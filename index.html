@@ -777,6 +777,9 @@ footer.site p{margin:4px 0}
           <p class="ahint">「後台資料」工作表的 A1（會自動排除密碼欄，這個工作表要發布到網路）：</p>
           <pre class="code" id="fxFeed"></pre>
           <button class="mini-btn" type="button" data-copy="fxFeed">複製公式</button>
+          <p class="ahint" style="margin-top:12px">「回覆資料」工作表的 A1（排除姓名與員工編號，這個工作表要發布，選填）：</p>
+          <pre class="code" id="fxIvReplies"></pre>
+          <button class="mini-btn" type="button" data-copy="fxIvReplies">複製公式</button>
           <p class="ahint" style="margin-top:12px">「新人名冊」工作表的 A2（不要發布）：</p>
           <pre class="code" id="fxRoster"></pre>
           <button class="mini-btn" type="button" data-copy="fxRoster">複製公式</button>
@@ -2770,6 +2773,7 @@ const FORM_KEYS={
 };
 const SHEET_KEYS={
   feed:{label:"後台資料",headers:["時間戳記","類型","編號","分段","資料","操作者"]},
+  ivreplies:{label:"回覆資料",optional:true,headers:["時間戳記","通知編號","新人代碼","回覆","說明"]},
   settings:{label:"網站設定",legacy:true,headers:["項目","內容"]},
   interviews:{label:"面談通知",legacy:true,headers:["通知編號","新人代碼","標題","面談時間","地點","內容","狀態"]},
   replies:{label:"諮詢回覆",legacy:true,headers:["申請編號","狀態","回覆","回覆時間"]},
@@ -3826,6 +3830,7 @@ function openAdminView(){
   curZone=null; curPlace=null;
   $("#adminNpc").innerHTML=avatarSVG(CHIEF_AV);
   $("#fxFeed").textContent=`=QUERY('後台更新'!A:G, "select A, C, D, E, F, G where C is not null", 1)`;
+  $("#fxIvReplies").textContent=`=QUERY('面談回覆'!A:F, "select A, B, C, E, F where B is not null", 1)`;
   $("#fxRoster").textContent=`=SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxGroups").textContent=`=QUERY('新人名冊'!A2:I, "select D, count(B) where B is not null group by D label D '組別', count(B) '人數'", 0)`;
   try{ $("#opName").value=localStorage.getItem(OP_KEY)||""; }catch(e){}
@@ -3942,7 +3947,7 @@ function renderStatus(){
   });
   Object.entries(SHEET_KEYS).forEach(([k,def])=>{
     const u=sheetUrl(k);
-    if(def.legacy&&!u) return;
+    if((def.legacy||def.optional)&&!u) return;
     const st=sheetState[k];
     const state=!u?`<span class="st st-off">未設定</span>`:!st?`<span class="st st-info">檢查中…</span>`:st.ok?`<span class="st st-ok">正常</span>`:`<span class="st st-warn">讀取失敗</span>`;
     let note=!u?"請到「設定小幫手」設定":!st?"":st.ok?`讀到 ${st.n} 列資料`:esc(st.err);
@@ -4033,8 +4038,26 @@ function parseSheetTs(t){
   return new Date(+m[1],+m[2]-1,+m[3],h,+m[6],+(m[7]||0));
 }
 const fmtShort=d=>d?`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`:"";
+let ivReplySrc="";
+async function loadIvRepliesPublished(){
+  const rows=await fetchSheet("ivreplies");
+  const map={};
+  (rows||[]).forEach(r=>{
+    const id=String(r[1]||"").trim(); if(!id) return;
+    (map[id]=map[id]||[]).push({id,code:String(r[2]||""),name:"",empno:"",status:String(r[3]||"").trim(),message:String(r[4]||""),at:parseSheetTs(r[0])});
+  });
+  Object.values(map).forEach(list=>list.sort((a,b)=>(a.at?a.at.getTime():0)-(b.at?b.at.getTime():0)));
+  return map;
+}
 async function loadIvReplies(){
   if(ivReplyBusy) return;
+  if(sheetUrl("ivreplies")){
+    ivReplyBusy=true; ivReplyErr=""; renderIvReplyState();
+    try{ IV_REPLIES=await loadIvRepliesPublished(); ivReplySrc="published"; }
+    catch(e){ IV_REPLIES=null; ivReplyErr="published"; }
+    finally{ ivReplyBusy=false; renderIvReplyState(); renderIvTable(); }
+    return;
+  }
   if(!sheetIdFromLink()){ IV_REPLIES=null; ivReplyErr="nolink"; renderIvReplyState(); renderIvTable(); return; }
   ivReplyBusy=true; ivReplyErr=""; renderIvReplyState();
   try{
@@ -4051,7 +4074,7 @@ async function loadIvReplies(){
       (map[id]=map[id]||[]).push({id,code:String(cell(r,iCode)),name:String(cell(r,iName)),empno:String(cell(r,iEmp)),status:String(cell(r,iSt)),message:String(cell(r,iMsg)),at});
     });
     Object.values(map).forEach(list=>list.sort((a,b)=>(a.at?a.at.getTime():0)-(b.at?b.at.getTime():0)));
-    IV_REPLIES=map;
+    IV_REPLIES=map; ivReplySrc="private";
   }catch(e){ IV_REPLIES=null; ivReplyErr=e&&e.message||"error"; }
   finally{ ivReplyBusy=false; renderIvReplyState(); renderIvTable(); }
 }
@@ -4061,12 +4084,13 @@ function renderIvReplyState(){
   if(ivReplyBusy){ el.innerHTML="新人回覆：讀取中…"; return; }
   if(IV_REPLIES){
     const n=Object.values(IV_REPLIES).reduce((a,l)=>a+l.length,0);
-    el.innerHTML=`新人回覆：已從「${IV_REPLY_SHEET}」工作表讀到 ${n} 筆（只有你看得到，不會公開）。<button class="mini-btn" type="button" data-ivrreload>重新讀取回覆</button>${link}`;
+    el.innerHTML=`新人回覆：已從「${ivReplySrc==="published"?"回覆資料":IV_REPLY_SHEET}」工作表讀到 ${n} 筆。<button class="mini-btn" type="button" data-ivrreload>重新讀取回覆</button>${link}`;
     return;
   }
-  const why=ivReplyErr==="nolink"?"還沒在設定小幫手填入「部門試算表網址」。"
+  const why=ivReplyErr==="published"?"讀不到發布的「回覆資料」工作表，請確認已發布成 CSV，且網址正確。"
+    :ivReplyErr==="nolink"?"還沒設定。請依說明建立並發布「回覆資料」工作表，把網址貼到「設定小幫手」。"
     :ivReplyErr==="columns"?`「${IV_REPLY_SHEET}」工作表找不到「通知編號」或「回覆」欄位，請確認回覆工作表的名稱與題目。`
-    :`讀不到「${IV_REPLY_SHEET}」工作表。請確認這個瀏覽器已登入有試算表權限的 Google 帳號，且沒有封鎖第三方 Cookie（Safari 請關閉「防止跨網站追蹤」）。`;
+    :`瀏覽器擋掉了直接讀取私人工作表。請改用「回覆資料」工作表：在試算表新增工作表「回覆資料」，A1 貼上 =QUERY('${IV_REPLY_SHEET}'!A:F, "select A, B, C, E, F where B is not null", 1)，發布成 CSV，再把網址貼到「設定小幫手」的「回覆資料」欄位。`;
   el.innerHTML=`<span class="cerr" style="display:inline">新人回覆無法顯示：${why}</span> <button class="mini-btn" type="button" data-ivrreload>再試一次</button>${link}`;
 }
 function ivReplyCell(x){
@@ -4238,7 +4262,7 @@ function renderSetup(){
       <p class="pfres" id="pfr-${k}"></p>
     </div>`;
   }).join("");
-  const sheetInput=(k,def)=>`<label for="sh-${k}">${def.label}${def.legacy?"":"（必要）"}</label>
+  const sheetInput=(k,def)=>`<label for="sh-${k}">${def.label}${def.legacy?"":def.optional?"（選填：讓村長在管理者專區看到新人的面談回覆）":"（必要）"}</label>
     <input id="sh-${k}" class="ainput wide" data-sheet="${k}" value="${esc((CONF.sheets||{})[k]||"")}" placeholder="https://docs.google.com/spreadsheets/d/e/…/pub?gid=…&single=true&output=csv">`;
   $("#setupSheets").innerHTML=Object.entries(SHEET_KEYS).filter(([,d])=>!d.legacy).map(([k,d])=>sheetInput(k,d)).join("");
   $("#setupLegacy").innerHTML=`<p class="ahint">這些是舊版設定使用的工作表，網站會在「後台資料」沒有對應資料時才讀取。新的設定不需要填。</p>`+Object.entries(SHEET_KEYS).filter(([,d])=>d.legacy).map(([k,d])=>sheetInput(k,d)).join("");
@@ -4278,7 +4302,7 @@ function buildConfig(){
     const k=i.dataset.sheet, v=normSheetUrl(i.value);
     out.sheets[k]=v;
     if(v&&!/^https:\/\/docs\.google\.com\/spreadsheets\/.+output=csv/.test(v)) warn.push(`${SHEET_KEYS[k].label}的網址看起來不是發布的 CSV 網址`);
-    else if(!v&&!SHEET_KEYS[k].legacy) warn.push(`${SHEET_KEYS[k].label}工作表還沒設定`);
+    else if(!v&&!SHEET_KEYS[k].legacy&&!SHEET_KEYS[k].optional) warn.push(`${SHEET_KEYS[k].label}工作表還沒設定`);
   });
   document.querySelectorAll("[data-link]").forEach(i=>{ out.links[i.dataset.link]=String(i.value||"").trim(); });
   $("#cfgWarn").textContent=warn.length?"提醒："+warn.join("；"):"";

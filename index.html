@@ -896,7 +896,7 @@ footer.site p{margin:4px 0}
     <!-- setup helper -->
     <div class="apanel" data-panel="setup" role="tabpanel" hidden>
       <section class="window abox">
-        <h3>① 四張 Google 表單</h3>
+        <h3>① 五張 Google 表單</h3>
         <p class="ahint">在每張表單的「⋮ → 取得預先填入的連結」中，每一題都填入下表的「代號」（英文小寫），按「取得連結 → 複製連結」，貼到對應的欄位。不要勾選縮短網址。「後台更新」表單請在取得連結<b>之後</b>，才替「管理密碼」加上必填與規則運算式驗證。</p>
         <div id="setupForms"></div>
       </section>
@@ -2726,7 +2726,9 @@ $("#cForm").addEventListener("submit",async e=>{
   document.querySelectorAll(".missing").forEach(el=>el.classList.remove("missing"));
   Sound.sfx("select");
   const isNew=!S.group;
+  const profileChanged=!isNew&&(S.name!==name||S.emp!==emp||S.group!==grp);
   S.name=name; S.emp=emp; S.av=Object.assign({},draft); S.group=grp; save();
+  if(isNew) logSignup("首次登錄"); else if(profileChanged) logSignup("修改資料");
   queueSync(true);
   $("#cDlg").close();
   renderPortals(); buildMap(); renderHUD(); syncSoundBtns(); checkAch();
@@ -2745,6 +2747,7 @@ $("#hudFace").addEventListener("click",openChar);
 /* ================= data: GitHub Pages + Google 表單／試算表 ================= */
 const CONF=(window.SINO22_CONFIG&&typeof window.SINO22_CONFIG==="object")?window.SINO22_CONFIG:{};
 const FORM_KEYS={
+  signup:{label:"新人登錄紀錄",fields:[["code","新人代碼"],["name","姓名"],["empno","員工編號"],["group","組別"],["event","事件"],["device","裝置"]]},
   progress:{label:"新人進度回報",fields:[["code","新人代碼"],["name","名字"],["group","組別"],["level","等級"],["progress","完成進度"],["awarded","結業日期"],["detail","詳細資料"],["empno","員工編號"]]},
   consult:{label:"技術諮詢申請",fields:[["no","申請編號"],["code","新人代碼"],["name","名字"],["group","組別"],["category","類別"],["topic","主題"],["detail","問題說明"],["preferred","希望時段"],["contact","聯絡方式"],["empno","員工編號"]]},
   ivReply:{label:"面談回覆",fields:[["notice","通知編號"],["code","新人代碼"],["name","名字"],["status","回覆"],["message","說明"],["empno","員工編號"]]},
@@ -3074,6 +3077,18 @@ async function bootstrap(){
   return true;
 }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"&&Date.now()-lastBoot>5*60000) bootstrap().catch(()=>{}); });
+
+/* ---- 新人登錄紀錄（Google 表單） ---- */
+function deviceText(){
+  const ua=navigator.userAgent||"";
+  const kind=/iPad|Tablet/i.test(ua)?"平板":/Mobi|Android|iPhone/i.test(ua)?"手機":"電腦";
+  const br=/Edg\//.test(ua)?"Edge":/OPR\//.test(ua)?"Opera":/Chrome\//.test(ua)?"Chrome":/Firefox\//.test(ua)?"Firefox":/Safari\//.test(ua)?"Safari":"其他瀏覽器";
+  return `${kind}・${br}`;
+}
+function logSignup(event){
+  if(!formCfg("signup")) return;
+  sendForm("signup",{code:myCode(),name:S.name||"",empno:S.emp||"",group:S.group||"",event,device:deviceText()}).catch(()=>{});
+}
 
 /* ---- player progress report (Google 表單) ---- */
 let syncTimer=null, lastSent=0, syncDirty=false;
@@ -3913,7 +3928,7 @@ function renderStatus(){
   });
   $("#stTable").innerHTML=`<thead><tr><th>類型</th><th>名稱</th><th>狀態</th><th>說明</th><th><span class="sr">操作</span></th></tr></thead><tbody>${rows.join("")}</tbody>`;
   const L=CONF.links||{};
-  const links=[["spreadsheet","部門試算表"],["progressForm","新人進度回報表單"],["consultForm","技術諮詢申請表單"],["ivReplyForm","面談回覆表單"],["adminForm","後台更新表單"]]
+  const links=[["spreadsheet","部門試算表"],["signupForm","新人登錄紀錄表單"],["progressForm","新人進度回報表單"],["consultForm","技術諮詢申請表單"],["ivReplyForm","面談回覆表單"],["adminForm","後台更新表單"]]
     .filter(([k])=>/^https:\/\//.test(String(L[k]||"")));
   $("#stLinks").innerHTML=links.length?links.map(([k,l])=>`<li><a href="${esc(L[k])}" target="_blank" rel="noopener">${l} ↗</a></li>`).join("")
     :`<li class="ahint">還沒設定常用連結，可以在「設定小幫手」填入。</li>`;
@@ -4076,7 +4091,7 @@ function renderSetup(){
   $("#setupSheets").innerHTML=Object.entries(SHEET_KEYS).filter(([,d])=>!d.legacy).map(([k,d])=>sheetInput(k,d)).join("");
   $("#setupLegacy").innerHTML=`<p class="ahint">這些是舊版設定使用的工作表，網站會在「後台資料」沒有對應資料時才讀取。新的設定不需要填。</p>`+Object.entries(SHEET_KEYS).filter(([,d])=>d.legacy).map(([k,d])=>sheetInput(k,d)).join("");
   const L=CONF.links||{};
-  $("#setupLinks").innerHTML=[["spreadsheet","部門試算表網址"],["progressForm","進度回報表單（編輯頁）"],["consultForm","技術諮詢表單（編輯頁）"],["ivReplyForm","面談回覆表單（編輯頁）"],["adminForm","後台更新表單（編輯頁）"]]
+  $("#setupLinks").innerHTML=[["spreadsheet","部門試算表網址"],["signupForm","登錄紀錄表單（編輯頁）"],["progressForm","進度回報表單（編輯頁）"],["consultForm","技術諮詢表單（編輯頁）"],["ivReplyForm","面談回覆表單（編輯頁）"],["adminForm","後台更新表單（編輯頁）"]]
     .map(([k,l])=>`<div><label for="lk-${k}">${l}</label><input id="lk-${k}" class="ainput wide" data-link="${k}" value="${esc(L[k]||"")}" placeholder="https://…"></div>`).join("");
   buildConfig();
 }

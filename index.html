@@ -446,6 +446,7 @@ details.legacy summary{cursor:pointer;font-family:var(--pixel);color:var(--win-m
 .icard dd{margin:0}
 .icard .txt{white-space:pre-line;margin:8px 0;font-size:15px;line-height:1.8}
 .icard .answer{background:rgba(242,193,78,.12);border-left:4px solid var(--gold);padding:6px 10px;margin:8px 0 0;white-space:pre-line;font-size:15px}
+.icard .answer.upd{background:rgba(242,193,78,.2);border-left-color:#FF9F43}
 .icard .answer b{font-family:var(--pixel);font-weight:400;color:var(--gold);display:block;font-size:13px}
 .icard .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
 .icard textarea{margin-top:8px}
@@ -854,7 +855,8 @@ footer.site p{margin:4px 0}
     <!-- interviews -->
     <div class="apanel" data-panel="ivs" role="tabpanel" hidden>
       <section class="window abox form">
-        <h3>發布面談通知</h3>
+        <h3 id="hvFormTitle">發布面談通知</h3>
+        <p class="cerr" id="hvEditNote" hidden style="color:var(--gold)"></p>
         <p class="ahint">新人代碼請到試算表的「新人名冊」複製，可以一次通知多位。通知會出現在新人的「村長的家」，新人的回覆會記錄在「面談回覆」工作表。</p>
         <label for="hvCodes">新人代碼（一行一個或用逗號分隔）</label>
         <textarea id="hvCodes" class="ainput wide" rows="2" placeholder="例如：K7QM-2XPD"></textarea>
@@ -866,7 +868,11 @@ footer.site p{margin:4px 0}
         <input id="hvPlace" class="ainput wide" maxlength="40" placeholder="例如：部門主管辦公室">
         <label for="hvBody">內容</label>
         <textarea id="hvBody" class="ainput wide" rows="3" maxlength="1000" placeholder="面談目的、需要準備的資料等（會公開發布，請勿寫入個人評語）"></textarea>
-        <div class="formfoot"><span class="cerr" id="hvErr" role="alert"></span><button class="act" type="button" id="hvSend">發布通知</button></div>
+        <div id="hvNoteRow" hidden>
+          <label for="hvNote">給新人的說明（會顯示在通知上）</label>
+          <input id="hvNote" class="ainput wide" maxlength="120">
+        </div>
+        <div class="formfoot"><span class="cerr" id="hvErr" role="alert"></span><span class="afilters"><button class="act ghost" type="button" id="hvCancelEdit" hidden>取消修改</button><button class="act" type="button" id="hvSend">發布通知</button></span></div>
       </section>
       <section class="window abox">
         <div class="abar"><h3>已發布的面談通知</h3><button class="act ghost" type="button" data-reload>重新讀取</button></div>
@@ -3177,10 +3183,15 @@ async function loadInbox(notify,force){
       if(ivR.status==="fulfilled"&&ivR.value) ivR.value.forEach(r=>{ const id=String(r[0]||"").trim(); if(id) all.set(id,{id,code:r[1],title:r[2],when:r[3],place:r[4],body:r[5],status:r[6]}); });
       if(feed) feed.interviews.forEach(x=>{ all.delete(x.id); all.set(x.id,x); });
       INBOX.interviews=[...all.values()].filter(x=>normCode(x.code)===me).reverse().map(x=>{
-        const cancelled=/取消|刪除/.test(String(x.status||"")), rep=reps[x.id];
+        const cancelled=/取消|刪除/.test(String(x.status||""));
+        const ver=hashStr([x.title,x.when,x.place,x.body,x.status].join("|"));
+        let rep=reps[x.id];
+        if(rep&&!rep.ver){ rep.ver=ver; reps[x.id]=rep; S.ivReplies=reps; save(); }
+        const outdated=!!(rep&&rep.ver!==ver);
         return {id:x.id,title:String(x.title||"面談通知"),when:String(x.when||""),place:String(x.place||""),body:String(x.body||""),
-          status:cancelled?"已取消":rep?rep.status:"待回覆",reply:rep?rep.reply:"",repliedAt:rep?rep.at:"",
-          ver:hashStr([x.title,x.when,x.place,x.body,x.status].join("|"))};
+          status:cancelled?"已取消":(rep&&!outdated)?rep.status:"待回覆",
+          reply:(rep&&!outdated)?rep.reply:"",repliedAt:(rep&&!outdated)?rep.at:"",
+          updated:outdated, prev:outdated?rep:null, note:String(x.note||""), ver};
       });
     }
     if((rpR.status==="fulfilled"&&rpR.value)||feed){
@@ -3282,11 +3293,12 @@ function renderHome(body){
     return `<article class="icard ${ivUnseen(x)||freshNow.has(x.id)?"fresh":""}" data-iv="${esc(x.id)}">
       <h4><span>${esc(x.title)}</span>${stTag(x.status)}</h4>
       <dl><dt>面談時間</dt><dd>${fmtWhen(x.when)}</dd><dt>地點</dt><dd>${esc(x.place||"—")}</dd><dt>通知編號</dt><dd>${esc(x.id)}</dd></dl>
+      ${x.updated&&x.status!=="已取消"?`<p class="answer upd"><b>村長已更新面談時間，請重新回覆</b>${x.note?esc(x.note)+"\n":""}你先前的回覆：${esc(x.prev.status)}${x.prev.reply?"・"+esc(x.prev.reply):""}</p>`:""}
       ${x.body?`<p class="txt">${esc(x.body)}</p>`:""}
       ${(x.status==="已確認"||x.status==="申請改期")?`<p class="answer"><b>你的回覆・${esc(x.status)}・${fmtDate(x.repliedAt)}</b>${esc(x.reply||"我會準時出席。")}</p>`:""}
       ${off?`<p class="empty-note">村長已取消這場面談。</p>`:formCfg("ivReply")?`<div class="acts">
         <button class="act" type="button" data-ivok ${x.status==="已確認"?"disabled":""}>${x.status==="已確認"?"已確認出席":"確認出席"}</button>
-        <button class="act ghost" type="button" data-ivre>申請改期</button>
+        <button class="act ghost" type="button" data-ivre>${x.status==="申請改期"?"修改改期說明":"申請改期"}</button>
       </div>
       <div class="resched" hidden>
         <label class="sr" for="rs-${esc(x.id)}">改期說明</label>
@@ -3371,8 +3383,9 @@ $("#placeBody").addEventListener("click",async e=>{
     try{
       await sendForm("ivReply",{notice:id,code:myCode(),name:S.name||"新人冒險者",empno:S.emp||"",status,message:reply});
       S.ivReplies=S.ivReplies||{};
-      S.ivReplies[id]={status,reply,at:new Date().toISOString()}; save();
-      const x=INBOX.interviews.find(v=>v.id===id); if(x) Object.assign(x,{status,reply,repliedAt:S.ivReplies[id].at});
+      const xv=INBOX.interviews.find(v=>v.id===id);
+      S.ivReplies[id]={status,reply,at:new Date().toISOString(),ver:xv?xv.ver:""}; save();
+      if(xv) Object.assign(xv,{status,reply,repliedAt:S.ivReplies[id].at,updated:false,prev:null});
       Sound.sfx("select");
       toast(send?"已送出改期申請，村長會再和你確認時間":"已回覆村長：會準時出席");
       renderPlace();
@@ -3988,7 +4001,7 @@ function renderIvTable(){
         <td style="white-space:normal;min-width:7em">${esc(x.place)}</td>
         <td>${off?`<span class="st st-off">已取消</span>`:`<span class="st st-ok">有效</span>`}${waiting.has(x.id)?' <span class="st st-wait">更新中</span>':""}</td>
         <td>${x.src==="feed"?`${esc(x.ts||"")}<br><span class="ahint">${esc(x.by||"")}</span>`:`<span class="ahint">舊版工作表</span>`}</td>
-        <td>${x.src==="feed"?`<button class="del" type="button" data-ivtoggle="${esc(x.id)}">${off?"恢復通知":"取消通知"}</button>`:`<span class="ahint">請到工作表修改</span>`}</td>
+        <td>${x.src==="feed"?`<span style="display:flex;gap:4px">${off?"":`<button class="mini-btn" type="button" data-ivedit="${esc(x.id)}">改時間</button>`}<button class="del" type="button" data-ivtoggle="${esc(x.id)}">${off?"恢復通知":"取消通知"}</button></span>`:`<span class="ahint">請到工作表修改</span>`}</td>
       </tr>`;}).join(""):`<tr><td colspan="7">${sheetUrl("feed")?"還沒有發布過面談通知。":"請先完成設定小幫手。"}</td></tr>`}</tbody>`;
 }
 function renderRpTable(){
@@ -4007,6 +4020,18 @@ $("#hvSend").addEventListener("click",async()=>{
   const title=cleanText($("#hvTitle").value,40), when=$("#hvWhen").value, place=cleanText($("#hvPlace").value,40), body=String($("#hvBody").value).trim().slice(0,1000);
   const msg=!codes.length?"請輸入至少一組新人代碼":bad.length?`這些代碼格式不對：${bad.join("、")}（應為 4 碼-4 碼）`:!title?"請輸入標題":!when?"請選擇面談時間":!place?"請輸入地點":"";
   if(msg){ err.textContent=msg; Sound.sfx("error"); return; }
+  if(ivEditId){
+    const x=ADMIN_IV.find(v=>v.id===ivEditId);
+    if(!x){ setIvEdit(null); return; }
+    if(!(await uiConfirm(`把「${title}」更新為 ${whenText(when)}、${place}？新人會看到新時間並可以重新回覆。`,"更新"))) return;
+    const note=cleanText($("#hvNote").value,120);
+    const payload="j:"+JSON.stringify({code:x.code,title,when:whenText(when),place,body,status:"",note});
+    const btn=$("#hvSend"); btn.disabled=true;
+    const ok=await adminSend("interview",x.id,payload,`更新面談時間：${title}（${x.code}）`,"");
+    btn.disabled=false;
+    if(ok){ setIvEdit(null); renderIvTable(); }
+    return;
+  }
   if(!(await uiConfirm(`要發布「${title}」給 ${codes.length} 位新人嗎？`,"發布"))) return;
   const btn=$("#hvSend"); btn.disabled=true;
   let ok=0;
@@ -4018,13 +4043,37 @@ $("#hvSend").addEventListener("click",async()=>{
   btn.disabled=false;
   if(ok){ ["#hvCodes","#hvTitle","#hvWhen","#hvPlace","#hvBody"].forEach(k=>$(k).value=""); renderIvTable(); }
 });
+let ivEditId=null;
+function setIvEdit(x){
+  ivEditId=x?x.id:null;
+  const codes=$("#hvCodes");
+  codes.disabled=!!x;
+  $("#hvEditNote").hidden=!x;
+  $("#hvNoteRow").hidden=!x;
+  $("#hvCancelEdit").hidden=!x;
+  $("#hvSend").textContent=x?"更新這則通知":"發布通知";
+  $("#hvFormTitle").textContent=x?"更新面談時間":"發布面談通知";
+  if(x){
+    codes.value=x.code; $("#hvTitle").value=x.title||""; $("#hvPlace").value=x.place||""; $("#hvBody").value=x.body||"";
+    const m=/^(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})/.exec(String(x.when||""));
+    $("#hvWhen").value=m?`${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}T${String(m[4]).padStart(2,"0")}:${m[5]}`:"";
+    $("#hvNote").value="已依你的改期申請調整時間，請再確認一次。";
+    $("#hvEditNote").textContent=`正在更新通知 ${x.id}（給 ${x.code}）。改好時間後按「更新這則通知」，新人會看到新時間並可以重新回覆。新人的改期說明請到試算表「面談回覆」工作表查看。`;
+    $("#hvFormTitle").scrollIntoView({behavior:"smooth",block:"start"}); $("#hvWhen").focus({preventScroll:true});
+  }else{
+    ["#hvCodes","#hvTitle","#hvWhen","#hvPlace","#hvBody","#hvNote"].forEach(k=>$(k).value="");
+  }
+}
+$("#hvCancelEdit").addEventListener("click",()=>{ setIvEdit(null); Sound.sfx("back"); });
 $("#ivTable").addEventListener("click",async e=>{
+  const ed=e.target.closest("[data-ivedit]");
+  if(ed){ const x=ADMIN_IV.find(v=>v.id===ed.dataset.ivedit); if(x){ setIvEdit(x); Sound.sfx("open"); } return; }
   const b=e.target.closest("[data-ivtoggle]"); if(!b) return;
   const x=ADMIN_IV.find(v=>v.id===b.dataset.ivtoggle); if(!x) return;
   const off=/取消|刪除/.test(String(x.status||""));
   if(!(await uiConfirm(off?`恢復給 ${x.code} 的「${x.title}」？`:`取消給 ${x.code} 的「${x.title}」？新人會看到這場面談已取消。`,off?"恢復":"取消通知"))) return;
   const status=off?"":"取消";
-  const payload="j:"+JSON.stringify({code:x.code,title:x.title,when:x.when,place:x.place,body:x.body||"",status});
+  const payload="j:"+JSON.stringify({code:x.code,title:x.title,when:x.when,place:x.place,body:x.body||"",status,note:x.note||""});
   if(await adminSend("interview",x.id,payload,`${off?"恢復":"取消"}面談通知：${x.title}（${x.code}）`,status)) renderIvTable();
 });
 $("#hcSend").addEventListener("click",async()=>{

@@ -3240,7 +3240,7 @@ function renderPlace(greet){
     typeInto($("#plSay"),home
       ?(pending?`${name}，來得正好！我這裡有 ${pending} 則面談通知，看完記得回覆我。`
                :`${name}，歡迎來我家坐坐。需要找你面談時，我會把通知放在這裡，地圖上的房子也會亮起「！」。`)
-      :`${name}，我是數位總合辦公室的${CFG.director}。部門平台開發或是技術應用需要諮詢時，都可以在這裡申請技術諮詢。`);
+      :`${name}，我是數位總合辦公室的${CFG.director}。部門平台或技術應用想要諮詢，都可以在這裡申請技術諮詢。`);
   }
   const body=$("#placeBody");
   const ready=home?(sheetUrl("feed")||sheetUrl("interviews")||formCfg("ivReply")):formCfg("consult");
@@ -3423,7 +3423,7 @@ function welcomePagesAfterChar(){
   const name=S.name||"新人冒險者";
   return [
     {text:`${name}，歡迎加入${S.group}！地圖上的新手村、情報酒館、行政塔、寶物庫和存摺神殿，都有等你完成的任務。`},
-    {text:`需要找你面談時，我會把通知放在「村長的家」；軟體或設備遇到問題，可以到「數位總合辦公室」找${CFG.director}。`},
+    {text:`需要找你面談時，我會把通知放在「村長的家」；部門平台或技術應用遇到問題，可以到「數位總合辦公室」找${CFG.director}幫忙。`},
     {text:"任務裡看到常用的資料，記得按「♥ 加入最愛」。回到「新人的家」打開筆記本，就能快速查到。先從新手村出發吧！",btn:"出發！",action:"go",goto:"village"}
   ];
 }

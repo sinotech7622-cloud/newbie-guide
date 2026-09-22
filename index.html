@@ -415,6 +415,14 @@ pre.code,textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:13p
 .petlock{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .petlock b{color:var(--gold);font-weight:400}
 
+/* ---------- interview replies in admin ---------- */
+.ivrstate{margin:0 0 10px!important}
+.ivrstate a{margin-left:6px}
+.ivmsg{margin-top:4px;font-size:14px;line-height:1.6}
+.ivhist{margin-top:4px;font-size:13px;color:var(--win-muted)}
+.ivhist summary{cursor:pointer}
+.atable tr.needact td{background:rgba(255,159,67,.12)}
+
 /* ---------- publish tracker ---------- */
 .pubbox{margin:0 0 18px}
 .publist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -747,7 +755,7 @@ footer.site p{margin:4px 0}
       <button role="tab" type="button" data-tab="status" aria-selected="true">連線狀態</button>
       <button role="tab" type="button" data-tab="items" aria-selected="false">項目管理</button>
       <button role="tab" type="button" data-tab="siteset" aria-selected="false">網站設定</button>
-      <button role="tab" type="button" data-tab="ivs" aria-selected="false">面談通知</button>
+      <button role="tab" type="button" data-tab="ivs" aria-selected="false">面談通知<span class="tabcount" id="ivTabCount" hidden></span></button>
       <button role="tab" type="button" data-tab="rps" aria-selected="false">諮詢回覆</button>
       <button role="tab" type="button" data-tab="setup" aria-selected="false">設定小幫手</button>
     </div>
@@ -876,6 +884,7 @@ footer.site p{margin:4px 0}
       </section>
       <section class="window abox">
         <div class="abar"><h3>已發布的面談通知</h3><button class="act ghost" type="button" data-reload>重新讀取</button></div>
+        <p class="ahint ivrstate" id="ivReplyState">新人回覆：讀取中…</p>
         <div class="tscroll"><table class="atable" id="ivTable"></table></div>
       </section>
     </div>
@@ -3822,7 +3831,7 @@ function openAdminView(){
   try{ $("#opName").value=localStorage.getItem(OP_KEY)||""; }catch(e){}
   syncPassState();
   selectTab("status");
-  renderStatus(); checkSheets(); renderSetup(); initManagers(); loadAdminLists(false); renderPubs();
+  renderStatus(); checkSheets(); renderSetup(); initManagers(); loadAdminLists(false); renderPubs(); loadIvReplies();
   if(PUBS.some(p=>p.state!=="done")) schedulePubCheck(1500);
   try{ history.replaceState(null,"","#admin"); }catch(e){}
   window.scrollTo({top:0});
@@ -3839,7 +3848,8 @@ function selectTab(t){
 document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");}});
 $("#viewAdmin").addEventListener("click",e=>{
   const c=e.target.closest("[data-copy]"); if(c){ copyText($("#"+c.dataset.copy).textContent); return; }
-  if(e.target.closest("[data-reload]")) loadAdminLists(true);
+  if(e.target.closest("[data-reload]")){ loadAdminLists(true); if($("#ivTable").closest(".apanel")&&!$("#ivTable").closest(".apanel").hidden) loadIvReplies(); }
+  if(e.target.closest("[data-ivrreload]")) loadIvReplies();
 });
 
 /* ---- password & operator ---- */
@@ -3989,20 +3999,112 @@ async function loadAdminLists(force){
   renderIvTable(); renderRpTable();
   if(!feed&&sheetUrl("feed")&&fd.status==="rejected") toast("暫時讀不到後台資料");
 }
+/* 新人回覆（私人工作表「面談回覆」，以村長瀏覽器中登入的 Google 帳號讀取，不公開發布） */
+let IV_REPLIES=null, ivReplyErr="", ivReplyBusy=false;
+const IV_REPLY_SHEET="面談回覆";
+function sheetIdFromLink(){ const m=/\/spreadsheets\/d\/([A-Za-z0-9_-]+)/.exec(String((CONF.links||{}).spreadsheet||"")); return m?m[1]:""; }
+function gvizQuery(sheet){
+  return new Promise((resolve,reject)=>{
+    const id=sheetIdFromLink(); if(!id){ reject(new Error("nolink")); return; }
+    const cb="__sinoGviz"+Date.now()+Math.floor(Math.random()*1e5);
+    const el=document.createElement("script"); let done=false;
+    const finish=(err,val)=>{ if(done) return; done=true; clearTimeout(timer); try{ delete window[cb]; }catch(e){ window[cb]=undefined; } el.remove(); err?reject(err):resolve(val); };
+    const timer=setTimeout(()=>finish(new Error("timeout")),12000);
+    window[cb]=resp=>{
+      if(resp&&resp.status==="ok") finish(null,resp.table);
+      else finish(new Error((resp&&resp.errors&&resp.errors[0]&&(resp.errors[0].detailed_message||resp.errors[0].message))||"error"));
+    };
+    el.onerror=()=>finish(new Error("load"));
+    el.onload=()=>setTimeout(()=>finish(new Error("auth")),400);
+    el.src=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json;responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}&headers=1&t=${Date.now()}`;
+    document.head.appendChild(el);
+  });
+}
+function gvizDate(v){
+  const m=/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+)(?:,(\d+))?)?\)$/.exec(String(v||""));
+  return m?new Date(+m[1],+m[2],+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0)):null;
+}
+function parseSheetTs(t){
+  const m=/(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})\s*(上午|下午|AM|PM)?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i.exec(String(t||""));
+  if(!m) return null;
+  let h=+m[5]; const ap=(m[4]||m[8]||"").toUpperCase();
+  if((ap==="下午"||ap==="PM")&&h<12) h+=12;
+  if((ap==="上午"||ap==="AM")&&h===12) h=0;
+  return new Date(+m[1],+m[2]-1,+m[3],h,+m[6],+(m[7]||0));
+}
+const fmtShort=d=>d?`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`:"";
+async function loadIvReplies(){
+  if(ivReplyBusy) return;
+  if(!sheetIdFromLink()){ IV_REPLIES=null; ivReplyErr="nolink"; renderIvReplyState(); renderIvTable(); return; }
+  ivReplyBusy=true; ivReplyErr=""; renderIvReplyState();
+  try{
+    const table=await gvizQuery(IV_REPLY_SHEET);
+    const labels=table.cols.map(c=>String(c.label||c.id||""));
+    const col=(...names)=>labels.findIndex(l=>names.some(n=>l.includes(n)));
+    const iTs=col("時間戳記","Timestamp"), iNo=col("通知編號"), iCode=col("新人代碼"), iName=col("名字","姓名"), iSt=col("回覆"), iMsg=col("說明"), iEmp=col("員工編號");
+    if(iNo<0||iSt<0) throw new Error("columns");
+    const cell=(r,i)=>i<0||!r.c[i]?"":(r.c[i].v==null?"":r.c[i].v);
+    const map={};
+    table.rows.forEach(r=>{
+      const id=String(cell(r,iNo)).trim(); if(!id) return;
+      const tsRaw=cell(r,iTs); const at=gvizDate(tsRaw)||parseSheetTs(r.c[iTs]&&r.c[iTs].f);
+      (map[id]=map[id]||[]).push({id,code:String(cell(r,iCode)),name:String(cell(r,iName)),empno:String(cell(r,iEmp)),status:String(cell(r,iSt)),message:String(cell(r,iMsg)),at});
+    });
+    Object.values(map).forEach(list=>list.sort((a,b)=>(a.at?a.at.getTime():0)-(b.at?b.at.getTime():0)));
+    IV_REPLIES=map;
+  }catch(e){ IV_REPLIES=null; ivReplyErr=e&&e.message||"error"; }
+  finally{ ivReplyBusy=false; renderIvReplyState(); renderIvTable(); }
+}
+function renderIvReplyState(){
+  const el=$("#ivReplyState"); if(!el) return;
+  const link=/^https:\/\//.test(String((CONF.links||{}).spreadsheet||""))?` <a href="${esc(CONF.links.spreadsheet)}" target="_blank" rel="noopener">開啟試算表 ↗</a>`:"";
+  if(ivReplyBusy){ el.innerHTML="新人回覆：讀取中…"; return; }
+  if(IV_REPLIES){
+    const n=Object.values(IV_REPLIES).reduce((a,l)=>a+l.length,0);
+    el.innerHTML=`新人回覆：已從「${IV_REPLY_SHEET}」工作表讀到 ${n} 筆（只有你看得到，不會公開）。<button class="mini-btn" type="button" data-ivrreload>重新讀取回覆</button>${link}`;
+    return;
+  }
+  const why=ivReplyErr==="nolink"?"還沒在設定小幫手填入「部門試算表網址」。"
+    :ivReplyErr==="columns"?`「${IV_REPLY_SHEET}」工作表找不到「通知編號」或「回覆」欄位，請確認回覆工作表的名稱與題目。`
+    :`讀不到「${IV_REPLY_SHEET}」工作表。請確認這個瀏覽器已登入有試算表權限的 Google 帳號，且沒有封鎖第三方 Cookie（Safari 請關閉「防止跨網站追蹤」）。`;
+  el.innerHTML=`<span class="cerr" style="display:inline">新人回覆無法顯示：${why}</span> <button class="mini-btn" type="button" data-ivrreload>再試一次</button>${link}`;
+}
+function ivReplyCell(x){
+  if(!IV_REPLIES) return `<span class="ahint">—</span>`;
+  const list=IV_REPLIES[x.id]||[];
+  if(!list.length) return `<span class="ahint">尚未回覆</span>`;
+  const last=list[list.length-1];
+  const notifAt=parseSheetTs(x.ts);
+  const stale=notifAt&&last.at&&last.at<notifAt;
+  const tag=last.status==="申請改期"?`<span class="st st-warn">申請改期</span>`:last.status==="已確認"?`<span class="st st-ok">已確認</span>`:stTag(last.status||"回覆");
+  const hist=list.length>1?`<details class="ivhist"><summary>共 ${list.length} 次回覆</summary>${list.slice().reverse().map(r=>`<div>${esc(fmtShort(r.at))}・${esc(r.status)}${r.message?"：「"+esc(r.message)+"」":""}</div>`).join("")}</details>`:"";
+  return `${tag}${stale?' <span class="st st-off">回覆的是更新前的時間</span>':""}
+    ${last.message?`<div class="ivmsg">「${esc(last.message)}」</div>`:""}
+    <div class="ahint" style="margin:2px 0 0">${esc(fmtShort(last.at))}${last.name?"・"+esc(last.name):""}</div>${hist}`;
+}
+function ivNeedsAction(x){
+  if(!IV_REPLIES) return false;
+  const list=IV_REPLIES[x.id]||[]; if(!list.length) return false;
+  const last=list[list.length-1], notifAt=parseSheetTs(x.ts);
+  return last.status==="申請改期"&&!/取消|刪除/.test(String(x.status||""))&&!(notifAt&&last.at&&last.at<notifAt);
+}
 function renderIvTable(){
   const waiting=new Set(PUBS.filter(p=>p.type==="interview"&&p.state!=="done").map(p=>p.id));
-  $("#ivTable").innerHTML=`<thead><tr><th>新人代碼</th><th>標題</th><th>面談時間</th><th>地點</th><th>狀態</th><th>發布</th><th><span class="sr">操作</span></th></tr></thead><tbody>${
+  const pending=ADMIN_IV.filter(ivNeedsAction).length;
+  const tc=$("#ivTabCount"); if(tc){ tc.hidden=!pending; tc.textContent=pending; }
+  $("#ivTable").innerHTML=`<thead><tr><th>新人代碼</th><th>標題</th><th>面談時間</th><th>地點</th><th>狀態</th><th>新人回覆</th><th>發布</th><th><span class="sr">操作</span></th></tr></thead><tbody>${
     ADMIN_IV.length?ADMIN_IV.map(x=>{
       const off=/取消|刪除/.test(String(x.status||""));
-      return `<tr>
-        <td><code>${esc(x.code)}</code></td>
+      return `<tr class="${ivNeedsAction(x)?"needact":""}">
+        <td><code>${esc(x.code)}</code>${ivNeedsAction(x)?'<br><span class="st st-warn">待處理</span>':""}</td>
         <td style="white-space:normal;min-width:9em">${esc(x.title)}</td>
         <td>${esc(x.when)}</td>
         <td style="white-space:normal;min-width:7em">${esc(x.place)}</td>
         <td>${off?`<span class="st st-off">已取消</span>`:`<span class="st st-ok">有效</span>`}${waiting.has(x.id)?' <span class="st st-wait">更新中</span>':""}</td>
+        <td style="white-space:normal;min-width:14em">${ivReplyCell(x)}</td>
         <td>${x.src==="feed"?`${esc(x.ts||"")}<br><span class="ahint">${esc(x.by||"")}</span>`:`<span class="ahint">舊版工作表</span>`}</td>
         <td>${x.src==="feed"?`<span style="display:flex;gap:4px">${off?"":`<button class="mini-btn" type="button" data-ivedit="${esc(x.id)}">改時間</button>`}<button class="del" type="button" data-ivtoggle="${esc(x.id)}">${off?"恢復通知":"取消通知"}</button></span>`:`<span class="ahint">請到工作表修改</span>`}</td>
-      </tr>`;}).join(""):`<tr><td colspan="7">${sheetUrl("feed")?"還沒有發布過面談通知。":"請先完成設定小幫手。"}</td></tr>`}</tbody>`;
+      </tr>`;}).join(""):`<tr><td colspan="8">${sheetUrl("feed")?"還沒有發布過面談通知。":"請先完成設定小幫手。"}</td></tr>`}</tbody>`;
 }
 function renderRpTable(){
   $("#rpTable").innerHTML=`<thead><tr><th>申請編號</th><th>狀態</th><th>回覆</th><th>回覆時間</th><th><span class="sr">操作</span></th></tr></thead><tbody>${
@@ -4058,7 +4160,8 @@ function setIvEdit(x){
     const m=/^(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})/.exec(String(x.when||""));
     $("#hvWhen").value=m?`${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}T${String(m[4]).padStart(2,"0")}:${m[5]}`:"";
     $("#hvNote").value="已依你的改期申請調整時間，請再確認一次。";
-    $("#hvEditNote").textContent=`正在更新通知 ${x.id}（給 ${x.code}）。改好時間後按「更新這則通知」，新人會看到新時間並可以重新回覆。新人的改期說明請到試算表「面談回覆」工作表查看。`;
+    const lastRep=IV_REPLIES&&IV_REPLIES[x.id]&&IV_REPLIES[x.id].slice(-1)[0];
+    $("#hvEditNote").textContent=`正在更新通知 ${x.id}（給 ${x.code}）。`+(lastRep&&lastRep.message?`新人的最新回覆：${lastRep.status}「${lastRep.message}」。`:"")+"改好時間後按「更新這則通知」，新人會看到新時間並可以重新回覆。";
     $("#hvFormTitle").scrollIntoView({behavior:"smooth",block:"start"}); $("#hvWhen").focus({preventScroll:true});
   }else{
     ["#hvCodes","#hvTitle","#hvWhen","#hvPlace","#hvBody","#hvNote"].forEach(k=>$(k).value="");

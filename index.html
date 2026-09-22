@@ -1635,7 +1635,7 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 const DEFAULT_CONTENT=clone(ZONES.map(z=>({id:z.id,intro:z.intro,chapters:z.chapters})));
 const DEFAULT_CONFIG={
   chief:"曹資協",
-  groups:["公路組","土木組","排水組","城鄉組","規劃組","土開小組","國土永續中心","南部辦公室","數位總合辦公室"],
+  groups:["公路組","土木組","排水組","城鄉組","規劃組","土開小組","國土永續中心","南部辦公室","數位總合辦"],
   portals:[
     {label:"公司內網",url:"https://portal2023.sinotech.com.tw/sip/#"},
     {label:"園城人",url:"https://cdp.sinotech.com.tw/LHA/"},
@@ -1648,7 +1648,7 @@ const DEFAULT_CONFIG={
 const PLACES=[
   {id:"myhome",name:"新人的家",real:"筆記本・成就・角色",sprite:"myhouse",tile:[5,10],from:0,heroDx:-24},
   {id:"home",name:"村長的家",real:"面談通知",sprite:"chiefhome",tile:[31,17],from:4},
-  {id:"digital",name:"數位總合辦公室",real:"技術諮詢",sprite:"digital",tile:[22,20],from:2}
+  {id:"digital",name:"數位總合辦",real:"技術諮詢",sprite:"digital",tile:[22,20],from:2}
 ];
 const CS_CATEGORIES=["程式與自動化","GIS 與圖資","BIM 與 3D","AI 工具","其他"];
 let CFG=clone(DEFAULT_CONFIG);
@@ -3220,7 +3220,7 @@ async function loadInbox(notify,force){
       const newCs=INBOX.consults.filter(x=>csUnseen(x)&&!prevCs.has(x.id+"|"+x.ver));
       let rang=false;
       if(newIv.length&&!inHome){toast(`📜 村長${CFG.chief}有 ${newIv.length} 則面談通知，請到「村長的家」查看`);rang=true;}
-      if(newCs.length&&!inDigital){toast(`💬 ${CFG.director}回覆了你的技術諮詢，請到「數位總合辦公室」查看`);rang=true;}
+      if(newCs.length&&!inDigital){toast(`💬 ${CFG.director}回覆了你的技術諮詢，請到「數位總合辦」查看`);rang=true;}
       if(rang) Sound.sfx("mail");
     }
     if(curPlace){ INBOX.interviews.filter(ivUnseen).forEach(x=>freshNow.add(x.id)); INBOX.consults.filter(csUnseen).forEach(x=>freshNow.add(x.id)); }
@@ -3272,14 +3272,14 @@ function renderPlace(greet){
   }
   const home=pl.id==="home";
   $("#plHostFace").innerHTML=home?avatarSVG(CHIEF_AV):avatarSVG(DIRECTOR_AV);
-  $("#plHostName").textContent=home?`部門村長　${CFG.chief}`:`數位總合辦公室　${CFG.director}`;
+  $("#plHostName").textContent=home?`部門村長　${CFG.chief}`:`數位總合辦　${CFG.director}`;
   if(greet){
     const name=S.name||"新人冒險者";
     const pending=INBOX.interviews.filter(x=>x.status==="待回覆").length;
     typeInto($("#plSay"),home
       ?(pending?`${name}，來得正好！我這裡有 ${pending} 則面談通知，看完記得回覆我。`
                :`${name}，歡迎來我家坐坐。需要找你面談時，我會把通知放在這裡，地圖上的房子也會亮起「！」。`)
-      :`${name}，我是數位總合辦公室的${CFG.director}。部門平台或技術應用想要諮詢，都可以在這裡申請技術諮詢。`);
+      :`${name}，我是數位總合辦的${CFG.director}。部門平台或技術應用想要諮詢，都可以在這裡申請技術諮詢。`);
   }
   const body=$("#placeBody");
   const ready=home?(sheetUrl("feed")||sheetUrl("interviews")||formCfg("ivReply")):formCfg("consult");
@@ -3464,7 +3464,7 @@ function welcomePagesAfterChar(){
   const name=S.name||"新人冒險者";
   return [
     {text:`${name}，歡迎加入${S.group}！地圖上的新手村、情報酒館、行政塔、寶物庫和存摺神殿，都有等你完成的任務。`},
-    {text:`需要找你面談時，我會把通知放在「村長的家」；部門平台或技術應用遇到問題，可以到「數位總合辦公室」找${CFG.director}幫忙。`},
+    {text:`需要找你面談時，我會把通知放在「村長的家」；部門平台或技術應用遇到問題，可以到「數位總合辦」找${CFG.director}幫忙。`},
     {text:"任務裡看到常用的資料，記得按「♥ 加入最愛」。回到「新人的家」打開筆記本，就能快速查到。先從新手村出發吧！",btn:"出發！",action:"go",goto:"village"}
   ];
 }

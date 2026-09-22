@@ -67,6 +67,7 @@ window.SINO22_CONFIG = {
   },
   "sheets": {
     "feed": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=592103693&single=true&output=csv",
+    "ivreplies": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1271539101&single=true&output=csv",
     "settings": "",
     "interviews": "",
     "replies": "",

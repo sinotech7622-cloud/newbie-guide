@@ -3240,7 +3240,7 @@ function renderPlace(greet){
     typeInto($("#plSay"),home
       ?(pending?`${name}，來得正好！我這裡有 ${pending} 則面談通知，看完記得回覆我。`
                :`${name}，歡迎來我家坐坐。需要找你面談時，我會把通知放在這裡，地圖上的房子也會亮起「！」。`)
-      :`${name}，我是數位總合辦公室的${CFG.director}。軟體、設備、程式或 AI 工具遇到問題，都可以在這裡申請技術諮詢。`);
+      :`${name}，我是數位總合辦公室的${CFG.director}。部門平台開發或是技術應用需要諮詢時，都可以在這裡申請技術諮詢。`);
   }
   const body=$("#placeBody");
   const ready=home?(sheetUrl("feed")||sheetUrl("interviews")||formCfg("ivReply")):formCfg("consult");

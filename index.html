@@ -1632,7 +1632,7 @@ const PLACES=[
   {id:"home",name:"村長的家",real:"面談通知",sprite:"chiefhome",tile:[31,17],from:4},
   {id:"digital",name:"數位總合辦公室",real:"技術諮詢",sprite:"digital",tile:[22,20],from:2}
 ];
-const CS_CATEGORIES=["軟體操作","資訊設備","程式與自動化","GIS 與圖資","BIM 與 3D","AI 工具","其他"];
+const CS_CATEGORIES=["程式與自動化","GIS 與圖資","BIM 與 3D","AI 工具","其他"];
 let CFG=clone(DEFAULT_CONFIG);
 const TITLES=["新手見習生","報到勇者","內網探險家","三卡填報師","申請達人","福利鑑定師","園城部傳奇"];
 
@@ -3315,7 +3315,7 @@ function renderDigital(body){
         <label for="csCat">類別</label>
         <select id="csCat" class="ainput wide">${CS_CATEGORIES.map(c=>`<option>${c}</option>`).join("")}</select>
         <label for="csTopic">主題</label>
-        <input id="csTopic" class="ainput wide" maxlength="40" placeholder="例如：Civil 3D 縱斷面怎麼出圖">
+        <input id="csTopic" class="ainput wide" maxlength="40" placeholder="例如：工作有自動化或平台化開發需求">
         <label for="csDetail">問題說明</label>
         <textarea id="csDetail" class="ainput wide" rows="5" maxlength="1000" placeholder="遇到什麼狀況、試過哪些方法、希望達成什麼（至少 10 個字）"></textarea>
         <div class="two">

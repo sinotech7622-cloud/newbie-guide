@@ -419,6 +419,11 @@ pre.code,textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:13p
 .fieldhint{font-size:13px;color:var(--win-muted);margin:4px 0 0!important}
 .warnbox{background:rgba(242,193,78,.14);border-left:4px solid var(--gold);padding:8px 12px;margin:0!important;font-size:14px;line-height:1.8}
 .warnbox b{color:var(--gold);font-weight:400}
+.pwwrap{position:relative;display:block}
+.pwfield{padding-right:44px!important}
+.pwfield.masked{-webkit-text-security:disc;text-security:disc;letter-spacing:.12em}
+.pweye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;font-size:18px;line-height:1;padding:4px 6px;opacity:.75}
+.pweye:hover,.pweye:focus-visible{opacity:1}
 .cloudfoot{display:block!important}
 .cloudfoot .cerr{margin:0 0 8px!important;min-height:1.3em;display:block}
 .cloudfoot .row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -1122,7 +1127,7 @@ footer.site p{margin:4px 0}
 </dialog>
 
 <dialog id="cloudDlg" aria-labelledby="cloudTitle">
-  <form class="window dlg form cloudwrap" id="cloudForm" novalidate>
+  <form class="window dlg form cloudwrap" id="cloudForm" novalidate autocomplete="off">
     <div class="head">
       <div><p class="dept">園區及城鄉發展部</p><h3 id="cloudTitle">雲端存檔</h3></div>
     </div>
@@ -1141,21 +1146,21 @@ footer.site p{margin:4px 0}
         </div>
         <div>
           <label for="clPw" id="clPwLabel">密碼</label>
-          <input id="clPw" class="ainput wide" type="password" maxlength="40" autocomplete="current-password" placeholder="至少 6 個字">
+          <span class="pwwrap"><input id="clPw" class="ainput wide pwfield" type="text" maxlength="40" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore placeholder="至少 6 個字"><button class="pweye" type="button" data-pweye="clPw" aria-label="顯示密碼">👁</button></span>
           <p class="fieldhint" id="clPwHint">只用於這個網站的存檔</p>
         </div>
         <div id="clPw2Row" hidden>
           <label for="clPw2" id="clPw2Label">再次輸入密碼</label>
-          <input id="clPw2" class="ainput wide" type="password" maxlength="40" autocomplete="new-password">
+          <span class="pwwrap"><input id="clPw2" class="ainput wide pwfield" type="text" maxlength="40" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore><button class="pweye" type="button" data-pweye="clPw2" aria-label="顯示密碼">👁</button></span>
           <p class="fieldhint" id="clPw2Hint">兩次要一致</p>
         </div>
         <div id="clPw3Row" hidden>
           <label for="clPw3">再次輸入新密碼</label>
-          <input id="clPw3" class="ainput wide" type="password" maxlength="40" autocomplete="new-password">
+          <span class="pwwrap"><input id="clPw3" class="ainput wide pwfield" type="text" maxlength="40" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore><button class="pweye" type="button" data-pweye="clPw3" aria-label="顯示密碼">👁</button></span>
           <p class="fieldhint">兩次要一致</p>
         </div>
       </div>
-      <p class="warnbox" id="cloudWarn"><b>請不要使用公司帳號的密碼。</b>密碼只留在你的瀏覽器，忘記密碼就無法還原存檔。</p>
+      <p class="warnbox" id="cloudWarn"><b>請不要使用公司帳號或其他網站的密碼。</b>這組密碼只用來解開這個網站的存檔，瀏覽器不會儲存它。密碼只留在你的瀏覽器，忘記密碼就無法還原存檔。</p>
     </div>
     <div class="foot cloudfoot">
       <p class="cerr" id="cloudErr" role="alert"></p>
@@ -2880,6 +2885,7 @@ const SHEET_KEYS={
   replies:{label:"諮詢回覆",legacy:true,headers:["申請編號","狀態","回覆","回覆時間"]},
   content:{label:"任務內容",legacy:true,headers:["類型","區域ID","區域介紹","章節順序","章節名稱","章節說明","任務順序","任務ID","任務標題","任務內容(HTML)"]}
 };
+const SHEET_HEAD_HINT={feed:"類型",saves:"帳號代碼",ivreplies:"通知編號",settings:"項目",interviews:"通知編號",replies:"申請編號",content:"類型"};
 const FORM_ACTION_RE=/^https:\/\/docs\.google\.com\/forms\/(?:u\/\d+\/)?d\/e\/[A-Za-z0-9_-]+\/formResponse$/;
 function formCfg(k){
   const f=(CONF.forms||{})[k];
@@ -2914,7 +2920,11 @@ async function fetchSheet(k){
   if(!r.ok) throw new Error("HTTP "+r.status);
   const text=await r.text();
   if(/^\s*<(!doctype|html)/i.test(text)) throw new Error("讀到的不是 CSV，請確認發布格式選的是「逗號分隔值 (.csv)」");
-  return parseCSV(text).slice(1).filter(r=>r.some(c=>String(c).trim()));
+  const rows=parseCSV(text).filter(r=>r.some(c=>String(c).trim()));
+  const hint=SHEET_HEAD_HINT[k]||"";
+  const first=(rows[0]||[]).map(c=>String(c).trim());
+  const hasHead=first.some(c=>c===hint||c==="時間戳記"||c==="項目");
+  return hasHead?rows.slice(1):rows;   // 公式產生的工作表可能沒有標題列
 }
 function sendForm(k,values){
   const f=formCfg(k);
@@ -3363,6 +3373,25 @@ $("#loginHint").addEventListener("click",e=>{
   if(b.dataset.loginhint==="go"){ Sound.sfx("select"); openCloud("login"); }
   else{ Sound.sfx("back"); try{ localStorage.setItem(LOGIN_HINT_KEY,"1"); }catch(e2){} renderLoginHint(); }
 });
+const maskSupported=(()=>{ try{ return CSS.supports("-webkit-text-security","disc")||CSS.supports("text-security","disc"); }catch(e){ return false; } })();
+function maskField(el,masked){
+  if(!el) return;
+  if(maskSupported){ el.type="text"; el.classList.toggle("masked",masked); }
+  else { el.type=masked?"password":"text"; }
+}
+function resetPwFields(){
+  ["clPw","clPw2","clPw3"].forEach(id=>{ const el=$("#"+id); if(el){ el.value=""; maskField(el,true); } });
+  document.querySelectorAll("[data-pweye]").forEach(b=>{ b.textContent="👁"; b.setAttribute("aria-label","顯示密碼"); });
+}
+$("#cloudForm").addEventListener("click",e=>{
+  const b=e.target.closest("[data-pweye]"); if(!b) return;
+  const el=$("#"+b.dataset.pweye); if(!el) return;
+  const nowMasked=maskSupported?el.classList.contains("masked"):el.type==="password";
+  maskField(el,!nowMasked);
+  b.textContent=nowMasked?"🙈":"👁";
+  b.setAttribute("aria-label",nowMasked?"隱藏密碼":"顯示密碼");
+  el.focus();
+});
 let cloudMode="login";
 function openCloud(mode){
   if(!cloudReady()){ uiAlert("網站還沒設定雲端存檔（需要「進度存檔」表單與「存檔資料」工作表）。"); return; }
@@ -3383,13 +3412,14 @@ function openCloud(mode){
   $("#cloudWarn").hidden=change;
   $("#clPwHint").textContent=change?"輸入你目前使用的密碼":"只用於這個網站的存檔";
   $("#clPw").placeholder=change?"目前的密碼":"至少 6 個字";
-  $("#clPw3").value="";
+  $("#clPw2").placeholder=change?"新密碼，至少 6 個字":"再次輸入相同密碼";
+  $("#clPw3").placeholder="再次輸入新密碼";
+  resetPwFields();
   $("#cloudSwitch").textContent=create?"我已經有帳號了":"我還沒有帳號";
   $("#clPw2Row").hidden=!(create||change);
-  $("#clPw").autocomplete=create?"new-password":"current-password";
   $("#cloudErr").textContent="";
   $("#clAcc").value=(CLOUD&&CLOUD.acc)||S.emp||"";
-  $("#clPw").value=""; $("#clPw2").value="";
+  resetPwFields();
   const d=$("#cloudDlg"); if(!d.open) d.showModal();
   Sound.sfx("open"); $("#clAcc").focus();
 }

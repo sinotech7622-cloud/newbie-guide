@@ -401,6 +401,18 @@ pre.code,textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:13p
 #ssBar{position:sticky;top:104px;z-index:15}
 @media (max-width:860px){#ssBar{top:8px}}
 
+/* ---------- login button & hint ---------- */
+.hbtn.on{border-color:var(--gold);color:var(--gold)}
+.loginhint{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;margin:0 0 16px;border-color:var(--gold)}
+.loginhint .txt{font-size:15px;line-height:1.7}
+.loginhint b{color:var(--gold);font-weight:400}
+.loginhint .acts{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- google sign-in ---------- */
+.gsibtn{display:flex;justify-content:center;margin:4px 0 6px;min-height:44px}
+.orline{display:flex;align-items:center;gap:10px;color:var(--win-muted);font-family:var(--pixel);font-size:14px;margin:12px 0 4px!important}
+.orline::before,.orline::after{content:"";flex:1;height:2px;background:rgba(255,255,255,.2)}
+
 /* ---------- pet ---------- */
 .petswap{margin-top:0;grid-column:1/-1}
 .passbook{grid-column:1/-1}
@@ -613,8 +625,9 @@ footer.site p{margin:4px 0}
 }
 @media (max-width:520px){
   .xpbox{order:5;flex-basis:100%}
-  .hbtn{font-size:14px;padding:3px 8px}
+  .hbtn{font-size:14px;padding:3px 7px}
   .hbtn .lbl{display:none}
+  .hud{gap:6px;padding:8px}
   .hud .who strong{max-width:7em}
   .hud{gap:8px}
   .hud .stat{display:none}
@@ -645,8 +658,9 @@ footer.site p{margin:4px 0}
     <button class="hbtn snd" id="btnMusic" type="button" aria-pressed="true" aria-label="背景音樂"><span class="ic" aria-hidden="true">♪</span><span class="lbl" aria-hidden="true"> 音樂</span></button>
     <button class="hbtn snd" id="btnSfx" type="button" aria-pressed="true" aria-label="音效"><span class="ic" aria-hidden="true">◆</span><span class="lbl" aria-hidden="true"> 音效</span></button>
   </span>
+  <button class="hbtn" id="btnLogin" type="button" hidden aria-label="登入雲端存檔"><span class="ic" aria-hidden="true">👤</span><span class="lbl" aria-hidden="true"> 登入</span></button>
   <button class="hbtn" id="btnHome" type="button" aria-label="新人的家"><span class="ic" aria-hidden="true">⌂</span><span class="lbl" aria-hidden="true"> 新人的家</span></button>
-  <button class="hbtn" id="btnMap" type="button">地圖</button>
+  <button class="hbtn" id="btnMap" type="button" aria-label="地圖"><span class="ic" aria-hidden="true">🗺</span><span class="lbl" aria-hidden="true"> 地圖</span></button>
 </header>
 
 <main>
@@ -662,6 +676,11 @@ footer.site p{margin:4px 0}
       <div class="ntext"><h2 id="noticeTitle"></h2><p id="noticeBody"></p></div>
       <button class="x" type="button" id="noticeClose">知道了</button>
     </div>
+    <div class="loginhint window" id="loginHint" hidden>
+      <span class="txt">進度目前只存在這台電腦。<b>換電腦、換瀏覽器或清除瀏覽器資料時，要先註冊並登入才能接續進度</b>；不登入也可以正常遊玩。</span>
+      <span class="acts"><button class="act" type="button" data-loginhint="go">註冊／登入</button><button class="act ghost" type="button" data-loginhint="hide">知道了</button></span>
+    </div>
+
     <div class="titlebar">
       <h1 id="gameTitle"><span class="dept">園區及城鄉發展部<span class="en" lang="en">Technology Park &amp; Regional Development Dept.</span></span>新人冒險指南</h1>
       <button class="act ghost" type="button" id="replayWelcome">📜 聽村長說明</button>
@@ -777,6 +796,9 @@ footer.site p{margin:4px 0}
           <p class="ahint">「後台資料」工作表的 A1（會自動排除密碼欄，這個工作表要發布到網路）：</p>
           <pre class="code" id="fxFeed"></pre>
           <button class="mini-btn" type="button" data-copy="fxFeed">複製公式</button>
+          <p class="ahint" style="margin-top:12px">「存檔資料」工作表的 A1（新人的雲端存檔，內容已加密，這個工作表要發布，選填）：</p>
+          <pre class="code" id="fxSaves"></pre>
+          <button class="mini-btn" type="button" data-copy="fxSaves">複製公式</button>
           <p class="ahint" style="margin-top:12px">「回覆資料」工作表的 A1（排除姓名與員工編號，這個工作表要發布，選填）：</p>
           <pre class="code" id="fxIvReplies"></pre>
           <button class="mini-btn" type="button" data-copy="fxIvReplies">複製公式</button>
@@ -928,12 +950,18 @@ footer.site p{margin:4px 0}
         </details>
       </section>
       <section class="window abox form">
-        <h3>③ 常用連結（選填）</h3>
+        <h3>③ Google 帳號登入（選填）</h3>
+        <p class="ahint">填入 Google Cloud 的「OAuth 用戶端 ID」（網頁應用程式），新人就能用個人 Google 帳號登入雲端存檔，不用自訂帳密。已授權的 JavaScript 來源要填這個網站的網址，例如 https://帳號.github.io。</p>
+        <label for="lk-googleClientId">OAuth 用戶端 ID</label>
+        <input id="lk-googleClientId" class="ainput wide" data-gid value="" placeholder="例如 123456789-abcdefg.apps.googleusercontent.com">
+      </section>
+      <section class="window abox form">
+        <h3>④ 常用連結（選填）</h3>
         <p class="ahint">只會顯示在管理者專區，方便快速開啟。沒有權限的人點了也打不開。</p>
         <div class="two" id="setupLinks"></div>
       </section>
       <section class="window abox">
-        <div class="abar"><h3>④ 產生 config.js</h3><span class="afilters"><button class="act ghost" type="button" id="cfgCopy">複製內容</button><button class="act" type="button" id="cfgDownload">下載 config.js</button></span></div>
+        <div class="abar"><h3>⑤ 產生 config.js</h3><span class="afilters"><button class="act ghost" type="button" id="cfgCopy">複製內容</button><button class="act" type="button" id="cfgDownload">下載 config.js</button></span></div>
         <p class="ahint">到 GitHub 專案上傳下載的 config.js（取代舊檔），約 1–2 分鐘後網站就會套用。config.js 裡不含管理密碼。</p>
         <p class="cerr" id="cfgWarn"></p>
         <textarea id="cfgOut" class="ainput wide code" rows="14" readonly spellcheck="false"></textarea>
@@ -1071,6 +1099,37 @@ footer.site p{margin:4px 0}
       <span class="cerr" id="eErr" role="alert"></span>
       <button class="act" type="submit">套用</button>
     </footer>
+  </form>
+</dialog>
+
+<dialog id="cloudDlg" aria-labelledby="cloudTitle">
+  <form class="window dlg form" id="cloudForm" novalidate>
+    <div class="head">
+      <div><p class="dept">園區及城鄉發展部</p><h3 id="cloudTitle">雲端存檔</h3></div>
+      <button class="act ghost" type="button" data-close>稍後再說</button>
+    </div>
+    <div class="body">
+      <p class="ahint" id="cloudIntro"></p>
+      <div id="gsiBox" hidden>
+        <div id="gsiBtn" class="gsibtn"></div>
+        <p class="ahint" id="gsiHint">用你的 Google 帳號登入最方便，不用記密碼，換電腦登入同一個帳號就會接回進度。</p>
+        <p class="orline"><span>或使用帳號密碼</span></p>
+      </div>
+      <label for="clAcc">帳號</label>
+      <input id="clAcc" class="ainput wide" maxlength="20" autocomplete="username" placeholder="建議用員工編號，例如 01234">
+      <label for="clPw">密碼</label>
+      <input id="clPw" class="ainput wide" type="password" maxlength="40" autocomplete="current-password" placeholder="至少 6 個字">
+      <div id="clPw2Row" hidden>
+        <label for="clPw2">再次輸入密碼</label>
+        <input id="clPw2" class="ainput wide" type="password" maxlength="40" autocomplete="new-password">
+      </div>
+      <p class="ahint" id="cloudWarn">密碼只留在你的瀏覽器，進度會加密後才存進部門試算表，其他人看不到內容。<b>請不要使用公司帳號的密碼；密碼忘記就無法還原存檔。</b></p>
+    </div>
+    <div class="foot">
+      <button class="linkbtn" type="button" id="cloudSwitch">我還沒有帳號</button>
+      <span class="cerr" id="cloudErr" role="alert"></span>
+      <button class="act" type="submit" id="cloudGo">登入</button>
+    </div>
   </form>
 </dialog>
 
@@ -1635,7 +1694,7 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 const DEFAULT_CONTENT=clone(ZONES.map(z=>({id:z.id,intro:z.intro,chapters:z.chapters})));
 const DEFAULT_CONFIG={
   chief:"曹資協",
-  groups:["公路組","土木組","排水組","城鄉組","規劃組","土開小組","國土永續中心","南部辦公室","數位總合辦"],
+  groups:["公路組","土木組","排水組","城鄉組","規劃組","土開小組","國土永續中心","南部辦公室","數位總合辦公室"],
   portals:[
     {label:"公司內網",url:"https://portal2023.sinotech.com.tw/sip/#"},
     {label:"園城人",url:"https://cdp.sinotech.com.tw/LHA/"},
@@ -1648,7 +1707,7 @@ const DEFAULT_CONFIG={
 const PLACES=[
   {id:"myhome",name:"新人的家",real:"筆記本・成就・角色",sprite:"myhouse",tile:[5,10],from:0,heroDx:-24},
   {id:"home",name:"村長的家",real:"面談通知",sprite:"chiefhome",tile:[31,17],from:4},
-  {id:"digital",name:"數位總合辦",real:"技術諮詢",sprite:"digital",tile:[22,20],from:2}
+  {id:"digital",name:"數位總合辦公室",real:"技術諮詢",sprite:"digital",tile:[22,20],from:2}
 ];
 const CS_CATEGORIES=["程式與自動化","GIS 與圖資","BIM 與 3D","AI 工具","其他"];
 let CFG=clone(DEFAULT_CONFIG);
@@ -1974,6 +2033,7 @@ $("#btnSfx").addEventListener("click",()=>{Sound.setSfx(!Sound.pref.sfx);syncSou
 /* ================= HUD ================= */
 function renderHUD(){
   const v=xp(), lv=lvOf(v), maxed=lv>=TITLES.length;
+  updateLoginBtn(); renderLoginHint();
   $("#pName").textContent=S.name||"新人冒險者";
   $("#pGroup").textContent=S.group||"尚未選擇組別";
   $("#hudFace").innerHTML=avatarSVG(S.av);
@@ -2752,6 +2812,7 @@ $("#cForm").addEventListener("submit",async e=>{
   renderPortals(); buildMap(); renderHUD(); syncSoundBtns(); checkAch();
   toast(isNew?`${S.name||"新人冒險者"} 加入了${grp}！`:"角色資料已更新");
   if(isNew) setTimeout(()=>loadInbox(false),2500);
+  if(isNew&&cloudReady()&&!CLOUD) setTimeout(()=>{ if(!CLOUD&&!$("#cDlg").open&&!$("#wDlg").open) openCloud("create"); },1800);
   if(curPlace) renderPlace();
   if(isNew&&wAfterChar){ wAfterChar=false; setTimeout(()=>openWelcome(welcomePagesAfterChar()),400); }
 });
@@ -2766,6 +2827,7 @@ $("#hudFace").addEventListener("click",openChar);
 const CONF=(window.SINO22_CONFIG&&typeof window.SINO22_CONFIG==="object")?window.SINO22_CONFIG:{};
 const FORM_KEYS={
   signup:{label:"新人登錄紀錄",fields:[["code","新人代碼"],["name","姓名"],["empno","員工編號"],["group","組別"],["event","事件"],["device","裝置"]]},
+  save:{label:"進度存檔",fields:[["acc","帳號代碼"],["data","存檔資料"],["note","備註"]]},
   progress:{label:"新人進度回報",fields:[["code","新人代碼"],["name","名字"],["group","組別"],["level","等級"],["progress","完成進度"],["awarded","結業日期"],["detail","詳細資料"],["empno","員工編號"]]},
   consult:{label:"技術諮詢申請",fields:[["no","申請編號"],["code","新人代碼"],["name","名字"],["group","組別"],["category","類別"],["topic","主題"],["detail","問題說明"],["preferred","希望時段"],["contact","聯絡方式"],["empno","員工編號"]]},
   ivReply:{label:"面談回覆",fields:[["notice","通知編號"],["code","新人代碼"],["name","名字"],["status","回覆"],["message","說明"],["empno","員工編號"]]},
@@ -2773,6 +2835,7 @@ const FORM_KEYS={
 };
 const SHEET_KEYS={
   feed:{label:"後台資料",headers:["時間戳記","類型","編號","分段","資料","操作者"]},
+  saves:{label:"存檔資料",optional:true,headers:["時間戳記","帳號代碼","存檔資料","備註"]},
   ivreplies:{label:"回覆資料",optional:true,headers:["時間戳記","通知編號","新人代碼","回覆","說明"]},
   settings:{label:"網站設定",legacy:true,headers:["項目","內容"]},
   interviews:{label:"面談通知",legacy:true,headers:["通知編號","新人代碼","標題","面談時間","地點","內容","狀態"]},
@@ -3097,6 +3160,257 @@ async function bootstrap(){
 }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"&&Date.now()-lastBoot>5*60000) bootstrap().catch(()=>{}); });
 
+/* ---- 雲端存檔（帳號＋密碼，資料以密碼加密後存進試算表） ---- */
+const CLOUD_KEY="sino22-cloud";
+const te=new TextEncoder(), td=new TextDecoder();
+const cloudReady=()=>!!(formCfg("save")&&sheetUrl("saves")&&window.crypto&&crypto.subtle);
+let CLOUD=null, cloudBusy=false, cloudTimer=null, cloudDirty=false, cloudLastAt="", cloudSynced=false;
+function b64buf(buf){ const u=new Uint8Array(buf); let t=""; for(let i=0;i<u.length;i+=0x8000) t+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(t); }
+const unb64buf=str=>Uint8Array.from(atob(String(str)),c=>c.charCodeAt(0));
+async function sha256(str){ return new Uint8Array(await crypto.subtle.digest("SHA-256",te.encode(str))); }
+async function accCode(acc){
+  const h=await sha256("sino22:"+String(acc).trim().toLowerCase());
+  return b64buf(h).replace(/[+/=]/g,c=>({"+":"-","/":"_","=":""}[c])).slice(0,16);
+}
+async function deriveKey(acc,pw){
+  const salt=await sha256("sino22-salt:"+String(acc).trim().toLowerCase());
+  const km=await crypto.subtle.importKey("raw",te.encode(String(pw)),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:150000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},true,["encrypt","decrypt"]);
+}
+async function encryptSave(key,obj){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,te.encode(JSON.stringify(obj)));
+  const out=new Uint8Array(12+ct.byteLength); out.set(iv); out.set(new Uint8Array(ct),12);
+  return "e1:"+b64buf(out);
+}
+async function decryptSave(key,str){
+  const raw=unb64buf(String(str).replace(/^e1:/,""));
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:raw.slice(0,12)},key,raw.slice(12));
+  return JSON.parse(td.decode(pt));
+}
+async function cloudRemember(acc,code,key,meta){
+  const raw=b64buf(await crypto.subtle.exportKey("raw",key));
+  CLOUD=Object.assign({acc,code,key},meta||{});
+  try{ localStorage.setItem(CLOUD_KEY,JSON.stringify(Object.assign({acc,code,key:raw},meta||{}))); }catch(e){}
+  renderCloudBox(); renderHUD();
+}
+async function cloudRestoreSession(){
+  if(!cloudReady()) return;
+  let d=null; try{ d=JSON.parse(localStorage.getItem(CLOUD_KEY)||"null"); }catch(e){}
+  if(!d||!d.acc||!d.key) return;
+  try{
+    const key=await crypto.subtle.importKey("raw",unb64buf(d.key),{name:"AES-GCM"},true,["encrypt","decrypt"]);
+    CLOUD={acc:d.acc,code:d.code,key,provider:d.provider,label:d.label};
+  }catch(e){}
+}
+function cloudLogout(){
+  CLOUD=null; try{ localStorage.removeItem(CLOUD_KEY); }catch(e){}
+  renderCloudBox(); renderHUD();
+}
+function snapshot(){ return {v:1,S,code:myCode(),at:new Date().toISOString()}; }
+function progressCount(st){ return Object.keys((st&&st.done)||{}).filter(k=>QIDS.has(k)&&st.done[k]).length; }
+async function cloudFetch(code){
+  const rows=await fetchSheet("saves");
+  const hit=(rows||[]).find(r=>String(r[1]||"").trim()===code);
+  return hit?{data:String(hit[2]||""),ts:String(hit[0]||"")}:null;
+}
+async function cloudPush(now){
+  if(!CLOUD||!cloudReady()) return false;
+  if(cloudBusy) return false;
+  cloudBusy=true;
+  try{
+    const data=await encryptSave(CLOUD.key,snapshot());
+    await sendForm("save",{acc:CLOUD.code,data,note:myCode()});
+    cloudDirty=false; cloudLastAt=new Date().toISOString();
+    try{ localStorage.setItem("sino22-cloud-at",cloudLastAt); }catch(e){}
+    renderCloudBox();
+    return true;
+  }catch(e){ cloudDirty=true; return false; }
+  finally{ cloudBusy=false; }
+}
+function queueCloud(now){
+  if(!CLOUD||!cloudReady()) return;
+  cloudDirty=true;
+  if(!cloudSynced) return;          // 先和雲端比對完，才允許上傳，避免蓋掉較新的存檔
+  clearTimeout(cloudTimer);
+  cloudTimer=setTimeout(()=>cloudPush(),now?0:20000);
+}
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden"&&cloudDirty){ clearTimeout(cloudTimer); cloudPush(); } });
+function applySave(obj){
+  if(!obj||!obj.S) return false;
+  S=Object.assign({},S,obj.S);
+  save();
+  if(obj.code){ CODE=obj.code; try{ localStorage.setItem(CODE_KEY,obj.code); }catch(e){} }
+  rebuildIndex(); renderHUD(); refreshAll(); renderGroups();
+  return true;
+}
+async function cloudSignIn(acc,pw,mode){
+  const code=await accCode(acc), key=await deriveKey(acc,pw);
+  let remote=null;
+  try{ remote=await cloudFetch(code); }catch(e){ throw new Error("offline"); }
+  if(mode==="login"&&!remote) throw new Error("noacc");
+  if(mode==="create"&&remote) throw new Error("exists");
+  let loaded=null;
+  if(remote){
+    try{ loaded=await decryptSave(key,remote.data); }catch(e){ throw new Error("badpw"); }
+  }
+  await cloudRemember(acc,code,key); cloudSynced=true;
+  if(loaded){
+    const mine=progressCount(S), theirs=progressCount(loaded.S);
+    let useCloud=true;
+    if(S.group&&mine>theirs) useCloud=await uiConfirm(`這台電腦有 ${mine} 個已完成任務，雲端存檔只有 ${theirs} 個。要改用雲端存檔嗎？按「取消」則保留這台電腦的進度並覆蓋雲端。`,"用雲端存檔");
+    if(useCloud){ applySave(loaded); toast("已載入雲端存檔"); }
+    else { await cloudPush(true); toast("已用這台電腦的進度覆蓋雲端"); }
+  }else{
+    await cloudPush(true);
+    toast("已建立雲端存檔，之後進度會自動同步");
+  }
+  return true;
+}
+async function cloudSyncOnStart(){
+  if(!CLOUD||!cloudReady()){ cloudSynced=true; return; }
+  try{
+    const remote=await cloudFetch(CLOUD.code);
+    if(!remote){ cloudSynced=true; await cloudPush(true); return; }
+    const loaded=await decryptSave(CLOUD.key,remote.data);
+    const mine=progressCount(S), theirs=progressCount(loaded.S);
+    const localAt=(()=>{ try{ return localStorage.getItem("sino22-cloud-at")||""; }catch(e){ return ""; } })();
+    if(theirs>mine||(theirs===mine&&String(loaded.at||"")>localAt)){ applySave(loaded); if(theirs>mine) toast("已從雲端載入最新進度"); cloudSynced=true; cloudDirty=false; }
+    else { cloudSynced=true; if(mine>theirs) queueCloud(true); }
+  }catch(e){ cloudSynced=true; }
+  finally{ cloudSynced=true; if(cloudDirty) queueCloud(); }
+}
+
+/* ---- 用個人 Google 帳號登入（Google Identity Services，純前端） ---- */
+const googleClientId=()=>String((CONF.google&&CONF.google.clientId)||"").trim();
+const googleReady=()=>!!(googleClientId()&&cloudReady());
+let gisLoaded=null;
+function loadGis(){
+  if(gisLoaded) return gisLoaded;
+  gisLoaded=new Promise((res,rej)=>{
+    if(window.google&&google.accounts&&google.accounts.id) return res();
+    const el=document.createElement("script");
+    el.src="https://accounts.google.com/gsi/client"; el.async=true; el.defer=true;
+    el.onload=()=>res(); el.onerror=()=>rej(new Error("gis"));
+    document.head.appendChild(el);
+  });
+  return gisLoaded;
+}
+function jwtPayload(tok){
+  const part=String(tok||"").split(".")[1]||"";
+  const json=decodeURIComponent(atob(part.replace(/-/g,"+").replace(/_/g,"/")).split("").map(c=>"%"+("00"+c.charCodeAt(0).toString(16)).slice(-2)).join(""));
+  return JSON.parse(json);
+}
+async function cloudSignInGoogle(cred){
+  let p; try{ p=jwtPayload(cred); }catch(e){ throw new Error("token"); }
+  const email=String(p.email||"").toLowerCase(), sub=String(p.sub||"");
+  if(!email||!sub) throw new Error("token");
+  const acc="g:"+email, code=await accCode(acc), key=await deriveKey(acc,"gid:"+sub);
+  let remote=null;
+  try{ remote=await cloudFetch(code); }catch(e){ throw new Error("offline"); }
+  let loaded=null;
+  if(remote){ try{ loaded=await decryptSave(key,remote.data); }catch(e){ throw new Error("badpw"); } }
+  await cloudRemember(acc,code,key,{provider:"google",label:email});
+  cloudSynced=true;
+  if(loaded){
+    const mine=progressCount(S), theirs=progressCount(loaded.S);
+    let useCloud=true;
+    if(S.group&&mine>theirs) useCloud=await uiConfirm(`這台電腦有 ${mine} 個已完成任務，雲端存檔只有 ${theirs} 個。要改用雲端存檔嗎？按「取消」則保留這台電腦的進度並覆蓋雲端。`,"用雲端存檔");
+    if(useCloud){ applySave(loaded); toast(`已用 ${email} 載入雲端存檔`); }
+    else { await cloudPush(true); toast("已用這台電腦的進度覆蓋雲端"); }
+  }else{
+    await cloudPush(true);
+    toast(`已綁定 ${email}，之後進度會自動同步`);
+  }
+  return true;
+}
+async function renderGoogleBtn(){
+  const box=$("#gsiBox"); if(!box) return;
+  if(!googleReady()){ box.hidden=true; return; }
+  box.hidden=false;
+  try{
+    await loadGis();
+    google.accounts.id.initialize({client_id:googleClientId(),callback:async resp=>{
+      const err=$("#cloudErr"); err.textContent="";
+      try{ await cloudSignInGoogle(resp&&resp.credential); $("#cloudDlg").close(); Sound.sfx("achieve"); }
+      catch(ex){
+        const m=ex&&ex.message;
+        err.textContent=m==="offline"?"連不上部門試算表，請稍後再試":m==="badpw"?"這個帳號的存檔無法解開，請聯絡管理者":"Google 登入失敗，請再試一次";
+        Sound.sfx("error");
+      }
+    }});
+    google.accounts.id.renderButton($("#gsiBtn"),{theme:"filled_blue",size:"large",text:"signin_with",shape:"rectangular",locale:"zh_TW",width:300});
+  }catch(e){ $("#gsiBtn").innerHTML=`<span class="cerr">無法載入 Google 登入，請確認網路或改用下方的帳號密碼。</span>`; }
+}
+const LOGIN_HINT_KEY="sino22-loginhint";
+function updateLoginBtn(){
+  const b=$("#btnLogin"); if(!b) return;
+  if(!cloudReady()){ b.hidden=true; return; }
+  b.hidden=false;
+  const on=!!CLOUD;
+  const who=on?(CLOUD.provider==="google"?(CLOUD.label||"已登入"):CLOUD.acc):"登入";
+  b.querySelector(".ic").textContent=on?"✓":"👤";
+  b.querySelector(".lbl").textContent=" "+(on?(who.length>14?who.slice(0,13)+"…":who):"登入");
+  b.classList.toggle("on",on);
+  b.setAttribute("aria-label",on?`雲端存檔已登入：${who}`:"登入或註冊雲端存檔");
+  b.title=on?`雲端存檔已登入：${who}（點一下管理）`:"註冊／登入雲端存檔，換電腦才能接續進度";
+}
+function renderLoginHint(){
+  const el=$("#loginHint"); if(!el) return;
+  let hide=""; try{ hide=localStorage.getItem(LOGIN_HINT_KEY)||""; }catch(e){}
+  el.hidden=!(cloudReady()&&!CLOUD&&S.group&&hide!=="1");
+}
+$("#btnLogin").addEventListener("click",()=>{
+  Sound.sfx("select");
+  if(!CLOUD) openCloud("login");
+  else { openHome("wardrobe"); setTimeout(()=>{ const b=$("#cloudBox"); if(b) b.scrollIntoView({behavior:"smooth",block:"center"}); },400); }
+});
+$("#loginHint").addEventListener("click",e=>{
+  const b=e.target.closest("[data-loginhint]"); if(!b) return;
+  if(b.dataset.loginhint==="go"){ Sound.sfx("select"); openCloud("login"); }
+  else{ Sound.sfx("back"); try{ localStorage.setItem(LOGIN_HINT_KEY,"1"); }catch(e2){} renderLoginHint(); }
+});
+let cloudMode="login";
+function openCloud(mode){
+  setTimeout(renderGoogleBtn,0);
+  if(!cloudReady()){ uiAlert("網站還沒設定雲端存檔（需要「進度存檔」表單與「存檔資料」工作表）。"); return; }
+  cloudMode=mode||"login";
+  const create=cloudMode==="create";
+  $("#cloudTitle").textContent=create?"建立雲端存檔帳號":"登入雲端存檔";
+  $("#cloudIntro").textContent=create?"建立帳號後，進度會自動存到部門試算表；換一台電腦時用同一組帳密就能接著玩。"
+    :"輸入你的帳號密碼，把之前的進度接回這台電腦。";
+  $("#cloudGo").textContent=create?"建立帳號":"登入";
+  $("#cloudSwitch").textContent=create?"我已經有帳號了":"我還沒有帳號";
+  $("#clPw2Row").hidden=!create;
+  $("#clPw").autocomplete=create?"new-password":"current-password";
+  $("#cloudErr").textContent="";
+  $("#clAcc").value=(CLOUD&&CLOUD.acc)||S.emp||"";
+  $("#clPw").value=""; $("#clPw2").value="";
+  const d=$("#cloudDlg"); if(!d.open) d.showModal();
+  Sound.sfx("open"); $("#clAcc").focus();
+}
+$("#cloudSwitch").addEventListener("click",()=>openCloud(cloudMode==="create"?"login":"create"));
+$("#cloudForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const err=$("#cloudErr"), acc=$("#clAcc").value.trim(), pw=$("#clPw").value;
+  err.textContent="";
+  if(!/^[A-Za-z0-9_-]{3,20}$/.test(acc)){ err.textContent="帳號請用 3–20 個英文字母、數字、_ 或 -"; Sound.sfx("error"); return; }
+  if(pw.length<6){ err.textContent="密碼至少 6 個字"; Sound.sfx("error"); return; }
+  if(cloudMode==="create"&&pw!==$("#clPw2").value){ err.textContent="兩次輸入的密碼不一樣"; Sound.sfx("error"); return; }
+  const btn=$("#cloudGo"); btn.disabled=true; btn.textContent="處理中…";
+  try{
+    await cloudSignIn(acc,pw,cloudMode);
+    $("#cloudDlg").close(); Sound.sfx("achieve");
+  }catch(ex){
+    const m=ex&&ex.message;
+    err.textContent=m==="noacc"?"找不到這個帳號的存檔，如果是第一次使用請按「我還沒有帳號」":
+      m==="exists"?"這個帳號已經有存檔了，請直接登入":
+      m==="badpw"?"密碼錯誤，或這個帳號的存檔無法解開":
+      m==="offline"?"連不上部門試算表，請稍後再試":"處理失敗，請稍後再試";
+    Sound.sfx("error");
+  }finally{ btn.disabled=false; btn.textContent=cloudMode==="create"?"建立帳號":"登入"; }
+});
+
 /* ---- 新人登錄紀錄（Google 表單） ---- */
 function deviceText(){
   const ua=navigator.userAgent||"";
@@ -3123,6 +3437,7 @@ function progressPayload(){
   };
 }
 function queueSync(now){
+  queueCloud(now);
   if(!formCfg("progress")||!S.group) return;
   syncDirty=true; clearTimeout(syncTimer);
   syncTimer=setTimeout(pushProgress,now?0:Math.max(4000,30000-(Date.now()-lastSent)));
@@ -3220,7 +3535,7 @@ async function loadInbox(notify,force){
       const newCs=INBOX.consults.filter(x=>csUnseen(x)&&!prevCs.has(x.id+"|"+x.ver));
       let rang=false;
       if(newIv.length&&!inHome){toast(`📜 村長${CFG.chief}有 ${newIv.length} 則面談通知，請到「村長的家」查看`);rang=true;}
-      if(newCs.length&&!inDigital){toast(`💬 ${CFG.director}回覆了你的技術諮詢，請到「數位總合辦」查看`);rang=true;}
+      if(newCs.length&&!inDigital){toast(`💬 ${CFG.director}回覆了你的技術諮詢，請到「數位總合辦公室」查看`);rang=true;}
       if(rang) Sound.sfx("mail");
     }
     if(curPlace){ INBOX.interviews.filter(ivUnseen).forEach(x=>freshNow.add(x.id)); INBOX.consults.filter(csUnseen).forEach(x=>freshNow.add(x.id)); }
@@ -3272,14 +3587,14 @@ function renderPlace(greet){
   }
   const home=pl.id==="home";
   $("#plHostFace").innerHTML=home?avatarSVG(CHIEF_AV):avatarSVG(DIRECTOR_AV);
-  $("#plHostName").textContent=home?`部門村長　${CFG.chief}`:`數位總合辦　${CFG.director}`;
+  $("#plHostName").textContent=home?`部門村長　${CFG.chief}`:`數位總合辦公室　${CFG.director}`;
   if(greet){
     const name=S.name||"新人冒險者";
     const pending=INBOX.interviews.filter(x=>x.status==="待回覆").length;
     typeInto($("#plSay"),home
       ?(pending?`${name}，來得正好！我這裡有 ${pending} 則面談通知，看完記得回覆我。`
                :`${name}，歡迎來我家坐坐。需要找你面談時，我會把通知放在這裡，地圖上的房子也會亮起「！」。`)
-      :`${name}，我是數位總合辦的${CFG.director}。部門平台或技術應用想要諮詢，都可以在這裡申請技術諮詢。`);
+      :`${name}，我是數位總合辦公室的${CFG.director}。部門平台或技術應用想要諮詢，都可以在這裡申請技術諮詢。`);
   }
   const body=$("#placeBody");
   const ready=home?(sheetUrl("feed")||sheetUrl("interviews")||formCfg("ivReply")):formCfg("consult");
@@ -3464,7 +3779,7 @@ function welcomePagesAfterChar(){
   const name=S.name||"新人冒險者";
   return [
     {text:`${name}，歡迎加入${S.group}！地圖上的新手村、情報酒館、行政塔、寶物庫和存摺神殿，都有等你完成的任務。`},
-    {text:`需要找你面談時，我會把通知放在「村長的家」；部門平台或技術應用遇到問題，可以到「數位總合辦」找${CFG.director}幫忙。`},
+    {text:`需要找你面談時，我會把通知放在「村長的家」；部門平台或技術應用遇到問題，可以到「數位總合辦公室」找${CFG.director}幫忙。`},
     {text:"任務裡看到常用的資料，記得按「♥ 加入最愛」。回到「新人的家」打開筆記本，就能快速查到。先從新手村出發吧！",btn:"出發！",action:"go",goto:"village"}
   ];
 }
@@ -3621,6 +3936,7 @@ function renderTrophy(panel){
 
 function renderWardrobe(panel){
   panel.dataset.kind="wardrobe";
+  setTimeout(renderCloudBox,0);
   const v=xp(), lv=lvOf(v);
   panel.innerHTML=`<div class="pgrid">
     <section class="window pbox">
@@ -3644,6 +3960,7 @@ function renderWardrobe(panel){
         return `<li><button class="plink" type="button" data-zone="${z.id}">${z.name}</button><div class="mbar"><div class="bar"><i style="width:${pc}%"></i></div><em>${n}/${t}</em></div></li>`;}).join("")}</ul>
     </section>
   </div>
+  <section class="window pbox" id="cloudBox"></section>
   <section class="window pbox danger">
     <h3>重新開始</h3>
     <p class="ahint">清除這台電腦上的角色、任務進度、成就、筆記本與申請紀錄，並換一組新的新人代碼。已經送到部門試算表的紀錄會保留。</p>
@@ -3749,6 +4066,30 @@ function renderPetPanel(panel){
     </section>
   </div>`;
 }
+function renderCloudBox(){
+  updateLoginBtn(); renderLoginHint();
+  const box=$("#cloudBox"); if(!box) return;
+  if(!cloudReady()){
+    box.innerHTML=`<h3>雲端存檔</h3><p class="ahint">網站還沒設定雲端存檔，進度只會存在這台電腦的瀏覽器。</p>`;
+    return;
+  }
+  if(!CLOUD){
+    box.innerHTML=`<h3>雲端存檔</h3>
+      <p class="ahint">目前進度只存在這台電腦。${googleReady()?"用 Google 帳號登入（或自訂帳密）":"建立帳號"}後會自動同步，換電腦或清除瀏覽器資料也不會不見。</p>
+      <div class="formfoot"><span></span><span class="afilters">
+        <button class="act ghost" type="button" data-cloud="login">${googleReady()?"Google 登入／我有帳號":"我有帳號，登入"}</button>
+        <button class="act" type="button" data-cloud="create">建立帳號</button></span></div>`;
+    return;
+  }
+  let at=""; try{ at=localStorage.getItem("sino22-cloud-at")||""; }catch(e){}
+  const who=CLOUD.provider==="google"?`Google 帳號 <b>${esc(CLOUD.label||CLOUD.acc.replace(/^g:/,""))}</b>`:`帳號 <b>${esc(CLOUD.acc)}</b>`;
+  box.innerHTML=`<h3>雲端存檔 <span class="st st-ok">已登入</span></h3>
+    <p class="ahint">${who}${at?`・最後同步 ${fmtDate(at)}`:""}${cloudDirty?"・有尚未同步的進度":""}</p>
+    <p class="ahint">進度會自動同步，換電腦時${CLOUD.provider==="google"?"登入同一個 Google 帳號":"用同一組帳密登入"}就能接著玩。${CLOUD.provider==="google"?"":"密碼忘記將無法還原存檔。"}</p>
+    <div class="formfoot"><span></span><span class="afilters">
+      <button class="act ghost" type="button" data-cloud="logout">登出這台電腦</button>
+      <button class="act" type="button" data-cloud="push">立即同步</button></span></div>`;
+}
 let memoTimer=null;
 $("#placeBody").addEventListener("input",e=>{
   if(e.target.id==="nbSearch"){ renderNotebook($("#homePanel")); return; }
@@ -3803,6 +4144,19 @@ $("#placeBody").addEventListener("click",async e=>{
   if(t.closest("[data-certdl]")){ downloadCert($("#homeCertCanvas")); return; }
   if(t.closest("[data-replayaward]")){ openAward(); return; }
   if(t.closest("[data-editchar]")){ openChar(); return; }
+  const cb=t.closest("[data-cloud]");
+  if(cb){
+    const act=cb.dataset.cloud;
+    if(act==="login"||act==="create") openCloud(act);
+    else if(act==="logout"){
+      if(!(await uiConfirm("登出後，這台電腦的進度仍在，但不會再自動同步。確定登出嗎？","登出"))) return;
+      cloudLogout(); toast("已登出雲端存檔");
+    }else if(act==="push"){
+      cb.disabled=true; const ok=await cloudPush(true); cb.disabled=false;
+      toast(ok?"已同步到雲端":"同步失敗，請稍後再試"); renderCloudBox();
+    }
+    return;
+  }
   if(t.closest("[data-reset]")){
     if(!(await uiConfirm("確定要清除角色、所有進度、成就與筆記本嗎？","清除"))) return;
     S={name:"",emp:"",av:null,pet:null,group:"",done:{},visited:{},points:0,ach:{},achSeen:{},fav:{},consults:[],ivReplies:{},loc:"village"}; save();
@@ -3830,6 +4184,7 @@ function openAdminView(){
   curZone=null; curPlace=null;
   $("#adminNpc").innerHTML=avatarSVG(CHIEF_AV);
   $("#fxFeed").textContent=`=QUERY('後台更新'!A:G, "select A, C, D, E, F, G where C is not null", 1)`;
+  $("#fxSaves").textContent=`=SORTN(SORT('進度存檔'!A2:D, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxIvReplies").textContent=`=QUERY('面談回覆'!A:F, "select A, B, C, E, F where B is not null", 1)`;
   $("#fxRoster").textContent=`=SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxGroups").textContent=`=QUERY('新人名冊'!A2:I, "select D, count(B) where B is not null group by D label D '組別', count(B) '人數'", 0)`;
@@ -3945,6 +4300,7 @@ function renderStatus(){
     const btn=!f?"":k==="admin"?`<button class="mini-btn" type="button" data-ping>測試後台更新</button>`:`<button class="mini-btn" type="button" data-testform="${k}">送出測試</button>`;
     rows.push(`<tr><td>表單</td><td>${def.label}</td><td>${state}</td><td style="white-space:normal">${!f?"請到「設定小幫手」設定":missing.length?"缺少："+missing.join("、"):`${def.fields.length} 個欄位${k==="admin"?"・送出時需要管理密碼":""}`}</td><td>${btn}</td></tr>`);
   });
+  rows.push(`<tr><td>登入</td><td>Google 帳號登入</td><td>${googleClientId()?`<span class="st st-ok">已設定</span>`:`<span class="st st-off">未設定</span>`}</td><td style="white-space:normal">${googleClientId()?"新人可以用個人 Google 帳號登入雲端存檔":"選填。沒設定時，新人改用自訂帳號密碼"}</td><td></td></tr>`);
   Object.entries(SHEET_KEYS).forEach(([k,def])=>{
     const u=sheetUrl(k);
     if((def.legacy||def.optional)&&!u) return;
@@ -4262,11 +4618,12 @@ function renderSetup(){
       <p class="pfres" id="pfr-${k}"></p>
     </div>`;
   }).join("");
-  const sheetInput=(k,def)=>`<label for="sh-${k}">${def.label}${def.legacy?"":def.optional?"（選填：讓村長在管理者專區看到新人的面談回覆）":"（必要）"}</label>
+  const sheetInput=(k,def)=>`<label for="sh-${k}">${def.label}${def.legacy?"":def.optional?(k==="saves"?"（選填：新人可以用帳號密碼跨電腦同步進度）":"（選填：讓村長在管理者專區看到新人的面談回覆）"):"（必要）"}</label>
     <input id="sh-${k}" class="ainput wide" data-sheet="${k}" value="${esc((CONF.sheets||{})[k]||"")}" placeholder="https://docs.google.com/spreadsheets/d/e/…/pub?gid=…&single=true&output=csv">`;
   $("#setupSheets").innerHTML=Object.entries(SHEET_KEYS).filter(([,d])=>!d.legacy).map(([k,d])=>sheetInput(k,d)).join("");
   $("#setupLegacy").innerHTML=`<p class="ahint">這些是舊版設定使用的工作表，網站會在「後台資料」沒有對應資料時才讀取。新的設定不需要填。</p>`+Object.entries(SHEET_KEYS).filter(([,d])=>d.legacy).map(([k,d])=>sheetInput(k,d)).join("");
   const L=CONF.links||{};
+  const gidEl=$("#lk-googleClientId"); if(gidEl) gidEl.value=googleClientId();
   $("#setupLinks").innerHTML=[["spreadsheet","部門試算表網址"],["signupForm","登錄紀錄表單（編輯頁）"],["progressForm","進度回報表單（編輯頁）"],["consultForm","技術諮詢表單（編輯頁）"],["ivReplyForm","面談回覆表單（編輯頁）"],["adminForm","後台更新表單（編輯頁）"]]
     .map(([k,l])=>`<div><label for="lk-${k}">${l}</label><input id="lk-${k}" class="ainput wide" data-link="${k}" value="${esc(L[k]||"")}" placeholder="https://…"></div>`).join("");
   buildConfig();
@@ -4287,10 +4644,10 @@ $("#viewAdmin").addEventListener("input",e=>{
     }
     buildConfig();
   }
-  if(t.dataset.sheet||t.dataset.link) buildConfig();
+  if(t.dataset.sheet||t.dataset.link||t.hasAttribute("data-gid")) buildConfig();
 });
 function buildConfig(){
-  const out={forms:{},sheets:{},links:{}}, warn=[];
+  const out={forms:{},sheets:{},links:{},google:{clientId:(($("#lk-googleClientId")||{}).value||"").trim()}}, warn=[];
   Object.keys(FORM_KEYS).forEach(k=>{
     const p=setupParsed[k], cur=formCfg(k);
     if(p) out.forms[k]={action:p.action,fields:p.fields};
@@ -4718,6 +5075,7 @@ async function saveFile(filename,blob){
 }
 
 /* ---- connect ---- */
+cloudRestoreSession().then(()=>{ renderCloudBox(); setTimeout(()=>cloudSyncOnStart(),1200); });
 bootstrap().then(()=>{
   if(S.group){
     setTimeout(()=>loadInbox(),1500);

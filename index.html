@@ -408,10 +408,35 @@ pre.code,textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:13p
 .loginhint b{color:var(--gold);font-weight:400}
 .loginhint .acts{display:flex;gap:8px;flex-wrap:wrap}
 
-/* ---------- google sign-in ---------- */
-.gsibtn{display:flex;justify-content:center;margin:4px 0 6px;min-height:44px}
-.orline{display:flex;align-items:center;gap:10px;color:var(--win-muted);font-family:var(--pixel);font-size:14px;margin:12px 0 4px!important}
-.orline::before,.orline::after{content:"";flex:1;height:2px;background:rgba(255,255,255,.2)}
+/* ---------- cloud login dialog ---------- */
+#cloudDlg{max-width:min(560px,calc(100vw - 28px))}
+.cloudwrap .body{display:grid;gap:14px}
+.benefits{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.benefits li{display:flex;gap:10px;align-items:center;font-size:15px;color:var(--win-muted)}
+.benefits li span{width:24px;text-align:center;font-size:17px}
+.cloudgrid{display:grid;gap:12px}
+.cloudgrid label{margin:0 0 4px!important}
+.fieldhint{font-size:13px;color:var(--win-muted);margin:4px 0 0!important}
+.warnbox{background:rgba(242,193,78,.14);border-left:4px solid var(--gold);padding:8px 12px;margin:0!important;font-size:14px;line-height:1.8}
+.warnbox b{color:var(--gold);font-weight:400}
+.cloudfoot{display:block!important}
+.cloudfoot .cerr{margin:0 0 8px!important;min-height:1.3em;display:block}
+.cloudfoot .row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.cloudfoot .btns{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
+.cloudfoot .linkbtn{white-space:nowrap}
+@media (max-width:540px){
+  .cloudfoot .row{flex-direction:column;align-items:stretch}
+  .cloudfoot .btns{margin-left:0}
+  .cloudfoot .btns .act{flex:1}
+}
+.ahint.center{text-align:center}
+.cloudwho{display:flex;gap:12px;align-items:center;margin:0 0 10px}
+.cloudwho img{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold)}
+.cloudwho .nm{font-family:var(--pixel);font-size:17px}
+.cloudwho .em{font-size:13px;color:var(--win-muted)}
+.cloudfacts{display:grid;grid-template-columns:5em 1fr;gap:2px 10px;font-size:14px;margin:8px 0 0}
+.cloudfacts dt{color:var(--win-muted);font-family:var(--pixel)}
+.cloudfacts dd{margin:0}
 
 /* ---------- pet ---------- */
 .petswap{margin-top:0;grid-column:1/-1}
@@ -950,18 +975,12 @@ footer.site p{margin:4px 0}
         </details>
       </section>
       <section class="window abox form">
-        <h3>③ Google 帳號登入（選填）</h3>
-        <p class="ahint">填入 Google Cloud 的「OAuth 用戶端 ID」（網頁應用程式），新人就能用個人 Google 帳號登入雲端存檔，不用自訂帳密。已授權的 JavaScript 來源要填這個網站的網址，例如 https://帳號.github.io。</p>
-        <label for="lk-googleClientId">OAuth 用戶端 ID</label>
-        <input id="lk-googleClientId" class="ainput wide" data-gid value="" placeholder="例如 123456789-abcdefg.apps.googleusercontent.com">
-      </section>
-      <section class="window abox form">
-        <h3>④ 常用連結（選填）</h3>
+        <h3>③ 常用連結（選填）</h3>
         <p class="ahint">只會顯示在管理者專區，方便快速開啟。沒有權限的人點了也打不開。</p>
         <div class="two" id="setupLinks"></div>
       </section>
       <section class="window abox">
-        <div class="abar"><h3>⑤ 產生 config.js</h3><span class="afilters"><button class="act ghost" type="button" id="cfgCopy">複製內容</button><button class="act" type="button" id="cfgDownload">下載 config.js</button></span></div>
+        <div class="abar"><h3>④ 產生 config.js</h3><span class="afilters"><button class="act ghost" type="button" id="cfgCopy">複製內容</button><button class="act" type="button" id="cfgDownload">下載 config.js</button></span></div>
         <p class="ahint">到 GitHub 專案上傳下載的 config.js（取代舊檔），約 1–2 分鐘後網站就會套用。config.js 裡不含管理密碼。</p>
         <p class="cerr" id="cfgWarn"></p>
         <textarea id="cfgOut" class="ainput wide code" rows="14" readonly spellcheck="false"></textarea>
@@ -1103,32 +1122,50 @@ footer.site p{margin:4px 0}
 </dialog>
 
 <dialog id="cloudDlg" aria-labelledby="cloudTitle">
-  <form class="window dlg form" id="cloudForm" novalidate>
+  <form class="window dlg form cloudwrap" id="cloudForm" novalidate>
     <div class="head">
       <div><p class="dept">園區及城鄉發展部</p><h3 id="cloudTitle">雲端存檔</h3></div>
-      <button class="act ghost" type="button" data-close>稍後再說</button>
     </div>
     <div class="body">
       <p class="ahint" id="cloudIntro"></p>
-      <div id="gsiBox" hidden>
-        <div id="gsiBtn" class="gsibtn"></div>
-        <p class="ahint" id="gsiHint">用你的 Google 帳號登入最方便，不用記密碼，換電腦登入同一個帳號就會接回進度。</p>
-        <p class="orline"><span>或使用帳號密碼</span></p>
+      <ul class="benefits" id="cloudBenefits">
+        <li><span aria-hidden="true">💾</span>進度自動存到部門試算表</li>
+        <li><span aria-hidden="true">💻</span>換電腦、換瀏覽器都能接續</li>
+        <li><span aria-hidden="true">🔒</span>資料加密，其他人看不到內容</li>
+      </ul>
+      <div class="cloudgrid">
+        <div>
+          <label for="clAcc" id="clAccLabel">帳號</label>
+          <input id="clAcc" class="ainput wide" maxlength="20" autocomplete="username" placeholder="建議用員工編號，例如 01234">
+          <p class="fieldhint">3–20 個英文字母、數字、_ 或 -</p>
+        </div>
+        <div>
+          <label for="clPw" id="clPwLabel">密碼</label>
+          <input id="clPw" class="ainput wide" type="password" maxlength="40" autocomplete="current-password" placeholder="至少 6 個字">
+          <p class="fieldhint" id="clPwHint">只用於這個網站的存檔</p>
+        </div>
+        <div id="clPw2Row" hidden>
+          <label for="clPw2" id="clPw2Label">再次輸入密碼</label>
+          <input id="clPw2" class="ainput wide" type="password" maxlength="40" autocomplete="new-password">
+          <p class="fieldhint" id="clPw2Hint">兩次要一致</p>
+        </div>
+        <div id="clPw3Row" hidden>
+          <label for="clPw3">再次輸入新密碼</label>
+          <input id="clPw3" class="ainput wide" type="password" maxlength="40" autocomplete="new-password">
+          <p class="fieldhint">兩次要一致</p>
+        </div>
       </div>
-      <label for="clAcc">帳號</label>
-      <input id="clAcc" class="ainput wide" maxlength="20" autocomplete="username" placeholder="建議用員工編號，例如 01234">
-      <label for="clPw">密碼</label>
-      <input id="clPw" class="ainput wide" type="password" maxlength="40" autocomplete="current-password" placeholder="至少 6 個字">
-      <div id="clPw2Row" hidden>
-        <label for="clPw2">再次輸入密碼</label>
-        <input id="clPw2" class="ainput wide" type="password" maxlength="40" autocomplete="new-password">
-      </div>
-      <p class="ahint" id="cloudWarn">密碼只留在你的瀏覽器，進度會加密後才存進部門試算表，其他人看不到內容。<b>請不要使用公司帳號的密碼；密碼忘記就無法還原存檔。</b></p>
+      <p class="warnbox" id="cloudWarn"><b>請不要使用公司帳號的密碼。</b>密碼只留在你的瀏覽器，忘記密碼就無法還原存檔。</p>
     </div>
-    <div class="foot">
-      <button class="linkbtn" type="button" id="cloudSwitch">我還沒有帳號</button>
-      <span class="cerr" id="cloudErr" role="alert"></span>
-      <button class="act" type="submit" id="cloudGo">登入</button>
+    <div class="foot cloudfoot">
+      <p class="cerr" id="cloudErr" role="alert"></p>
+      <div class="row">
+        <button class="linkbtn" type="button" id="cloudSwitch">我還沒有帳號</button>
+        <span class="btns">
+          <button class="act ghost" type="button" data-close>稍後再說</button>
+          <button class="act" type="submit" id="cloudGo">登入</button>
+        </span>
+      </div>
     </div>
   </form>
 </dialog>
@@ -2717,7 +2754,8 @@ $("#map").addEventListener("keydown",e=>{
   if(g&&(e.key==="Enter"||e.key===" ")){e.preventDefault();g.dataset.place?openPlace(g.dataset.place):openZone(g.dataset.zone);}
 });
 document.querySelectorAll("dialog").forEach(d=>{
-  d.addEventListener("click",e=>{if(e.target===d)d.close();});
+  const keep=d.id==="cloudDlg"||d.id==="cDlg";     // 登入與建立角色視窗：避免誤點外面關掉
+  if(!keep) d.addEventListener("click",e=>{if(e.target===d)d.close();});
   d.addEventListener("close",()=>{setTimeout(topHost,0);Sound.sfx("back",{soft:true});});
 });
 $("#qDlg").addEventListener("close",()=>{ if(curPlace&&curPlace.id==="myhome") renderPlace(); if(curZone){const b=document.querySelector(`#zChapters [data-q="${curQ&&curQ.id}"]`);b&&b.focus();} });
@@ -3267,6 +3305,22 @@ async function cloudSignIn(acc,pw,mode){
   }
   return true;
 }
+async function cloudChangePassword(oldPw,newPw){
+  if(!CLOUD) throw new Error("noacc");
+  const oldKey=await deriveKey(CLOUD.acc,oldPw);
+  const a=b64buf(await crypto.subtle.exportKey("raw",oldKey));
+  const b=b64buf(await crypto.subtle.exportKey("raw",CLOUD.key));
+  if(a!==b) throw new Error("oldpw");
+  const newKey=await deriveKey(CLOUD.acc,newPw);
+  const data=await encryptSave(newKey,snapshot());
+  await sendForm("save",{acc:CLOUD.code,data,note:myCode()});
+  await cloudRemember(CLOUD.acc,CLOUD.code,newKey);
+  cloudDirty=false; cloudLastAt=new Date().toISOString();
+  try{ localStorage.setItem("sino22-cloud-at",cloudLastAt); }catch(e){}
+  renderCloudBox();
+  toast("密碼已變更，其他電腦請改用新密碼登入");
+  return true;
+}
 async function cloudSyncOnStart(){
   if(!CLOUD||!cloudReady()){ cloudSynced=true; return; }
   try{
@@ -3281,74 +3335,13 @@ async function cloudSyncOnStart(){
   finally{ cloudSynced=true; if(cloudDirty) queueCloud(); }
 }
 
-/* ---- 用個人 Google 帳號登入（Google Identity Services，純前端） ---- */
-const googleClientId=()=>String((CONF.google&&CONF.google.clientId)||"").trim();
-const googleReady=()=>!!(googleClientId()&&cloudReady());
-let gisLoaded=null;
-function loadGis(){
-  if(gisLoaded) return gisLoaded;
-  gisLoaded=new Promise((res,rej)=>{
-    if(window.google&&google.accounts&&google.accounts.id) return res();
-    const el=document.createElement("script");
-    el.src="https://accounts.google.com/gsi/client"; el.async=true; el.defer=true;
-    el.onload=()=>res(); el.onerror=()=>rej(new Error("gis"));
-    document.head.appendChild(el);
-  });
-  return gisLoaded;
-}
-function jwtPayload(tok){
-  const part=String(tok||"").split(".")[1]||"";
-  const json=decodeURIComponent(atob(part.replace(/-/g,"+").replace(/_/g,"/")).split("").map(c=>"%"+("00"+c.charCodeAt(0).toString(16)).slice(-2)).join(""));
-  return JSON.parse(json);
-}
-async function cloudSignInGoogle(cred){
-  let p; try{ p=jwtPayload(cred); }catch(e){ throw new Error("token"); }
-  const email=String(p.email||"").toLowerCase(), sub=String(p.sub||"");
-  if(!email||!sub) throw new Error("token");
-  const acc="g:"+email, code=await accCode(acc), key=await deriveKey(acc,"gid:"+sub);
-  let remote=null;
-  try{ remote=await cloudFetch(code); }catch(e){ throw new Error("offline"); }
-  let loaded=null;
-  if(remote){ try{ loaded=await decryptSave(key,remote.data); }catch(e){ throw new Error("badpw"); } }
-  await cloudRemember(acc,code,key,{provider:"google",label:email});
-  cloudSynced=true;
-  if(loaded){
-    const mine=progressCount(S), theirs=progressCount(loaded.S);
-    let useCloud=true;
-    if(S.group&&mine>theirs) useCloud=await uiConfirm(`這台電腦有 ${mine} 個已完成任務，雲端存檔只有 ${theirs} 個。要改用雲端存檔嗎？按「取消」則保留這台電腦的進度並覆蓋雲端。`,"用雲端存檔");
-    if(useCloud){ applySave(loaded); toast(`已用 ${email} 載入雲端存檔`); }
-    else { await cloudPush(true); toast("已用這台電腦的進度覆蓋雲端"); }
-  }else{
-    await cloudPush(true);
-    toast(`已綁定 ${email}，之後進度會自動同步`);
-  }
-  return true;
-}
-async function renderGoogleBtn(){
-  const box=$("#gsiBox"); if(!box) return;
-  if(!googleReady()){ box.hidden=true; return; }
-  box.hidden=false;
-  try{
-    await loadGis();
-    google.accounts.id.initialize({client_id:googleClientId(),callback:async resp=>{
-      const err=$("#cloudErr"); err.textContent="";
-      try{ await cloudSignInGoogle(resp&&resp.credential); $("#cloudDlg").close(); Sound.sfx("achieve"); }
-      catch(ex){
-        const m=ex&&ex.message;
-        err.textContent=m==="offline"?"連不上部門試算表，請稍後再試":m==="badpw"?"這個帳號的存檔無法解開，請聯絡管理者":"Google 登入失敗，請再試一次";
-        Sound.sfx("error");
-      }
-    }});
-    google.accounts.id.renderButton($("#gsiBtn"),{theme:"filled_blue",size:"large",text:"signin_with",shape:"rectangular",locale:"zh_TW",width:300});
-  }catch(e){ $("#gsiBtn").innerHTML=`<span class="cerr">無法載入 Google 登入，請確認網路或改用下方的帳號密碼。</span>`; }
-}
 const LOGIN_HINT_KEY="sino22-loginhint";
 function updateLoginBtn(){
   const b=$("#btnLogin"); if(!b) return;
   if(!cloudReady()){ b.hidden=true; return; }
   b.hidden=false;
   const on=!!CLOUD;
-  const who=on?(CLOUD.provider==="google"?(CLOUD.label||"已登入"):CLOUD.acc):"登入";
+  const who=on?CLOUD.acc:"登入";
   b.querySelector(".ic").textContent=on?"✓":"👤";
   b.querySelector(".lbl").textContent=" "+(on?(who.length>14?who.slice(0,13)+"…":who):"登入");
   b.classList.toggle("on",on);
@@ -3372,16 +3365,27 @@ $("#loginHint").addEventListener("click",e=>{
 });
 let cloudMode="login";
 function openCloud(mode){
-  setTimeout(renderGoogleBtn,0);
   if(!cloudReady()){ uiAlert("網站還沒設定雲端存檔（需要「進度存檔」表單與「存檔資料」工作表）。"); return; }
+  if(mode==="change"&&!CLOUD){ mode="login"; }
   cloudMode=mode||"login";
-  const create=cloudMode==="create";
-  $("#cloudTitle").textContent=create?"建立雲端存檔帳號":"登入雲端存檔";
-  $("#cloudIntro").textContent=create?"建立帳號後，進度會自動存到部門試算表；換一台電腦時用同一組帳密就能接著玩。"
+  const create=cloudMode==="create", change=cloudMode==="change";
+  $("#cloudTitle").textContent=change?"變更雲端存檔密碼":create?"建立雲端存檔帳號":"登入雲端存檔";
+  $("#cloudIntro").textContent=change?"輸入目前的密碼和新密碼，存檔會用新密碼重新加密。其他電腦下次登入時請改用新密碼。":create?"建立帳號後，進度會自動存到部門試算表；換一台電腦時用同一組帳密就能接著玩。"
     :"輸入你的帳號密碼，把之前的進度接回這台電腦。";
-  $("#cloudGo").textContent=create?"建立帳號":"登入";
+  $("#cloudGo").textContent=change?"變更密碼":create?"建立帳號":"登入";
+  $("#cloudSwitch").hidden=change;
+  $("#clAcc").readOnly=change;
+  $("#clPwLabel").textContent=change?"目前密碼":"密碼";
+  $("#clPw2Label").textContent=change?"新密碼":"再次輸入密碼";
+  $("#clPw2Hint").textContent=change?"至少 6 個字，不要使用公司帳號的密碼":"兩次要一致";
+  $("#clPw3Row").hidden=!change;
+  $("#cloudBenefits").hidden=change;
+  $("#cloudWarn").hidden=change;
+  $("#clPwHint").textContent=change?"輸入你目前使用的密碼":"只用於這個網站的存檔";
+  $("#clPw").placeholder=change?"目前的密碼":"至少 6 個字";
+  $("#clPw3").value="";
   $("#cloudSwitch").textContent=create?"我已經有帳號了":"我還沒有帳號";
-  $("#clPw2Row").hidden=!create;
+  $("#clPw2Row").hidden=!(create||change);
   $("#clPw").autocomplete=create?"new-password":"current-password";
   $("#cloudErr").textContent="";
   $("#clAcc").value=(CLOUD&&CLOUD.acc)||S.emp||"";
@@ -3397,18 +3401,25 @@ $("#cloudForm").addEventListener("submit",async e=>{
   if(!/^[A-Za-z0-9_-]{3,20}$/.test(acc)){ err.textContent="帳號請用 3–20 個英文字母、數字、_ 或 -"; Sound.sfx("error"); return; }
   if(pw.length<6){ err.textContent="密碼至少 6 個字"; Sound.sfx("error"); return; }
   if(cloudMode==="create"&&pw!==$("#clPw2").value){ err.textContent="兩次輸入的密碼不一樣"; Sound.sfx("error"); return; }
+  if(cloudMode==="change"){
+    const np=$("#clPw2").value;
+    if(np.length<6){ err.textContent="新密碼至少 6 個字"; Sound.sfx("error"); return; }
+    if(np!==$("#clPw3").value){ err.textContent="兩次輸入的新密碼不一樣"; Sound.sfx("error"); return; }
+    if(np===pw){ err.textContent="新密碼和目前密碼一樣"; Sound.sfx("error"); return; }
+  }
   const btn=$("#cloudGo"); btn.disabled=true; btn.textContent="處理中…";
   try{
-    await cloudSignIn(acc,pw,cloudMode);
+    if(cloudMode==="change") await cloudChangePassword(pw,$("#clPw2").value);
+    else await cloudSignIn(acc,pw,cloudMode);
     $("#cloudDlg").close(); Sound.sfx("achieve");
   }catch(ex){
     const m=ex&&ex.message;
     err.textContent=m==="noacc"?"找不到這個帳號的存檔，如果是第一次使用請按「我還沒有帳號」":
       m==="exists"?"這個帳號已經有存檔了，請直接登入":
       m==="badpw"?"密碼錯誤，或這個帳號的存檔無法解開":
-      m==="offline"?"連不上部門試算表，請稍後再試":"處理失敗，請稍後再試";
+      m==="oldpw"?"目前密碼不正確":m==="offline"?"連不上部門試算表，請稍後再試":"處理失敗，請稍後再試";
     Sound.sfx("error");
-  }finally{ btn.disabled=false; btn.textContent=cloudMode==="create"?"建立帳號":"登入"; }
+  }finally{ btn.disabled=false; btn.textContent=cloudMode==="change"?"變更密碼":cloudMode==="create"?"建立帳號":"登入"; }
 });
 
 /* ---- 新人登錄紀錄（Google 表單） ---- */
@@ -3835,7 +3846,7 @@ function flashLoc(id){
   $("#map").scrollIntoView({block:"center",behavior:"smooth"});
 }
 
-/* ================= new hire's home (成就・筆記本・衣櫃) ================= */
+/* ================= new hire's home (成就・筆記本・角色設定) ================= */
 let homeTab="notebook";
 const MEMO_MAX=300;
 function favList(){
@@ -3864,7 +3875,7 @@ function renderMyHome(body){
     ["pet","寵物窩",S.pet?null:"petbed",S.pet?`${S.pet.name||PETS[S.pet.type].name}・${petStage()==="adult"?"成年":"寶寶"}`:petUnlocked()?"可以領養了":`LV 3 解鎖・還差 ${tasksToLevel(3)} 個任務`],
     ["trophy","獎盃櫃","trophy",`${ACH.filter(a=>S.ach[a.id]).length}/${ACH.length}`],
     ["cert","證書牆","certwall",S.awarded?esc(S.awarded):`完成全部 ${TOTAL} 項任務後掛上`],
-    ["wardrobe","衣櫃","wardrobe","編輯角色"]];
+    ["wardrobe","角色設定","wardrobe","造型・雲端存檔"]];
   if(body.dataset.kind!=="myhome"){
     body.dataset.kind="myhome";
     body.innerHTML=`<div class="furniture" role="tablist" aria-label="新人的家">${tabs.map(([id,label,spr])=>`
@@ -4075,18 +4086,19 @@ function renderCloudBox(){
   }
   if(!CLOUD){
     box.innerHTML=`<h3>雲端存檔</h3>
-      <p class="ahint">目前進度只存在這台電腦。${googleReady()?"用 Google 帳號登入（或自訂帳密）":"建立帳號"}後會自動同步，換電腦或清除瀏覽器資料也不會不見。</p>
+      <p class="ahint">目前進度只存在這台電腦。建立帳號後會自動同步，換電腦或清除瀏覽器資料也不會不見。</p>
       <div class="formfoot"><span></span><span class="afilters">
-        <button class="act ghost" type="button" data-cloud="login">${googleReady()?"Google 登入／我有帳號":"我有帳號，登入"}</button>
+        <button class="act ghost" type="button" data-cloud="login">我有帳號，登入</button>
         <button class="act" type="button" data-cloud="create">建立帳號</button></span></div>`;
     return;
   }
   let at=""; try{ at=localStorage.getItem("sino22-cloud-at")||""; }catch(e){}
-  const who=CLOUD.provider==="google"?`Google 帳號 <b>${esc(CLOUD.label||CLOUD.acc.replace(/^g:/,""))}</b>`:`帳號 <b>${esc(CLOUD.acc)}</b>`;
   box.innerHTML=`<h3>雲端存檔 <span class="st st-ok">已登入</span></h3>
-    <p class="ahint">${who}${at?`・最後同步 ${fmtDate(at)}`:""}${cloudDirty?"・有尚未同步的進度":""}</p>
-    <p class="ahint">進度會自動同步，換電腦時${CLOUD.provider==="google"?"登入同一個 Google 帳號":"用同一組帳密登入"}就能接著玩。${CLOUD.provider==="google"?"":"密碼忘記將無法還原存檔。"}</p>
+    <dl class="cloudfacts"><dt>姓名</dt><dd>${esc(S.name||"—")}</dd><dt>員工編號</dt><dd>${esc(S.emp||"—")}</dd><dt>組別</dt><dd>${esc(S.group||"—")}</dd><dt>新人代碼</dt><dd>${esc(myCode())}</dd></dl>
+    <p class="ahint">${[`帳號 <b>${esc(CLOUD.acc)}</b>`,at?`最後同步 ${fmtDate(at)}`:"",cloudDirty?"有尚未同步的進度":""].filter(Boolean).join("・")}</p>
+    <p class="ahint">進度會自動同步，換電腦時用同一組帳密登入就能接著玩。密碼忘記將無法還原存檔。</p>
     <div class="formfoot"><span></span><span class="afilters">
+      <button class="act ghost" type="button" data-cloud="password">變更密碼</button>
       <button class="act ghost" type="button" data-cloud="logout">登出這台電腦</button>
       <button class="act" type="button" data-cloud="push">立即同步</button></span></div>`;
 }
@@ -4148,6 +4160,7 @@ $("#placeBody").addEventListener("click",async e=>{
   if(cb){
     const act=cb.dataset.cloud;
     if(act==="login"||act==="create") openCloud(act);
+    else if(act==="password") openCloud("change");
     else if(act==="logout"){
       if(!(await uiConfirm("登出後，這台電腦的進度仍在，但不會再自動同步。確定登出嗎？","登出"))) return;
       cloudLogout(); toast("已登出雲端存檔");
@@ -4159,7 +4172,7 @@ $("#placeBody").addEventListener("click",async e=>{
   }
   if(t.closest("[data-reset]")){
     if(!(await uiConfirm("確定要清除角色、所有進度、成就與筆記本嗎？","清除"))) return;
-    S={name:"",emp:"",av:null,pet:null,group:"",done:{},visited:{},points:0,ach:{},achSeen:{},fav:{},consults:[],ivReplies:{},loc:"village"}; save();
+    S={name:"",emp:"",gmail:"",av:null,pet:null,group:"",done:{},visited:{},points:0,ach:{},achSeen:{},fav:{},consults:[],ivReplies:{},loc:"village"}; save();
     try{localStorage.removeItem(CODE_KEY);}catch(e2){} CODE="";
     INBOX={interviews:[],consults:[]}; inboxLoaded=false;
     try{sessionStorage.removeItem(WELCOME_KEY);}catch(e3){}
@@ -4300,7 +4313,6 @@ function renderStatus(){
     const btn=!f?"":k==="admin"?`<button class="mini-btn" type="button" data-ping>測試後台更新</button>`:`<button class="mini-btn" type="button" data-testform="${k}">送出測試</button>`;
     rows.push(`<tr><td>表單</td><td>${def.label}</td><td>${state}</td><td style="white-space:normal">${!f?"請到「設定小幫手」設定":missing.length?"缺少："+missing.join("、"):`${def.fields.length} 個欄位${k==="admin"?"・送出時需要管理密碼":""}`}</td><td>${btn}</td></tr>`);
   });
-  rows.push(`<tr><td>登入</td><td>Google 帳號登入</td><td>${googleClientId()?`<span class="st st-ok">已設定</span>`:`<span class="st st-off">未設定</span>`}</td><td style="white-space:normal">${googleClientId()?"新人可以用個人 Google 帳號登入雲端存檔":"選填。沒設定時，新人改用自訂帳號密碼"}</td><td></td></tr>`);
   Object.entries(SHEET_KEYS).forEach(([k,def])=>{
     const u=sheetUrl(k);
     if((def.legacy||def.optional)&&!u) return;
@@ -4623,7 +4635,6 @@ function renderSetup(){
   $("#setupSheets").innerHTML=Object.entries(SHEET_KEYS).filter(([,d])=>!d.legacy).map(([k,d])=>sheetInput(k,d)).join("");
   $("#setupLegacy").innerHTML=`<p class="ahint">這些是舊版設定使用的工作表，網站會在「後台資料」沒有對應資料時才讀取。新的設定不需要填。</p>`+Object.entries(SHEET_KEYS).filter(([,d])=>d.legacy).map(([k,d])=>sheetInput(k,d)).join("");
   const L=CONF.links||{};
-  const gidEl=$("#lk-googleClientId"); if(gidEl) gidEl.value=googleClientId();
   $("#setupLinks").innerHTML=[["spreadsheet","部門試算表網址"],["signupForm","登錄紀錄表單（編輯頁）"],["progressForm","進度回報表單（編輯頁）"],["consultForm","技術諮詢表單（編輯頁）"],["ivReplyForm","面談回覆表單（編輯頁）"],["adminForm","後台更新表單（編輯頁）"]]
     .map(([k,l])=>`<div><label for="lk-${k}">${l}</label><input id="lk-${k}" class="ainput wide" data-link="${k}" value="${esc(L[k]||"")}" placeholder="https://…"></div>`).join("");
   buildConfig();
@@ -4644,10 +4655,10 @@ $("#viewAdmin").addEventListener("input",e=>{
     }
     buildConfig();
   }
-  if(t.dataset.sheet||t.dataset.link||t.hasAttribute("data-gid")) buildConfig();
+  if(t.dataset.sheet||t.dataset.link) buildConfig();
 });
 function buildConfig(){
-  const out={forms:{},sheets:{},links:{},google:{clientId:(($("#lk-googleClientId")||{}).value||"").trim()}}, warn=[];
+  const out={forms:{},sheets:{},links:{}}, warn=[];
   Object.keys(FORM_KEYS).forEach(k=>{
     const p=setupParsed[k], cur=formCfg(k);
     if(p) out.forms[k]={action:p.action,fields:p.fields};

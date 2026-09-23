@@ -91,6 +91,6 @@ window.SINO22_CONFIG = {
     "adminForm": "https://docs.google.com/forms/d/1Jm00FG7dN4B4M_YBMrqQAN-6ltGJsdJkXvQSmtuKdTc/edit"
   },
   "google": {
-    "clientId": ""
+    "clientId": "462963071516-dbd4i42gfmj3nl3vom20gtdnm7htaf93.apps.googleusercontent.com"
   }
 };

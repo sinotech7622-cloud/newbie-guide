@@ -89,8 +89,5 @@ window.SINO22_CONFIG = {
     "consultForm": "https://docs.google.com/forms/d/1xWOq_gAXxpHCX932Dnf2wlq4zXLhRSZU75k5ovpjhUw/edit",
     "ivReplyForm": "https://docs.google.com/forms/d/1XWTTFtypSjPa78Y0FMja2a-5D8e6Jm3v7rDIxNAI1Ac/edit",
     "adminForm": "https://docs.google.com/forms/d/1Jm00FG7dN4B4M_YBMrqQAN-6ltGJsdJkXvQSmtuKdTc/edit"
-  },
-  "google": {
-    "clientId": "462963071516-dbd4i42gfmj3nl3vom20gtdnm7htaf93.apps.googleusercontent.com"
   }
 };

@@ -14,6 +14,20 @@ window.SINO22_CONFIG = {
         "device": "1797761001"
       }
     },
+    "lounge": {
+      "action": "https://docs.google.com/forms/d/e/1FAIpQLScr2mFb0zqJrXrKvt1UTZE7juGhrrSsBsOoFBImvMKOuvJWOA/formResponse",
+      "fields": {
+        "type": "1214652450",
+        "code": "762078313",
+        "name": "644820840",
+        "group": "1262056268",
+        "level": "296999690",
+        "av": "1780174805",
+        "pet": "1647845533",
+        "msg": "1266603793",
+        "target": "665753719"
+      }
+    },
     "save": {
       "action": "https://docs.google.com/forms/d/e/1FAIpQLSdWxs_kQ0fivnvguxFPJdeQljFGBmaNTGdYmXKBDjL4co2CZA/formResponse",
       "fields": {
@@ -75,6 +89,7 @@ window.SINO22_CONFIG = {
   },
   "sheets": {
     "feed": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=592103693&single=true&output=csv",
+    "lounge": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1321071480&single=true&output=csv",
     "saves": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=29804008&single=true&output=csv",
     "ivreplies": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1271539101&single=true&output=csv",
     "settings": "",

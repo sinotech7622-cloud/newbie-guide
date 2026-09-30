@@ -2903,6 +2903,24 @@
       z-index: 1
     }
 
+    .sr-weapon.t-r .sr-wpic {
+      border-color: #5B93E8
+    }
+
+    .sr-weapon.t-sr .sr-wpic {
+      border-color: #A97BE6
+    }
+
+    .sr-weapon.t-ssr .sr-wpic {
+      border-color: #F2C14E;
+      box-shadow: 0 0 0 2px #3B2412, 0 0 14px rgba(242, 193, 78, .7), 3px 4px 0 rgba(0, 0, 0, .4)
+    }
+
+    .sr-weapon.t-x .sr-wpic {
+      border-color: #D8434B;
+      box-shadow: 0 0 0 2px #3B2412, 0 0 14px rgba(216, 67, 75, .6), 3px 4px 0 rgba(0, 0, 0, .4)
+    }
+
     .sr-wpic {
       width: 70px;
       height: 70px;
@@ -3140,6 +3158,104 @@
 
     .atabs button[hidden] {
       display: none !important
+    }
+
+    .tier {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--pixel);
+      font-size: 12px;
+      line-height: 1;
+      padding: 3px 7px;
+      border-radius: 3px;
+      color: #fff;
+      white-space: nowrap
+    }
+
+    .tier b {
+      font-weight: 400;
+      letter-spacing: -1px
+    }
+
+    .tier.t-n {
+      background: #5F6788
+    }
+
+    .tier.t-r {
+      background: #2F6FD0
+    }
+
+    .tier.t-sr {
+      background: #8A4FD1
+    }
+
+    .tier.t-ssr {
+      background: linear-gradient(90deg, #C9912B, #F2C14E, #C9912B);
+      color: #2B1B00
+    }
+
+    .tier.t-x {
+      background: linear-gradient(90deg, #D8434B, #F2C14E, #4CC38A, #4A7BF7, #9B6BD6);
+      color: #fff;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, .5)
+    }
+
+    .gear.t-r {
+      border-left: 6px solid #2F6FD0
+    }
+
+    .gear.t-sr {
+      border-left: 6px solid #8A4FD1
+    }
+
+    .gear.t-ssr {
+      border-left: 6px solid #F2C14E;
+      box-shadow: inset 0 0 0 1px rgba(242, 193, 78, .35)
+    }
+
+    .gear.t-x {
+      border-left: 6px solid #D8434B
+    }
+
+    .gear.t-ssr .gicon {
+      box-shadow: 0 0 0 2px #F2C14E, 0 0 10px rgba(242, 193, 78, .6)
+    }
+
+    .droptable {
+      margin-top: 14px
+    }
+
+    .droptable summary {
+      cursor: pointer;
+      font-family: var(--pixel);
+      color: var(--gold);
+      font-size: 15px
+    }
+
+    .droptable .atable td,
+    .droptable .atable th {
+      text-align: center
+    }
+
+    .droptable .atable th[scope=row] {
+      text-align: left;
+      color: var(--win-text)
+    }
+
+    .tierlist {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0;
+      display: grid;
+      gap: 6px
+    }
+
+    .tierlist li {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px
     }
 
     /* ---------- lounge ---------- */
@@ -5889,7 +6005,7 @@
      <li>赴任或調動至不同工作地點當日，不得報支膳雜費。</li>
     </ul>
     <p>詳閱：${R(RULES + "＞【差旅規定】＞員工國內出差旅費支給辦法")}</p>
-    <p>部門費用申請由行政組陳慧（#03690）協助辦理。</p>`},
+    <p>部門費用申請由行政組陳慧協助辦理。</p>`},
                 {
                   id: "w2", title: "公出申請（新竹以北）", body: `
     <ul>
@@ -6583,26 +6699,58 @@
 
       /* ================= 海底寶藏與武器 ================= */
       Object.assign(SPR, { w_leave_card: ["............", "..KKKKKKKK..", "..KWWWWWWK..", "..KWRRRRWK..", "..KWWWWWWK..", "..KWAAAAWK..", "..KWWWWWWK..", "..KWAAAWWK..", "..KWWWWWWK..", "..KKKKKKKK..", "....KLLK....", "....KKKK...."], w_sword_wood: ["............", "............", "........KK..", ".......KLEK.", "......KLEK..", ".....KLEK...", "....KLEK....", "...KLEK.....", "..KLEK......", ".KBBBK......", "..KBK.......", "...K........"], w_shovel: ["............", "......KKK...", ".....KWAWK..", ".....KAAAK..", ".....KAAAK..", ".....KAABK..", ".....KABAK..", ".....KBKK...", "..KKKBK.....", ".KBBBK......", ".KBBBK......", "..KKK......."], w_tape: ["............", "...........K", "..........KA", ".........KAK", "........KAK.", ".......KAK..", "..KKKKKAK...", ".KYYYYAK....", ".KYWWYK.....", ".KYWWYK.....", ".KYYYYK.....", "..KKKK......"], w_staff_survey: ["....KKKK....", "...KRWWRK...", "....KRRK....", "....KWWK....", "....KRRK....", "....KWWK....", "....KRRK....", "....KWWK....", "....KRRK....", "....KWWK....", "....KRRK....", "....KWWK...."], w_coral_staff: ["............", ".........K..", "........KPK.", ".......KPXPK", "........KPK.", ".......KLK..", "......KLK...", ".....KLK....", "....KLK.....", "...KLK......", "..KLK.......", "...K........"], w_trident: ["..K.KWWK.K..", ".KWKKAAKKWK.", ".KAAKAAKAAK.", ".KAAKAAKAAK.", ".KAAKAAKAAK.", ".KAAAAAAAAK.", "..KKKAAKKK..", "....KAAK....", "....KAAK....", "....KAAK....", "....KAAK....", "....KAAK...."], w_shovel_gold: ["............", ".....KKKKK..", "....KWYYYWK.", "....KYYYYYK.", "....KYYWYYK.", "....KYYLYYK.", "....KYLYYYK.", "....KLKKKK..", ".KKKLK......", "KLLLK.......", "KLLLK.......", ".KKK........"], w_sword_sea: ["..........K.", ".........KWK", "........KWK.", "........KSWK", ".......KSWK.", "......KSWK..", ".....KSWK...", "....KSWK....", "..KKSWK.....", ".KUUUUK.....", ".KUUUUK.....", "..KYYK......"] });
+      /* 武器分級：先依機率抽等級，再從該等級平均抽一把 */
+      const TIERS = {
+        N: { name: "普通", stars: "★", cls: "t-n", order: 1 },
+        R: { name: "稀有", stars: "★★", cls: "t-r", order: 2 },
+        SR: { name: "史詩", stars: "★★★", cls: "t-sr", order: 3 },
+        SSR: { name: "傳說", stars: "★★★★", cls: "t-ssr", order: 4 },
+        X: { name: "隱藏", stars: "✦", cls: "t-x", order: 5 }
+      };
+      const DROP_RATES = {
+        sea: { label: "海上撈寶", N: 55, R: 30, SR: 12, SSR: 3 },
+        gift: { label: "拜訪村長／總長", N: 45, R: 33, SR: 17, SSR: 5 }
+      };
       const WEAPONS = [
-        { id: "sword_wood", name: "漂流木劍", rar: "常見", w: 26, desc: "海邊撿到的木劍，握起來意外順手。" },
-        { id: "shovel", name: "工程鐵鏟", rar: "常見", w: 24, desc: "挖過無數基地的老夥伴。" },
-        { id: "leave_card", name: "請假卡", rar: "傳說", w: 0, hidden: true, desc: "隱藏版武器。關鍵時刻拿出來，什麼都能擋。" },
-        { id: "tape", name: "捲尺長鞭", rar: "少見", w: 18, desc: "一甩就是五公尺，量測與防身兩用。" },
-        { id: "staff_survey", name: "測量標桿", rar: "少見", w: 16, desc: "紅白相間，站得筆直的正義。" },
-        { id: "coral_staff", name: "珊瑚法杖", rar: "稀有", w: 9, desc: "杖頭的珊瑚在水裡會發光。" },
-        { id: "trident", name: "海神三叉戟", rar: "稀有", w: 5, desc: "傳說是海神落在灘上的。" },
-        { id: "shovel_gold", name: "黃金鏟", rar: "傳說", w: 1.5, desc: "據說挖得到更多寶藏。" },
-        { id: "sword_sea", name: "碧海之劍", rar: "傳說", w: 0.5, desc: "劍身像一道靜止的浪。" }
+        { id: "sword_wood", name: "漂流木劍", tier: "N", desc: "海邊撿到的木劍，握起來意外順手。" },
+        { id: "shovel", name: "工程鐵鏟", tier: "N", desc: "挖過無數基地的老夥伴。" },
+        { id: "tape", name: "捲尺長鞭", tier: "R", desc: "一甩就是五公尺，量測與防身兩用。" },
+        { id: "staff_survey", name: "測量標桿", tier: "R", desc: "紅白相間，站得筆直的正義。" },
+        { id: "coral_staff", name: "珊瑚法杖", tier: "SR", desc: "杖頭的珊瑚在水裡會發光。" },
+        { id: "trident", name: "海神三叉戟", tier: "SR", desc: "傳說是海神落在灘上的。" },
+        { id: "shovel_gold", name: "黃金鏟", tier: "SSR", desc: "裝備時，史詩與傳說武器的出現機率提高 1.5 倍。" },
+        { id: "sword_sea", name: "碧海之劍", tier: "SSR", desc: "劍身像一道靜止的浪。" },
+        { id: "leave_card", name: "請假卡", tier: "X", hidden: true, desc: "隱藏版武器，只能用密技取得。關鍵時刻拿出來，什麼都能擋。" }
       ];
-      const RAR_CLASS = { "常見": "st-off", "少見": "st-info", "稀有": "st-ok", "傳說": "st-gold" };
+      WEAPONS.forEach(w => { w.rar = TIERS[w.tier].name; });
+      const RAR_CLASS = Object.fromEntries(Object.values(TIERS).map(t => [t.name, t.cls]));
+      const tierOf = w => TIERS[(w && w.tier) || "N"] || TIERS.N;
+      const tierBadge = w => { const t = tierOf(w); return `<span class="tier ${t.cls}"><b>${t.stars}</b>${t.name}</span>`; };
+      function dropRates(source) {
+        const base = Object.assign({}, DROP_RATES[source] || DROP_RATES.sea); delete base.label;
+        if (S.weapon === "shovel_gold") { base.SR *= 1.5; base.SSR *= 1.5; }
+        const tot = Object.values(base).reduce((a, b) => a + b, 0), out = {};
+        Object.keys(base).forEach(k => { out[k] = base[k] / tot * 100; });
+        return out;
+      }
       const weaponById = id => WEAPONS.find(w => w.id === id);
-      function rollWeapon() {
-        const lucky = S.weapon === "shovel_gold" ? 1.35 : 1;           // 黃金鏟：稀有度加成
-        const pool = WEAPONS.map(w => ({ w, p: w.w * (["稀有", "傳說"].includes(w.rar) ? lucky : 1) }));
-        const total = pool.reduce((a, x) => a + x.p, 0);
-        let r = Math.random() * total;
-        for (const x of pool) { r -= x.p; if (r <= 0) return x.w; }
-        return WEAPONS[0];
+      function rollWeapon(source) {
+        const rates = dropRates(source);
+        let r = Math.random() * 100, tier = "N";
+        for (const k of ["N", "R", "SR", "SSR"]) { r -= rates[k] || 0; if (r <= 0) { tier = k; break; } tier = k; }
+        const pool = WEAPONS.filter(w => w.tier === tier && !w.hidden);
+        return pool[Math.floor(Math.random() * pool.length)] || WEAPONS[0];
+      }
+      function dropMessage(w, prefix, first, equipped) {
+        const t = tierOf(w);
+        const tail = first ? (equipped ? "！已裝備" : "！可在角色設定裝備") : "，又拿到一把";
+        return `${prefix}【${t.stars} ${t.name}】${w.name}${tail}`;
+      }
+      function celebrate(w) {
+        const o = tierOf(w).order;
+        if (o >= 4) { Sound.sfx("levelup"); setTimeout(() => toast("✨ 恭喜！抽中傳說級武器 ✨"), 900); }
+        else if (o === 3) Sound.sfx("achieve");
+        else Sound.sfx("get");
       }
       let lastDig = 0, MAPLAND = null;
       const SEA_LINES = ["撲通！只撈到一個空瓶。", "浪花打過來，什麼都沒撈到。", "腳邊滑過一群小魚。", "好像踩到什麼…只是石頭。"];
@@ -6673,12 +6821,13 @@
         const now = Date.now(); if (now - lastDig < 2200) return; lastDig = now;
         S.items = S.items || {};
         if (Math.random() < 0.22) {
-          const w = rollWeapon();
+          const w = rollWeapon("sea");
           S.items[w.id] = (S.items[w.id] || 0) + 1;
           const first = S.items[w.id] === 1;
-          if (!S.weapon || first && ["稀有", "傳說"].includes(w.rar)) S.weapon = w.id;
-          save(); Sound.sfx("achieve");
-          toast(`🌊 撈到寶藏：${w.name}（${w.rar}）${first ? "！已裝備" : "，又撿到一把"}`);
+          const cur = weaponById(S.weapon);
+          if (!S.weapon || first && tierOf(w).order > tierOf(cur).order) S.weapon = w.id;   // 撈到更高等級的新武器才自動換上
+          save(); celebrate(w);
+          toast(dropMessage(w, "🌊 撈到寶藏：", first, S.weapon === w.id));
           checkAch(); renderHUD(); buildMap();
           if (curPlace && curPlace.id === "myhome") renderPlace();
         } else {
@@ -6730,13 +6879,13 @@
         setTimeout(() => {
           S.items = S.items || {};
           if (Math.random() < cfg.chance) {
-            const w = rollWeapon();
+            const w = rollWeapon("gift");
             S.items[w.id] = (S.items[w.id] || 0) + 1;
             const first = S.items[w.id] === 1;
             if (!S.weapon) S.weapon = w.id;
-            save(); Sound.sfx("achieve");
+            save(); celebrate(w);
             toast(`${cfg.lines[Math.floor(Math.random() * cfg.lines.length)]}`);
-            setTimeout(() => toast(`🎁 獲得裝備：${w.name}（${w.rar}）${first ? (S.weapon === w.id ? "！已裝備" : "！可在角色設定裝備") : "，又拿到一把"}`), 1400);
+            setTimeout(() => toast(dropMessage(w, "🎁 獲得裝備：", first, S.weapon === w.id)), 1400);
             checkAch(); renderHUD(); buildMap();
             if (curPlace && curPlace.id === "myhome") renderPlace();
           } else {
@@ -8153,9 +8302,17 @@
         cloudTimer = setTimeout(() => cloudPush(), now ? 0 : 20000);
       }
       document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && cloudDirty) { clearTimeout(cloudTimer); cloudPush(); } });
+      function mergeConsults(a, b) {
+        const m = new Map();
+        (a || []).concat(b || []).forEach(c => { if (!c || !c.no) return; const o = m.get(c.no); m.set(c.no, o ? Object.assign({}, o, c, { withdrawn: !!(o.withdrawn || c.withdrawn) }) : c); });
+        return [...m.values()].sort((x, y) => String(x.createdAt || "").localeCompare(String(y.createdAt || "")));
+      }
       function applySave(obj) {
         if (!obj || !obj.S) return false;
+        const keepCs = S.consults, keepIv = S.ivReplies;
         S = Object.assign({}, S, obj.S);
+        S.consults = mergeConsults(keepCs, obj.S.consults);
+        S.ivReplies = Object.assign({}, keepIv || {}, obj.S.ivReplies || {});
         save();
         if (obj.code) { CODE = obj.code; try { localStorage.setItem(CODE_KEY, obj.code); } catch (e) { } }
         rebuildIndex(); renderHUD(); refreshAll(); renderGroups();
@@ -8580,7 +8737,11 @@
       const CS_STATUSES = ["待處理", "已排定", "已完成", "無法受理"];
 
       function buildConsults(replyMap) {
-        return (S.consults || []).map(c => {
+        const me = normCode(myCode()).replace(/-/g, "");
+        const known = new Set((S.consults || []).map(c => c.no));
+        const orphans = Object.keys(replyMap || {}).filter(no => !known.has(no) && me && no.indexOf("CS-" + me + "-") === 0)
+          .map(no => ({ no, topic: "技術諮詢（在其他裝置送出）", category: "—", detail: "", createdAt: (replyMap[no] && replyMap[no].at) || "", status: "待處理", fromReply: true }));
+        return (S.consults || []).concat(orphans).map(c => {
           const r = replyMap && replyMap[c.no];
           let status = r && r.status ? r.status : (c.status || "待處理");
           if (c.withdrawn && (!r || !r.status || r.status === "待處理")) status = "已撤回";
@@ -8627,7 +8788,7 @@
             if (feed) Object.entries(feed.replies).forEach(([no, x]) => { replyCache[no] = { status: String(x.status || "").trim(), reply: String(x.reply || ""), at: String(x.at || "") }; });
           }
           INBOX.consults = buildConsults(replyCache);
-          inboxLoaded = true;
+          inboxLoaded = true; INBOX.at = feed ? Date.now() : INBOX.at;
           if (notify !== false) {
             const inHome = curPlace && curPlace.id === "home", inDigital = curPlace && curPlace.id === "digital";
             const newIv = INBOX.interviews.filter(x => ivUnseen(x) && !prevIv.has(x.id + "|" + x.ver));
@@ -8669,7 +8830,7 @@
         renderPlace(entering);
         syncSoundBtns();
         $("#plName").setAttribute("tabindex", "-1"); $("#plName").focus({ preventScroll: true });
-        if (id !== "myhome") loadInbox(false);
+        if (id !== "myhome") loadInbox(false, id === "digital" || id === "home");
       }
       $("#placeBack").addEventListener("click", showMap);
 
@@ -8888,7 +9049,7 @@
       </section>
       <section class="window pbox">
         <h3>我的申請 <button class="act ghost" type="button" data-inboxrefresh>重新整理</button></h3>
-        <p class="ahint">申請紀錄存在這台電腦。${esc(CFG.director)}更新處理進度後，最慢約 5 分鐘會顯示在這裡。</p>
+        <p class="ahint">${esc(CFG.director)}回覆後，最慢約 5 分鐘會出現在這裡（Google 試算表的更新間隔），按「重新整理」可以立刻檢查。${INBOX.at ? `最後更新：${fmtShort(new Date(INBOX.at))}` : ""}</p>
         <div id="csMine"></div>
       </section>
     </div>`;
@@ -9014,13 +9175,13 @@
               (S.consults || []).filter(c => !c.withdrawn && INBOX.consults.some(x => x.id === c.no && (x.status === "待處理" || x.status === "已排定"))).length >= 5 ? "你已有 5 件處理中的申請，請等處理完再送出新的" : "";
           if (bad) { errEl.textContent = bad; Sound.sfx("error"); return; }
           btn.disabled = true; btn.textContent = "送出中…";
-          const no = randId("CS");
+          const no = "CS-" + normCode(myCode()).replace(/-/g, "") + "-" + randChars(4);
           try {
             await sendForm("consult", Object.assign({ no, code: myCode(), name: S.name || "新人冒險者", empno: S.emp || "", group: S.group }, f));
             lastConsultAt = Date.now();
             S.consults = S.consults || [];
             S.consults.push(Object.assign({ no, createdAt: new Date().toISOString(), status: "待處理" }, { category: f.category, topic: f.topic, detail: f.detail, preferred: f.preferred }));
-            save();
+            save(); queueSync(true);
             INBOX.consults = buildConsults(replyCache);
             try { localStorage.setItem("sino22-contact", f.contact); } catch (e2) { }
             $("#csTopic").value = ""; $("#csDetail").value = ""; $("#csPref").value = "";
@@ -9037,7 +9198,7 @@
           if (!(await uiConfirm("確定要撤回這筆技術諮詢申請嗎？", "撤回"))) return;
           try {
             await sendForm("consult", { no: c.no, code: myCode(), name: S.name || "新人冒險者", empno: S.emp || "", group: S.group, category: "撤回申請", topic: "【撤回】" + c.topic, detail: "新人撤回了這筆申請。", preferred: "", contact: "" });
-            c.withdrawn = true; save();
+            c.withdrawn = true; save(); queueSync(true);
             INBOX.consults = buildConsults(replyCache);
             toast("已撤回申請"); renderPlace();
           } catch (err) { toast("撤回失敗，請檢查網路後再試"); }
@@ -9294,7 +9455,7 @@
       <option value="">不展示</option>${list.map(([v, n]) => `<option value="${esc(v)}" ${sc[key] === v ? "selected" : ""}>${esc(n)}</option>`).join("")}</select></label>`;
         return `<div class="showroom${tall ? " tall" : ""}" aria-label="溫暖的家展示空間">
     <div class="sr-wall">${hasFrame ? `<figure class="wframe"><img src="${a.img}" alt="${esc(a.name)}"><figcaption>${esc(a.name)}</figcaption></figure>` : `<p class="sr-empty">到「相簿」兌換畫框，就能掛在這面牆上。</p>`}</div>
-    ${hasWep ? `<div class="sr-weapon" title="${esc((weaponById(sc.weapon) || {}).name || "")}"><span class="sr-wpic">${spriteSVG("w_" + sc.weapon)}</span><span class="sr-tag">${esc((weaponById(sc.weapon) || {}).name || "")}</span></div>` : ""}
+    ${hasWep ? `<div class="sr-weapon ${tierOf(weaponById(sc.weapon)).cls}" title="${esc((weaponById(sc.weapon) || {}).name || "")}"><span class="sr-wpic">${spriteSVG("w_" + sc.weapon)}</span><span class="sr-tag">${esc(tierOf(weaponById(sc.weapon)).stars)} ${esc((weaponById(sc.weapon) || {}).name || "")}</span></div>` : ""}
     <div class="sr-floor"></div>
     ${hasItem ? `<div class="sr-item" title="${esc(findById(sc.item).name)}"><span class="sr-case">${spriteSVG("i_" + sc.item)}</span><span class="sr-stand"></span><span class="sr-tag">${esc(findById(sc.item).name)}</span></div>` : ""}
     ${hasOut ? `<div class="sr-outfit" title="${esc(OUTFIT[sc.outfit].name)}"><span class="sr-hook"></span><span class="sr-cloth">${outfitDisplaySVG(sc.outfit)}</span><span class="sr-pole"></span><span class="sr-base"></span><span class="sr-tag">${esc(OUTFIT[sc.outfit].name)}</span></div>` : ""}
@@ -9589,28 +9750,44 @@
     </section>
   </div>`;
       }
+      function dropTableHTML() {
+        const gold = S.weapon === "shovel_gold";
+        const cols = ["N", "R", "SR", "SSR"];
+        const row = src => { const r = dropRates(src); return `<tr><th scope="row">${esc(DROP_RATES[src].label)}</th>${cols.map(k => `<td>${r[k].toFixed(r[k] < 10 ? 1 : 0)}%</td>`).join("")}</tr>`; };
+        const members = k => WEAPONS.filter(w => w.tier === k && !w.hidden).map(w => w.name).join("、");
+        return `<details class="droptable"${gold ? " open" : ""}><summary>各等級的出現機率</summary>
+    <div class="tscroll"><table class="atable">
+      <thead><tr><th>來源</th>${cols.map(k => `<th><span class="tier ${TIERS[k].cls}"><b>${TIERS[k].stars}</b>${TIERS[k].name}</span></th>`).join("")}</tr></thead>
+      <tbody>${row("sea")}${row("gift")}</tbody></table></div>
+    <p class="ahint">${gold ? "目前裝備黃金鏟，史詩與傳說的機率已經提高 1.5 倍（表格已含加成）。" : "裝備「黃金鏟」時，史詩與傳說的機率會提高 1.5 倍。"}抽到等級後，再從該等級的武器中平均抽一把。</p>
+    <ul class="tierlist">${cols.map(k => `<li><span class="tier ${TIERS[k].cls}"><b>${TIERS[k].stars}</b>${TIERS[k].name}</span>${esc(members(k))}</li>`).join("")}
+      <li><span class="tier t-x"><b>✦</b>隱藏</span>只能用留言板密技取得</li></ul>
+  </details>`;
+      }
       function renderGearBox() {
         const box = $("#gearBox"); if (!box) return;
         const items = Object.entries(S.items || {}).filter(([id, n]) => n > 0 && weaponById(id));
         if (!items.length) {
           box.innerHTML = `<h3>我的裝備</h3>
-      <p class="ahint">還沒有任何裝備。走進海裡撈撈看，或到「村長的家」「數位總合辦公室」拜訪，有機會拿到武器。</p>`;
+      <p class="ahint">還沒有任何裝備。走進海裡撈撈看，或到「村長的家」「數位總合辦公室」拜訪，有機會拿到武器。</p>${dropTableHTML()}`;
           return;
         }
-        items.sort((a, b) => WEAPONS.findIndex(w => w.id === a[0]) - WEAPONS.findIndex(w => w.id === b[0]));
-        box.innerHTML = `<h3>我的裝備 <span class="ahint" style="font-size:14px">共 ${items.length} 種</span></h3>
+        items.sort((a, b) => tierOf(weaponById(b[0])).order - tierOf(weaponById(a[0])).order || WEAPONS.findIndex(w => w.id === a[0]) - WEAPONS.findIndex(w => w.id === b[0]));
+        const total = WEAPONS.filter(w => !w.hidden).length;
+        box.innerHTML = `<h3>我的裝備 <span class="ahint" style="font-size:14px">已收集 ${items.filter(([id]) => !weaponById(id).hidden).length} / ${total} 種</span></h3>
     <p class="ahint">裝備後，地圖上的角色會拿在手上，交誼廳名片和結業證書也看得到。</p>
     <div class="gearlist">${items.map(([id, n]) => {
-          const w = weaponById(id), on = S.weapon === id;
-          return `<article class="gear${on ? " on" : ""}">
+          const w = weaponById(id), on = S.weapon === id, t = tierOf(w);
+          return `<article class="gear ${t.cls}${on ? " on" : ""}">
         <span class="gicon" aria-hidden="true">${SPR["w_" + id] ? spriteSVG("w_" + id) : ""}</span>
         <div class="ginfo">
-          <p class="gname">${esc(w.name)}<span class="st ${RAR_CLASS[w.rar] || "st-off"}">${esc(w.rar)}</span>${n > 1 ? `<span class="ahint">×${n}</span>` : ""}</p>
+          <p class="gname">${esc(w.name)}${tierBadge(w)}${n > 1 ? `<span class="ahint">×${n}</span>` : ""}</p>
           <p class="ahint" style="margin:0">${esc(w.desc || "")}</p>
         </div>
         <button class="act ${on ? "ghost" : ""}" type="button" data-gear="${on ? "off" : "on"}" data-id="${esc(id)}">${on ? "卸下" : "裝備"}</button>
       </article>`;
-        }).join("")}</div>`;
+        }).join("")}</div>
+    ${dropTableHTML()}`;
       }
       function renderCloudBox() {
         updateLoginBtn(); renderLoginHint();

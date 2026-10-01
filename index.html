@@ -2907,6 +2907,84 @@
       z-index: 3
     }
 
+    .roomhost {
+      position: absolute;
+      bottom: 22px;
+      left: 40%;
+      width: 72px;
+      height: 72px;
+      padding: 0;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      z-index: 4
+    }
+
+    .roomhost .rh-body {
+      display: block;
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 4px 0 rgba(0, 0, 0, .35))
+    }
+
+    .roomhost.flip .rh-body {
+      transform: scaleX(-1)
+    }
+
+    .roomhost.walk .rh-body {
+      animation: rpbob .36s steps(2) infinite
+    }
+
+    .roomhost.flip.walk .rh-body {
+      animation: rpbobf .36s steps(2) infinite
+    }
+
+    .roomhost.hop {
+      animation: rphop .4s ease-out
+    }
+
+    .rh-say {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      transform: translateX(-50%);
+      min-width: 120px;
+      max-width: 240px;
+      width: max-content;
+      background: #FFFDF5;
+      color: #2B2A3A;
+      border: 3px solid #231F20;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: left;
+      box-shadow: 3px 3px 0 rgba(0, 0, 0, .35);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s
+    }
+
+    .rh-say:not(:empty) {
+      opacity: 1
+    }
+
+    .rh-say::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      transform: translateX(-50%);
+      border: 7px solid transparent;
+      border-top-color: #231F20
+    }
+
+    .roomhost:hover .rh-body,
+    .roomhost:focus-visible .rh-body {
+      outline: 2px dashed var(--gold);
+      outline-offset: 2px
+    }
+
     .sr-tag {
       display: block;
       margin-top: 4px;
@@ -3445,6 +3523,88 @@
       background: #1F2A6B;
       border-color: #3D4A96;
       padding: 14px 6px
+    }
+
+    .starbadge {
+      display: inline-block;
+      margin-left: 8px;
+      font-family: var(--pixel);
+      font-size: 12px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      color: #1A1200 !important;
+      font-weight: 700;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, .6);
+      border: 1px solid #231F20;
+      background: linear-gradient(90deg, #FFD23F, #FF8FB1, #7FD1F7, #57C35A, #FFD23F);
+      background-size: 300% 100%;
+      animation: starbg 1.2s linear infinite;
+      vertical-align: middle
+    }
+
+    @keyframes starbg {
+      to {
+        background-position: 300% 0
+      }
+    }
+
+    body.star-mode #hero>g:first-child {
+      animation: starglow .6s linear infinite
+    }
+
+    @keyframes starglow {
+      0% {
+        filter: hue-rotate(0deg) brightness(1.25) drop-shadow(0 0 2px #FFD23F)
+      }
+
+      50% {
+        filter: hue-rotate(180deg) brightness(1.35) drop-shadow(0 0 3px #FF8FB1)
+      }
+
+      100% {
+        filter: hue-rotate(360deg) brightness(1.25) drop-shadow(0 0 2px #FFD23F)
+      }
+    }
+
+    body.star-mode #hero::after {
+      content: ""
+    }
+
+    body.star-mode #hudFace {
+      box-shadow: 0 0 0 3px #FFD23F, 0 0 14px #FFD23F
+    }
+
+    .herostars rect {
+      animation: twinkle 1s steps(2) infinite
+    }
+
+    .herostars g:nth-child(2) rect {
+      animation-delay: .25s
+    }
+
+    .herostars g:nth-child(3) rect {
+      animation-delay: .5s
+    }
+
+    .herostars g:nth-child(4) rect {
+      animation-delay: .75s
+    }
+
+    @keyframes twinkle {
+      50% {
+        opacity: 0
+      }
+    }
+
+    .starpv {
+      background: #1B2466 !important;
+      animation: starspin 1.6s ease-in-out infinite
+    }
+
+    @keyframes starspin {
+      50% {
+        transform: translateY(-4px) rotate(8deg)
+      }
     }
 
     /* ---------- lounge ---------- */
@@ -5006,7 +5166,7 @@
   <header class="hud window" aria-label="冒險者狀態">
     <button class="face" id="hudFace" type="button" aria-label="編輯角色" title="編輯角色"></button>
     <div class="who">
-      <strong id="pName">新人冒險者</strong>
+      <strong id="pName">新人冒險者</strong><span id="starBadge" class="starbadge" hidden></span>
       <span id="pTitle">LV 1　新手見習生</span>
       <em id="pGroup">尚未選擇組別</em>
     </div>
@@ -5433,7 +5593,7 @@
 
   <footer class="site">
     <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-    <p>內容參考自「園城部新人指引」並持續更新訊息；系統維護人員：陳逸歆（#07622）。</p>
+    <p>內容參考自「園城部新人指引」（2026/9/16 版）；系統維護人員：陳逸歆（#07622）。</p>
     <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
   </footer>
 
@@ -7029,7 +7189,8 @@
       };
       function tryFind(from, chance, where) {
         if (!S.group) return;
-        const now = Date.now(), cooling = now - lastFind < 4000;
+        if (starActive()) chance = 1;
+        const now = Date.now(), cooling = now - lastFind < 4000 && !starActive();
         if (cooling || Math.random() >= chance) {                 // 冷卻中也一定顯示一句沒找到的訊息
           const miss = FIND_MISS[where] || FIND_MISS.文件;
           setTimeout(() => toast(miss[Math.floor(Math.random() * miss.length)]), 700);
@@ -7178,7 +7339,7 @@
         if (!S.group) return;
         const now = Date.now(); if (now - lastDig < 2200) return; lastDig = now;
         S.items = S.items || {};
-        if (Math.random() < 0.22) {
+        if (starActive() || Math.random() < 0.22) {
           const w = rollWeapon("sea");
           S.items[w.id] = (S.items[w.id] || 0) + 1;
           const first = S.items[w.id] === 1;
@@ -7215,7 +7376,7 @@
         const pool = FINDS.filter(f => f.hidden && f.place === id);
         setTimeout(() => {
           if (!curPlace || curPlace.id !== id) return;
-          if (now - (S.hidAt[id] || 0) < 10 * 60 * 1000 || Math.random() >= 0.25) {
+          if (!starActive() && (now - (S.hidAt[id] || 0) < 10 * 60 * 1000 || Math.random() >= 0.25)) {
             toast(HIDDEN_MISS[id][Math.floor(Math.random() * HIDDEN_MISS[id].length)]); return;
           }
           S.hidAt[id] = now;
@@ -7233,11 +7394,11 @@
         const cfg = PLACE_TREASURE[id]; if (!cfg || !S.group) return;
         S.digAt = S.digAt || {};
         const now = Date.now();
-        if (now - (S.digAt[id] || 0) < 30 * 60 * 1000) return;      // 同一個地點 30 分鐘內只有一次機會
+        if (!starActive() && now - (S.digAt[id] || 0) < 30 * 60 * 1000) return;      // 同一個地點 30 分鐘內只有一次機會（無敵星星期間不限）
         S.digAt[id] = now; save();
         setTimeout(() => {
           S.items = S.items || {};
-          if (Math.random() < cfg.chance) {
+          if (starActive() || Math.random() < cfg.chance) {
             const w = rollWeapon("gift");
             S.items[w.id] = (S.items[w.id] || 0) + 1;
             const first = S.items[w.id] === 1;
@@ -7330,7 +7491,7 @@
     </g>`;
         });
         // hero
-        s += `<g id="hero" aria-hidden="true"><g transform="translate(-9,-31)">${(() => { const a = avatarParts32(S.av); return spriteRects(a.rows, 0.575, 0, 0, a.pal); })()}</g>${IS_CHAMP ? `<g transform="translate(-6,-40)">${spriteRects(SPR.crown, 0.85, 0, 0)}</g>` : ""}${S.weapon && SPR["w_" + S.weapon] ? `<g transform="translate(6,-25)">${spriteRects(SPR["w_" + S.weapon], 0.95 * 12 / (SPR["w_" + S.weapon].length || 12) * 1.1, 0, 0)}</g>` : ""}${S.pet ? `<g transform="translate(-26,-16)">${(() => { const q = petParts(S.pet), sc = petStage() === "adult" ? 1 : 0.85; return q.img ? petImgTag(q.type, 16 * sc, "adult", 0, 0, q.color) : spriteRects(q.rows, sc * 16 / (q.rows.length || 16), 0, 0, q.pal); })()}</g>` : ""}</g>`;
+        s += `<g id="hero" aria-hidden="true"><g transform="translate(-9,-31)">${(() => { const a = avatarParts32(S.av); return spriteRects(a.rows, 0.575, 0, 0, a.pal); })()}</g>${starActive() ? `<g class="herostars">${[[-14, -30], [12, -36], [-16, -6], [14, -10]].map(([x, y]) => `<g transform="translate(${x},${y})"><rect x="1" y="0" width="1" height="3" fill="#FFF3B0"/><rect x="0" y="1" width="3" height="1" fill="#FFD23F"/></g>`).join("")}</g>` : ""}${IS_CHAMP ? `<g transform="translate(-6,-40)">${spriteRects(SPR.crown, 0.85, 0, 0)}</g>` : ""}${S.weapon && SPR["w_" + S.weapon] ? `<g transform="translate(6,-25)">${spriteRects(SPR["w_" + S.weapon], 0.95 * 12 / (SPR["w_" + S.weapon].length || 12) * 1.1, 0, 0)}</g>` : ""}${S.pet ? `<g transform="translate(-26,-16)">${(() => { const q = petParts(S.pet), sc = petStage() === "adult" ? 1 : 0.85; return q.img ? petImgTag(q.type, 16 * sc, "adult", 0, 0, q.color) : spriteRects(q.rows, sc * 16 / (q.rows.length || 16), 0, 0, q.pal); })()}</g>` : ""}</g>`;
         $("#map").innerHTML = s;
         if (heroPos) moveHero(heroPos.x, heroPos.y, { instant: true }); else placeHero(S.loc, true);
       }
@@ -9236,8 +9397,29 @@
         "我愛潦草小狗": { kind: "pet", pet: "scruffy", say: "「欸，你也喜歡那種被風吹得亂七八糟的小狗？這隻給你帶回家吧。」" },
         "我愛生氣魯魯米": { kind: "pet", pet: "grumpy", say: "「這隻整天氣噗噗的小白雲，好像跟你很合得來。」" },
         "我不想上班": { kind: "weapon", weapon: "leave_card", say: "「……我什麼都沒聽到。這張卡你收好，別說是我給的。」" },
+        "0302009": { kind: "star", say: "「⭐ 這顆星星給你！接下來 5 分鐘，你就是無敵的，去尋寶吧！」" },
         "我愛數數辦": { kind: "all", say: "「被你發現了！數位總合辦公室全力支援，所有成就、武器、收藏和相簿都送你。」" }
       };
+      const STAR_MS = 5 * 60 * 1000;
+      let starTimer = null;
+      const starActive = () => !!(S && S.starUntil && Date.now() < S.starUntil);
+      function startStar() {
+        clearInterval(starTimer);
+        const badge = $("#starBadge");
+        const tick = () => {
+          const left = (S.starUntil || 0) - Date.now();
+          if (left <= 0) {
+            clearInterval(starTimer); document.body.classList.remove("star-mode");
+            if (badge) badge.hidden = true;
+            if (S.starUntil) { S.starUntil = 0; save(); toast("無敵星星的效果結束了，下次再來！"); try { buildMap(); } catch (e) { } }
+            return;
+          }
+          document.body.classList.add("star-mode");
+          if (badge) { badge.hidden = false; const m = Math.floor(left / 60000), sec = Math.floor(left % 60000 / 1000); badge.textContent = `⭐ 無敵中 ${m}:${String(sec).padStart(2, "0")}`; }
+        };
+        tick(); starTimer = setInterval(tick, 1000);
+        try { buildMap(); } catch (e) { }
+      }
       function cheatKey(msg) { return String(msg || "").replace(/[\s　！!。，,～~]/g, ""); }
       function runCheat(msg) {
         const c = CHEATS[cheatKey(msg)]; if (!c) return false;
@@ -9247,6 +9429,11 @@
           const name = PETS[c.pet].name;
           S.pet = Object.assign({}, PET_DEFAULT, S.pet || {}, { type: c.pet, color: 2, name: (S.pet && S.pet.name) || name });
           gift = `<span class="pv">${petSVG(S.pet)}</span><div><p class="dbody"><b>隱藏版寵物：${esc(name)}</b></p><p class="ahint">已經變成你的夥伴了，之後在寵物窩或寵物交換所也能選到牠。</p></div>`;
+        } else if (c.kind === "star") {
+          S.starUntil = Date.now() + STAR_MS;
+          gift = `<span class="pv starpv">${spriteSVG("superstar")}</span><div><p class="dbody"><b>無敵星星</b>（效果 5 分鐘）</p>
+      <p class="ahint">角色會閃閃發光；這段時間查看任務文件、加入最愛、海上撈寶、拜訪村長或總長，每次都一定有收穫。</p></div>`;
+          setTimeout(startStar, 50);
         } else if (c.kind === "weapon") {
           S.items = S.items || {}; S.items[c.weapon] = (S.items[c.weapon] || 0) + 1; S.weapon = c.weapon;
           const w = weaponById(c.weapon);
@@ -9286,11 +9473,46 @@
         const h = (p.av && p.av.home) || {};
         $("#vsDept").textContent = `拜訪 ${p.group || ""}`;
         $("#vsTitle").textContent = `${p.name || "冒險者"} 的溫暖的家`;
-        $("#vsRoom").innerHTML = roomHTML(Object.assign({}, h, { pet: p.pet, petStage: (+p.level || 1) >= 4 ? "adult" : "baby", av: p.av }), { petId: "visitPet", label: `${p.name}的溫暖的家`, empty: `${p.name || "主人"}還沒在牆上掛畫。` });
+        $("#vsRoom").innerHTML = roomHTML(Object.assign({}, h, { pet: p.pet, petStage: (+p.level || 1) >= 4 ? "adult" : "baby", av: p.av }), { petId: "visitPet", host: p.name || "屋主", hostId: "visitHost", label: `${p.name}的溫暖的家`, empty: `${p.name || "主人"}還沒在牆上掛畫。` });
         startRoomPet("#visitPet", true);
+        const hostEl = $("#visitHost");
+        if (hostEl) {
+          startWalker(hostEl, "visit:host", { start: .5, speed: 55, rest: .45, delay: 1500 });
+          hostEl.onclick = () => hostGreet(hostEl, p, h);
+          setTimeout(() => { if (document.body.contains(hostEl) && !hostEl.dataset.greeted) hostGreet(hostEl, p, h, true); }, 900);   // 一進門先打招呼
+        }
         $("#vsStats").innerHTML = `<span>LV ${esc(p.level || "1")}</span>` + (h.ach != null ? `<span>🏆 成就 ${h.ach}/${ACH.length}</span>` : "") + (h.finds != null ? `<span>🧳 收藏 ${h.finds}/${FINDS.length}</span>` : "") + (h.album != null ? `<span>🖼 相簿 ${h.album}/${ALBUM.length}</span>` : "") + (p.msg ? `<span>「${esc(p.msg)}」</span>` : "");
         const list = (d.visits[visitHost] || []).slice(0, 20);
         $("#vsBook").innerHTML = list.length ? list.map(v => visitItemHTML(v, d.people)).join("") : `<p class="empty-note">還沒有人留言，當第一個吧！</p>`;
+      }
+      function hostLines(p, h, first) {
+        const me = S.name || "冒險者", hr = new Date().getHours();
+        const hello = hr < 5 ? "晚安" : hr < 11 ? "早安" : hr < 18 ? "午安" : "晚安";
+        const a = ALBUM.find(x => x.id === h.frame), w = weaponById(h.weapon), o = OUTFIT[h.outfit], f = findById(h.item);
+        const petName = p.pet && PETS[p.pet.type] ? (p.pet.name || PETS[p.pet.type].name) : "";
+        if (first) return [`${hello}，${me}！歡迎來我家～`, `${me}來了！快請進～`, `哇，有客人！${me}，歡迎歡迎！`];
+        const L = [`${hello}！要不要喝杯茶？`, `${me}，謝謝你來看我！`, `隨便坐，不用客氣～`, `今天的任務做完了嗎？`, `有空常來玩喔！`, `記得在訪客簿留言給我～`];
+        if (a) L.push(`牆上那幅「${a.name}」，是我用小物換來的！`);
+        if (w) L.push(`那把${w.name}是我的寶貝，${tierOf(w).name}級的喔！`);
+        if (o) L.push(`衣架上的${o.name}，你覺得好看嗎？`);
+        if (f) L.push(`展示台上的${f.name}，是我好不容易找到的。`);
+        if (petName) L.push(`${petName}很喜歡有客人來，摸摸牠吧！`);
+        if (p.msg) L.push(p.msg);
+        if ((+p.level || 1) >= 10) L.push("我已經是園城部傳奇了，有問題都可以問我！");
+        return L;
+      }
+      function hostGreet(el, p, h, first) {
+        const say = el.querySelector(".rh-say"); if (!say) return;
+        const L = hostLines(p, h, first);
+        let line = L[Math.floor(Math.random() * L.length)];
+        if (!first && L.length > 1 && line === el.dataset.last) line = L[(L.indexOf(line) + 1) % L.length];   // 避免連續講同一句
+        el.dataset.last = line; el.dataset.greeted = "1";
+        say.textContent = line;
+        el.classList.add("talking"); el.classList.remove("walk");
+        el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop");
+        Sound.sfx("blip");
+        clearTimeout(el._sayT);
+        el._sayT = setTimeout(() => { el.classList.remove("talking"); say.textContent = ""; }, 3200);
       }
       async function openVisit(code) {
         code = String(code || "").toUpperCase();
@@ -9316,7 +9538,7 @@
         if (ok) { addPending(payload); $("#vsMsg").value = ""; Sound.sfx("get"); toast("留言完成，主人最慢約 5 分鐘後看得到"); renderVisit(); }
         else toast("留言失敗，請稍後再試");
       });
-      $("#visitDlg").addEventListener("close", () => clearTimeout(visitRoomTimer));
+      $("#visitDlg").addEventListener("close", () => stopWalkers("visit:"));
       document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("[data-visit]")) { e.preventDefault(); openVisit(e.target.dataset.visit); } });
       function renderLounge(box) {
         if (!loungeReady()) {
@@ -9795,7 +10017,7 @@
         <td>${h ? '<span class="st st-off">已隱藏</span>' : '<span class="st st-ok">顯示中</span>'}${waiting ? ' <span class="st st-wait">更新中</span>' : ""}</td>
         <td><button class="${h ? "mini-btn" : "del"}" type="button" data-rshide="${esc(x.code)}" data-on="${h ? 0 : 1}">${h ? "恢復顯示" : "隱藏"}</button></td></tr>`;
         }).join("")
-          : `<tr><td colspan="8">${RS_ROWS.length ? "沒有符合的人員。" : "目前沒有名冊資料。"}</td></tr>`}</tbody>`;
+            : `<tr><td colspan="8">${RS_ROWS.length ? "沒有符合的人員。" : "目前沒有名冊資料。"}</td></tr>`}</tbody>`;
       }
       let RS_PENDING = {};
       const adminPendingRoster = () => { const r = (FEED && FEED.roster) || {}; Object.keys(RS_PENDING).forEach(c => { const cur = !!(r[c] && r[c].hidden); if (cur === RS_PENDING[c]) delete RS_PENDING[c]; }); return RS_PENDING; };
@@ -9905,6 +10127,7 @@
 
       /* ================= 相簿（每 30 個同一種小物可以兌換一張隱藏畫框） ================= */
       Object.assign(SPR, { album: ["............", ".KKKKKKKKKK.", "KBBBBLLBBBBK", "KBEEEEEEEEBK", "KBESSSSYSEBK", "KBESSDSDSEBK", "KBESDSDSSEBK", "KBESSSSSSEBK", "KBEEEEEEEEBK", "KBBBBBBBBBBK", ".KKKKKKKKKK.", "............"] });
+      Object.assign(SPR, { superstar: ["................", ".......KK.......", "......KYYK......", "......KYYK......", ".....KYFYYK.....", "KKKKKKYFYYKKKKKK", "KYYYYYFFYYYYYYTK", ".KTYYYYYYYYYYTK.", "..KTYYYYYYYYTK..", "...KTYYYYYYTK...", "...KYYYYYYYYK...", "..KYYYYKKYYYYK..", "..KYYYKK.KKYYK..", ".KYYTK....KTYYK.", ".KTKK......KKTK.", ".KK..........KK."] });
       Object.assign(SPR, { mirror: ["............", "....KKKK....", "...KSSSSK...", "..KSWSSSSK..", "..KSWSSSSK..", "..KSSSSSSK..", "..KSSSSSSK..", "...KSSSSK...", "....KBBK....", ".....KK.....", "...KKBBKK...", "..KKKKKKKK.."] });
       Object.assign(SPR, { armory: ["............", "..K......K..", ".KBK....KBK.", ".KBBKKKKBBK.", ".KB.KAWK.BK.", ".KB.KAIK.BK.", ".KB.KAIK.BK.", ".KBBKKKKBBK.", ".KB..KYK.BK.", ".KBBKKKKBBK.", ".KJJJJJJJJK.", "..KKKKKKKK.."] });
       Object.assign(SPR, { guestbook: ["............", "..KKKKKKKK..", ".KRRRRRRRRK.", ".KRWWWWWWRK.", ".KRWKKKKWRK.", ".KRWWWWWWRK.", ".KRWKKKWWRK.", ".KRWWWWWWRK.", ".KRRRRRRRRK.", ".KKKKKKKKKK.", "...KYYK.....", "...KKKK....."] });
@@ -9975,7 +10198,7 @@
         opt = opt || {};
         const a = ALBUM.find(x => x.id === h.frame);
         const out = OUTFIT[h.outfit] ? h.outfit : "", item = findById(h.item) ? h.item : "", wep = weaponById(h.weapon) && SPR["w_" + h.weapon] ? h.weapon : "";
-        const tall = !!(a || out || item || wep), pid = opt.petId || "roomPet";
+        const tall = !!(a || out || item || wep || opt.host), pid = opt.petId || "roomPet";
         const av = h.av || S.av || AV_DEFAULT;
         return `<div class="showroom${tall ? " tall" : ""}" aria-label="${esc(opt.label || "溫暖的家展示空間")}">
     <div class="sr-wall">${a ? `<figure class="wframe"><img src="${a.img}" alt="${esc(a.name)}"><figcaption>${esc(a.name)}</figcaption></figure>` : `<p class="sr-empty">${esc(opt.empty || "到「相簿」兌換畫框，就能掛在這面牆上。")}</p>`}</div>
@@ -9983,6 +10206,7 @@
     <div class="sr-floor"></div>
     ${item ? `<div class="sr-item" title="${esc(findById(item).name)}"><span class="sr-case">${spriteSVG("i_" + item)}</span><span class="sr-stand"></span><span class="sr-tag">${esc(findById(item).name)}</span></div>` : ""}
     ${out ? `<div class="sr-outfit" title="${esc(OUTFIT[out].name)}"><span class="sr-hook"></span><span class="sr-cloth">${outfitDisplaySVG(out, av)}</span><span class="sr-pole"></span><span class="sr-base"></span><span class="sr-tag">${esc(OUTFIT[out].name)}</span></div>` : ""}
+    ${opt.host ? `<button type="button" class="roomhost" id="${opt.hostId || "roomHost"}" title="跟${esc(opt.host)}打招呼"><span class="rh-body">${avatarSVG(av)}</span><span class="rh-say" aria-live="polite"></span></button>` : ""}
     ${h.pet && PETS[h.pet.type] ? `<button type="button" class="roompet" id="${pid}" title="摸摸${esc(h.pet.name || PETS[h.pet.type].name)}"><span class="rp-body">${petSVG(h.pet, h.petStage)}</span></button>` : ""}
   </div>`;
       }
@@ -9996,25 +10220,32 @@
     ${sel("outfit", "服裝", L.outfit)}${sel("item", "小物", L.item)}${sel("weapon", "武器", L.weapon)}
   </div>`;
       }
-      let roomTimer = null, visitRoomTimer = null;
-      function startRoomPet(sel, isVisit) {
-        const T = isVisit ? "visitRoomTimer" : "roomTimer";
-        const setT = v => { if (isVisit) visitRoomTimer = v; else roomTimer = v; };
-        clearTimeout(isVisit ? visitRoomTimer : roomTimer);
-        const el = $(sel || "#roomPet"); if (!el) return;
+      const WALKERS = {};
+      let roomTimer = null, visitRoomTimer = null;      // 保留舊名稱，關閉視窗時用來停止
+      function stopWalkers(prefix) { Object.keys(WALKERS).forEach(k => { if (!prefix || k.indexOf(prefix) === 0) { clearTimeout(WALKERS[k]); delete WALKERS[k]; } }); }
+      function startWalker(el, key, opt) {
+        opt = opt || {};
+        clearTimeout(WALKERS[key]);
+        if (!el) return;
         const room = el.parentElement;
         const maxX = () => Math.max(0, room.clientWidth - el.offsetWidth - 8);
-        el.style.transition = "none"; el.style.left = Math.round(Math.random() * maxX()) + "px";
+        el.style.transition = "none"; el.style.left = Math.round((opt.start != null ? opt.start : Math.random()) * maxX()) + "px";
+        const setT = v => { WALKERS[key] = v; };
         const step = () => {
           if (!document.body.contains(el)) return;
-          if (Math.random() < .3) { el.classList.remove("walk"); setT(setTimeout(step, 1400 + Math.random() * 2200)); return; }  // 停下來休息
+          if (el.classList.contains("talking")) { setT(setTimeout(step, 1200)); return; }       // 說話時站著不動
+          if (Math.random() < (opt.rest || .3)) { el.classList.remove("walk"); setT(setTimeout(step, 1400 + Math.random() * 2200)); return; }
           const cur = el.offsetLeft, nx = Math.round(Math.random() * maxX());
-          const dur = Math.max(.7, Math.abs(nx - cur) / 70);
+          const dur = Math.max(.7, Math.abs(nx - cur) / (opt.speed || 70));
           el.classList.toggle("flip", nx < cur); el.classList.add("walk");
           el.style.transition = `left ${dur}s linear`; el.style.left = nx + "px";
           setT(setTimeout(() => { el.classList.remove("walk"); setT(setTimeout(step, 600 + Math.random() * 1600)); }, dur * 1000));
         };
-        setT(setTimeout(step, 800));
+        setT(setTimeout(step, opt.delay || 800));
+      }
+      function startRoomPet(sel, isVisit) {
+        const el = $(sel || "#roomPet"); if (!el) return;
+        startWalker(el, (isVisit ? "visit" : "home") + ":pet");
         el.onclick = () => {
           el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop");
           const h = document.createElement("span"); h.className = "rp-heart"; h.textContent = "♥"; el.appendChild(h);
@@ -10956,7 +11187,7 @@
       <td style="white-space:normal;min-width:14em">${esc(x.reply)}</td>
       <td>${esc(x.at || "")}${x.src === "feed" && x.by ? `<br><span class="ahint">${esc(x.by)}</span>` : ""}</td>
       <td><button class="mini-btn" type="button" data-rpedit="${esc(x.no)}">修改</button></td></tr>`).join("")
-          : `<tr><td colspan="5">${sheetUrl("feed") ? "還沒有發布過回覆。" : "請先完成設定小幫手。"}</td></tr>`}</tbody>`;
+            : `<tr><td colspan="5">${sheetUrl("feed") ? "還沒有發布過回覆。" : "請先完成設定小幫手。"}</td></tr>`}</tbody>`;
       }
       $("#hvSend").addEventListener("click", async () => {
         const err = $("#hvErr"); err.textContent = "";
@@ -11550,6 +11781,7 @@ window.SINO22_CONFIG = ${JSON.stringify(out, null, 2)};
 
       /* ---- connect ---- */
       applyInterviewSwitch();
+      if (starActive()) startStar();
       cloudRestoreSession().then(() => { renderCloudBox(); setTimeout(() => cloudSyncOnStart(), 1200); });
       bootstrap().then(() => {
         if (S.group) {

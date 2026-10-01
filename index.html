@@ -3607,6 +3607,46 @@
       }
     }
 
+    .bonuslist {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px 0 14px
+    }
+
+    .bonuscard {
+      position: relative;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      background: #1B2466;
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      padding: 22px 14px 10px;
+      min-width: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: left
+    }
+
+    .bonuscard.on,
+    .bonuscard:hover {
+      border-color: var(--gold)
+    }
+
+    .bc-ribbon {
+      position: absolute;
+      left: 10px;
+      top: -9px;
+      background: linear-gradient(90deg, #C9912B, #F2C14E);
+      color: #2B1B00;
+      font-family: var(--pixel);
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 3px
+    }
+
     /* ---------- lounge ---------- */
     .lounge {
       display: grid;
@@ -6156,9 +6196,16 @@
       const petKindOK = k => !(PETS[k] && PETS[k].hidden) || !!(S.petKinds && S.petKinds[k]);
       const petColorOK = i => i < PETC_SPECIAL || !!(S.petColors && S.petColors[i]);
       const PET_DEFAULT = { type: "dog", color: 0, name: "", wear: "none", wc: 1 };
-      const petStage = () => lvOf(xp()) >= 4 ? "adult" : "baby";
-      const petUnlocked = () => lvOf(xp()) >= 3;
-      const petWearUnlocked = () => lvOf(xp()) >= 5;
+      function myLv() {
+        const now = lvOf(xp());
+        let best = Math.min(TITLES.length, S.lvMax || 0);
+        if (!best && S.awarded) best = TITLES.length;              // 舊資料：已結業的人一定滿級
+        if (now > best) { S.lvMax = now; best = now; } else if (best && !S.lvMax) S.lvMax = best;
+        return Math.max(now, best, 1);
+      }
+      const petStage = () => myLv() >= 4 ? "adult" : "baby";
+      const petUnlocked = () => myLv() >= 3;
+      const petWearUnlocked = () => myLv() >= 5;
       const PET_SWAP_MIN = 50;
       const canSwapPet = () => (S.points || 0) >= PET_SWAP_MIN;
       const tasksToLevel = n => Math.max(0, Math.ceil((lvNeed(n) - xp()) / XP_PER));
@@ -7115,7 +7162,7 @@
 
       /* ================= HUD ================= */
       function renderHUD() {
-        const v = xp(), lv = lvOf(v), maxed = lv >= TITLES.length;
+        const v = xp(), lv = myLv(), maxed = lv >= TITLES.length;
         updateLoginBtn(); renderLoginHint();
         $("#pName").innerHTML = (IS_CHAMP ? `<span class="hudcrown" aria-label="人氣王">${spriteSVG("crown")}</span>` : "") + esc(S.name || "新人冒險者");
         $("#pGroup").textContent = S.group || "尚未選擇組別";
@@ -7123,7 +7170,7 @@
         $("#pTitle").textContent = `LV ${lv}　${TITLES[lv - 1]}`;
         const base = lvNeed(lv), nextAt = maxed ? TOTAL * XP_PER : lvNeed(lv + 1);
         const into = Math.max(0, v - base), span = Math.max(1, nextAt - base);
-        const pct = span > 0 ? Math.min(100, Math.round(into / span * 100)) : 100;
+        const pct = maxed ? Math.min(100, Math.round(v / Math.max(1, TOTAL * XP_PER) * 100)) : (span > 0 ? Math.min(100, Math.round(into / span * 100)) : 100);
         $("#xpBar i").style.width = pct + "%";
         $("#xpBar").setAttribute("aria-valuenow", pct);
         $("#xpText").textContent = maxed ? `${v} / ${TOTAL * XP_PER}` : `${into} / ${span}`;
@@ -7598,7 +7645,7 @@
         const d = !!S.done[q.id];
         return `<li><button type="button" class="qbtn ${d ? "done" : ""}" data-q="${q.id}">
     <span class="star" aria-hidden="true">${d ? "★" : "☆"}</span>
-    <span class="qt">${q.title}${QUEST_NEW[q.id] ? '<span class="newtag">更新</span>' : ""}${isFav(q.id) ? '<span class="heart" aria-label="已加入最愛">♥</span>' : ""}${showWhere ? `<span class="where">${q.zone.name}・${q.chapter}</span>` : ""}<span class="sr">${d ? "（已完成）" : "（未完成）"}</span></span>
+    <span class="qt">${q.title}${QUEST_NEW[q.id] ? '<span class="newtag">更新</span>' : (S.bonusPend || []).includes(q.id) ? '<span class="newtag">NEW</span>' : ""}${isFav(q.id) ? '<span class="heart" aria-label="已加入最愛">♥</span>' : ""}${showWhere ? `<span class="where">${q.zone.name}・${q.chapter}</span>` : ""}<span class="sr">${d ? "（已完成）" : "（未完成）"}</span></span>
     <span class="xp">${d ? "CLEAR" : "+10 EXP"}</span></button></li>`;
       }
       function showMap() {
@@ -7722,6 +7769,7 @@
       let curQ = null, listCtx = [];
       function openQuest(id, ctx) {
         const q = ALLQ.find(q => q.id === id); if (!q) return;
+        setTimeout(() => bonusTouch(id), 800);
         setTimeout(() => tryFind((q.zone && q.zone.id) || "", .20, "文件"), 350);
         Sound.sfx($("#qDlg").open ? "cursor" : "open");
         curQ = q; listCtx = ctx || ALLQ.filter(x => x.zone === q.zone);
@@ -7743,16 +7791,17 @@
       const canGraduate = () => xp() === TOTAL * XP_PER && (S.points || 0) >= CFG.goal;
       function graduateIfReady(delay) {
         if (!canGraduate() || S.awarded) return false;
-        S.awarded = new Date().toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" }); save(); queueSync(true);
+        S.awarded = new Date().toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" }); S.awardTotal = TOTAL; S.knownQ = ALLQ.map(q => q.id); save(); queueSync(true);
         setTimeout(() => { if ($("#qDlg").open) $("#qDlg").close(); openAward(); }, delay || 1100);
         return true;
       }
       function toggleDone() {
         if (S.done[curQ.id]) return;
-        const before = lvOf(xp());
+        const before = myLv();
         S.done[curQ.id] = true; toast("獲得 10 EXP！"); Sound.sfx("get");
+        setTimeout(() => bonusTouch(curQ.id), 1500);
         save(); syncDoneBtn(); renderHUD(); renderZone(); refreshSearch(); queueSync();
-        const after = lvOf(xp());
+        const after = myLv();
         if (after > before) levelUp(after);
         checkAch();
         if (!graduateIfReady(after > before ? 2700 : 1100) && xp() === TOTAL * XP_PER && !S.awarded) {
@@ -7855,9 +7904,17 @@
       const F_PIX = '"DotGothic16","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
       const F_BODY = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
       const F_DIG = '"Press Start 2P",monospace';
+      let CERT_OPT = null;
       function certText() {
         const name = S.name || "新人冒險者";
-        const body = `已完成「園區及城鄉發展部新人冒險指南」全部 ${TOTAL} 項任務，等級達到 LV ${TITLES.length}，特頒「${TITLES[TITLES.length - 1]}」稱號與勳章，以資鼓勵。`;
+        if (CERT_OPT && CERT_OPT.bonus) {
+          const b = CERT_OPT.bonus;
+          return {
+            name, body: `持續精進，已完成「園城人冒險指南」新增與更新的 ${b.n} 項任務內容，特頒 Bonus 進修證書，以資鼓勵。`,
+            group: S.group || "", empno: S.emp || "", date: b.date, title: TITLES[TITLES.length - 1]
+          };
+        }
+        const body = `已完成「園區及城鄉發展部新人冒險指南」全部 ${S.awardTotal || TOTAL} 項任務，等級達到 LV ${TITLES.length}，特頒「${TITLES[TITLES.length - 1]}」稱號與勳章，以資鼓勵。`;
         return { name, body, group: S.group || "", empno: S.emp || "", date: S.awarded || "", title: TITLES[TITLES.length - 1] };
       }
       async function loadCertFonts(t) {
@@ -7917,7 +7974,9 @@
         lines.forEach((l, i) => centerText(ctx, l, cx, y + i * lh));
         return y + (lines.length - 1) * lh;
       }
-      async function renderCert(canvas) {
+      async function renderCert(canvas, opt) {
+        CERT_OPT = opt || null;
+        const BONUS = !!(opt && opt.bonus);
         const t = certText();
         await loadCertFonts(t);
         canvas.width = CERT_W * CERT_SCALE; canvas.height = CERT_H * CERT_SCALE;
@@ -7952,11 +8011,17 @@
         ctx.fillStyle = "#D9585F"; ctx.fillRect(rx, ry, rw, 6);
         ctx.fillStyle = GOLD; ctx.fillRect(rx, ry + rh - 6, rw, 6);
         ctx.font = `42px ${F_PIX}`; ctx.textBaseline = "middle";
-        ctx.fillStyle = "#6E1F25"; spacedText(ctx, "結業證書", MID + 3, ry + rh / 2 + 3, 22, "center");
-        ctx.fillStyle = "#FFF6E4"; spacedText(ctx, "結業證書", MID, ry + rh / 2, 22, "center");
+        ctx.fillStyle = "#6E1F25"; spacedText(ctx, BONUS ? "進修證書" : "結業證書", MID + 3, ry + rh / 2 + 3, 22, "center");
+        ctx.fillStyle = "#FFF6E4"; spacedText(ctx, BONUS ? "進修證書" : "結業證書", MID, ry + rh / 2, 22, "center");
         ctx.textBaseline = "alphabetic";
         ctx.font = `11px ${F_DIG}`; ctx.fillStyle = SUB;
-        spacedText(ctx, "CERTIFICATE OF COMPLETION", MID, ry + rh + 30, 3, "center");
+        spacedText(ctx, BONUS ? "BONUS CERTIFICATE" : "CERTIFICATE OF COMPLETION", MID, ry + rh + 30, 3, "center");
+        if (BONUS) {                                           // 右上角 BONUS 標籤
+          ctx.save(); ctx.translate(W - 120, 92); ctx.rotate(0.18);
+          ctx.fillStyle = GOLD; ctx.fillRect(-82, -22, 164, 44); ctx.fillStyle = "#FFF3B0"; ctx.fillRect(-78, -18, 156, 36);
+          ctx.fillStyle = "#6E1F25"; ctx.font = `16px ${F_DIG}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(`BONUS #${opt.idx}`, 0, 1);
+          ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.restore();
+        }
 
         /* 內文 */
         ctx.font = `22px ${F_PIX}`; ctx.fillStyle = SUB; centerText(ctx, "茲證明", MID, 186);
@@ -7973,7 +8038,7 @@
         /* 成績小框 */
         const achN = ACH.filter(a => S.ach[a.id]).length;
         ctx.font = `18px ${F_PIX}`;
-        const items = [["任務", `${xp() / XP_PER}/${TOTAL}`], ["成就", `${achN}/${ACH.length}`], ["等級", `LV ${lvOf(xp())}`]];
+        const items = [["任務", BONUS ? `${xp() / XP_PER}/${TOTAL}` : `${S.awardTotal || TOTAL}/${S.awardTotal || TOTAL}`], ["成就", `${achN}/${ACH.length}`], ["等級", `LV ${myLv()}`]];
         const widths = items.map(([l, v]) => { ctx.font = `18px ${F_PIX}`; const a1 = ctx.measureText(l).width; ctx.font = `13px ${F_DIG}`; return a1 + ctx.measureText(v).width + 42; });
         let cxp = MID - (widths.reduce((a, b) => a + b, 0) + 24) / 2;
         items.forEach(([l, v], i) => { chip(ctx, cxp, endY + 24, l, v); cxp += widths[i] + 12; });
@@ -8016,7 +8081,7 @@
         ctx.font = `18px ${F_PIX}`; ctx.fillStyle = "#8E2A31";
         centerText(ctx, "認證勳章", px2 + 136, sy + bh - 44);
         ctx.font = `14px ${F_PIX}`; ctx.fillStyle = SUB;
-        centerText(ctx, `LV ${lvOf(xp())}　${t.title}`, px2 + 136, sy + bh - 18);
+        centerText(ctx, `LV ${myLv()}　${t.title}`, px2 + 136, sy + bh - 18);
 
         /* 頁腳 */
         ctx.fillStyle = "#D9CBA6"; for (let x = 96; x < W - 96; x += 12) ctx.fillRect(x, 624, 7, 3);
@@ -8044,10 +8109,10 @@
       let dlApi = null;
       dlReady.then(api => { dlApi = api; syncDownloadBtn(); });
       function syncDownloadBtn() { $("#rDownload").hidden = !(dlApi && rPhase >= 2); }
-      async function downloadCert(canvasEl) {
+      async function downloadCert(canvasEl, label) {
         const canvas = (canvasEl && canvasEl.tagName === "CANVAS") ? canvasEl : $("#certCanvas");
         if (!canvas || !dlApi) return;
-        const fname = `結業證書_${(S.name || "新人冒險者").replace(/[\\/:*?"<>|]/g, "")}.png`;
+        const fname = `${label || "結業證書"}_${(S.name || "新人冒險者").replace(/[\\/:*?"<>|]/g, "")}.png`;
         const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
         if (!blob) { toast("圖片產生失敗，請再試一次"); return; }
         if (dlApi === "fallback") {
@@ -8603,6 +8668,38 @@
         if (changed) save();
         const n = Object.keys(ZONE_NEW).length;
         if (n && !first) toast(`村長更新了 ${n} 個地點的任務內容，地圖上有「！」的地方去看看吧`);
+        setTimeout(refreshBonus, 0);
+      }
+      function refreshBonus() {
+        if (!S.awarded || !ALLQ.length) return;
+        const ids = ALLQ.map(q => q.id);
+        if (!Array.isArray(S.knownQ)) {                      // 第一次：以已完成的任務當作「既有任務」，還沒完成的就是新任務
+          S.knownQ = ids.filter(id => S.done[id]); if (!S.awardTotal) S.awardTotal = S.knownQ.length; save();
+        }
+        const known = new Set(S.knownQ), pend = new Set(S.bonusPend || []);
+        let added = 0;
+        ids.forEach(id => { if (!known.has(id)) { pend.add(id); known.add(id); added++; } });      // 新增的任務
+        Object.keys(QUEST_NEW).forEach(id => { if (!pend.has(id)) { pend.add(id); added++; } });     // 內容更新的任務
+        if (added) {
+          S.bonusPend = [...pend]; S.knownQ = [...known];
+          S.bonusTotal = (S.bonusTotal || 0) + added; save();
+          setTimeout(() => toast(`🎖 有 ${pend.size} 項新任務或更新，全部看完（新任務要完成）就能領 Bonus 進修證書！`), 2600);
+        }
+      }
+      function bonusTouch(id) {
+        if (!S.bonusPend || !S.bonusPend.length) return;
+        if (!S.bonusPend.includes(id) || !S.done[id]) return;
+        S.bonusPend = S.bonusPend.filter(x => x !== id); save();
+        if (!S.bonusPend.length) grantBonus();
+        else toast(`Bonus 進度：還剩 ${S.bonusPend.length} 項`);
+      }
+      function grantBonus() {
+        const n = S.bonusTotal || 0; if (!n) return;
+        const d = new Date(), date = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+        S.bonusCerts = S.bonusCerts || []; S.bonusCerts.push({ date, n, total: TOTAL });
+        S.bonusTotal = 0; S.bonusPend = []; save(); queueSync(true);
+        Sound.sfx("levelup");
+        setTimeout(() => toast(`🎖 恭喜獲得第 ${S.bonusCerts.length} 張 Bonus 進修證書！到「溫暖的家 → 證書牆」查看`), 400);
       }
       function clearZoneNew(id) {
         const z = ZONES.find(x => x.id === id); if (!z) return;
@@ -9169,12 +9266,12 @@
         if (S.group) {
           people[me] = Object.assign({}, people[me] || {}, {
             code: me, name: S.name || "新人冒險者", group: S.group,
-            level: String(lvOf(xp())), av: Object.assign({}, S.av || AV_DEFAULT, { weapon: S.weapon || "" }),
+            level: String(myLv()), av: Object.assign({}, S.av || AV_DEFAULT, { weapon: S.weapon || "" }),
             pet: S.pet || null, msg: S.loungeMsg || "", at: (people[me] && people[me].at) || new Date()
           });
         }
         const mine = people[me];
-        if (!mine && S.group) people[me] = { code: me, name: S.name || "新人冒險者", group: S.group, level: String(lvOf(xp())), av: S.av, pet: S.pet, msg: S.loungeMsg || "", at: new Date() };
+        if (!mine && S.group) people[me] = { code: me, name: S.name || "新人冒險者", group: S.group, level: String(myLv()), av: S.av, pet: S.pet, msg: S.loungeMsg || "", at: new Date() };
         const list = Object.values(people).map(p => Object.assign({}, p, {
           likes: (likes[p.code] || new Set()).size,
           online: !!(p.at && Date.now() - p.at.getTime() < LOUNGE_ONLINE_MS)
@@ -9197,7 +9294,7 @@
         lastPresence = Date.now();
         await loungeSend({
           type: "presence", code: myCode(), name: S.name || "新人冒險者", group: S.group || "",
-          level: String(lvOf(xp())), av: JSON.stringify(Object.assign({}, S.av || AV_DEFAULT, { weapon: S.weapon || "", home: myHomeSnapshot() })), pet: S.pet ? JSON.stringify(S.pet) : "", msg: S.loungeMsg || ""
+          level: String(myLv()), av: JSON.stringify(Object.assign({}, S.av || AV_DEFAULT, { weapon: S.weapon || "", home: myHomeSnapshot() })), pet: S.pet ? JSON.stringify(S.pet) : "", msg: S.loungeMsg || ""
         });
       }
 
@@ -9217,7 +9314,7 @@
       let syncTimer = null, lastSent = 0, syncDirty = false;
       function progressPayload() {
         const done = Object.keys(S.done).filter(k => S.done[k]);
-        const n = done.filter(id => QIDS.has(id)).length, lv = lvOf(xp());
+        const n = done.filter(id => QIDS.has(id)).length, lv = myLv();
         return {
           code: myCode(), name: S.name || "新人冒險者", empno: S.emp || "", group: S.group || "",
           level: `LV ${lv} ${TITLES[lv - 1]}`,
@@ -9796,7 +9893,7 @@
             S.loungeMsg = cleanText($("#lgMsg").value, 30); save();
             lg.disabled = true; lastPresence = 0; await loungePresence(true); await loadLounge(true); lg.disabled = false;
             addPending({
-              type: "presence", code: myCode(), name: S.name || "新人冒險者", group: S.group || "", level: String(lvOf(xp())),
+              type: "presence", code: myCode(), name: S.name || "新人冒險者", group: S.group || "", level: String(myLv()),
               av: Object.assign({}, S.av || AV_DEFAULT, { weapon: S.weapon || "" }), pet: S.pet || null, msg: S.loungeMsg || ""
             });
             toast("名片已更新"); renderLounge($("#placeBody")); return;
@@ -10523,6 +10620,15 @@
     <div class="formfoot"><span class="ahint certtip" id="homeCertTip"></span><span class="afilters">
       <button class="act ghost" type="button" data-certdl hidden>下載證書圖片</button>
       <button class="act ghost" type="button" data-replayaward>重看頒獎典禮</button></span></div>
+  </section>
+  <section class="window pbox">
+    <div class="abar"><h3>Bonus 進修證書</h3><span class="ahint">已獲得 ${(S.bonusCerts || []).length} 張</span></div>
+    ${(S.bonusPend || []).length ? `<p class="dbody">🎖 目前有 <b>${S.bonusPend.length}</b> 項新任務或更新還沒看完（新任務需要完成）。地圖上有「！」、任務列標示「更新」或「NEW」的就是，全部完成就能領下一張。</p>`
+            : `<p class="ahint">村長新增或更新任務後，把新內容全部看完、新任務都完成，就會獲得一張 Bonus 進修證書。</p>`}
+    ${(S.bonusCerts || []).length ? `<div class="bonuslist">${S.bonusCerts.map((b, i) => `<button type="button" class="bonuscard${i === S.bonusCerts.length - 1 ? " on" : ""}" data-bonus="${i}">
+        <span class="bc-ribbon">BONUS #${i + 1}</span><b>${esc(b.date)}</b><span class="ahint">新內容 ${b.n} 項</span></button>`).join("")}</div>
+      <div class="certwall"><div class="certframe" id="bonusCertBox"></div></div>
+      <div class="formfoot"><span></span><span class="afilters"><button class="act ghost" type="button" data-bonusdl hidden>下載這張 Bonus 證書</button></span></div>`: ""}
   </section>`;
         const box = $("#homeCertBox");
         box.innerHTML = '<canvas id="homeCertCanvas"></canvas>';
@@ -10534,11 +10640,27 @@
           if (dlApi) dl.hidden = false;
           if (dlApi === "fallback") $("#homeCertTip").textContent = "按「下載證書圖片」沒有反應時，可以在證書上按右鍵（手機長按）另存圖片。";
         }).catch(() => { box.innerHTML = '<p class="empty-note">證書產生失敗，請重新整理再試。</p>'; });
+        if ((S.bonusCerts || []).length) showBonusCert(S.bonusCerts.length - 1);
+      }
+      let bonusShown = -1;
+      function showBonusCert(i) {
+        const box = $("#bonusCertBox"); if (!box) return;
+        const b = (S.bonusCerts || [])[i]; if (!b) return;
+        bonusShown = i;
+        document.querySelectorAll(".bonuscard").forEach(el => el.classList.toggle("on", +el.dataset.bonus === i));
+        box.innerHTML = '<canvas id="bonusCertCanvas"></canvas>';
+        // 等結業證書畫完再畫，避免共用的設定互相干擾
+        setTimeout(() => renderCert($("#bonusCertCanvas"), { bonus: b, idx: i + 1 }).then(() => {
+          const cv = $("#bonusCertCanvas"); if (!cv) return;
+          const img = new Image(); img.src = cv.toDataURL("image/png"); img.alt = `Bonus 進修證書 #${i + 1}`; img.className = "certimg"; cv.hidden = true; cv.after(img);
+          const dl = document.querySelector("[data-bonusdl]"); if (dl && dlApi) dl.hidden = false;
+          CERT_OPT = null;
+        }), 400);
       }
       let petDraft = null, petAdopting = false;
       function renderPetPanel(panel) {
         panel.dataset.kind = "pet";
-        const lv = lvOf(xp()), stage = petStage();
+        const lv = myLv(), stage = petStage();
         if (lv < 3 && !S.pet) {
           panel.innerHTML = `<section class="window pbox">
       <h3>寵物窩</h3>
@@ -10851,6 +10973,8 @@
         const uf = t.closest("[data-unfav]");
         if (uf) { delete S.fav[uf.dataset.unfav]; save(); Sound.sfx("undo"); toast("已移出筆記本"); renderPlace(); return; }
         if (t.closest("[data-certdl]")) { downloadCert($("#homeCertCanvas")); return; }
+        const bc = t.closest("[data-bonus]"); if (bc) { showBonusCert(+bc.dataset.bonus); return; }
+        if (t.closest("[data-bonusdl]")) { downloadCert($("#bonusCertCanvas"), `Bonus進修證書${bonusShown + 1}`); return; }
         if (t.closest("[data-replayaward]")) { openAward(); return; }
         if (t.closest("[data-editchar]")) { openChar(); return; }
         const rd = t.closest("[data-redeem]");
@@ -11841,6 +11965,7 @@ window.SINO22_CONFIG = ${JSON.stringify(out, null, 2)};
       if (starActive()) startStar();
       cloudRestoreSession().then(() => { renderCloudBox(); setTimeout(() => cloudSyncOnStart(), 1200); });
       bootstrap().then(() => {
+        try { if (!S.seenContent || !Object.keys(S.seenContent).length) markContentUpdates(); else refreshBonus(); } catch (e) { }
         if (S.group) {
           setTimeout(() => loadInbox(), 1500);
           try { if (!sessionStorage.getItem("sino22-reported")) { sessionStorage.setItem("sino22-reported", "1"); queueSync(true); } } catch (e) { }

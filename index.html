@@ -3647,6 +3647,185 @@
       border-radius: 3px
     }
 
+    .seedrow {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+      gap: 8px
+    }
+
+    .seed {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: #1B2466;
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      padding: 8px 4px;
+      cursor: pointer;
+      text-align: center
+    }
+
+    .seed input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none
+    }
+
+    .seed.on {
+      border-color: var(--gold);
+      box-shadow: inset 0 0 0 1px var(--gold)
+    }
+
+    .seed b {
+      font-family: var(--pixel);
+      font-size: 14px;
+      font-weight: 400
+    }
+
+    .seed small {
+      font-size: 12px;
+      color: var(--win-muted)
+    }
+
+    .seedicon {
+      display: block;
+      width: 36px;
+      height: 36px;
+      background: #B97A4A;
+      border: 2px solid #fff;
+      border-radius: 3px;
+      padding: 2px
+    }
+
+    .plotgrid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px
+    }
+
+    .plotgrid.mini {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 6px
+    }
+
+    .plot {
+      font: inherit;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 6px;
+      border-radius: 5px;
+      background: repeating-linear-gradient(0deg, #8A5A32 0 6px, #7B4E2B 6px 8px);
+      border: 3px solid #5A3A1E;
+      min-height: 128px;
+      box-sizing: border-box
+    }
+
+    .plotgrid.mini .plot {
+      min-height: 96px;
+      padding: 6px 3px;
+      cursor: default
+    }
+
+    .plot.empty {
+      opacity: .85
+    }
+
+    .plot.ripe {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(242, 193, 78, .4)
+    }
+
+    .plot:hover {
+      filter: brightness(1.08)
+    }
+
+    .ploticon {
+      display: block;
+      width: 56px;
+      height: 56px
+    }
+
+    .plotgrid.mini .ploticon {
+      width: 40px;
+      height: 40px
+    }
+
+    .plotname {
+      font-family: var(--pixel);
+      font-size: 14px;
+      text-shadow: 0 1px 0 #000
+    }
+
+    .plotmeta {
+      font-size: 12px;
+      color: #FFF3B0;
+      text-shadow: 0 1px 0 #000
+    }
+
+    .plotbar {
+      display: block;
+      width: 80%;
+      height: 6px;
+      background: #3B2412;
+      border: 1px solid #000;
+      border-radius: 3px;
+      overflow: hidden
+    }
+
+    .plotbar i {
+      display: block;
+      height: 100%;
+      background: #57C35A
+    }
+
+    .mini-steal {
+      padding: 4px 10px !important;
+      font-size: 13px !important
+    }
+
+    .barn {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 8px
+    }
+
+    .barnitem span:last-child {
+      white-space: nowrap
+    }
+
+    .barnitem {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1B2466;
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 14px
+    }
+
+    .barnitem b {
+      font-family: var(--pixel);
+      font-weight: 400;
+      flex: 1;
+      white-space: nowrap
+    }
+
+    .barnitem.none {
+      opacity: .5
+    }
+
+    @media (max-width:640px) {
+      .plotgrid.mini {
+        grid-template-columns: repeat(3, minmax(0, 1fr))
+      }
+    }
+
     /* ---------- lounge ---------- */
     .lounge {
       display: grid;
@@ -5971,6 +6150,7 @@
       <div class="body">
         <div id="vsRoom"></div>
         <div class="vsstats" id="vsStats"></div>
+        <div id="vsFarm"></div>
         <p class="dsec">訪客簿</p>
         <div class="lrow">
           <label class="sr" for="vsMsg">留言</label>
@@ -9244,7 +9424,7 @@
         finally { LOUNGE.busy = false; }
       }
       function loungeData() {
-        const people = {}, likes = {}, posts = [], replies = {}, visits = {};
+        const people = {}, likes = {}, posts = [], replies = {}, visits = {}, steals = {};
         const seen = new Set(LOUNGE.rows.map(r => r.type + "|" + r.code + "|" + r.target + "|" + r.msg));
         const pend = pendingRows().filter(r => !seen.has(r.type + "|" + r.code + "|" + r.target + "|" + r.msg));
         const HID = hiddenCodes();
@@ -9256,6 +9436,8 @@
             (likes[r.target] = likes[r.target] || new Set()).add(r.code);
           } else if (r.type === "post" && r.target) {
             if (!posts.some(x => x.id === r.target)) posts.push({ id: r.target, code: r.code, name: r.name, msg: r.msg, at: r.at, pending: r.pending });
+          } else if (r.type === "steal" && r.target) {
+            (steals[r.target] = steals[r.target] || []).push({ code: r.code, name: r.name, msg: r.msg, at: r.at, pending: r.pending });
           } else if (r.type === "visit" && r.target) {
             (visits[r.target] = visits[r.target] || []).push({ code: r.code, name: r.name, msg: r.msg, at: r.at, pending: r.pending });
           } else if (r.type === "reply" && r.target) {
@@ -9282,7 +9464,7 @@
         posts.sort((a, b) => (b.at ? b.at.getTime() : 0) - (a.at ? a.at.getTime() : 0));
         Object.values(replies).forEach(l => l.sort((a, b) => (a.at ? a.at.getTime() : 0) - (b.at ? b.at.getTime() : 0)));
         Object.values(visits).forEach(l => l.sort((a, b) => (b.at ? b.at.getTime() : 0) - (a.at ? a.at.getTime() : 0)));
-        return { list, posts, replies, visits, people, champion, online: list.filter(p => p.online).length };
+        return { list, posts, replies, visits, steals, people, champion, online: list.filter(p => p.online).length };
       }
       async function loungeSend(payload) {
         if (!loungeReady()) return false;
@@ -9579,6 +9761,7 @@
           setTimeout(() => { if (document.body.contains(hostEl) && !hostEl.dataset.greeted) hostGreet(hostEl, p, h, true); }, 900);   // 一進門先打招呼
         }
         $("#vsStats").innerHTML = `<span>LV ${esc(p.level || "1")}</span>` + (h.ach != null ? `<span>🏆 成就 ${h.ach}/${ACH.length}</span>` : "") + (h.finds != null ? `<span>🧳 收藏 ${h.finds}/${FINDS.length}</span>` : "") + (h.album != null ? `<span>🖼 相簿 ${h.album}/${ALBUM.length}</span>` : "") + (p.msg ? `<span>「${esc(p.msg)}」</span>` : "");
+        renderVisitFarm(p, h);
         const list = (d.visits[visitHost] || []).slice(0, 20);
         $("#vsBook").innerHTML = list.length ? list.map(v => visitItemHTML(v, d.people)).join("") : `<p class="empty-note">還沒有人留言，當第一個吧！</p>`;
       }
@@ -9638,6 +9821,43 @@
           homePlayTimer = setTimeout(play, 9000 + Math.random() * 7000);
         };
         homePlayTimer = setTimeout(play, 5000 + Math.random() * 3000);
+      }
+      const STOLE_KEY = "sino22-stole";
+      function stoleLog() { try { return JSON.parse(localStorage.getItem(STOLE_KEY) || "{}"); } catch (e) { return {}; } }
+      function renderVisitFarm(p, h) {
+        const box = $("#vsFarm"); if (!box) return;
+        const farm = Array.isArray(h.farm) ? h.farm : [];
+        if (!farm.some(x => x && CROPS[x.c])) { box.innerHTML = `<p class="dsec">${esc(p.name)}的農場</p><p class="ahint">${esc(p.name)}的田地目前空空的，什麼都沒種。</p>`; return; }
+        const log = stoleLog(), host = String(p.code).toUpperCase();
+        box.innerHTML = `<p class="dsec">${esc(p.name)}的農場 <span class="ahint">成熟的菜可以偷 1 份，每塊田最多被偷 ${STEAL_MAX} 次</span></p>
+    <div class="plotgrid mini">${farm.map((pl, i) => {
+          const st = plotState(pl);
+          if (st.stage === "empty") return `<div class="plot empty"><span class="ploticon"></span><span class="plotname">空地</span></div>`;
+          const key = `${host}|${i}|${pl.t}`, n = stealsOn(host, i, pl.t).length, mine = !!log[key];
+          const btn = st.stage === "ripe" ? (mine ? '<span class="plotmeta">已經偷過了</span>' : n >= STEAL_MAX ? '<span class="plotmeta">被偷光了</span>' : `<button class="act mini-steal" type="button" data-steal="${i}">偷菜</button>`) : `<span class="plotmeta">還要 ${fmtLeft(st.left)}</span>`;
+          return `<div class="plot ${st.stage}"><span class="ploticon" aria-hidden="true">${plotIcon(st, pl)}</span><span class="plotname">${esc(st.crop.name)}</span>${btn}</div>`;
+        }).join("")}</div>`;
+        box.onclick = async e => {
+          const b = e.target.closest("[data-steal]"); if (!b) return;
+          const i = +b.dataset.steal, pl = farm[i], st = plotState(pl); if (st.stage !== "ripe") return;
+          const key = `${host}|${i}|${pl.t}`, L = stoleLog(); if (L[key]) return;
+          b.disabled = true;
+          L[key] = 1; try { localStorage.setItem(STOLE_KEY, JSON.stringify(L)); } catch (e2) { }
+          const hostEl = $("#visitHost"), petName = p.pet && PETS[p.pet.type] ? (p.pet.name || PETS[p.pet.type].name) : "";
+          if (petName && Math.random() < 0.25) {                   // 被寵物發現
+            Sound.sfx("error"); toast(`被${petName}發現了！什麼都沒偷到`);
+            if (hostEl) sayAt(hostEl, `${petName}，幹得好！別想偷我的菜～`);
+            renderVisitFarm(p, h); return;
+          }
+          const payload = { type: "steal", code: myCode(), name: S.name || "新人冒險者", target: host, msg: `${i}|${pl.c}|${pl.t}` };
+          const ok = await loungeSend(payload);
+          if (!ok) { delete L[key]; try { localStorage.setItem(STOLE_KEY, JSON.stringify(L)); } catch (e2) { } toast("偷菜失敗，請稍後再試"); b.disabled = false; return; }
+          addPending(payload);
+          S.barn = S.barn || {}; S.barn[pl.c] = (S.barn[pl.c] || 0) + 1; save(); queueSync();
+          Sound.sfx("get"); toast(`偷到 1 ${st.crop.unit}${st.crop.name}，放進倉庫了！`);
+          if (hostEl) sayAt(hostEl, ["喂！那是我的菜！", "下次換我去你家偷～", "嘿嘿，被你發現成熟了啊", "好啦，分你一點～"][Math.floor(Math.random() * 4)]);
+          renderVisitFarm(p, h);
+        };
       }
       function hostLines(p, h, first) {
         const me = S.name || "冒險者", hr = new Date().getHours();
@@ -10345,7 +10565,8 @@
           outfit: L.outfit.some(x => x[0] === sc.outfit) ? sc.outfit : "",
           item: L.item.some(x => x[0] === sc.item) ? sc.item : "",
           weapon: L.weapon.some(x => x[0] === sc.weapon) ? sc.weapon : "",
-          ach: ACH.filter(x => S.ach && S.ach[x.id]).length, finds: findCount(), album: albumOwned().length
+          ach: ACH.filter(x => S.ach && S.ach[x.id]).length, finds: findCount(), album: albumOwned().length,
+          farm: farmPlots().map(pl => pl && CROPS[pl.c] ? { c: pl.c, t: pl.t } : 0)
         };
       }
       function roomHTML(h, opt) {
@@ -10406,6 +10627,105 @@
           setTimeout(() => h.remove(), 900); Sound.sfx("get");
         };
       }
+      Object.assign(SPR, { f_seed: ["............", "............", "............", "............", "............", "............", "......K.....", ".....KHK....", "....KJJK....", "....KJJK....", ".....KK.....", "............"], f_sprout: ["............", "............", "............", "...K....K...", "..KHK..KHK..", "..KGGKKGGK..", "...KGKKGK...", "....KDDK....", "....KDDK....", "....KDDK....", "....KDDK....", ".....KK....."], f_grow: ["......KKK...", "...KKKGGGK..", "..KGGGGHGK..", "..KHGGGGGK..", "..KGGGKGGGK.", ".KGGGDDGHGK.", ".KHGGDDGGGK.", ".KGGGDDKKK..", "..KKKDDK....", "....KDDK....", "....KDDK....", ".....KK....."], f_bokchoy: ["............", "....KKKK....", "...KGGGGK...", "..KGGGGGGK..", "..KGGHHGGK..", "..KGDHHDGK..", "..KGGHHGGK..", "..KGDHHDGK..", "..KGGHHGGK..", "..KGGHHGGK..", "...KWWWWK...", "....KKKK...."], f_carrot: [".....KK.....", "....KGGK....", "...KGGGGK...", "...KOOOOK...", "...KXOOOK...", "...KOOOOK...", "....KOXK....", "....KOOK....", "....KXOK....", "....KOOK....", "....KOK.....", ".....K......"], f_tomato: [".....KK.....", "....KGGK....", "...KGGGGK...", "..KRRRRRRK..", ".KRWXRRRRRK.", ".KRRXRRRRRK.", ".KRRRRRRRRK.", ".KRRRRRRRRK.", "..KRRRRRRK..", "...KKKKKK...", "............", "............"], f_corn: [".....KK.....", "....KYYK....", "...KYYYYK...", "...KTYTYK...", "...KYTYTK...", "..KKTYTYKK..", ".KGGYTYTGGK.", ".KGGTYTYGGK.", ".KGGYTYYGGK.", ".KGGYYYYGGK.", ".KGGGGGGGGK.", "..KKKKKKKK.."], f_pumpkin: [".....KK.....", "....KJJKK...", "...KKJJGGK..", "..KOOOOOOK..", ".KOOTOOTOOK.", ".KOFTOOTOOK.", ".KOOTOOTOOK.", ".KOOTOOTOOK.", ".KOOTOOTOOK.", ".KOOTOOTOOK.", "..KOOOOOOK..", "...KKKKKK..."], f_strawberry: [".....KK.....", "...KKGGKK...", "..KGGGGGGK..", "..KWRRRRRK..", "..KRFRFRRK..", "..KRRRRRFK..", "..KRRFRRRK..", "...KRRRFK...", "...KRFRRK...", "....KRRK....", ".....KK.....", "............"], f_farm: ["............", "..........KK", ".........KSS", "....KKKK..KS", "..KKQQQQK.KQ", ".KZQQQQQQKQK", "KZKQSQQQQQK.", "KZKQSQQQQK..", ".KZQQQQQQK..", "..KQQQQQQK..", "...KKKKKK...", "............"], f_barn: ["............", "............", "....KKKK....", "...KXXXXK...", "..KRRRRRRK..", ".KRRRRRRRRK.", ".KRRRRRRRRK.", ".KRRWRRWRRK.", ".KRRWRRWRRK.", ".KRRWRRWRRK.", ".KRRWWWWRRK.", "..KKKKKKKK.."] });
+      /* ================= 開心農場 ================= */
+      const CROPS = {
+        bokchoy: { name: "小白菜", unit: "顆", ms: 3 * 60e3, yield: 3 },
+        carrot: { name: "紅蘿蔔", unit: "根", ms: 10 * 60e3, yield: 4 },
+        tomato: { name: "番茄", unit: "顆", ms: 30 * 60e3, yield: 5 },
+        corn: { name: "玉米", unit: "根", ms: 60 * 60e3, yield: 6 },
+        pumpkin: { name: "南瓜", unit: "顆", ms: 3 * 3600e3, yield: 8 },
+        strawberry: { name: "草莓", unit: "顆", ms: 8 * 3600e3, yield: 10 }
+      };
+      const PLOTS = 6, STEAL_MAX = 2;
+      let farmTimer = null;
+      function farmPlots() { S.farm = S.farm || { plots: [] }; if (!Array.isArray(S.farm.plots)) S.farm.plots = []; while (S.farm.plots.length < PLOTS) S.farm.plots.push(null); return S.farm.plots; }
+      function plotState(pl, now) {
+        if (!pl || !CROPS[pl.c]) return { stage: "empty" };
+        const c = CROPS[pl.c], e = (now || Date.now()) - pl.t, r = Math.min(1, Math.max(0, e / c.ms));
+        return { stage: r >= 1 ? "ripe" : r >= .66 ? "grow" : r >= .33 ? "sprout" : "seed", left: Math.max(0, c.ms - e), crop: c, ratio: r };
+      }
+      function fmtLeft(ms) {
+        const t = Math.ceil(ms / 1000), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), sc = t % 60;
+        return h ? `${h}:${String(m).padStart(2, "0")}:${String(sc).padStart(2, "0")}` : `${m}:${String(sc).padStart(2, "0")}`;
+      }
+      const fmtDur = ms => ms >= 3600e3 ? `${ms / 3600e3} 小時` : `${ms / 60e3} 分鐘`;
+      function stealsOn(host, idx, t) {
+        if (!loungeReady() || !LOUNGE.at) return [];
+        return ((loungeData().steals || {})[String(host).toUpperCase()] || []).filter(x => { const a = String(x.msg || "").split("|"); return a[0] === String(idx) && a[2] === String(t); });
+      }
+      function ripeCount() { return farmPlots().filter(pl => plotState(pl).stage === "ripe").length; }
+      function pushFarm() {                                   // 讓別人看得到最新的田地（最多一分鐘一次）
+        if (!loungeReady() || !S.group) return;
+        if (Date.now() - (S._farmPush || 0) < 60000) return;
+        S._farmPush = Date.now(); lastPresence = 0; loungePresence(true).catch(() => { });
+      }
+      function plotIcon(st, pl) {
+        if (st.stage === "empty") return "";
+        return spriteSVG(st.stage === "ripe" ? "f_" + pl.c : "f_" + st.stage);
+      }
+      function renderFarm(panel) {
+        panel.dataset.kind = "farm";
+        clearInterval(farmTimer);
+        const plots = farmPlots(), seed = CROPS[S.farmSeed] ? S.farmSeed : "bokchoy";
+        const myCodeU = myCode().toUpperCase();
+        const stolenLog = loungeReady() && LOUNGE.at ? ((loungeData().steals || {})[myCodeU] || []).slice().sort((a, b) => (b.at ? b.at.getTime() : 0) - (a.at ? a.at.getTime() : 0)).slice(0, 8) : [];
+        const barn = S.barn || {}, barnTotal = Object.values(barn).reduce((a, b) => a + (+b || 0), 0);
+        panel.innerHTML = `<section class="window pbox">
+    <div class="abar"><h3>開心農場</h3><span class="ahint">${ripeCount() ? `🌾 有 ${ripeCount()} 塊田可以收成` : "作物會依真實時間長大"}</span></div>
+    <p class="dsec">選種子</p>
+    <div class="seedrow" role="radiogroup" aria-label="種子">${Object.entries(CROPS).map(([k, c]) => `<label class="seed${k === seed ? " on" : ""}">
+      <input type="radio" name="farm-seed" value="${k}" ${k === seed ? "checked" : ""}>
+      <span class="seedicon" aria-hidden="true">${spriteSVG("f_" + k)}</span><b>${esc(c.name)}</b><small>${fmtDur(c.ms)}・收 ${c.yield} ${esc(c.unit)}</small></label>`).join("")}</div>
+    <p class="dsec">我的田地 <span class="ahint">點空地種「${esc(CROPS[seed].name)}」，成熟後點一下收成</span></p>
+    <div class="plotgrid">${plots.map((pl, i) => {
+          const st = plotState(pl), stolen = st.stage !== "empty" ? stealsOn(myCodeU, i, pl.t).length : 0;
+          return `<button type="button" class="plot ${st.stage}" data-plot="${i}">
+        <span class="ploticon" aria-hidden="true">${plotIcon(st, pl)}</span>
+        <span class="plotname">${st.stage === "empty" ? "空地" : esc(st.crop.name)}</span>
+        <span class="plotmeta" data-left="${i}">${st.stage === "empty" ? "點一下播種" : st.stage === "ripe" ? (stolen ? `可收成（被偷 ${stolen}）` : "可收成！") : `還要 ${fmtLeft(st.left)}`}</span>
+        ${st.stage !== "empty" && st.stage !== "ripe" ? `<span class="plotbar"><i style="width:${Math.round(st.ratio * 100)}%"></i></span>` : ""}
+      </button>`;
+        }).join("")}</div>
+    <p class="dsec">倉庫 <span class="ahint">共 ${barnTotal} 份</span></p>
+    <div class="barn">${Object.entries(CROPS).map(([k, c]) => `<div class="barnitem${barn[k] ? "" : " none"}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_" + k)}</span><b>${esc(c.name)}</b><span>${barn[k] || 0} ${esc(c.unit)}</span></div>`).join("")}</div>
+    <p class="dsec">偷菜紀錄</p>
+    ${stolenLog.length ? `<div class="vsbook" style="max-height:none">${stolenLog.map(x => {
+          const c = CROPS[String(x.msg || "").split("|")[1]] || { name: "蔬菜", unit: "份" };
+          return `<article class="vsitem"><span class="vsav" aria-hidden="true">${avatarSVG(((loungeData().people[x.code] || {}).av) || AV_DEFAULT)}</span><div><p><b>${esc(x.name || "某人")}</b> 偷走了 1 ${esc(c.unit)}${esc(c.name)} <span class="ahint">${esc(fmtShort(x.at))}</span></p></div></article>`;
+        }).join("")}</div>`
+            : `<p class="ahint">還沒有人來偷菜。到交誼廳點別人的人像拜訪，成熟的菜也可以偷 1 份喔！</p>`}
+  </section>`;
+        // 倒數計時：每秒更新文字，階段改變時重畫
+        farmTimer = setInterval(() => {
+          if (!document.body.contains(panel) || panel.dataset.kind !== "farm") { clearInterval(farmTimer); return; }
+          let redraw = false;
+          farmPlots().forEach((pl, i) => {
+            const el = panel.querySelector(`[data-left="${i}"]`), st = plotState(pl), card = el && el.closest(".plot");
+            if (!el || !card) return;
+            if (!card.classList.contains(st.stage)) redraw = true;
+            else if (st.stage !== "empty" && st.stage !== "ripe") el.textContent = `還要 ${fmtLeft(st.left)}`;
+          });
+          if (redraw) { renderFarm(panel); Sound.sfx("cursor"); }
+        }, 1000);
+        if (loungeReady() && !LOUNGE.at) loadLounge(false).then(() => { if (homeTab === "farm" && document.body.contains(panel)) renderFarm(panel); });
+      }
+      function farmClick(i) {
+        const plots = farmPlots(), pl = plots[i], st = plotState(pl);
+        if (st.stage === "empty") {
+          const k = CROPS[S.farmSeed] ? S.farmSeed : "bokchoy";
+          plots[i] = { c: k, t: Date.now() }; save(); queueSync(); pushFarm();
+          Sound.sfx("step"); toast(`種下了${CROPS[k].name}，${fmtDur(CROPS[k].ms)}後成熟`);
+        } else if (st.stage === "ripe") {
+          const stolen = stealsOn(myCode(), i, pl.t).length, amount = Math.max(1, st.crop.yield - stolen);
+          S.barn = S.barn || {}; S.barn[pl.c] = (S.barn[pl.c] || 0) + amount; plots[i] = null;
+          save(); queueSync(); pushFarm(); Sound.sfx("get");
+          toast(`收成${st.crop.name} ×${amount}，放進倉庫了${stolen ? `（被偷了 ${stolen} ${st.crop.unit}）` : ""}`);
+        } else {
+          toast(`${st.crop.name}還要 ${fmtLeft(st.left)} 才會成熟`); Sound.sfx("cursor");
+        }
+        renderPlace();
+      }
       function myVisits() {
         if (!loungeReady() || !LOUNGE.at) return [];
         return (loungeData().visits[myCode().toUpperCase()] || []);
@@ -10447,6 +10767,7 @@
         ["armory", "武器庫", "armory", `${weaponOwnedCount()}/${WEAPONS.filter(w => !w.hidden).length} 把`],
         ["closet", "衣櫃", "wardrobe", `${outfitOwnedCount()}/${Object.keys(OUTFIT).length} 套`],
         ["album", "相簿", "album", `${albumOwned().length}/${ALBUM.length} 張`],
+        ["farm", "開心農場", "f_farm", (() => { const n = ripeCount(); return n ? `${n} 塊可收成` : `倉庫 ${Object.values(S.barn || {}).reduce((a, b) => a + (+b || 0), 0)} 份`; })()],
         ["guest", "訪客簿", "guestbook", (() => { const n = newVisitCount(), t = myVisits().length; return n ? `${n} 位新訪客` : t ? `${t} 筆紀錄` : "還沒有訪客"; })()],
         ["wardrobe", "角色設定", "mirror", "造型・雲端存檔"]];
         if (body.dataset.kind !== "myhome") {
@@ -10460,6 +10781,7 @@
         if (homeTab === "notebook") renderNotebook(panel);
         else if (homeTab === "album") renderAlbum(panel);
         else if (homeTab === "guest") renderGuestbook(panel);
+        else if (homeTab === "farm") renderFarm(panel);
         else if (homeTab === "pet") renderPetPanel(panel);
         else if (homeTab === "collect") renderCollection(panel);
         else if (homeTab === "armory") renderArmory(panel);
@@ -10925,6 +11247,7 @@
           document.querySelectorAll("#placeBody [data-petth]").forEach(el => { el.innerHTML = petSVG(Object.assign({}, petDraft, { type: el.dataset.petth })); });
           return;
         }
+        if (n === "farm-seed") { S.farmSeed = e.target.value; save(); Sound.sfx("cursor"); renderPlace(); return; }
         if (n === "closet-oc") {
           S.av = Object.assign({}, S.av || AV_DEFAULT, { oc: +e.target.value }); save(); Sound.sfx("cursor");
           renderHUD(); buildMap(); renderPlace();
@@ -11000,6 +11323,8 @@
         if (t.closest("[data-guestrefresh]")) { loadLounge(true).then(() => renderPlace()); return; }
         const fd = t.closest("[data-find]");
         if (fd) { openFind(fd.dataset.find); return; }
+        const pt = t.closest("[data-plot]");
+        if (pt) { farmClick(+pt.dataset.plot); return; }
         const oc = t.closest("[data-outfit]");
         if (oc) { openOutfit(oc.dataset.outfit); return; }
         const wc = t.closest("[data-weapon]");

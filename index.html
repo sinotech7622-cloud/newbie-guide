@@ -757,6 +757,15 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .nqopt.wrong{border-color:#E8453C;background:rgba(232,69,60,.18)}
 .nqok{color:#9BE38E;font-size:16px}.nqng{color:#FFB3AD;font-size:16px}
 
+.csadmin{display:grid;gap:10px;margin-top:10px}
+.csrow{background:#1B2466;border:2px solid var(--line);border-radius:4px;padding:10px 12px}
+.csrow.todo{border-left:5px solid var(--gold)}
+.cshead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.cshead b{font-size:16px}
+.csdetail{white-space:pre-wrap;margin:6px 0 0;padding:8px 10px;background:#0B1030;border-radius:4px;font-size:14px}
+.csreply{margin:6px 0 0;font-size:14px;color:#BFE6F5}
+[data-csf][aria-pressed="true"]{background:var(--gold);color:#2B1B00}
+
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -1176,6 +1185,9 @@ footer.site p{margin:4px 0}
           <p class="ahint">「後台資料」工作表的 A1（會自動排除密碼欄，這個工作表要發布到網路）：</p>
           <pre class="code" id="fxFeed"></pre>
           <button class="mini-btn" type="button" data-copy="fxFeed">複製公式</button>
+          <p class="ahint" style="margin-top:12px">「諮詢資料」工作表的 A1（給後台「諮詢回覆」列出收到的申請，不含聯絡方式，這個工作表要發布，選填）：</p>
+          <pre class="code" id="fxConsultPub"></pre>
+          <button class="mini-btn" type="button" data-copy="fxConsultPub">複製公式</button>
           <p class="ahint" style="margin-top:12px">「名冊資料」工作表的 A1（給後台「使用者名冊」用，不含員工編號，這個工作表要發布，選填）：</p>
           <pre class="code" id="fxRosterPub"></pre>
           <button class="mini-btn" type="button" data-copy="fxRosterPub">複製公式</button>
@@ -1301,9 +1313,18 @@ footer.site p{margin:4px 0}
 
     <!-- consult replies -->
     <div class="apanel" data-panel="rps" role="tabpanel" hidden>
-      <section class="window abox form">
+      <section class="window abox">
+        <div class="abar"><h3>收到的諮詢</h3><span class="afilters">
+          <button class="mini-btn" type="button" data-csf="todo" aria-pressed="true">待回覆</button>
+          <button class="mini-btn" type="button" data-csf="done" aria-pressed="false">已回覆</button>
+          <button class="mini-btn" type="button" data-csf="all" aria-pressed="false">全部</button>
+          <button class="act ghost" type="button" id="csReload">重新讀取</button></span></div>
+        <p class="ahint" id="csSrc"></p>
+        <div id="csAdminList" class="csadmin"></div>
+      </section>
+      <section class="window abox form" id="hcBox">
         <h3>回覆技術諮詢</h3>
-        <p class="ahint">申請內容請到試算表的「技術諮詢」工作表查看（開啟表單的 Email 通知，就會收到新申請提醒）。同一個申請編號再次發布時，會以最新的一次為準。</p>
+        <p class="ahint">在上方「收到的諮詢」按「回覆」，申請編號會自動帶入；也可以自己輸入編號。聯絡方式只在試算表的「技術諮詢」工作表看得到。同一個申請編號再次發布時，會以最新的一次為準。</p>
         <div class="two">
           <div><label for="hcNo">申請編號</label><input id="hcNo" class="ainput wide" maxlength="30" placeholder="例如：CS-260917-AB3K"></div>
           <div><label for="hcStatus">狀態</label><select id="hcStatus" class="ainput wide"><option>已排定</option><option>已完成</option><option>無法受理</option><option>待處理</option></select></div>
@@ -4052,6 +4073,7 @@ const FORM_KEYS={
 const SHEET_KEYS={
   feed:{label:"後台資料",headers:["時間戳記","類型","編號","分段","資料","操作者"]},
   lounge:{label:"交誼廳資料",optional:true,headers:["時間戳記","類型","新人代碼","名字","組別","等級","造型","寵物","一句話","對象代碼"]},
+  consults:{label:"諮詢資料",optional:true,headers:["時間戳記","申請編號","新人代碼","名字","組別","類別","主題","內容","希望時間"]},
   roster:{label:"名冊資料",optional:true,headers:["時間戳記","新人代碼","名字","組別","等級","進度","結業"]},
   saves:{label:"存檔資料",optional:true,headers:["時間戳記","帳號代碼","存檔資料","備註"]},
   ivreplies:{label:"回覆資料",optional:true,headers:["時間戳記","通知編號","新人代碼","回覆","說明"]},
@@ -7405,6 +7427,7 @@ function openAdminView(){
   curZone=null; curPlace=null;
   $("#adminNpc").innerHTML=avatarSVG(CHIEF_AV);
   $("#fxFeed").textContent=`=QUERY('後台更新'!A:G, "select A, C, D, E, F, G where C is not null", 1)`;
+  $("#fxConsultPub").textContent=`={"時間戳記","申請編號","新人代碼","名字","組別","類別","主題","內容","希望時間";QUERY('技術諮詢'!A2:I, "select A, B, C, D, E, F, G, H, I where B is not null order by A desc", 0)}`;
   $("#fxRosterPub").textContent=`={"時間戳記","新人代碼","名字","組別","等級","進度","結業";QUERY(SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE), "select Col1, Col2, Col3, Col4, Col5, Col6, Col7 where Col2 is not null", 0)}`;
   $("#fxSaves").textContent=`=SORTN(SORT('進度存檔'!A2:D, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxIvReplies").textContent=`=QUERY('面談回覆'!A:F, "select A, B, C, E, F where B is not null", 1)`;
@@ -7432,7 +7455,7 @@ $("#nqOpts").addEventListener("click",e=>{ const b=e.target.closest("[data-nq]")
 $("#nqSkip").addEventListener("click",()=>{ const c=QUIZ_CUR; if(!c||c.done) return; c.done=true; const g=giveNpcSeeds(c.n,1); Sound.sfx("get"); toast(`🌱 ${c.n.name}給了你 ${g} 種子！`); $("#npcQuizDlg").close(); renderZoneNpc(curZone&&curZone.id); });
 $("#nqOk").addEventListener("click",()=>$("#npcQuizDlg").close());
 $("#nqGo").addEventListener("click",()=>{ const c=QUIZ_CUR; $("#npcQuizDlg").close(); if(c&&c.qz.quest) setTimeout(()=>openQuest(c.qz.quest),120); });
-document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); }if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster();}});
+document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); } if(b.dataset.tab==="rps") loadConsultAdmin();if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster();}});
 $("#viewAdmin").addEventListener("click",e=>{
   const c=e.target.closest("[data-copy]"); if(c){ copyText($("#"+c.dataset.copy).textContent); return; }
   if(e.target.closest("[data-reload]")){ loadAdminLists(true); if($("#ivTable").closest(".apanel")&&!$("#ivTable").closest(".apanel").hidden) loadIvReplies(); }
@@ -7785,6 +7808,51 @@ $("#ivTable").addEventListener("click",async e=>{
   const payload="j:"+JSON.stringify({code:x.code,title:x.title,when:x.when,place:x.place,body:x.body||"",status,note:x.note||""});
   if(await adminSend("interview",x.id,payload,`${off?"恢復":"取消"}面談通知：${x.title}（${x.code}）`,status)) renderIvTable();
 });
+let CS_ROWS=[], CS_FILTER="todo";
+function csStatus(no){ const r=(FEED&&FEED.replies||{})[no]; return r?r.status:"待回覆"; }
+async function loadConsultAdmin(){
+  const src=$("#csSrc"), list=$("#csAdminList"); if(!list) return;
+  if(!sheetUrl("consults")){
+    src.innerHTML=`還沒設定「諮詢資料」工作表，所以這裡看不到收到的申請。請到「設定小幫手 → 試算表公式」複製「諮詢資料」公式，建立工作表並發布後，把 CSV 網址貼到「諮詢資料」欄位、重新產生 config.js。`;
+    list.innerHTML=""; return;
+  }
+  src.textContent="讀取中…";
+  try{ await getFeed(true); }catch(e){}
+  try{
+    const rows=await fetchSheet("consults",true);
+    CS_ROWS=(rows||[]).filter(r=>/^CS-/i.test(String(r[1]||"").trim())).map(r=>({at:parseSheetTs(r[0]),no:String(r[1]).trim().toUpperCase(),code:String(r[2]||""),name:String(r[3]||""),group:String(r[4]||""),
+      cat:String(r[5]||""),topic:String(r[6]||""),detail:String(r[7]||""),pref:String(r[8]||"")})).sort((a,b)=>(b.at?b.at.getTime():0)-(a.at?a.at.getTime():0));
+    src.textContent=`共 ${CS_ROWS.length} 筆申請，其中 ${CS_ROWS.filter(x=>csStatus(x.no)==="待回覆"||csStatus(x.no)==="待處理").length} 筆待回覆。資料來源：「諮詢資料」工作表（最慢約 5 分鐘更新）。`;
+  }catch(e){ src.innerHTML=`<span class="cerr" style="display:inline">讀不到「諮詢資料」工作表</span>，請確認已發布並設定 CSV 網址。`; CS_ROWS=[]; }
+  renderConsultAdmin();
+}
+function renderConsultAdmin(){
+  const list=$("#csAdminList"); if(!list) return;
+  document.querySelectorAll("[data-csf]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.csf===CS_FILTER)));
+  const todo=x=>["待回覆","待處理"].includes(csStatus(x.no));
+  const L=CS_ROWS.filter(x=>CS_FILTER==="all"||(CS_FILTER==="todo"?todo(x):!todo(x)));
+  list.innerHTML=L.length?L.map(x=>{ const st=csStatus(x.no), r=(FEED&&FEED.replies||{})[x.no];
+    return `<article class="csrow${todo(x)?" todo":""}">
+      <div class="cshead"><b>${esc(x.topic||"（沒有主題）")}</b>
+        <span class="st ${todo(x)?"st-wait":st==="已完成"?"st-ok":st==="無法受理"?"st-off":"st-info"}">${esc(st)}</span></div>
+      <p class="ahint" style="margin:2px 0 6px">${esc(x.name||"—")}・${esc(x.group||"—")}・${esc(x.cat||"—")}・<code>${esc(x.no)}</code>・${x.at?esc(fmtShort(x.at)):""}${x.pref?`・希望時間：${esc(x.pref)}`:""}</p>
+      ${x.detail?`<details><summary>申請內容</summary><p class="csdetail">${esc(x.detail)}</p></details>`:""}
+      ${r&&r.reply?`<p class="csreply">💬 已回覆：${esc(r.reply)}</p>`:""}
+      <div class="formfoot"><span></span><button class="act${todo(x)?"":" ghost"}" type="button" data-csreply="${esc(x.no)}">${todo(x)?"回覆":"修改回覆"}</button></div>
+    </article>`; }).join(""):`<p class="empty-note">${CS_ROWS.length?(CS_FILTER==="todo"?"目前沒有待回覆的諮詢 🎉":"沒有符合的申請。"):"目前還沒有收到任何申請。"}</p>`;
+}
+$("#csReload").addEventListener("click",loadConsultAdmin);
+document.querySelectorAll("[data-csf]").forEach(b=>b.addEventListener("click",()=>{ CS_FILTER=b.dataset.csf; renderConsultAdmin(); }));
+$("#csAdminList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-csreply]"); if(!b) return;
+  const no=b.dataset.csreply, r=(FEED&&FEED.replies||{})[no], x=CS_ROWS.find(v=>v.no===no);
+  $("#hcNo").value=no; $("#hcReply").value=r&&r.reply?r.reply:"";
+  const want=r&&r.status&&r.status!=="待處理"?r.status:"已排定";
+  if([...$("#hcStatus").options].some(o=>o.value===want)) $("#hcStatus").value=want;
+  $("#hcBox").scrollIntoView({behavior:"smooth",block:"center"});
+  setTimeout(()=>{ $("#hcReply").focus(); },350);
+  $("#hcErr").textContent=x?`正在回覆：${x.name}「${x.topic}」`:"";
+});
 $("#hcSend").addEventListener("click",async()=>{
   const err=$("#hcErr"); err.textContent="";
   const no=$("#hcNo").value.trim().toUpperCase(), status=$("#hcStatus").value, reply=String($("#hcReply").value).trim().slice(0,1000);
@@ -7792,7 +7860,9 @@ $("#hcSend").addEventListener("click",async()=>{
   if(!reply&&status!=="待處理"){ err.textContent="請輸入回覆內容"; Sound.sfx("error"); return; }
   const at=nowText();
   if(await adminSend("reply",no,"j:"+JSON.stringify({status,reply,at}),`諮詢回覆：${no}（${status}）`,at)){
-    $("#hcNo").value=""; $("#hcReply").value="";
+    $("#hcNo").value=""; $("#hcReply").value=""; $("#hcErr").textContent="";
+    FEED=FEED||{}; FEED.replies=FEED.replies||{}; FEED.replies[no]={status,reply,at};   // 先在清單上更新狀態
+    renderConsultAdmin();
   }
 });
 $("#rpTable").addEventListener("click",e=>{

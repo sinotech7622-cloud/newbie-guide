@@ -784,6 +784,9 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .tour-btns{display:flex;gap:6px;flex-wrap:wrap}
 .tour-btns .act{padding:5px 10px;font-size:13px}
 body.touring .maptip{opacity:.4}
+body.tour-lock::before{content:"";position:fixed;inset:0;z-index:40;background:rgba(10,14,40,.45)}
+body.tour-lock .mapframe{z-index:41}
+.optl{margin-left:6px;font-size:12px;font-weight:400;color:var(--muted)}
 .tour-bubble.dock{position:fixed;left:8px!important;right:8px;bottom:10px;top:auto!important;width:auto!important;z-index:60}
 @media (max-width:640px){.tour-text{font-size:14px;min-height:5em}}
 
@@ -1479,15 +1482,19 @@ footer.site p{margin:4px 0}
         <h4><span class="n">1</span>基本資料</h4>
         <div class="two">
           <div>
-            <label class="elabel" for="cName">姓名<b class="req">＊必填</b></label>
-            <input id="cName" class="cinput wide" maxlength="12" placeholder="例如：園城人" autocomplete="off">
+            <label class="elabel" for="cName">真實姓名<b class="req">＊必填</b></label>
+            <input id="cName" class="cinput wide" maxlength="12" placeholder="請填本名" autocomplete="off">
           </div>
           <div>
-            <label class="elabel" for="cEmp">員工編號<b class="req">＊必填</b></label>
+            <label class="elabel" for="cNick">暱稱<b class="optl">選填</b></label>
+            <input id="cNick" class="cinput wide" maxlength="12" placeholder="遊戲中顯示的名字" autocomplete="off">
+          </div>
+          <div>
+            <label class="elabel" for="cEmp">員工編號<b class="optl">選填</b></label>
             <input id="cEmp" class="cinput wide" maxlength="12" placeholder="例如：01234" autocomplete="off" inputmode="latin">
           </div>
         </div>
-        <p class="ahint">姓名與員工編號會回報給部門，方便村長知道你是誰。</p>
+        <p class="ahint">真實姓名會回報給部門、也會印在結業證書上；填了暱稱的話，交誼廳和遊戲中都會顯示暱稱。員工編號可以不填，填了方便村長確認你是誰。</p>
       </div>
       <fieldset class="cstep">
         <legend><h4><span class="n">2</span>設計你的角色</h4></legend>
@@ -2004,6 +2011,7 @@ function myLv(){
   return Math.max(now,best,1);
 }
 const petStage=()=>myLv()>=4?"adult":"baby";
+const dispName=()=>(S.nick||S.name||"新人冒險者");      // 遊戲中顯示暱稱；回報給部門與證書用真實姓名
 const petUnlocked=()=>myLv()>=3;
 const petWearUnlocked=()=>myLv()>=5;
 const PET_SWAP_MIN=50;
@@ -2881,7 +2889,7 @@ function renderHUD(){
   try{ petSanitize(); }catch(e){}
   const v=xp(), lv=myLv(), maxed=lv>=TITLES.length;
   updateLoginBtn(); renderLoginHint();
-  $("#pName").innerHTML=(IS_CHAMP?`<span class="hudcrown" aria-label="人氣王">${spriteSVG("crown")}</span>`:"")+esc(S.name||"新人冒險者");
+  $("#pName").innerHTML=(IS_CHAMP?`<span class="hudcrown" aria-label="人氣王">${spriteSVG("crown")}</span>`:"")+esc(dispName());
   $("#pGroup").textContent=S.group||"尚未選擇組別";
   $("#hudFace").innerHTML=avatarSVG(S.av);
   $("#pTitle").textContent=`LV ${lv}　${TITLES[lv-1]}`;
@@ -3324,7 +3332,7 @@ function mapPoint(ev){
 let curZone=null, curPlace=null;
 function openZone(id,push){
   const z=ZONES.find(z=>z.id===id); if(!z) return;
-  if(TOUR) endTour(true);
+  if(TOUR){ if(TOUR.first) return; endTour(true); }
   tryZoneSeeds(id);
   const hadNew=!!ZONE_NEW[id];
   curZone=z;
@@ -3871,7 +3879,7 @@ function openAward(){
   Sound.scene("fanfare");
   $("#rNext").focus();
   confetti();
-  typeInto($("#rSay"),`${S.name||"新人冒險者"}，恭喜你！新手村、情報酒館、行政塔、寶物庫和存摺神殿的任務全部完成，等級也升到最高了。請上前來吧！`);
+  typeInto($("#rSay"),`${dispName()}，恭喜你！新手村、情報酒館、行政塔、寶物庫和存摺神殿的任務全部完成，等級也升到最高了。請上前來吧！`);
 }
 $("#rNext").addEventListener("click",()=>{
   rPhase++;
@@ -4028,16 +4036,19 @@ $("#avRandom").addEventListener("click",()=>{
 });
 function openChar(){
   const f=$("#cForm");
-  $("#cName").value=S.name; $("#cEmp").value=S.emp||"";
+  $("#cName").value=S.name; $("#cNick").value=S.nick||""; $("#cEmp").value=S.emp||"";
   document.querySelectorAll("#cDlg .missing").forEach(el=>el.classList.remove("missing"));
   buildAvOpts();
   draft=Object.assign({},AV_DEFAULT,S.av||{});
   drawEditor();
   f.querySelectorAll('input[name="group"]').forEach(r=>r.checked=r.value===S.group);
   $("#cErr").textContent="";
+  const x=$("#cDlg .x[data-close]"); if(x) x.hidden=!S.group;     // 第一次一定要建立角色
   $("#cDlg").showModal();
   $("#cName").focus();
 }
+$("#cDlg").addEventListener("cancel",e=>{ if(!S.group) e.preventDefault(); });
+$("#wDlg").addEventListener("cancel",e=>{ if(!S.group) e.preventDefault(); });
 $("#cForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const f=e.target;
@@ -4045,9 +4056,8 @@ $("#cForm").addEventListener("submit",async e=>{
   const name=$("#cName").value.trim().slice(0,12);
   const emp=$("#cEmp").value.trim().toUpperCase().replace(/\s/g,"").slice(0,12);
   const miss=[];
-  if(!name) miss.push({el:$("#cName"),msg:"請輸入姓名"});
-  if(!emp) miss.push({el:$("#cEmp"),msg:"請輸入員工編號"});
-  else if(!/^[A-Z0-9-]{3,12}$/.test(emp)) miss.push({el:$("#cEmp"),msg:"員工編號只能用英文字母、數字或連字號（3–12 碼）"});
+  if(!name) miss.push({el:$("#cName"),msg:"請輸入真實姓名"});
+  if(emp&&!/^[A-Z0-9-]{3,12}$/.test(emp)) miss.push({el:$("#cEmp"),msg:"員工編號只能用英文字母、數字或連字號（3–12 碼）"});
   if(!grp) miss.push({el:$("#groupGrid"),msg:"請選擇所屬組別"});
   if(miss.length){
     $("#cErr").textContent=miss.map(m=>m.msg).join("；");
@@ -4063,13 +4073,14 @@ $("#cForm").addEventListener("submit",async e=>{
   Sound.sfx("select");
   const isNew=!S.group;
   const profileChanged=!isNew&&(S.name!==name||S.emp!==emp||S.group!==grp);
-  S.name=name; S.emp=emp; S.av=Object.assign({},draft); S.group=grp; save();
+  S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; S.av=Object.assign({},draft); S.group=grp; save();
   if(isNew) logSignup("首次登錄"); else if(profileChanged) logSignup("修改資料");
   queueSync(true);
   $("#cDlg").close();
   renderPortals(); buildMap(); renderHUD(); syncSoundBtns(); checkAch();
-  toast(isNew?`${S.name||"新人冒險者"} 加入了${grp}！`:"角色資料已更新");
+  toast(isNew?`${dispName()} 加入了${grp}！`:"角色資料已更新");
   if(isNew) setTimeout(()=>loadInbox(false),2500);
+  loungePresence(true).catch(()=>{});                  // 建立角色就出現在交誼廳（修改造型也會更新名片）
   if(isNew&&cloudReady()&&!CLOUD&&S.tourDone) setTimeout(()=>{ if(!CLOUD&&!$("#cDlg").open&&!$("#wDlg").open&&!TOUR) openCloud("create"); },1800);
   if(curPlace) renderPlace();
   if(isNew&&wAfterChar){ wAfterChar=false; }
@@ -4989,12 +5000,12 @@ function loungeData(){
   });
   const me=myCode().toUpperCase();
   if(S.group){
-    people[me]=Object.assign({},people[me]||{},{code:me,name:S.name||"新人冒險者",group:S.group,
+    people[me]=Object.assign({},people[me]||{},{code:me,name:dispName(),group:S.group,
       level:String(myLv()),av:Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||""}),
       pet:S.pet||null,msg:S.loungeMsg||"",at:(people[me]&&people[me].at)||new Date()});
   }
   const mine=people[me];
-  if(!mine&&S.group) people[me]={code:me,name:S.name||"新人冒險者",group:S.group,level:String(myLv()),av:S.av,pet:S.pet,msg:S.loungeMsg||"",at:new Date()};
+  if(!mine&&S.group) people[me]={code:me,name:dispName(),group:S.group,level:String(myLv()),av:S.av,pet:S.pet,msg:S.loungeMsg||"",at:new Date()};
   const list=Object.values(people).map(p=>Object.assign({},p,{
     likes:(likes[p.code]||new Set()).size,
     online:!!(p.at&&Date.now()-p.at.getTime()<LOUNGE_ONLINE_MS)
@@ -5015,7 +5026,7 @@ async function loungePresence(force){
   if(!loungeReady()||!S.group) return;
   if(!force&&Date.now()-lastPresence<90000) return;
   lastPresence=Date.now();
-  await loungeSend({type:"presence",code:myCode(),name:S.name||"新人冒險者",group:S.group||"",
+  await loungeSend({type:"presence",code:myCode(),name:dispName(),group:S.group||"",
     level:String(myLv()),av:JSON.stringify(Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||"",home:myHomeSnapshot()})),pet:S.pet?JSON.stringify(S.pet):"",msg:S.loungeMsg||""});
 }
 
@@ -5169,7 +5180,7 @@ setInterval(()=>{                                      // 有還沒收到回覆�
 
 function openPlace(id,push){
   const pl=PLACES.find(p=>p.id===id); if(!pl||adminOpen) return;
-  if(TOUR) endTour(true);
+  if(TOUR){ if(TOUR.first) return; endTour(true); }
   const entering=curPlace!==pl;
   if(entering) freshNow=new Set(INBOX.interviews.filter(ivUnseen).map(x=>x.id).concat(INBOX.consults.filter(csUnseen).map(x=>x.id)));
   curPlace=pl; curZone=null;
@@ -5655,7 +5666,7 @@ async function tossVeg(p,h){
     fly.remove();
     const sp=document.createElement("span"); sp.className="splat fresh"; sp.style.left=tx+"%"; sp.style.top=ty+"%"; sp.innerHTML=splatSVG(k);
     room.appendChild(sp); Sound.sfx("error");
-    const payload={type:"toss",code:myCode(),name:S.name||"新人冒險者",target:host,msg:k};
+    const payload={type:"toss",code:myCode(),name:dispName(),target:host,msg:k};
     if(await loungeSend(payload)) addPending(payload);
     S.barn[k]--; save(); queueSync();
     log[lk]=(log[lk]||0)+1; try{ localStorage.setItem(TOSS_KEY,JSON.stringify(log)); }catch(e){}
@@ -5670,7 +5681,7 @@ async function giftVeg(p){
   const k=($("#vsGiftSel")||{}).value, host=String(p.code).toUpperCase();
   if(!CROPS[k]||!((S.barn||{})[k]>0)) return;
   const btn=$("#vsGift"); if(btn) btn.disabled=true;
-  const id=randChars(8), payload={type:"gift",code:myCode(),name:S.name||"新人冒險者",target:host,msg:`${k}|${id}`};
+  const id=randChars(8), payload={type:"gift",code:myCode(),name:dispName(),target:host,msg:`${k}|${id}`};
   const ok=await loungeSend(payload);
   if(!ok){ toast("送禮失敗，請稍後再試"); if(btn) btn.disabled=false; return; }
   addPending(payload); S.barn[k]--; save(); queueSync();
@@ -5708,7 +5719,7 @@ function renderVisitFarm(p,h){
       if(hostEl) sayAt(hostEl,`${petName}，幹得好！別想偷我的菜～`);
       renderVisitFarm(p,h); return;
     }
-    const payload={type:"steal",code:myCode(),name:S.name||"新人冒險者",target:host,msg:`${i}|${pl.c}|${pl.t}`};
+    const payload={type:"steal",code:myCode(),name:dispName(),target:host,msg:`${i}|${pl.c}|${pl.t}`};
     const ok=await loungeSend(payload);
     if(!ok){ delete L[key]; try{ localStorage.setItem(STOLE_KEY,JSON.stringify(L)); }catch(e2){} toast("偷菜失敗，請稍後再試"); b.disabled=false; return; }
     addPending(payload);
@@ -5719,7 +5730,7 @@ function renderVisitFarm(p,h){
   };
 }
 function hostLines(p,h,first){
-  const me=S.name||"冒險者", hr=new Date().getHours();
+  const me=dispName(), hr=new Date().getHours();
   const hello=hr<5?"晚安":hr<11?"早安":hr<18?"午安":"晚安";
   const a=ALBUM.find(x=>x.id===h.frame), w=weaponById(h.weapon), o=OUTFIT[h.outfit], f=findById(h.item);
   const petName=p.pet&&PETS[p.pet.type]?(p.pet.name||PETS[p.pet.type].name):"";
@@ -5760,14 +5771,14 @@ async function openVisit(code){
   let log={}; try{ log=JSON.parse(localStorage.getItem(VISIT_KEY)||"{}"); }catch(e){}
   const today=new Date().toISOString().slice(0,10);
   if(log[code]!==today&&S.group){
-    const payload={type:"visit",code:myCode(),name:S.name||"新人冒險者",target:code,msg:""};
+    const payload={type:"visit",code:myCode(),name:dispName(),target:code,msg:""};
     if(await loungeSend(payload)){ addPending(payload); log[code]=today; try{ localStorage.setItem(VISIT_KEY,JSON.stringify(log)); }catch(e){} renderVisit(); }
   }
 }
 $("#vsSend").addEventListener("click",async()=>{
   const msg=cleanText($("#vsMsg").value,40); if(!msg){ toast("請先寫一句話"); return; }
   const btn=$("#vsSend"); btn.disabled=true;
-  const payload={type:"visit",code:myCode(),name:S.name||"新人冒險者",target:visitHost,msg};
+  const payload={type:"visit",code:myCode(),name:dispName(),target:visitHost,msg};
   const ok=await loungeSend(payload); btn.disabled=false;
   if(ok){ addPending(payload); $("#vsMsg").value=""; Sound.sfx("get"); toast("留言完成，主人最慢約 5 分鐘後看得到"); renderVisit(); }
   else toast("留言失敗，請稍後再試");
@@ -5819,7 +5830,7 @@ function renderPlaceInner(greet){
   const pl=curPlace; if(!pl) return;
   if(pl.id==="myhome"){
     $("#plHostFace").innerHTML=avatarSVG(S.av);
-    $("#plHostName").textContent=S.name||"新人冒險者";
+    $("#plHostName").textContent=dispName();
     if(greet){
       const n=favList().length;
       typeInto($("#plSay"),n?`回到家了！筆記本裡有 ${n} 筆收藏，想查什麼直接搜尋就好。`:"回到家了！執行任務時記得按「♡ 加入最愛」，筆記本才會有東西可以查。");
@@ -5829,7 +5840,7 @@ function renderPlaceInner(greet){
   }
   if(pl.id==="lounge"){
     $("#plHostFace").innerHTML=avatarSVG(S.av);
-    $("#plHostName").textContent=S.name||"新人冒險者";
+    $("#plHostName").textContent=dispName();
     if(greet) typeInto($("#plSay"),"來交誼廳看看大家的角色和寵物吧！點人像可以去他家拜訪，幫喜歡的人按讚，按讚最多的人會戴上皇冠。");
     renderLounge($("#placeBody"));
     loungePresence(true).then(()=>loadLounge(true)).then(()=>{ if(curPlace&&curPlace.id==="lounge") renderLounge($("#placeBody")); });
@@ -5845,7 +5856,7 @@ function renderPlaceInner(greet){
   $("#plHostFace").innerHTML=home?avatarSVG(CHIEF_AV):avatarSVG(DIRECTOR_AV);
   $("#plHostName").textContent=home?`部門村長　${CFG.chief}`:`數位總合辦公室　${CFG.director}`;
   if(greet){
-    const name=S.name||"新人冒險者";
+    const name=dispName();
     const pending=INBOX.interviews.filter(x=>x.status==="待回覆").length;
     typeInto($("#plSay"),home
       ?(!ivOn()?`${name}，歡迎來我家坐坐！泡杯茶休息一下，順便看看角落有沒有藏什麼好東西。`
@@ -5959,7 +5970,7 @@ $("#placeBody").addEventListener("click",async e=>{
     S.likes=S.likes||{};
     if(S.likes[code]) return;
     lk.disabled=true;
-    const likePayload={type:"like",code:myCode(),name:S.name||"",target:code};
+    const likePayload={type:"like",code:myCode(),name:dispName(),target:code};
     const ok=await loungeSend(likePayload);
     if(ok){ S.likes[code]=true; save(); addPending(likePayload); Sound.sfx("achieve"); toast("已按讚！"); await loadLounge(true); }
     else { toast("按讚失敗，請稍後再試"); lk.disabled=false; }
@@ -5973,7 +5984,7 @@ $("#placeBody").addEventListener("click",async e=>{
     if(act==="me"){
       S.loungeMsg=cleanText($("#lgMsg").value,30); save();
       lg.disabled=true; lastPresence=0; await loungePresence(true); await loadLounge(true); lg.disabled=false;
-      addPending({type:"presence",code:myCode(),name:S.name||"新人冒險者",group:S.group||"",level:String(myLv()),
+      addPending({type:"presence",code:myCode(),name:dispName(),group:S.group||"",level:String(myLv()),
         av:Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||""}),pet:S.pet||null,msg:S.loungeMsg||""});
       toast("名片已更新"); renderLounge($("#placeBody")); return;
     }
@@ -5983,7 +5994,7 @@ $("#placeBody").addEventListener("click",async e=>{
       if(runCheat(msg)){ $("#lgPost").value=""; renderLounge($("#placeBody")); return; }
       lg.disabled=true;
       const id="P-"+randChars(6);
-      const payload={type:"post",code:myCode(),name:S.name||"新人冒險者",msg,target:id};
+      const payload={type:"post",code:myCode(),name:dispName(),msg,target:id};
       const ok=await loungeSend(payload);
       lg.disabled=false;
       if(ok){
@@ -6000,7 +6011,7 @@ $("#placeBody").addEventListener("click",async e=>{
       const msg=cleanText(inp&&inp.value,60);
       if(!msg){ toast("請先輸入回應內容"); return; }
       lg.disabled=true;
-      const payload={type:"reply",code:myCode(),name:S.name||"新人冒險者",msg,target:id};
+      const payload={type:"reply",code:myCode(),name:dispName(),msg,target:id};
       const ok=await loungeSend(payload);
       lg.disabled=false;
       if(ok){
@@ -6103,7 +6114,7 @@ function welcomePagesIntro(){
   ];
 }
 function welcomePagesAfterChar(){
-  const name=S.name||"新人冒險者";
+  const name=dispName();
   return [
     {text:`${name}，歡迎加入${S.group}！地圖上的新手村、情報酒館、行政塔、寶物庫和存摺神殿，都有等你完成的任務。`},
     {text:()=>ivOn()?`需要找你面談時，我會把通知放在「村長的家」；部門平台或技術應用遇到問題，可以到「數位總合辦公室」找${CFG.director}幫忙。`:`有空可以來「村長的家」坐坐；部門平台或技術應用遇到問題，可以到「數位總合辦公室」找${CFG.director}幫忙。`},
@@ -6111,7 +6122,7 @@ function welcomePagesAfterChar(){
   ];
 }
 function welcomePagesReturning(){
-  const name=S.name||"新人冒險者", done=xp()/XP_PER, nz=nextZoneHint();
+  const name=dispName(), done=xp()/XP_PER, nz=nextZoneHint();
   const first=done>=TOTAL
     ?`${name}，歡迎回來！所有任務都完成了，辛苦了。有空也可以回來翻翻筆記本。`
     :`${name}，歡迎回來！目前完成 ${done}／${TOTAL} 個任務${nz?`，下一站建議到「${nz.name}」看看`:""}。`;
@@ -6132,11 +6143,13 @@ function showWelcomePage(){
   typeInto($("#wSay"),typeof pg.text==="function"?pg.text():pg.text);
   $("#wNext").textContent=pg.btn||"下一步 ▼";
   $("#wStep").textContent=`${wIdx+1} / ${wPages.length}`;
-  $("#wSkip").hidden=!!pg.action&&wIdx===wPages.length-1;
+  $("#wSkip").hidden=!S.group||(!!pg.action&&wIdx===wPages.length-1);
   $("#wNext").focus();
 }
 function startWelcome(force){
   if(adminOpen) return;
+  if(S.group&&S.tourDone===undefined&&(Object.keys(S.done||{}).length||Object.keys(S.visited||{}).length>1)){ S.tourDone=true; save(); }
+  if(S.group&&!S.tourDone){ startTour(true); return; }
   if(!force&&welcomedThisSession()){ if(!S.group) openChar(); return; }
   openWelcome(S.group?welcomePagesReturning():welcomePagesIntro());
 }
@@ -6158,7 +6171,7 @@ $("#replayWelcome").addEventListener("click",()=>{ if(S.group) startTour(false);
 /* ================= 村長的地圖導覽（第一次使用時，走到各建物旁邊說明） ================= */
 let TOUR=null;
 function tourSteps(){
-  const name=S.name||"新人冒險者", zn=id=>{ const z=ZONES.find(x=>x.id===id); return z?`${z.name}（${z.real}）`:id; };
+  const name=dispName(), zn=id=>{ const z=ZONES.find(x=>x.id===id); return z?`${z.name}（${z.real}）`:id; };
   return [
     {text:`${name}，歡迎加入${S.group||"園城部"}！我是村長${CFG.chief}。我帶你繞地圖一圈，看看每個地方可以做什麼。`},
     {zone:"village",text:`這裡是${zn("village")}。剛報到要做的事都在這裡，建議從這裡開始！每看完一則任務按「完成」，就能拿到經驗值升級。`},
@@ -6183,11 +6196,12 @@ function tourEnsure(){
       <div class="tour-bubble"><p class="tour-who"></p><p class="tour-text" aria-live="polite"></p>
         <div class="tour-nav"><span class="tour-step"></span><span class="tour-btns">
           <button type="button" class="act ghost" data-tour="skip">跳過導覽</button>
+          <button type="button" class="act ghost" data-tour="again">再看一次</button>
           <button type="button" class="act ghost" data-tour="prev">上一步</button>
           <button type="button" class="act" data-tour="next">下一步</button></span></div></div>`;
     frame.appendChild(el);
     el.addEventListener("click",e=>{ const b=e.target.closest("[data-tour]"); if(!b) return; const a=b.dataset.tour;
-      if(a==="next") tourGo(TOUR.i+1); else if(a==="prev") tourGo(TOUR.i-1); else endTour(true); });
+      if(a==="next") tourGo(TOUR.i+1); else if(a==="prev") tourGo(TOUR.i-1); else if(a==="again") tourGo(0); else if(a==="skip"&&!TOUR.first) endTour(true); });
   }
   return el;
 }
@@ -6211,7 +6225,8 @@ function tourGo(i){
   typeInto(el.querySelector(".tour-text"),step.text);
   el.querySelector(".tour-step").textContent=`${i+1} / ${steps.length}`;
   el.querySelector('[data-tour="prev"]').hidden=i===0;
-  el.querySelector('[data-tour="skip"]').hidden=!!step.last;
+  el.querySelector('[data-tour="skip"]').hidden=!!step.last||TOUR.first;
+  el.querySelector('[data-tour="again"]').hidden=!step.last;
   el.querySelector('[data-tour="next"]').textContent=step.last?"開始冒險！":"下一步 ▶";
   const cs=Math.max(26,Math.min(52,fw/14));
   const dock=fw<560;                                   // 窄螢幕：對話泡泡固定在畫面下方，不擋住地圖
@@ -6246,7 +6261,7 @@ function startTour(first){
   setTimeout(()=>{
     const el=tourEnsure(); if(!el) return;
     TOUR={i:0,steps:tourSteps(),first:!!first};
-    el.hidden=false; document.body.classList.add("touring");
+    el.hidden=false; document.body.classList.add("touring"); document.body.classList.toggle("tour-lock",!!first);
     el.querySelector(".tour-chief").innerHTML=avatarSVG(CHIEF_AV);
     const frame=document.querySelector(".mapframe"), hud=document.querySelector("header.hud,.hud");
     const hudH=hud&&getComputedStyle(hud).position!=="static"?hud.getBoundingClientRect().height:0;
@@ -6258,7 +6273,7 @@ function startTour(first){
 }
 function endTour(skipped){
   const el=$("#tour"); if(el) el.hidden=true;
-  document.body.classList.remove("touring");
+  document.body.classList.remove("touring","tour-lock");
   const first=TOUR&&TOUR.first; TOUR=null;
   S.tourDone=true; save();
   flashLoc("village");
@@ -6267,7 +6282,7 @@ function endTour(skipped){
 }
 document.addEventListener("keydown",e=>{
   if(!TOUR||document.querySelector("dialog[open]")) return;
-  if(e.key==="Escape"){ e.preventDefault(); endTour(true); }
+  if(e.key==="Escape"){ e.preventDefault(); if(!TOUR.first) endTour(true); }
   else if(e.key==="ArrowRight"){ tourGo(TOUR.i+1); }
   else if(e.key==="ArrowLeft"){ tourGo(TOUR.i-1); }
 });
@@ -6525,7 +6540,8 @@ async function loadRoster(force){
         const code=String(r[2]||"").trim().toUpperCase(); if(!code) return;
         const at=parseSheetTs(r[0]);
         const o=map[code]||(map[code]={code,name:String(r[3]||""),group:String(r[4]||""),level:String(r[5]||""),progress:"",awarded:""});
-        if(!o.name) o.name=String(r[3]||""); if(!o.group) o.group=String(r[4]||"");
+        if(!o.name) o.name=String(r[3]||""); else if(String(r[3]||"")&&String(r[3])!==o.name) o.nick=String(r[3]);
+        if(!o.group) o.group=String(r[4]||"");
         if(!o.seen||(at&&at>o.seen)) o.seen=at;
       });
       if(!RS_SRC) RS_SRC="lounge";
@@ -6552,7 +6568,7 @@ function renderRoster(){
   $("#rsTable").innerHTML=`<thead><tr><th>名字</th><th>組別</th><th>新人代碼</th><th>等級／進度</th><th>最後回報</th><th>最後上線</th><th>狀態</th><th><span class="sr">操作</span></th></tr></thead><tbody>${
     list.length?list.map(x=>{ const h=isHid(x.code), waiting=x.code in pend;
       return `<tr class="${h?"rs-hid":""}">
-        <td>${esc(x.name||"—")}</td><td>${esc(x.group||"—")}</td><td><code>${esc(x.code)}</code></td>
+        <td>${esc(x.name||"—")}${x.nick?`<span class="ahint">（${esc(x.nick)}）</span>`:""}</td><td>${esc(x.group||"—")}</td><td><code>${esc(x.code)}</code></td>
         <td>${x.level?`LV ${esc(x.level)}`:"—"}${x.progress?`<span class="ahint">・${esc(x.progress)}</span>`:""}${x.awarded?' <span class="st st-gold">已結業</span>':""}</td>
         <td>${x.reported?esc(fmtShort(x.reported)):"—"}</td><td>${x.seen?esc(fmtShort(x.seen)):"—"}</td>
         <td>${h?'<span class="st st-off">已隱藏</span>':'<span class="st st-ok">顯示中</span>'}${waiting?' <span class="st st-wait">更新中</span>':""}</td>
@@ -6771,7 +6787,7 @@ function showroomHTML(){
   const sel=(key,label,list)=>`<label class="srsel"><span>${label}</span><select class="ainput" name="sc-${key}">
       <option value="">不展示</option>${list.map(([v,n])=>`<option value="${esc(v)}" ${sc[key]===v?"selected":""}>${esc(n)}</option>`).join("")}</select></label>`;
   const mySplatList=splatList(myCode(),S.cleanedAt), mySplats=mySplatList.length;
-  return roomHTML(Object.assign({},myHomeSnapshot(),{pet:S.pet,petStage:petStage(),av:S.av,splats:mySplatList}),{host:S.name||"我",hostId:"homeHost"})+`
+  return roomHTML(Object.assign({},myHomeSnapshot(),{pet:S.pet,petStage:petStage(),av:S.av,splats:mySplatList}),{host:dispName(),hostId:"homeHost"})+`
   <div class="srbar" aria-label="展示品設定">
     <span class="srbar-t">展示品 ${helpBtn("showroom")}</span>
     ${sel("outfit","服裝",L.outfit)}${sel("item","小物",L.item)}${sel("weapon","武器",L.weapon)}
@@ -7039,7 +7055,7 @@ function renderWardrobe(panel){
       <div class="me">
         <span class="mebig" aria-hidden="true">${avatarSVG(S.av)}</span>
         <div>
-          <p class="mename">${esc(S.name||"新人冒險者")}</p>
+          <p class="mename">${esc(dispName())}</p>${S.nick?`<p class="ahint" style="margin:0">真實姓名 ${esc(S.name)}</p>`:""}
           <p class="ahint" style="margin:0">${esc(S.group||"尚未選擇組別")}</p>
           <p class="melv">LV ${lv}　${TITLES[lv-1]}</p>
           <p class="ahint" style="margin:0">完成任務 ${v/XP_PER} / ${TOTAL}・最愛 ${favList().length} 筆</p>
@@ -7276,7 +7292,7 @@ function openWeapon(id){
 $("#wpAct").addEventListener("click",e=>{
   const wr=e.target.closest("[data-wear]");
   if(wr){
-    S.av=Object.assign({},S.av||AV_DEFAULT,{outfit:wr.dataset.wear}); save(); Sound.sfx("get");
+    S.av=Object.assign({},S.av||AV_DEFAULT,{outfit:wr.dataset.wear}); save(); pushFarm(); Sound.sfx("get");
     toast(`換上了 ${OUTFIT[wr.dataset.wear].name}`);
     renderHUD(); buildMap(); $("#wpDlg").close();
     if(curPlace&&curPlace.id==="myhome") renderPlace();
@@ -7401,7 +7417,7 @@ function renderCloudBox(){
   }
   let at=""; try{ at=localStorage.getItem("sino22-cloud-at")||""; }catch(e){}
   box.innerHTML=`<h3>雲端存檔 ${helpBtn("cloud")} <span class="st st-ok">已登入</span></h3>
-    <dl class="cloudfacts"><dt>姓名</dt><dd>${esc(S.name||"—")}</dd><dt>員工編號</dt><dd>${esc(S.emp||"—")}</dd><dt>組別</dt><dd>${esc(S.group||"—")}</dd><dt>新人代碼</dt><dd>${esc(myCode())}</dd></dl>
+    <dl class="cloudfacts"><dt>姓名</dt><dd>${esc(S.name||"—")}${S.nick?`（暱稱 ${esc(S.nick)}）`:""}</dd><dt>員工編號</dt><dd>${esc(S.emp||"—")}</dd><dt>組別</dt><dd>${esc(S.group||"—")}</dd><dt>新人代碼</dt><dd>${esc(myCode())}</dd></dl>
     <p class="ahint">${[`帳號 <b>${esc(CLOUD.acc)}</b>`,at?`最後同步 ${fmtDate(at)}`:"",cloudDirty?"有尚未同步的進度":""].filter(Boolean).join("・")}</p>
     <p class="ahint">進度會自動同步，換電腦時用同一組帳密登入就能接著玩。密碼忘記將無法還原存檔。</p>
     <div class="formfoot"><span></span><span class="afilters">
@@ -7431,7 +7447,7 @@ $("#placeBody").addEventListener("change",e=>{
   }
   if(n==="farm-seed"){ S.farmSeed=e.target.value; save(); Sound.sfx("cursor"); renderPlace(); return; }
   if(n==="closet-oc"){
-    S.av=Object.assign({},S.av||AV_DEFAULT,{oc:+e.target.value}); save(); Sound.sfx("cursor");
+    S.av=Object.assign({},S.av||AV_DEFAULT,{oc:+e.target.value}); save(); pushFarm(); Sound.sfx("cursor");
     renderHUD(); buildMap(); renderPlace();
     return;
   }
@@ -8531,6 +8547,7 @@ applyInterviewSwitch();
 if(starActive()) startStar();
 cloudRestoreSession().then(()=>{ renderCloudBox(); setTimeout(()=>cloudSyncOnStart(),1200); });
 bootstrap().then(()=>{
+  if(S.group) setTimeout(()=>{ loungePresence(true).catch(()=>{}); },3000);   // 每次開站都讓大家看到自己在線上
   try{ if(!S.seenContent||!Object.keys(S.seenContent).length) markContentUpdates(); else refreshBonus(); }catch(e){}
   if(S.group){
     setTimeout(()=>loadInbox(),1500);

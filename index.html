@@ -1345,7 +1345,7 @@ footer.site p{margin:4px 0}
         <div class="abar"><h3>種子供應 NPC</h3><span class="afilters">
           <button class="act ghost" type="button" id="npcReset">恢復預設</button>
           <button class="act" type="button" id="npcPublish">發布 NPC 設定</button></span></div>
-        <p class="ahint">7 位 NPC 會出現在指定的任務地點（地圖上也會站在建築旁邊），新人每天可以向每位 NPC 領一次他負責的種子。可以修改名字、一句話、出現地點和外觀；地點選「不出現」就會暫時隱藏。發布後約 5 分鐘生效。</p>
+        <p class="ahint">7 位 NPC 會出現在指定的任務地點（地圖上也會站在建築旁邊），新人每天可以找每位 NPC 答題領種子。可以修改名字、稱號、供應說明、一句話、出現地點和外觀；地點選「不出現」就會暫時隱藏。供應說明留白時會自動顯示「供應○○種子」；實際供應的種子種類固定。發布後約 5 分鐘生效。</p>
         <div id="npcAdmin" class="npcadmin"></div>
       </section>
     </div>
@@ -3205,7 +3205,7 @@ function buildMap(){
       const z=ZONES.find(x=>x.id===zid); if(!z) return;
       const [tx,ty]=z.tile;
       list.forEach((n,i)=>{ const a=avatarParts32(n.av), x=tx*T+5+19+i*11, y=ty*T-7;
-        s+=`<g class="mapnpc" aria-hidden="true"><title>${esc(n.name)}（${esc(n.title)}）</title><g transform="translate(${x},${y})">${spriteRects(a.rows,.36,0,0,a.pal)}</g></g>`; });
+        s+=`<g class="mapnpc" aria-hidden="true"><title>${esc(n.name)}（${esc(n.title)}・${esc(npcSupplyText(n))}）</title><g transform="translate(${x},${y})">${spriteRects(a.rows,.36,0,0,a.pal)}</g></g>`; });
     });
   }catch(e){}
   // START flag
@@ -5136,7 +5136,13 @@ async function loadInbox(notify,force){
   }catch(e){ return false; }
   finally{ inboxBusy=false; }
 }
-setInterval(()=>{ if(document.visibilityState==="visible"&&!adminOpen) loadInbox(); },120000);
+let inboxTick=0;
+setInterval(()=>{                                      // 有還沒收到回覆的諮詢時每 1 分鐘檢查，否則每 2 分鐘
+  if(document.visibilityState!=="visible"||adminOpen) return;
+  inboxTick++;
+  const waiting=(INBOX.consults||[]).some(x=>!x.reply&&!x.withdrawn);
+  if(waiting||inboxTick%2===0) loadInbox();
+},60000);
 
 function openPlace(id,push){
   const pl=PLACES.find(p=>p.id===id); if(!pl||adminOpen) return;
@@ -6183,12 +6189,13 @@ function cleanNpcs(list){
   return NPC_DEFAULTS.map(def=>{
     const x=src.find(n=>n&&n.id===def.id)||{};
     const zone=x.zone===""||ZONES.some(z=>z.id===x.zone)?x.zone:def.zone;
-    return {id:def.id,name:cleanText(x.name,10)||def.name,title:def.title,seed:def.seed,
+    return {id:def.id,name:cleanText(x.name,10)||def.name,title:cleanText(x.title,12)||def.title,supply:cleanText(x.supply,20),seed:def.seed,
       zone:x.zone===undefined?def.zone:zone,say:cleanText(x.say,60)||def.say,av:cleanNpcAv(x.av,def.av)};
   });
 }
 const npcList=()=>CFG.npcs||cleanNpcs(null);
 const npcSeedText=n=>n.seed==="mix"?"隨機綜合種子":`${CROPS[n.seed].name}種子`;
+const npcSupplyText=n=>n.supply||`供應${npcSeedText(n)}`;
 function npcClaimedToday(id){ return ((S.npcDay||{})[id])===new Date().toISOString().slice(0,10); }
 function renderZoneNpc(zoneId){
   const box=$("#zNpc"); if(!box) return;
@@ -6197,7 +6204,7 @@ function renderZoneNpc(zoneId){
   box.innerHTML=here.map(n=>{ const done=npcClaimedToday(n.id);
     return `<div class="npccard">
       <span class="npcface" aria-hidden="true">${avatarSVG(n.av)}</span>
-      <div class="npcbody"><p class="npcname"><b>${esc(n.name)}</b><span class="ahint">${esc(n.title)}・供應${esc(npcSeedText(n))}</span></p>
+      <div class="npcbody"><p class="npcname"><b>${esc(n.name)}</b><span class="ahint">${esc(n.title)}・${esc(npcSupplyText(n))}</span></p>
         <p class="npcsay">「${esc(done?"今天的種子給過你囉，明天再來找我吧！":n.say)}」</p>
         ${done?"":`<p class="ahint" style="margin:2px 0 0">回答一題這裡的情報問題，答對送 ${QUIZ_MULT} 倍種子！</p>`}</div>
       <button class="act${done?" ghost":""}" type="button" data-npcseed="${n.id}" ${done?"disabled":""}>${done?"今天已領":"❓ 答題領種子"}</button>
@@ -6331,9 +6338,11 @@ function renderNpcAdmin(){
   box.innerHTML=NPCD.map((n,i)=>`<article class="npcedit" data-npci="${i}">
     <span class="npcprev" aria-hidden="true">${avatarSVG(n.av)}</span>
     <div class="npcfields">
-      <p class="npcname"><b>${esc(n.title)}</b><span class="ahint">供應${esc(npcSeedText(n))}</span></p>
+      <p class="npcname"><b>${esc(n.name)}</b><span class="ahint">${esc(n.title)}・${esc(npcSupplyText(n))}（實際供應：${esc(npcSeedText(n))}，不能修改）</span></p>
       <div class="npcgrid">
         <label>名字<input class="ainput" data-k="name" maxlength="10" value="${esc(n.name)}"></label>
+        <label>稱號<input class="ainput" data-k="title" maxlength="12" value="${esc(n.title)}"></label>
+        <label>供應說明<input class="ainput" data-k="supply" maxlength="20" value="${esc(n.supply||"")}" placeholder="${esc("供應"+npcSeedText(n))}"></label>
         <label>出現地點<select class="ainput" data-k="zone">${opt(zones,n.zone)}</select></label>
         <label class="wide">一句話<input class="ainput" data-k="say" maxlength="60" value="${esc(n.say)}"></label>
         <label>髮型<select class="ainput" data-k="av.hair">${opt(hairs,n.av.hair)}</select></label>
@@ -6416,6 +6425,7 @@ $("#npcAdmin").addEventListener("input",e=>{
   const n=NPCD[+card.dataset.npci], v=e.target.value;
   if(k.indexOf("av.")===0){ const f=k.slice(3); n.av[f]=["hc","skin","oc"].includes(f)?+v:v; card.querySelector(".npcprev").innerHTML=avatarSVG(n.av); }
   else n[k]=v;
+  if(["name","title","supply"].includes(k)){ const h=card.querySelector(".npcname"); if(h) h.innerHTML=`<b>${esc(n.name||"")}</b><span class="ahint">${esc(n.title||"")}・${esc(npcSupplyText(n))}（實際供應：${esc(npcSeedText(n))}，不能修改）</span>`; }
 });
 $("#npcReset").addEventListener("click",async()=>{ if(!(await uiConfirm("要把 7 位 NPC 恢復成預設的名字、地點和外觀嗎？（按發布後才會生效）","恢復預設"))) return; NPCD=cleanNpcs(null); renderNpcAdmin(); });
 $("#npcPublish").addEventListener("click",()=>{

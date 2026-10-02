@@ -1052,8 +1052,45 @@ footer.site p{margin:4px 0}
   #levelup.show .burst{opacity:1}
 }
 </style>
+<style id="bootcss">
+#boot{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:radial-gradient(circle at 50% 40%,#2A3470,#141a3c 70%);color:#F6E7C8;font-family:"DotGothic16","Noto Sans TC",system-ui,sans-serif;
+  opacity:0;animation:bootin .25s ease-out .35s forwards;transition:opacity .45s ease}
+#boot.done{opacity:0!important;animation:none;pointer-events:none}
+@keyframes bootin{to{opacity:1}}
+#boot .bt-title{font-size:clamp(26px,6vw,40px);letter-spacing:.12em;text-shadow:3px 3px 0 #000;margin:0}
+#boot .bt-sub{font-size:14px;color:#BFC5E8;margin:0;letter-spacing:.2em}
+#boot .bt-run{position:relative;width:min(320px,80vw);height:100px;overflow:hidden}
+#boot .bt-dog{position:absolute;bottom:0;left:-100px;animation:btrun 2.6s linear infinite}
+#boot .bt-dog svg{animation:bthop .3s steps(2) infinite}
+@keyframes btrun{to{left:100%}}
+@keyframes bthop{50%{transform:translateY(-6px)}}
+#boot .bt-ground{position:absolute;left:0;right:0;bottom:0;height:6px;background:repeating-linear-gradient(90deg,#57C35A 0 12px,#3E9A5A 12px 24px)}
+#boot .bt-bar{width:min(320px,80vw);height:14px;border:3px solid #F6E7C8;border-radius:3px;padding:2px;box-sizing:border-box}
+#boot .bt-bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,#F2C14E 0 8px,#E0A93A 8px 16px);animation:btbar 6s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes btbar{to{width:96%}}
+#boot .bt-tips{position:relative;width:min(420px,90vw);height:3.2em;text-align:center;font-size:15px;line-height:1.6}
+#boot .bt-tips span{position:absolute;inset:0;opacity:0;animation:bttip 12s infinite}
+#boot .bt-tips span:nth-child(2){animation-delay:3s}#boot .bt-tips span:nth-child(3){animation-delay:6s}#boot .bt-tips span:nth-child(4){animation-delay:9s}
+@keyframes bttip{0%,2%{opacity:0}5%,22%{opacity:1}25%,100%{opacity:0}}
+#boot .bt-slow{font-size:13px;color:#FFB3AD;opacity:0;animation:bootin .4s ease-out 10s forwards;margin:0;text-align:center;padding:0 16px}
+@media (prefers-reduced-motion:reduce){#boot .bt-dog,#boot .bt-dog svg,#boot .bt-bar i{animation:none}#boot .bt-dog{left:calc(50% - 48px)}#boot .bt-bar i{width:60%}}
+</style>
 </head>
 <body>
+<div id="boot" role="status" aria-live="polite" aria-label="網站載入中">
+  <p class="bt-sub">園區及城鄉發展部</p>
+  <h1 class="bt-title">園城人冒險指南</h1>
+  <div class="bt-run"><span class="bt-dog"><svg viewBox="0 0 32 32" width="96" height="96" shape-rendering="crispEdges" aria-hidden="true"><rect x="11" y="2" width="10" height="1" fill="#231F20"/><rect x="9" y="3" width="14" height="1" fill="#231F20"/><rect x="5" y="4" width="6" height="1" fill="#231F20"/><rect x="11" y="4" width="9" height="1" fill="#DFB99C"/><rect x="20" y="4" width="1" height="1" fill="#916341"/><rect x="21" y="4" width="6" height="1" fill="#231F20"/><rect x="4" y="5" width="5" height="1" fill="#231F20"/><rect x="9" y="5" width="2" height="1" fill="#DFB99C"/><rect x="11" y="5" width="10" height="1" fill="#C98A5A"/><rect x="21" y="5" width="1" height="1" fill="#DFB99C"/><rect x="22" y="5" width="1" height="1" fill="#916341"/><rect x="23" y="5" width="5" height="1" fill="#231F20"/><rect x="4" y="6" width="4" height="1" fill="#916341"/><rect x="8" y="6" width="1" height="1" fill="#DFB99C"/><rect x="9" y="6" width="14" height="1" fill="#C98A5A"/><rect x="23" y="6" width="1" height="1" fill="#DFB99C"/><rect x="24" y="6" width="4" height="1" fill="#916341"/><rect x="4" y="7" width="4" height="1" fill="#916341"/><rect x="8" y="7" width="16" height="1" fill="#C98A5A"/><rect x="24" y="7" width="4" height="1" fill="#916341"/><rect x="4" y="8" width="4" height="1" fill="#916341"/><rect x="8" y="8" width="16" height="1" fill="#C98A5A"/><rect x="24" y="8" width="4" height="1" fill="#916341"/><rect x="4" y="9" width="4" height="1" fill="#916341"/><rect x="8" y="9" width="16" height="1" fill="#C98A5A"/><rect x="24" y="9" width="4" height="1" fill="#916341"/><rect x="4" y="10" width="4" height="1" fill="#916341"/><rect x="8" y="10" width="4" height="1" fill="#C98A5A"/><rect x="12" y="10" width="2" height="1" fill="#231F20"/><rect x="14" y="10" width="4" height="1" fill="#C98A5A"/><rect x="18" y="10" width="2" height="1" fill="#231F20"/><rect x="20" y="10" width="4" height="1" fill="#C98A5A"/><rect x="24" y="10" width="4" height="1" fill="#916341"/><rect x="4" y="11" width="4" height="1" fill="#916341"/><rect x="8" y="11" width="4" height="1" fill="#C98A5A"/><rect x="12" y="11" width="2" height="1" fill="#231F20"/><rect x="14" y="11" width="4" height="1" fill="#C98A5A"/><rect x="18" y="11" width="2" height="1" fill="#231F20"/><rect x="20" y="11" width="4" height="1" fill="#C98A5A"/><rect x="24" y="11" width="4" height="1" fill="#916341"/><rect x="4" y="12" width="4" height="1" fill="#916341"/><rect x="8" y="12" width="4" height="1" fill="#C98A5A"/><rect x="12" y="12" width="2" height="1" fill="#231F20"/><rect x="14" y="12" width="4" height="1" fill="#C98A5A"/><rect x="18" y="12" width="2" height="1" fill="#231F20"/><rect x="20" y="12" width="4" height="1" fill="#C98A5A"/><rect x="24" y="12" width="4" height="1" fill="#916341"/><rect x="4" y="13" width="4" height="1" fill="#916341"/><rect x="8" y="13" width="4" height="1" fill="#C98A5A"/><rect x="12" y="13" width="3" height="1" fill="#231F20"/><rect x="15" y="13" width="2" height="1" fill="#C98A5A"/><rect x="17" y="13" width="3" height="1" fill="#231F20"/><rect x="20" y="13" width="4" height="1" fill="#C98A5A"/><rect x="24" y="13" width="4" height="1" fill="#916341"/><rect x="4" y="14" width="4" height="1" fill="#916341"/><rect x="8" y="14" width="2" height="1" fill="#C98A5A"/><rect x="10" y="14" width="2" height="1" fill="#F4929A"/><rect x="12" y="14" width="1" height="1" fill="#F7F7FB"/><rect x="13" y="14" width="6" height="1" fill="#231F20"/><rect x="19" y="14" width="1" height="1" fill="#F7F7FB"/><rect x="20" y="14" width="2" height="1" fill="#F4929A"/><rect x="22" y="14" width="2" height="1" fill="#C98A5A"/><rect x="24" y="14" width="4" height="1" fill="#916341"/><rect x="4" y="15" width="4" height="1" fill="#916341"/><rect x="8" y="15" width="2" height="1" fill="#C98A5A"/><rect x="10" y="15" width="2" height="1" fill="#F4929A"/><rect x="12" y="15" width="3" height="1" fill="#F7F7FB"/><rect x="15" y="15" width="2" height="1" fill="#231F20"/><rect x="17" y="15" width="3" height="1" fill="#F7F7FB"/><rect x="20" y="15" width="2" height="1" fill="#F4929A"/><rect x="22" y="15" width="2" height="1" fill="#C98A5A"/><rect x="24" y="15" width="4" height="1" fill="#916341"/><rect x="4" y="16" width="4" height="1" fill="#231F20"/><rect x="8" y="16" width="1" height="1" fill="#916341"/><rect x="9" y="16" width="3" height="1" fill="#C98A5A"/><rect x="12" y="16" width="8" height="1" fill="#F7F7FB"/><rect x="20" y="16" width="3" height="1" fill="#C98A5A"/><rect x="23" y="16" width="1" height="1" fill="#916341"/><rect x="24" y="16" width="4" height="1" fill="#231F20"/><rect x="5" y="17" width="4" height="1" fill="#231F20"/><rect x="9" y="17" width="1" height="1" fill="#916341"/><rect x="10" y="17" width="3" height="1" fill="#C98A5A"/><rect x="13" y="17" width="6" height="1" fill="#F7F7FB"/><rect x="19" y="17" width="3" height="1" fill="#C98A5A"/><rect x="22" y="17" width="1" height="1" fill="#916341"/><rect x="23" y="17" width="5" height="1" fill="#231F20"/><rect x="7" y="18" width="3" height="1" fill="#231F20"/><rect x="10" y="18" width="1" height="1" fill="#DFB99C"/><rect x="11" y="18" width="10" height="1" fill="#C98A5A"/><rect x="21" y="18" width="1" height="1" fill="#916341"/><rect x="22" y="18" width="2" height="1" fill="#231F20"/><rect x="26" y="18" width="2" height="1" fill="#231F20"/><rect x="8" y="19" width="2" height="1" fill="#231F20"/><rect x="10" y="19" width="1" height="1" fill="#DFB99C"/><rect x="11" y="19" width="10" height="1" fill="#C98A5A"/><rect x="21" y="19" width="1" height="1" fill="#916341"/><rect x="22" y="19" width="2" height="1" fill="#231F20"/><rect x="26" y="19" width="2" height="1" fill="#231F20"/><rect x="8" y="20" width="2" height="1" fill="#DFB99C"/><rect x="10" y="20" width="12" height="1" fill="#C98A5A"/><rect x="22" y="20" width="2" height="1" fill="#DFB99C"/><rect x="24" y="20" width="4" height="1" fill="#916341"/><rect x="8" y="21" width="16" height="1" fill="#C98A5A"/><rect x="24" y="21" width="4" height="1" fill="#916341"/><rect x="7" y="22" width="1" height="1" fill="#231F20"/><rect x="8" y="22" width="1" height="1" fill="#DFB99C"/><rect x="9" y="22" width="15" height="1" fill="#C98A5A"/><rect x="24" y="22" width="4" height="1" fill="#916341"/><rect x="28" y="22" width="2" height="1" fill="#231F20"/><rect x="6" y="23" width="2" height="1" fill="#231F20"/><rect x="8" y="23" width="1" height="1" fill="#DFB99C"/><rect x="9" y="23" width="15" height="1" fill="#C98A5A"/><rect x="24" y="23" width="4" height="1" fill="#916341"/><rect x="28" y="23" width="2" height="1" fill="#231F20"/><rect x="6" y="24" width="2" height="1" fill="#231F20"/><rect x="8" y="24" width="1" height="1" fill="#DFB99C"/><rect x="9" y="24" width="14" height="1" fill="#C98A5A"/><rect x="23" y="24" width="1" height="1" fill="#916341"/><rect x="24" y="24" width="2" height="1" fill="#231F20"/><rect x="6" y="25" width="2" height="1" fill="#231F20"/><rect x="8" y="25" width="1" height="1" fill="#DFB99C"/><rect x="9" y="25" width="14" height="1" fill="#C98A5A"/><rect x="23" y="25" width="1" height="1" fill="#916341"/><rect x="24" y="25" width="2" height="1" fill="#231F20"/><rect x="6" y="26" width="2" height="1" fill="#231F20"/><rect x="8" y="26" width="1" height="1" fill="#DFB99C"/><rect x="9" y="26" width="14" height="1" fill="#C98A5A"/><rect x="23" y="26" width="1" height="1" fill="#916341"/><rect x="24" y="26" width="2" height="1" fill="#231F20"/><rect x="7" y="27" width="1" height="1" fill="#231F20"/><rect x="8" y="27" width="1" height="1" fill="#DFB99C"/><rect x="9" y="27" width="14" height="1" fill="#C98A5A"/><rect x="23" y="27" width="1" height="1" fill="#916341"/><rect x="24" y="27" width="1" height="1" fill="#231F20"/><rect x="8" y="28" width="3" height="1" fill="#916341"/><rect x="11" y="28" width="10" height="1" fill="#C98A5A"/><rect x="21" y="28" width="3" height="1" fill="#916341"/><rect x="9" y="29" width="3" height="1" fill="#916341"/><rect x="12" y="29" width="8" height="1" fill="#C98A5A"/><rect x="20" y="29" width="3" height="1" fill="#916341"/></svg></span><span class="bt-ground"></span></div>
+  <div class="bt-bar"><i></i></div>
+  <div class="bt-tips">
+    <span>村長正在準備冒險地圖……</span>
+    <span>💡 任務裡常用的資料按「♥ 加入最愛」，筆記本就查得到</span>
+    <span>💡 走進海裡可以撈寶，還可能遇到章魚海怪</span>
+    <span>💡 每個區塊標題旁的「?」都有玩法說明</span>
+  </div>
+  <p class="bt-slow">網路有點慢，再等一下下……如果一直沒反應，請重新整理頁面。</p>
+</div>
 
 <header class="hud window" aria-label="冒險者狀態">
   <button class="face" id="hudFace" type="button" aria-label="編輯角色" title="點頭像可以修改角色外觀"></button>
@@ -6161,6 +6198,7 @@ function showWelcomePage(){
 }
 function startWelcome(force){
   if(adminOpen) return;
+  if(!force&&bootShowing()){ BOOT_WAIT.push(()=>startWelcome(force)); return; }   // 等過場畫面結束再出現
   if(S.group&&S.tourDone===undefined&&(Object.keys(S.done||{}).length||Object.keys(S.visited||{}).length>1)){ S.tourDone=true; save(); }
   if(S.group&&!S.tourDone){ startTour(true); return; }
   if(!force&&welcomedThisSession()){ if(!S.group) openChar(); return; }
@@ -8556,10 +8594,17 @@ async function saveFile(filename,blob){
 }
 
 /* ---- connect ---- */
+const BOOT_WAIT=[];
+const bootShowing=()=>{ const b=document.getElementById("boot"); return !!(b&&!b.classList.contains("done")); };
+function hideBoot(){ const b=document.getElementById("boot"); if(!b||b.classList.contains("done")) return; b.classList.add("done");
+  setTimeout(()=>{ b.remove(); const c=document.getElementById("bootcss"); if(c) c.remove(); },500);
+  setTimeout(()=>{ BOOT_WAIT.splice(0).forEach(fn=>{ try{ fn(); }catch(e){} }); },150); }
+setTimeout(hideBoot,6000);                             // 試算表太慢時，6 秒後先用內建內容開始
 applyInterviewSwitch();
 if(starActive()) startStar();
 cloudRestoreSession().then(()=>{ renderCloudBox(); setTimeout(()=>cloudSyncOnStart(),1200); });
 bootstrap().then(()=>{
+  hideBoot();
   if(S.group) setTimeout(()=>{ loungePresence(true).catch(()=>{}); },3000);   // 每次開站都讓大家看到自己在線上
   try{ if(!S.seenContent||!Object.keys(S.seenContent).length) markContentUpdates(); else refreshBonus(); }catch(e){}
   if(S.group){
@@ -8567,6 +8612,7 @@ bootstrap().then(()=>{
     try{ if(!sessionStorage.getItem("sino22-reported")){ sessionStorage.setItem("sino22-reported","1"); queueSync(true); } }catch(e){}
   }
 }).catch(err=>{
+  hideBoot();
   console.error("bootstrap:",err);
   const net=err&&(/fetch|network|Failed|HTTP|CSV/i.test(String(err.message||err)));
   toast(net?"暫時讀不到部門試算表，任務內容先使用內建版本":"畫面載入時發生問題，請重新整理；若持續發生請通知管理者");

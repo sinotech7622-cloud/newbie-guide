@@ -747,6 +747,16 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .npcgrid .ainput{padding:6px 8px;font-size:14px}
 @media (max-width:640px){.npccard{flex-wrap:wrap}.npcedit{flex-direction:column}}
 
+.nqwrap{max-width:min(620px,calc(100vw - 28px))}
+.nqtop{display:flex;gap:12px;align-items:center}
+.nqq{white-space:pre-line;font-size:17px;line-height:1.7;margin:14px 0 10px;padding:12px 14px;background:#0B1030;border:2px solid var(--line);border-radius:4px}
+.nqopts{display:grid;gap:8px}
+.nqopt{font:inherit;text-align:left;color:var(--win-text);background:#1B2466;border:2px solid var(--line);border-radius:4px;padding:10px 12px;cursor:pointer;font-size:15px}
+.nqopt:hover:not(:disabled){border-color:var(--gold)}
+.nqopt.right{border-color:#4CC38A;background:rgba(76,195,138,.18)}
+.nqopt.wrong{border-color:#E8453C;background:rgba(232,69,60,.18)}
+.nqok{color:#9BE38E;font-size:16px}.nqng{color:#FFB3AD;font-size:16px}
+
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -1678,6 +1688,22 @@ footer.site p{margin:4px 0}
   <linearGradient id="petRbwD" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="32" y2="32" spreadMethod="repeat"><stop offset="0" stop-color="#AE3029"/><stop offset=".2" stop-color="#C07730"/><stop offset=".4" stop-color="#BF9D2F"/><stop offset=".6" stop-color="#409244"/><stop offset=".8" stop-color="#375CB9"/><stop offset="1" stop-color="#7450A0"/><animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="32 32" dur="4s" repeatCount="indefinite"/></linearGradient>
   <linearGradient id="petRbwL" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="32" y2="32" spreadMethod="repeat"><stop offset="0" stop-color="#F48D87"/><stop offset=".2" stop-color="#FFC48E"/><stop offset=".4" stop-color="#FFE68C"/><stop offset=".6" stop-color="#9ADB9C"/><stop offset=".8" stop-color="#92B0FA"/><stop offset="1" stop-color="#C3A6E6"/><animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="32 32" dur="4s" repeatCount="indefinite"/></linearGradient>
 </defs></svg>
+<dialog id="npcQuizDlg" aria-labelledby="nqTitle">
+  <div class="window dlg form nqwrap">
+    <div class="head">
+      <div><p class="dept" id="nqDept">情報問答</p><h3 id="nqTitle">情報問答</h3></div>
+      <button class="act ghost" type="button" data-close>稍後再說</button>
+    </div>
+    <div class="body">
+      <div class="nqtop"><span class="npcface" id="nqFace" aria-hidden="true"></span><p class="dbody" id="nqSay"></p></div>
+      <p class="nqq" id="nqQ"></p>
+      <div class="nqopts" id="nqOpts"></div>
+      <div id="nqResult" aria-live="polite"></div>
+    </div>
+    <div class="foot"><button class="act ghost" type="button" id="nqSkip">不答題，直接領一般份量</button>
+      <span class="afilters"><button class="act ghost" type="button" id="nqGo" hidden>去看這則任務</button><button class="act" type="button" id="nqOk" hidden>好</button></span></div>
+  </div>
+</dialog>
 <dialog id="visitDlg" aria-labelledby="vsTitle">
   <div class="window dlg form visitwrap">
     <div class="head">
@@ -5214,7 +5240,7 @@ function runCheat(msg){
 /* ---- 各功能的說明提示（點「?」顯示） ---- */
 const HELP={
   map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
-  zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC，每天可以向每位 NPC 領一次種子。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
+  zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
   places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。",
   notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題、內容，也能寫自己的小筆記。",
   pet:"LV 3 可以領養寵物，LV 4 會長大，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件。",
@@ -6150,8 +6176,9 @@ function renderZoneNpc(zoneId){
     return `<div class="npccard">
       <span class="npcface" aria-hidden="true">${avatarSVG(n.av)}</span>
       <div class="npcbody"><p class="npcname"><b>${esc(n.name)}</b><span class="ahint">${esc(n.title)}・供應${esc(npcSeedText(n))}</span></p>
-        <p class="npcsay">「${esc(done?"今天的種子給過你囉，明天再來找我吧！":n.say)}」</p></div>
-      <button class="act${done?" ghost":""}" type="button" data-npcseed="${n.id}" ${done?"disabled":""}>${done?"今天已領":"🌱 領種子"}</button>
+        <p class="npcsay">「${esc(done?"今天的種子給過你囉，明天再來找我吧！":n.say)}」</p>
+        ${done?"":`<p class="ahint" style="margin:2px 0 0">回答一題這裡的情報問題，答對送 ${QUIZ_MULT} 倍種子！</p>`}</div>
+      <button class="act${done?" ghost":""}" type="button" data-npcseed="${n.id}" ${done?"disabled":""}>${done?"今天已領":"❓ 答題領種子"}</button>
     </div>`; }).join("");
 }
 function claimNpcSeeds(id){
@@ -6169,6 +6196,108 @@ function claimNpcSeeds(id){
   toast(`🌱 ${n.name}給了你 ${got.join("、")} 種子！`);
   renderZoneNpc(curZone&&curZone.id);
 }
+/* ---- NPC 情報問答：用所在地點的任務內容出題，答對 10 倍種子 ---- */
+const QUIZ_MULT=10;
+function seededRand(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; }
+  return ()=>{ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
+const shuffleR=(arr,r)=>{ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+function questSentences(q){
+  const tmp=document.createElement("div"); tmp.innerHTML=String(q.body||"").replace(/<(li|p|br|h4|div|tr)\b/gi,"\n<$1");
+  return (tmp.textContent||"").split(/\n|。/).map(t=>t.replace(/\s+/g," ").trim()).filter(t=>t.length>=8&&t.length<=80);
+}
+const NUM_RE=/\d{1,4}(?::\d{2})?(?:\s*[～~\-–]\s*\d{1,4}(?::\d{2})?)?/;
+function numKind(tok){ if(/:/.test(tok)) return "time"; if(/[～~\-–]/.test(tok)) return "range"; const v=parseInt(tok,10); return v>=1900&&v<=2100?"year":"num"; }
+function similarTok(a,b){                              // 干擾選項要跟答案同類型、數值接近，才不會一眼看穿
+  if(a===b||numKind(a)!==numKind(b)) return false;
+  if(numKind(a)!=="num") return true;
+  const x=parseInt(a,10), y=parseInt(b,10);
+  if(String(y)!==b) return false;
+  return y>=Math.floor(x/4)&&y<=Math.max(12,x*4);
+}
+function fakeNums(tok,r){
+  const k=numKind(tok), out=new Set();
+  const bump=t=>t.replace(/\d+/g,(m,off)=>{ const n=parseInt(m,10); const d=[1,2,5,10,30][Math.floor(r()*5)]*(r()<.5?-1:1); let v=Math.max(0,n+d); if(/:\d{2}/.test(t)&&m.length===2&&off>0) v=[0,15,30,45][Math.floor(r()*4)]; return String(v).padStart(m.length>1&&m[0]==="0"?m.length:1,"0"); });
+  let guard=0; while(out.size<6&&guard++<60){ const f=bump(tok); if(f!==tok&&(numKind(tok)!=="num"||similarTok(tok,f))) out.add(f); }
+  return [...out];
+}
+function makeNpcQuiz(n){
+  const today=new Date().toISOString().slice(0,10), r=seededRand(n.id+"|"+today+"|"+(n.zone||""));
+  const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
+  const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id); if(!qs.length) return null;
+  // ① 內容題：任務說明裡有數字的句子，把數字挖空
+  const cands=[];
+  qs.forEach(q=>questSentences(q).forEach(t=>{ const m=t.match(NUM_RE); if(m&&!/^\d+$/.test(t.trim())) cands.push({q,t,tok:m[0].replace(/\s+/g,"")}); }));
+  const zoneToks=[...new Set(cands.map(c=>c.tok))];
+  if(cands.length&&r()<.7){
+    const c=cands[Math.floor(r()*cands.length)];
+    let wrong=zoneToks.filter(t=>similarTok(c.tok,t));
+    wrong=shuffleR(wrong,r).slice(0,3);
+    if(wrong.length<3) wrong=wrong.concat(fakeNums(c.tok,r).filter(f=>!wrong.includes(f))).slice(0,3);
+    if(wrong.length===3){
+      const opts=shuffleR([c.tok].concat(wrong),r);
+      return {kind:"內容題",text:`根據「${c.q.title}」：\n${c.t.replace(NUM_RE,"＿＿＿＿")}`,opts,ans:opts.indexOf(c.tok),quest:c.q.id,explain:c.t};
+    }
+  }
+  // ② 歸屬題：哪一項可以在這裡查到
+  const others=ALLQ.filter(q=>q.zone&&q.zone.id!==z.id);
+  if(others.length>=3&&(r()<.6||new Set(qs.map(q=>q.chapter)).size<2)){
+    const right=qs[Math.floor(r()*qs.length)], wrong=shuffleR(others,r).slice(0,3);
+    const opts=shuffleR([right].concat(wrong),r);
+    return {kind:"歸屬題",text:`下列哪一項，是在「${z.name}」可以查到的情報？`,opts:opts.map(q=>q.title),ans:opts.indexOf(right),quest:right.id,
+      explain:`「${right.title}」在${z.name}的「${right.chapter}」裡。`};
+  }
+  // ③ 分類題：屬於哪個分類
+  const chs=[...new Set(qs.map(q=>q.chapter))];
+  if(chs.length>=2){
+    const right=qs[Math.floor(r()*qs.length)], opts=shuffleR(chs,r).slice(0,4);
+    if(!opts.includes(right.chapter)) opts[0]=right.chapter;
+    const o2=shuffleR(opts,r);
+    return {kind:"分類題",text:`「${right.title}」屬於${z.name}的哪個分類？`,opts:o2,ans:o2.indexOf(right.chapter),quest:right.id,explain:`它在「${right.chapter}」分類裡。`};
+  }
+  return null;
+}
+function giveNpcSeeds(n,mult){
+  const got=[];
+  if(n.seed==="mix"){
+    const r=seededRand(n.id+"|mix|"+new Date().toISOString().slice(0,10));
+    shuffleR(Object.keys(CROPS),r).slice(0,2).forEach(k=>{ const a=2*mult; seeds()[k]=(seeds()[k]||0)+a; got.push(`${CROPS[k].name} ×${a}`); });
+  }else{
+    const a=(n.seed==="strawberry"||n.seed==="pumpkin"?2:3)*mult;
+    seeds()[n.seed]=(seeds()[n.seed]||0)+a; got.push(`${CROPS[n.seed].name} ×${a}`);
+  }
+  S.npcDay=S.npcDay||{}; S.npcDay[n.id]=new Date().toISOString().slice(0,10);
+  save(); queueSync();
+  return got.join("、");
+}
+let QUIZ_CUR=null;
+function openNpcQuiz(id){
+  const n=npcList().find(x=>x.id===id); if(!n||npcClaimedToday(id)) return;
+  const qz=makeNpcQuiz(n);
+  if(!qz){ const g=giveNpcSeeds(n,1); Sound.sfx("get"); toast(`🌱 ${n.name}給了你 ${g} 種子！`); renderZoneNpc(curZone&&curZone.id); return; }
+  QUIZ_CUR={n,qz,done:false};
+  $("#nqFace").innerHTML=avatarSVG(n.av);
+  $("#nqTitle").textContent=`${n.name}的情報問答`;
+  $("#nqDept").textContent=`${n.title}・${qz.kind}`;
+  $("#nqSay").textContent=`「答對的話，我送你 ${QUIZ_MULT} 倍的${npcSeedText(n)}！」`;
+  $("#nqQ").textContent=qz.text;
+  $("#nqOpts").innerHTML=qz.opts.map((o,i)=>`<button type="button" class="nqopt" data-nq="${i}">${String.fromCharCode(65+i)}．${esc(o)}</button>`).join("");
+  $("#nqResult").innerHTML=""; $("#nqSkip").hidden=false; $("#nqGo").hidden=true; $("#nqOk").hidden=true;
+  const d=$("#npcQuizDlg"); if(!d.open) d.showModal();
+  Sound.sfx("open");
+}
+function answerNpcQuiz(i){
+  const c=QUIZ_CUR; if(!c||c.done) return;
+  c.done=true;
+  const ok=i===c.qz.ans, mult=ok?QUIZ_MULT:1;
+  document.querySelectorAll("#nqOpts .nqopt").forEach((b,j)=>{ b.disabled=true; if(j===c.qz.ans) b.classList.add("right"); else if(j===i) b.classList.add("wrong"); });
+  const got=giveNpcSeeds(c.n,mult);
+  Sound.sfx(ok?"achieve":"error");
+  $("#nqResult").innerHTML=ok?`<p class="nqok">⭕ 答對了！${esc(c.n.name)}送你 <b>${esc(got)}</b> 種子（${QUIZ_MULT} 倍）！</p>`
+    :`<p class="nqng">❌ 可惜答錯了。正確答案是「${esc(c.qz.opts[c.qz.ans])}」。${esc(c.n.name)}還是送你 <b>${esc(got)}</b> 種子。</p><p class="ahint">${esc(c.qz.explain)}</p>`;
+  $("#nqSkip").hidden=true; $("#nqGo").hidden=false; $("#nqOk").hidden=false;
+  renderZoneNpc(curZone&&curZone.id);
+}
+
 /* ---- 後台：NPC 設定 ---- */
 let NPCD=null;
 function renderNpcAdmin(){
@@ -7298,7 +7427,11 @@ function selectTab(t){
   document.querySelectorAll(".atabs [role=tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
   document.querySelectorAll(".apanel").forEach(p=>p.hidden=p.dataset.panel!==t);
 }
-document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-npcseed]"); if(b){ claimNpcSeeds(b.dataset.npcseed); } });
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-npcseed]"); if(b){ openNpcQuiz(b.dataset.npcseed); } });
+$("#nqOpts").addEventListener("click",e=>{ const b=e.target.closest("[data-nq]"); if(b) answerNpcQuiz(+b.dataset.nq); });
+$("#nqSkip").addEventListener("click",()=>{ const c=QUIZ_CUR; if(!c||c.done) return; c.done=true; const g=giveNpcSeeds(c.n,1); Sound.sfx("get"); toast(`🌱 ${c.n.name}給了你 ${g} 種子！`); $("#npcQuizDlg").close(); renderZoneNpc(curZone&&curZone.id); });
+$("#nqOk").addEventListener("click",()=>$("#npcQuizDlg").close());
+$("#nqGo").addEventListener("click",()=>{ const c=QUIZ_CUR; $("#npcQuizDlg").close(); if(c&&c.qz.quest) setTimeout(()=>openQuest(c.qz.quest),120); });
 document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); }if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster();}});
 $("#viewAdmin").addEventListener("click",e=>{
   const c=e.target.closest("[data-copy]"); if(c){ copyText($("#"+c.dataset.copy).textContent); return; }

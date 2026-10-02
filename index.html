@@ -796,6 +796,9 @@ body.tour-lock .mapframe{z-index:41}
 .gotplus{position:absolute;right:6px;top:-10px;background:var(--gold);color:#2B1B00;font-family:var(--pixel);font-size:12px;padding:1px 6px;border-radius:8px;animation:gotpop .6s ease-out}
 @keyframes gotpop{from{transform:translateY(6px) scale(.6);opacity:0}to{transform:none;opacity:1}}
 
+.npccount{margin:0 0 8px;padding:8px 10px;background:rgba(242,193,78,.12);border:1px solid var(--gold);border-radius:4px;font-size:14px}
+#spOpts .seed{font:inherit;color:inherit}
+
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -1807,6 +1810,15 @@ footer.site p{margin:4px 0}
     </div>
     <div class="foot"><button class="act ghost" type="button" id="nqSkip">不答題，直接領一般份量</button>
       <span class="afilters"><button class="act ghost" type="button" id="nqGo" hidden>去看這則任務</button><button class="act" type="button" id="nqOk" hidden>好</button></span></div>
+  </div>
+</dialog>
+<dialog id="seedPickDlg" aria-labelledby="spTitle">
+  <div class="window dlg form nqwrap">
+    <div class="head"><div><p class="dept">第 100 份的獎勵</p><h3 id="spTitle">你送出了第 100 份蔬菜！</h3></div></div>
+    <div class="body">
+      <div class="nqtop"><span class="npcface" id="spFace" aria-hidden="true"></span><p class="dbody" id="spSay"></p></div>
+      <div class="seedrow" id="spOpts" style="margin-top:12px"></div>
+    </div>
   </div>
 </dialog>
 <dialog id="visitDlg" aria-labelledby="vsTitle">
@@ -5021,6 +5033,7 @@ async function loadLounge(force){
     })).filter(r=>r.type&&r.code);
     LOUNGE.at=Date.now(); LOUNGE.err="";
     try{ claimGifts(); }catch(e){}
+    try{ checkNpcMilestones(); }catch(e){}
     const champ=loungeData().champion===myCode().toUpperCase();
     if(champ!==IS_CHAMP){
       IS_CHAMP=champ; renderHUD(); if(!$("#viewMap").hidden) buildMap();
@@ -5030,7 +5043,7 @@ async function loadLounge(force){
   finally{ LOUNGE.busy=false; }
 }
 function loungeData(){
-  const people={}, likes={}, posts=[], replies={}, visits={}, steals={}, tosses={}, gifts={};
+  const people={}, likes={}, posts=[], replies={}, visits={}, steals={}, tosses={}, gifts={}, npcgifts={};
   const seen=new Set(LOUNGE.rows.map(r=>r.type+"|"+r.code+"|"+r.target+"|"+r.msg));
   const pend=pendingRows().filter(r=>!seen.has(r.type+"|"+r.code+"|"+r.target+"|"+r.msg));
   const HID=hiddenCodes();
@@ -5042,6 +5055,8 @@ function loungeData(){
       (likes[r.target]=likes[r.target]||new Set()).add(r.code);
     }else if(r.type==="post"&&r.target){
       if(!posts.some(x=>x.id===r.target)) posts.push({id:r.target,code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
+    }else if(r.type==="npcgift"&&r.target){
+      (npcgifts[r.target]=npcgifts[r.target]||[]).push({code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
     }else if(r.type==="toss"&&r.target){
       (tosses[r.target]=tosses[r.target]||[]).push({code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
     }else if(r.type==="gift"&&r.target){
@@ -5072,7 +5087,7 @@ function loungeData(){
   posts.sort((a,b)=>(b.at?b.at.getTime():0)-(a.at?a.at.getTime():0));
   Object.values(replies).forEach(l=>l.sort((a,b)=>(a.at?a.at.getTime():0)-(b.at?b.at.getTime():0)));
   Object.values(visits).forEach(l=>l.sort((a,b)=>(b.at?b.at.getTime():0)-(a.at?a.at.getTime():0)));
-  return {list,posts,replies,visits,steals,tosses,gifts,people,champion,online:list.filter(p=>p.online).length};
+  return {list,posts,replies,visits,steals,tosses,gifts,npcgifts,people,champion,online:list.filter(p=>p.online).length};
 }
 async function loungeSend(payload){
   if(!loungeReady()) return false;
@@ -5615,12 +5630,42 @@ function npcNextFrame(id){
 }
 const NPC_GIFT={home:{who:"村長",pet:"tiger",petName:"小老虎",color:5,thanks:["哈哈，自己種的嗎？我收下了！","這蔬菜真新鮮，謝謝你～"]},
                 digital:{who:"總長",pet:"caterpillar",petName:"毛毛蟲",color:7,thanks:["喔！數位辦公室的大家會很開心。","謝啦，這個拿來當下午茶剛好。"]}};
+const NPC_MILESTONE=100, NPC_MILESTONE_SEEDS=30;
+const npcTarget=id=>id==="home"?"@chief":"@director";
+function npcGiftList(id,withPending){
+  if(!loungeReady()||!LOUNGE.at) return null;
+  const L=(loungeData().npcgifts||{})[npcTarget(id)]||[];
+  return withPending?L:L.filter(x=>!x.pending);
+}
+function checkNpcMilestones(){                         // 依試算表順序，每第 100 份的送菜者得 30 顆自選種子
+  if(!S.group) return;
+  const me=myCode().toUpperCase(); S.npcMile=S.npcMile||{};
+  ["home","digital"].forEach(id=>{
+    const L=npcGiftList(id,false); if(!L) return;
+    for(let i=NPC_MILESTONE-1;i<L.length;i+=NPC_MILESTONE){
+      const key=`${id}|${i+1}`;
+      if(L[i].code===me&&!S.npcMile[key]){ S.npcMile[key]="pending"; save(); openSeedPick(id,i+1,key); return; }
+    }
+  });
+}
+let SEEDPICK=null;
+function openSeedPick(id,nth,key){
+  const g=NPC_GIFT[id]; SEEDPICK={id,key};
+  $("#spTitle").textContent=`你送出了第 ${nth} 份蔬菜！`;
+  $("#spSay").textContent=`${g.who}：「恭喜你剛好是第 ${nth} 份！挑一種你最想要的種子，我送你 ${NPC_MILESTONE_SEEDS} 顆！」`;
+  $("#spFace").innerHTML=avatarSVG(id==="home"?CHIEF_AV:DIRECTOR_AV);
+  $("#spOpts").innerHTML=Object.entries(CROPS).map(([k,c])=>`<button type="button" class="seed" data-sp="${k}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}</b><small>×${NPC_MILESTONE_SEEDS}</small></button>`).join("");
+  const d=$("#seedPickDlg"); if(!d.open) d.showModal();
+  Sound.sfx("levelup");
+}
 function npcGiftHTML(id){
   const g=NPC_GIFT[id]; if(!g||!S.group) return "";
   const barn=S.barn||{}, opts=Object.entries(CROPS).filter(([k])=>(barn[k]||0)>0);
   const got=!!(S.petKinds&&S.petKinds[g.pet]);
   return `<section class="window pbox" id="npcGift">
     <h3>送蔬菜給${g.who} ${helpBtn("npcGift")}</h3>
+    ${(()=>{ const L=npcGiftList(id,true); if(!L) return ""; const n=L.length%NPC_MILESTONE, left=NPC_MILESTONE-n;
+      return `<p class="npccount">🎯 ${g.who}已經收到 <b>${n}</b> 份蔬菜（大家一起累計）。<b>第 ${NPC_MILESTONE} 份</b>的送菜者可以拿到 <b>${NPC_MILESTONE_SEEDS} 顆自選種子</b>，還差 ${left} 份！</p>`; })()}
     <p class="dbody">${got?`${g.who}已經送過你${esc(g.petName)}了。`:`把自己種的蔬菜送給${g.who}，說不定會有<b>意想不到的回禮</b>喔！`}
       ${(()=>{ const nx=npcNextFrame(id); return got?(nx?`再送 <b>${nx.left}</b> 次，${g.who}會送你一幅畫框「${esc(nx.frame.name)}」。`:`${g.who}的畫框都送給你了，再送蔬菜會回送種子。`):""; })()}</p>
     <div class="vsactrow"><select class="ainput" id="npcGiftSel" ${opts.length?"":"disabled"}>${opts.length?opts.map(([k,c])=>`<option value="${k}">${esc(c.name)}（${barn[k]}）</option>`).join(""):`<option>倉庫是空的</option>`}</select>
@@ -5634,11 +5679,20 @@ function injectNpcGift(){
   const old=$("#npcGift"); if(old) old.remove();
   const html=npcGiftHTML(pl.id); if(!html) return;
   body.insertAdjacentHTML("afterbegin",html);
+  if(loungeReady()&&!LOUNGE.at&&!LOUNGE.busy) loadLounge(false).then(()=>{ if(curPlace&&curPlace.id===pl.id) injectNpcGift(); });
 }
 async function giveToNpc(id){
   const g=NPC_GIFT[id], k=($("#npcGiftSel")||{}).value;
   if(!g||!CROPS[k]||!((S.barn||{})[k]>0)) return;
   S.barn[k]--; S.npcGifts=S.npcGifts||{}; S.npcGifts[id]=(S.npcGifts[id]||0)+1; save();
+  if(loungeReady()&&S.group){                          // 全站共用計數：每第 100 份有 30 顆自選種子
+    const payload={type:"npcgift",code:myCode(),name:dispName(),target:npcTarget(id),msg:`${k}|${randChars(6)}`};
+    loungeSend(payload).then(ok=>{ if(!ok) return; addPending(payload);
+      const L=npcGiftList(id,true);
+      if(L&&L.length%NPC_MILESTONE===0) setTimeout(()=>toast(`🎯 你可能剛好送出第 ${L.length} 份！試算表同步後（約 5 分鐘）確認就會收到 ${NPC_MILESTONE_SEEDS} 顆自選種子`),2500);
+      injectNpcGift();
+    });
+  }
   S.petKinds=S.petKinds||{};
   const frameId=(NPC_FRAMES[id]||{})[S.npcGifts[id]];
   if(S.petKinds[g.pet]&&frameId&&!(S.album&&S.album[frameId])){
@@ -7686,6 +7740,15 @@ document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closes
 $("#nqOpts").addEventListener("click",e=>{ const b=e.target.closest("[data-nq]"); if(b) answerNpcQuiz(+b.dataset.nq); });
 $("#nqSkip").addEventListener("click",()=>{ const c=QUIZ_CUR; if(!c||c.done) return; c.done=true; const g=giveNpcSeeds(c.n,1); Sound.sfx("get"); toast(`🌱 ${c.n.name}給了你 ${g} 種子！`); $("#npcQuizDlg").close(); renderZoneNpc(curZone&&curZone.id); });
 $("#nqOk").addEventListener("click",()=>$("#npcQuizDlg").close());
+$("#seedPickDlg").addEventListener("cancel",e=>e.preventDefault());       // 一定要選一種
+$("#spOpts").addEventListener("click",e=>{
+  const b=e.target.closest("[data-sp]"); if(!b||!SEEDPICK) return;
+  const k=b.dataset.sp; seeds()[k]=(seeds()[k]||0)+NPC_MILESTONE_SEEDS;
+  S.npcMile[SEEDPICK.key]=k; save(); queueSync(true);
+  $("#seedPickDlg").close(); Sound.sfx("achieve");
+  toast(`🌱 拿到 ${NPC_MILESTONE_SEEDS} 顆${CROPS[k].name}種子！計數重新從 0 開始累計`);
+  SEEDPICK=null; injectNpcGift();
+});
 $("#nqGo").addEventListener("click",()=>{ const c=QUIZ_CUR; $("#npcQuizDlg").close(); if(c&&c.qz.quest) setTimeout(()=>openQuest(c.qz.quest),120); });
 document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); } if(b.dataset.tab==="rps") loadConsultAdmin();if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster();}});
 $("#viewAdmin").addEventListener("click",e=>{

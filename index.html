@@ -790,6 +790,12 @@ body.tour-lock .mapframe{z-index:41}
 .tour-bubble.dock{position:fixed;left:8px!important;right:8px;bottom:10px;top:auto!important;width:auto!important;z-index:60}
 @media (max-width:640px){.tour-text{font-size:14px;min-height:5em}}
 
+.barnitem{position:relative}
+.barnitem.got{border-color:var(--gold);box-shadow:0 0 0 2px rgba(242,193,78,.45);animation:gotflash 1.2s ease-out 2}
+@keyframes gotflash{50%{background:#3A3F8F}}
+.gotplus{position:absolute;right:6px;top:-10px;background:var(--gold);color:#2B1B00;font-family:var(--pixel);font-size:12px;padding:1px 6px;border-radius:8px;animation:gotpop .6s ease-out}
+@keyframes gotpop{from{transform:translateY(6px) scale(.6);opacity:0}to{transform:none;opacity:1}}
+
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -4953,9 +4959,8 @@ function parseJSONish(v){ try{ return JSON.parse(String(v||"")); }catch(e){ retu
 async function loadLounge(force){
   if(!loungeReady()) return;
   try{ await getFeed(!!force); }catch(e){}
-  setTimeout(()=>{ try{ claimGifts(); }catch(e){} },300);
   if(LOUNGE.busy) return;
-  if(!force&&Date.now()-LOUNGE.at<20000) return;
+  if(!force&&Date.now()-LOUNGE.at<20000){ try{ claimGifts(); }catch(e){} return; }
   LOUNGE.busy=true;
   try{
     const rows=await fetchSheet("lounge",force);
@@ -4965,6 +4970,7 @@ async function loadLounge(force){
       av:parseJSONish(r[6]), pet:parseJSONish(r[7]), msg:String(r[8]||""), target:String(r[9]||"").trim()
     })).filter(r=>r.type&&r.code);
     LOUNGE.at=Date.now(); LOUNGE.err="";
+    try{ claimGifts(); }catch(e){}
     const champ=loungeData().champion===myCode().toUpperCase();
     if(champ!==IS_CHAMP){
       IS_CHAMP=champ; renderHUD(); if(!$("#viewMap").hidden) buildMap();
@@ -5170,6 +5176,7 @@ async function loadInbox(notify,force){
   }catch(e){ return false; }
   finally{ inboxBusy=false; }
 }
+setInterval(()=>{ if(document.visibilityState==="visible"&&!adminOpen&&curPlace&&curPlace.id==="myhome"&&loungeReady()) loadLounge(true).catch(()=>{}); },60000);
 let inboxTick=0;
 setInterval(()=>{                                      // 有還沒收到回覆的諮詢時每 1 分鐘檢查，否則每 2 分鐘
   if(document.visibilityState!=="visible"||adminOpen) return;
@@ -5452,11 +5459,15 @@ function claimGifts(){
   const fresh=mine.filter(g=>{ const [c,id]=String(g.msg||"").split("|"); return CROPS[c]&&id&&!S.giftClaimed[id]&&!g.pending; });
   if(!fresh.length) return;
   S.barn=S.barn||{};
-  fresh.forEach(g=>{ const [c,id]=String(g.msg).split("|"); S.barn[c]=(S.barn[c]||0)+1; S.giftClaimed[id]=1; });
+  const got={}, from={};
+  fresh.forEach(g=>{ const [c,id]=String(g.msg).split("|"); S.barn[c]=(S.barn[c]||0)+1; S.giftClaimed[id]=1;
+    got[c]=(got[c]||0)+1; (from[c]=from[c]||new Set()).add(g.name||"有人"); });
   save(); queueSync();
-  const g=fresh[0], c=CROPS[String(g.msg).split("|")[0]];
   Sound.sfx("achieve");
-  toast(fresh.length>1?`🎁 收到 ${fresh.length} 份別人送的蔬菜，已放進倉庫！`:`🎁 ${g.name||"有人"}送你 1 ${c.unit}${c.name}，已放進倉庫！`);
+  toast(`🎁 收到禮物：${Object.entries(got).map(([c,n])=>`${CROPS[c].name} ×${n}（${[...from[c]].join("、")}）`).join("、")}，已放進倉庫！`);
+  GIFT_FLASH={got,until:Date.now()+8000};
+  const hb=$("#homeBarn"); if(hb){ hb.innerHTML=barnHTML(got); }        // 倉庫數量即時更新
+  try{ renderMenu(); }catch(e){}
 }
 function feedPet(k){
   if(!S.pet||!CROPS[k]||!((S.barn||{})[k]>0)) return;
@@ -5529,7 +5540,9 @@ function notifyInteractions(){                         // 回家時通知：誰�
   toast(`📬 ${lines.join("、")}${fresh.length>3?`……共 ${fresh.length} 件`:""}`);
   S.ixSeen=new Date().toISOString(); save();
 }
-function barnHTML(){
+let GIFT_FLASH=null;
+function barnHTML(got){
+  got=got||(GIFT_FLASH&&Date.now()<GIFT_FLASH.until?GIFT_FLASH.got:{});
   const barn=S.barn||{}, total=Object.values(barn).reduce((a,b)=>a+(+b||0),0);
   const pn=S.pet&&PETS[S.pet.type]?(S.pet.name||PETS[S.pet.type].name):"";
   const g=guardActive(S.guardUntil), left=g?S.guardUntil-Date.now():0;
@@ -5537,7 +5550,7 @@ function barnHTML(){
   return `<div class="homebarn">
     <div class="abar"><b class="hb-title">倉庫 ${helpBtn("barn")}</b><span class="ahint">共 ${total} 份${pn?`・點「餵」看${esc(pn)}的反應`:""}</span>
       ${g?`<span class="st st-gold">🐾 ${esc(pn)}看守中 ${fmtLeft(left)}</span>`:""}</div>
-    <div class="barn">${Object.entries(CROPS).map(([k,c])=>`<div class="barnitem${barn[k]?"":" none"}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}${S.pet&&PET_FAV[S.pet.type]===k?' <span title="寵物最愛">♥</span>':""}</b><span>${barn[k]||0} ${esc(c.unit)}</span>${S.pet&&barn[k]?`<button class="mini-btn" type="button" data-feed="${k}" title="拿來餵寵物">餵</button>`:""}</div>`).join("")}</div>
+    <div class="barn">${Object.entries(CROPS).map(([k,c])=>`<div class="barnitem${barn[k]?"":" none"}${got[k]?" got":""}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}${S.pet&&PET_FAV[S.pet.type]===k?' <span title="寵物最愛">♥</span>':""}</b><span>${barn[k]||0} ${esc(c.unit)}</span>${got[k]?`<span class="gotplus">+${got[k]}</span>`:""}${S.pet&&barn[k]?`<button class="mini-btn" type="button" data-feed="${k}" title="拿來餵寵物">餵</button>`:""}</div>`).join("")}</div>
     <p class="ahint" style="margin:8px 0 0">${pn?`餵完 5 分鐘內，${esc(pn)}會更專心看守農場，小偷更容易被抓到。`:""}蔬菜也可以帶去別人家送禮或砸過去，去村長家和總長辦公室送菜還有驚喜。</p>
     ${log.length?`<details class="ixlog"><summary>互動紀錄（${log.length}）</summary>${log.map(x=>{ const c=CROPS[x.crop]||{name:"蔬菜",unit:"份"};
       return `<p>${x.kind==="toss"?"🍅":x.kind==="gift"?"🎁":"🧺"} <b>${esc(x.name||"有人")}</b> ${word[x.kind]} 1 ${esc(c.unit)}${esc(c.name)} <span class="ahint">${esc(fmtShort(x.at))}</span></p>`; }).join("")}</details>`:""}

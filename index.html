@@ -766,6 +766,27 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .csreply{margin:6px 0 0;font-size:14px;color:#BFE6F5}
 [data-csf][aria-pressed="true"]{background:var(--gold);color:#2B1B00}
 
+.mapframe{position:relative}
+.tour{position:absolute;inset:0;z-index:20;overflow:hidden;border-radius:inherit}
+.tour[hidden]{display:none}
+.tour-ring{position:absolute;border:3px solid var(--gold);border-radius:8px;box-shadow:0 0 0 9999px rgba(10,14,40,.62),0 0 14px rgba(242,193,78,.8);
+  transition:left .5s ease,top .5s ease,width .5s ease,height .5s ease;pointer-events:none;animation:tourpulse 1.4s ease-in-out infinite}
+.tour-ring[hidden]{display:block!important;width:0!important;height:0!important;box-shadow:0 0 0 9999px rgba(10,14,40,.62);border:0}
+@keyframes tourpulse{50%{box-shadow:0 0 0 9999px rgba(10,14,40,.62),0 0 22px rgba(242,193,78,1)}}
+.tour-chief{position:absolute;display:block;transition:left .55s ease,top .55s ease;filter:drop-shadow(0 3px 0 rgba(0,0,0,.4));animation:tourbob .5s steps(2) infinite}
+.tour-chief.flip svg{transform:scaleX(-1)}
+@keyframes tourbob{50%{transform:translateY(-2px)}}
+.tour-bubble{position:absolute;background:#FFFDF5;color:#2B2A3A;border:3px solid #231F20;border-radius:8px;padding:10px 12px;box-shadow:4px 4px 0 rgba(0,0,0,.4);transition:left .45s ease,top .45s ease}
+.tour-who{margin:0 0 2px;font-family:var(--pixel);font-size:13px;color:#8A5A32}
+.tour-text{margin:0;font-size:15px;line-height:1.7;min-height:3.4em}
+.tour-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.tour-step{font-family:var(--pixel);font-size:12px;color:#8A8FA8}
+.tour-btns{display:flex;gap:6px;flex-wrap:wrap}
+.tour-btns .act{padding:5px 10px;font-size:13px}
+body.touring .maptip{opacity:.4}
+.tour-bubble.dock{position:fixed;left:8px!important;right:8px;bottom:10px;top:auto!important;width:auto!important;z-index:60}
+@media (max-width:640px){.tour-text{font-size:14px;min-height:5em}}
+
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -1066,7 +1087,7 @@ footer.site p{margin:4px 0}
 
     <div class="titlebar">
       <h1 id="gameTitle"><span class="dept">園區及城鄉發展部<span class="en" lang="en">Technology Park &amp; Regional Development Dept.</span></span>園城人冒險指南</h1>
-      <button class="act ghost" type="button" id="replayWelcome">📜 聽村長說明</button>
+      <button class="act ghost" type="button" id="replayWelcome" title="村長帶你繞地圖一圈，介紹每個地方">📜 聽村長說明</button>
     </div>
 
     <div class="toprow">
@@ -3303,6 +3324,7 @@ function mapPoint(ev){
 let curZone=null, curPlace=null;
 function openZone(id,push){
   const z=ZONES.find(z=>z.id===id); if(!z) return;
+  if(TOUR) endTour(true);
   tryZoneSeeds(id);
   const hadNew=!!ZONE_NEW[id];
   curZone=z;
@@ -4048,9 +4070,10 @@ $("#cForm").addEventListener("submit",async e=>{
   renderPortals(); buildMap(); renderHUD(); syncSoundBtns(); checkAch();
   toast(isNew?`${S.name||"新人冒險者"} 加入了${grp}！`:"角色資料已更新");
   if(isNew) setTimeout(()=>loadInbox(false),2500);
-  if(isNew&&cloudReady()&&!CLOUD) setTimeout(()=>{ if(!CLOUD&&!$("#cDlg").open&&!$("#wDlg").open) openCloud("create"); },1800);
+  if(isNew&&cloudReady()&&!CLOUD&&S.tourDone) setTimeout(()=>{ if(!CLOUD&&!$("#cDlg").open&&!$("#wDlg").open&&!TOUR) openCloud("create"); },1800);
   if(curPlace) renderPlace();
-  if(isNew&&wAfterChar){ wAfterChar=false; setTimeout(()=>openWelcome(welcomePagesAfterChar()),400); }
+  if(isNew&&wAfterChar){ wAfterChar=false; }
+  if(isNew&&!S.tourDone) setTimeout(()=>startTour(true),500);
 });
 $("#cForm").addEventListener("change",e=>{$("#cErr").textContent="";document.querySelectorAll("#cDlg .missing").forEach(el=>el.classList.remove("missing"));if(e.target.name==="group")Sound.sfx("cursor");});
 $("#cForm").addEventListener("input",e=>{ if(e.target.id==="cName"||e.target.id==="cEmp"){ $("#cErr").textContent=""; e.target.classList.remove("missing"); } });
@@ -5146,6 +5169,7 @@ setInterval(()=>{                                      // 有還沒收到回覆�
 
 function openPlace(id,push){
   const pl=PLACES.find(p=>p.id===id); if(!pl||adminOpen) return;
+  if(TOUR) endTour(true);
   const entering=curPlace!==pl;
   if(entering) freshNow=new Set(INBOX.interviews.filter(ivUnseen).map(x=>x.id).concat(INBOX.consults.filter(csUnseen).map(x=>x.id)));
   curPlace=pl; curZone=null;
@@ -6130,7 +6154,125 @@ $("#wDlg").addEventListener("close",()=>{
   markWelcomed();
   setTimeout(()=>{ if(!S.group&&!$("#cDlg").open&&!adminOpen){ wAfterChar=true; openChar(); } },60);
 });
-$("#replayWelcome").addEventListener("click",()=>startWelcome(true));
+$("#replayWelcome").addEventListener("click",()=>{ if(S.group) startTour(false); else startWelcome(true); });
+/* ================= 村長的地圖導覽（第一次使用時，走到各建物旁邊說明） ================= */
+let TOUR=null;
+function tourSteps(){
+  const name=S.name||"新人冒險者", zn=id=>{ const z=ZONES.find(x=>x.id===id); return z?`${z.name}（${z.real}）`:id; };
+  return [
+    {text:`${name}，歡迎加入${S.group||"園城部"}！我是村長${CFG.chief}。我帶你繞地圖一圈，看看每個地方可以做什麼。`},
+    {zone:"village",text:`這裡是${zn("village")}。剛報到要做的事都在這裡，建議從這裡開始！每看完一則任務按「完成」，就能拿到經驗值升級。`},
+    {zone:"tavern",text:`${zn("tavern")}：前輩們整理的常見問題，上下班時間、請假、午餐、分機……找不到答案時來這裡翻翻。`},
+    {zone:"tower",text:`${zn("tower")}：出差、加班、請款等各種申請流程，都有一步一步的說明。`},
+    {zone:"chest",text:`${zn("chest")}：員工福利都在這裡，旅遊補助、健康檢查，記得把福利用好用滿！`},
+    {zone:"temple",text:`${zn("temple")}：智慧存摺集點。點數達到 ${CFG.goal} 點、加上完成全部任務，我就會頒結業證書給你。`},
+    {place:"myhome",text:"溫暖的家是你的基地：筆記本、寵物、收藏、武器庫、衣櫃、開心農場都在這裡。任務裡常用的資料記得按「♥ 加入最愛」，筆記本就查得到。"},
+    {place:"lounge",text:"交誼廳可以看大家的名片、按讚、留言；點別人的人像，還能去他家拜訪、送菜，或是……偷菜。"},
+    {place:"home",text:ivOn()?"這是我家！需要找你面談時，通知會放在這裡。送我蔬菜也會有回禮喔。":"這是我家！有空來坐坐，送我蔬菜會有回禮，角落也可能藏著好東西。"},
+    {place:"digital",text:`數位總合辦公室：平台或技術問題可以找${CFG.director}申請技術諮詢，${CFG.director}回覆時，這裡會出現「!」。`},
+    {sea:[18,42],text:"在地圖上可以自由走動，走進海裡能撈到武器，還可能遇到章魚海怪！任務地點旁邊的 NPC，每天也會出題送種子給你。"},
+    {zone:"village",text:"導覽結束！建築上出現「!」就代表有新內容。不知道怎麼玩時，各區塊標題旁的「?」都有說明。先從新手村出發吧！",last:true}
+  ];
+}
+function tourEnsure(){
+  const frame=document.querySelector(".mapframe"); if(!frame) return null;
+  let el=$("#tour");
+  if(!el){
+    el=document.createElement("div"); el.id="tour"; el.className="tour"; el.setAttribute("role","dialog"); el.setAttribute("aria-label","村長的地圖導覽");
+    el.innerHTML=`<div class="tour-ring"></div><span class="tour-chief" aria-hidden="true"></span>
+      <div class="tour-bubble"><p class="tour-who"></p><p class="tour-text" aria-live="polite"></p>
+        <div class="tour-nav"><span class="tour-step"></span><span class="tour-btns">
+          <button type="button" class="act ghost" data-tour="skip">跳過導覽</button>
+          <button type="button" class="act ghost" data-tour="prev">上一步</button>
+          <button type="button" class="act" data-tour="next">下一步</button></span></div></div>`;
+    frame.appendChild(el);
+    el.addEventListener("click",e=>{ const b=e.target.closest("[data-tour]"); if(!b) return; const a=b.dataset.tour;
+      if(a==="next") tourGo(TOUR.i+1); else if(a==="prev") tourGo(TOUR.i-1); else endTour(true); });
+  }
+  return el;
+}
+function tourTargetRect(step,frame){
+  const fr=frame.getBoundingClientRect(), map=$("#map"), mr=map.getBoundingClientRect(), k=mr.width/400;
+  if(step.zone||step.place){
+    const g=document.querySelector(step.zone?`#map [data-zone="${step.zone}"]`:`#map [data-place="${step.place}"]`);
+    if(g){ const r=g.getBoundingClientRect(); return {x:r.left-fr.left,y:r.top-fr.top,w:r.width,h:r.height}; }
+  }
+  if(step.sea){ const [sx,sy]=step.sea; return {x:mr.left-fr.left+(sx-14)*k,y:mr.top-fr.top+(sy-14)*k,w:28*k,h:28*k}; }
+  return null;
+}
+function tourGo(i){
+  if(!TOUR) return;
+  const steps=TOUR.steps; if(i<0) return; if(i>=steps.length){ endTour(false); return; }
+  TOUR.i=i;
+  const step=steps[i], frame=document.querySelector(".mapframe"), el=tourEnsure(); if(!el) return;
+  const fw=frame.clientWidth, fh=frame.clientHeight, t=tourTargetRect(step,frame);
+  const ring=el.querySelector(".tour-ring"), chief=el.querySelector(".tour-chief"), bub=el.querySelector(".tour-bubble");
+  el.querySelector(".tour-who").textContent=`部門村長　${CFG.chief}`;
+  typeInto(el.querySelector(".tour-text"),step.text);
+  el.querySelector(".tour-step").textContent=`${i+1} / ${steps.length}`;
+  el.querySelector('[data-tour="prev"]').hidden=i===0;
+  el.querySelector('[data-tour="skip"]').hidden=!!step.last;
+  el.querySelector('[data-tour="next"]').textContent=step.last?"開始冒險！":"下一步 ▶";
+  const cs=Math.max(26,Math.min(52,fw/14));
+  const dock=fw<560;                                   // 窄螢幕：對話泡泡固定在畫面下方，不擋住地圖
+  bub.classList.toggle("dock",dock);
+  chief.style.width=chief.style.height=cs+"px";
+  if(t){
+    const pad=6;
+    ring.hidden=false;
+    Object.assign(ring.style,{left:(t.x-pad)+"px",top:(t.y-pad)+"px",width:(t.w+pad*2)+"px",height:(t.h+pad*2)+"px"});
+    const right=t.x+t.w+cs+12<fw;                       // 村長站在建物旁邊
+    chief.style.left=(right?t.x+t.w+4:t.x-cs-4)+"px";
+    chief.style.top=Math.max(4,Math.min(fh-cs-4,t.y+t.h-cs))+"px";
+    chief.classList.toggle("flip",!right);
+    if(!dock){
+      const bw=Math.min(340,fw-16); bub.style.width=bw+"px";
+      const below=t.y+t.h+12, bh=bub.offsetHeight||120;
+      const top=below+bh<fh-6?below:Math.max(6,t.y-bh-12);
+      bub.style.left=Math.max(8,Math.min(fw-bw-8,t.x+t.w/2-bw/2))+"px"; bub.style.top=top+"px";
+    }
+  }else{
+    ring.hidden=true;
+    chief.style.left=(fw/2-cs/2)+"px"; chief.style.top=(fh*0.22)+"px"; chief.classList.remove("flip");
+    if(!dock){ const bw=Math.min(380,fw-16); bub.style.width=bw+"px"; bub.style.left=(fw/2-bw/2)+"px"; bub.style.top=(fh*0.22+cs+10)+"px"; }
+  }
+  Sound.sfx(i?"cursor":"open");
+  el.querySelector('[data-tour="next"]').focus({preventScroll:true});
+}
+function startTour(first){
+  if(adminOpen) return;
+  if($("#viewMap").hidden) $("#btnMap").click();
+  document.querySelectorAll("dialog[open]").forEach(d=>{ if(d.id!=="cloudDlg") d.close(); });
+  setTimeout(()=>{
+    const el=tourEnsure(); if(!el) return;
+    TOUR={i:0,steps:tourSteps(),first:!!first};
+    el.hidden=false; document.body.classList.add("touring");
+    el.querySelector(".tour-chief").innerHTML=avatarSVG(CHIEF_AV);
+    const frame=document.querySelector(".mapframe"), hud=document.querySelector("header.hud,.hud");
+    const hudH=hud&&getComputedStyle(hud).position!=="static"?hud.getBoundingClientRect().height:0;
+    const narrow=frame.clientWidth<560, r=frame.getBoundingClientRect();
+    const y=narrow?r.top+window.scrollY-hudH-8:r.top+window.scrollY-Math.max(hudH+8,(window.innerHeight-r.height)/2);
+    window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+    setTimeout(()=>tourGo(0),350);
+  },120);
+}
+function endTour(skipped){
+  const el=$("#tour"); if(el) el.hidden=true;
+  document.body.classList.remove("touring");
+  const first=TOUR&&TOUR.first; TOUR=null;
+  S.tourDone=true; save();
+  flashLoc("village");
+  if(!skipped) Sound.sfx("achieve");
+  if(first&&cloudReady()&&!CLOUD) setTimeout(()=>{ if(!CLOUD&&!document.querySelector("dialog[open]")) openCloud("create"); },900);
+}
+document.addEventListener("keydown",e=>{
+  if(!TOUR||document.querySelector("dialog[open]")) return;
+  if(e.key==="Escape"){ e.preventDefault(); endTour(true); }
+  else if(e.key==="ArrowRight"){ tourGo(TOUR.i+1); }
+  else if(e.key==="ArrowLeft"){ tourGo(TOUR.i-1); }
+});
+window.addEventListener("resize",()=>{ if(TOUR) tourGo(TOUR.i); });
+
 function flashLoc(id){
   const g=document.querySelector(`#map [data-zone="${id}"],#map [data-place="${id}"]`);
   if(!g||$("#viewMap").hidden) return;

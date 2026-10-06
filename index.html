@@ -431,6 +431,19 @@ pre.code,textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:13p
 
 /* ---------- cloud login dialog ---------- */
 #cloudDlg{max-width:min(560px,calc(100vw - 28px))}
+.vipbadge{display:inline-block;font-size:13px;padding:1px 8px;border-radius:999px;background:linear-gradient(90deg,#F2C14E,#FFE9A8);color:#5A3A00;border:2px solid #3B2412;vertical-align:middle}
+.vipline{margin:4px 0 8px}
+.shopcard{padding-top:26px}
+.pvbtn{position:absolute;top:4px;right:4px;font:inherit;font-size:11px;line-height:1.4;padding:1px 6px;border-radius:3px;border:1px solid var(--gold);background:#2B3480;color:#FFE9A8;cursor:pointer;z-index:2}
+.pvbtn.locked{border-color:var(--line);color:#9AA0C8;background:#1B2466}
+.pvbtn:hover,.pvbtn:focus-visible{background:#3A46A8}
+#pvDlg{max-width:min(980px,calc(100vw - 20px));width:100%}
+.pvwrap .head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+#pvRoom .showroom{margin:8px 0}
+.pvbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.pvside,.pvact{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.vipv{font-size:40px;display:flex;align-items:center;justify-content:center}
+
 #syncDlg{max-width:min(640px,calc(100vw - 28px))}
 .synccmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 .synccard{border:2px solid var(--line);border-radius:4px;padding:10px;background:rgba(255,255,255,.05)}
@@ -1833,6 +1846,17 @@ footer.site p{margin:4px 0}
       </div>
     </div>
   </form>
+</dialog>
+
+<dialog id="pvDlg" aria-labelledby="pvTitle">
+  <div class="window dlg pvwrap">
+    <div class="head"><div><p class="dept">👑 VIP 家具預覽</p><h3 id="pvTitle">預覽</h3></div><button class="act ghost" type="button" data-close>關閉</button></div>
+    <div class="body">
+      <p class="ahint" id="pvHint"></p>
+      <div id="pvRoom"></div>
+      <div class="pvbar" id="pvBar"></div>
+    </div>
+  </div>
 </dialog>
 
 <dialog id="syncDlg" aria-labelledby="syncTitle">
@@ -5656,7 +5680,7 @@ function runCheat(msg){
     gift=`<span class="pv">${avatarSVG(S.av)}</span><div><p class="dbody"><b>隱藏配件：${esc(ACC[c.acc].name)}</b></p><p class="ahint">已經幫你戴上了，在「角色設定」的配件可以拿下或換回其他配件。</p></div>`;
     setTimeout(()=>{ pushFarm(true); },300);
   }else if(c.kind==="deco"){
-    shopState(); let n=0;
+    shopState(); shopBuysCount(); S.decoCheat=true; let n=0;
     Object.entries(SHOP).forEach(([cat,cc])=>{ if(cat==="snack") return; cc.items.forEach(([id])=>{ if(!S.shopOwned[id]){ S.shopOwned[id]=true; n++; } }); });
     const tot=Object.entries(SHOP).filter(([cat])=>cat!=="snack").reduce((a,[,cc])=>a+cc.items.length,0);
     gift=`<span class="pv">${decoSVG("d_xmastree")}</span><div><p class="dbody"><b>全部家具解鎖</b>（${tot} 件，這次新增 ${n} 件）</p><p class="ahint">牆紙、地毯、掛飾、地面擺設都可以在「溫暖的家 → 種子商店」直接換上；寵物零食還是要用種子買。</p></div>`;
@@ -5699,7 +5723,7 @@ const HELP={
   armory:"走進海裡撈寶，或拜訪村長的家、數位總合辦公室時有機會拿到武器，分成普通、稀有、史詩、傳說四個等級。暗色剪影是還沒拿到的，點武器可以裝備或卸下。",
   closet:"基本款一開始就有；秘密服裝要在地圖上散步時遇到村長或總長才拿得到。可以在這裡換衣服、換顏色，點衣服能先預覽穿上的樣子。",
   album:"同一種小物收集到 30 個，就能兌換一張隱藏畫框；另外 4 幅要送蔬菜給村長或總長、1 幅要集滿稀有作物圖鑑，在交誼廳留言板留言 1 次也能拿到「吶喊兔」。畫框可以掛在展示區的牆上，別人拜訪時也看得到。",
-  shop:"用種子買展示空間的牆紙、地毯、掛飾、擺設，以及寵物零食。地板樣式和地面擺設都可以換，地面擺設可以同時擺兩件（左邊和右邊）。上方可以依主題（經典、聖誕節、萬聖節、感恩節、辦公室、森林、太空、迪斯可、spy）篩選，旁邊的數字是已收集／全部。價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具可以隨時換上或收起，訪客也看得到；零食能讓目前的寵物親密度提升。",
+  shop:"用種子買展示空間的牆紙、地毯、掛飾、擺設，以及寵物零食。地板樣式和地面擺設都可以換；累積買 30 個商品成為 VIP，可以先預覽家具擺在家裡的樣子。地面擺設可以同時擺兩件（左邊和右邊）。上方可以依主題（經典、聖誕節、萬聖節、感恩節、辦公室、森林、太空、迪斯可、spy）篩選，旁邊的數字是已收集／全部。價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具可以隨時換上或收起，訪客也看得到；零食能讓目前的寵物親密度提升。",
   farm:"先選種子，再點空地播種；種錯了可以按「⛏ 挖掉」退還種子重種。相鄰（左右或上下）的兩塊田種了合適的不同作物，收成時有機率長出稀有品種，記錄在下方的稀有作物圖鑑。作物依真實時間長大，成熟後點一下收成，蔬菜會放進展示區下方的倉庫。種子用完可以到任務地點撿；按「立即同步」讓別人馬上看到你的田。",
   barn:"收成的、偷來的、別人送的蔬菜都在這裡。可以餵寵物（餵完 5 分鐘寵物會看守農場）、帶去別人家送禮或砸過去，也可以送給村長、總長換回禮。",
   showroom:"這就是別人拜訪你家時看到的樣子：牆上的畫框、展示的服裝／小物／武器，還有你和寵物。點角色或寵物會有反應；牆上的蔬菜漬可以清理並回收。",
@@ -7579,7 +7603,8 @@ function renderShop(panel){
   panel.dataset.kind="shop";
   const d=shopState(), total=seedTotal(), pn=S.pet&&PETS[S.pet.type]?(S.pet.name||PETS[S.pet.type].name):"";
   panel.innerHTML=`<section class="window pbox">
-    <div class="abar"><h3>種子商店 ${helpBtn("shop")}</h3><span class="ahint">你有 <b>${total}</b> 顆種子</span></div>
+    <div class="abar"><h3>種子商店 ${helpBtn("shop")} ${isVip()?'<span class="vipbadge">👑 VIP</span>':""}</h3><span class="ahint">你有 <b>${total}</b> 顆種子</span></div>
+    <p class="ahint vipline">${isVip()?`👑 你是 VIP（已購買 ${shopBuysCount()} 個商品）：每件家具右上角的「👁 預覽」可以先看擺進家裡的樣子。`:`👑 累積購買 ${VIP_BUYS} 個商品成為 VIP，就能先預覽家具擺放（目前 ${shopBuysCount()} / ${VIP_BUYS}）。`}</p>
     <p class="ahint">價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具會擺在上方的展示空間，訪客也看得到。</p>
     <div class="seedchips">${Object.entries(CROPS).map(([k,c])=>`<span class="seedchip"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span>${esc(c.name)} ${seeds()[k]||0}</span>`).join("")}</div>
     <div class="themechips" role="group" aria-label="家具主題">${[["all","全部"]].concat(SHOP_THEMES).map(([k,n])=>{
@@ -7598,7 +7623,7 @@ function renderShop(panel){
         else if(using) btn=cat==="paper"||cat==="ground"?`<span class="st st-gold">使用中</span>`:`<button class="act ghost" type="button" data-shopuse="${cat}|">使用中・收起</button>`;
         else btn=`<button class="act" type="button" data-shopuse="${cat}|${id}">${cat==="paper"||cat==="ground"?"換上":"擺上"}</button>`;
         const th=SHOP_THEMES.find(([k])=>k===SHOP_THEME[id]);
-        return `<article class="shopcard${using?" on":""}">${th&&shopTheme==="all"?`<span class="themetag t-${th[0]}">${esc(th[1])}</span>`:""}${shopPreview(cat,id)}
+        return `<article class="shopcard${using?" on":""}">${th&&shopTheme==="all"?`<span class="themetag t-${th[0]}">${esc(th[1])}</span>`:""}${cat!=="snack"?`<button class="pvbtn${isVip()?"":" locked"}" type="button" data-shoppv="${id}" title="${isVip()?"預覽擺進家裡的樣子":`VIP 才能預覽（再買 ${VIP_BUYS-shopBuysCount()} 個）`}">${isVip()?"👁 預覽":"🔒 預覽"}</button>`:""}${shopPreview(cat,id)}
           <b>${esc(name)}</b>
           <span class="ahint">${cat==="snack"?`親密度 +${aff}・擁有 ${n}`:owned?"已擁有":`${price} 顆種子`}${!owned&&cat!=="snack"&&!can?`・還差 ${price-total}`:""}</span>
           <span class="shopbtns">${btn}</span></article>`;
@@ -7615,12 +7640,62 @@ function petEatFx(line,big){
   const el=$("#roomPet");
   if(el){ sayAt(el,line); heartAt(el); if(big) setTimeout(()=>heartAt(el),400); }
 }
+/* ---- 種子商店 VIP：累積買 30 個商品，可以先預覽家具擺在家裡的樣子 ---- */
+const VIP_BUYS=30;
+function shopBuysCount(){ if(S.shopBuys==null){ S.shopBuys=S.decoCheat?0:Object.keys(S.shopOwned||{}).length; } return S.shopBuys; }
+const isVip=()=>shopBuysCount()>=VIP_BUYS;
+let PV=null;
+function openPreview(id,slot){
+  const it=shopItem(id); if(!it||it.cat==="snack") return;
+  if(!isVip()){ toast(`👑 再買 ${VIP_BUYS-shopBuysCount()} 個商品成為 VIP，就能預覽家具擺放`); Sound.sfx("error"); return; }
+  shopState();
+  PV={id,slot:it.cat==="floor"?(slot||(S.deco.floor===id?"floor":S.deco.floor2===id?"floor2":(!S.deco.floor?"floor":!S.deco.floor2?"floor2":"floor"))):it.cat};
+  renderPreview();
+  const d=$("#pvDlg"); if(!d.open) d.showModal(); Sound.sfx("open");
+}
+function renderPreview(){
+  if(!PV) return;
+  const it=shopItem(PV.id), snap=myHomeSnapshot(), deco=Object.assign({},snap.deco||{});
+  deco[PV.slot]=PV.id;
+  if(it.cat==="floor"){ const other=PV.slot==="floor"?"floor2":"floor"; if(deco[other]===PV.id) deco[other]=""; }
+  const owned=FREE_DECO.has(PV.id)||!!S.shopOwned[PV.id], total=seedTotal();
+  $("#pvTitle").textContent=`${it.name}${owned?"（已擁有）":`・${it.price} 顆種子`}`;
+  $("#pvHint").textContent="這是擺進你家的樣子，其他家具維持目前的擺設；確定喜歡再買或換上。";
+  stopWalkers("pv:");
+  $("#pvRoom").innerHTML=roomHTML(Object.assign({},snap,{deco,pet:S.pet,petStage:petStage(),av:S.av,splats:[]}),{host:dispName(),hostId:"pvHost",petId:"pvPet",label:"家具預覽"});
+  const h=$("#pvHost"), pt=$("#pvPet");
+  if(h) startWalker(h,"pv:host",{start:.5,speed:55,rest:.45,delay:900});
+  if(pt) startWalker(pt,"pv:pet");
+  const side=it.cat==="floor"?`<span class="pvside">擺在<button class="act ${PV.slot==="floor"?"":"ghost"}" type="button" data-pvslot="floor">左邊</button><button class="act ${PV.slot==="floor2"?"":"ghost"}" type="button" data-pvslot="floor2">右邊</button></span>`:"";
+  const act=owned?`<button class="act" type="button" data-pvapply>${it.cat==="paper"||it.cat==="ground"?"換上":"擺上"}</button>`
+    :`<button class="act" type="button" data-pvbuy ${total>=it.price?"":"disabled"}>購買並${it.cat==="paper"||it.cat==="ground"?"換上":"擺上"}（${it.price} 顆）</button>${total<it.price?`<span class="ahint">還差 ${it.price-total} 顆種子</span>`:""}`;
+  $("#pvBar").innerHTML=side+`<span class="pvact">${act}</span>`;
+}
+$("#pvDlg").addEventListener("close",()=>{ stopWalkers("pv:"); PV=null; });
+$("#pvDlg").addEventListener("click",async e=>{
+  if(!PV) return;
+  const sl=e.target.closest("[data-pvslot]"); if(sl){ PV.slot=sl.dataset.pvslot; Sound.sfx("select"); renderPreview(); return; }
+  if(e.target.closest("[data-pvapply]")){ const p=PV; $("#pvDlg").close(); shopUse(p.slot,p.id); toast(`「${shopItem(p.id).name}」擺好了`); return; }
+  if(e.target.closest("[data-pvbuy]")){
+    const p=PV; await shopBuy(p.id);
+    if(S.shopOwned[p.id]){ $("#pvDlg").close(); shopUse(p.slot,p.id); }
+  }
+});
+function vipCongrats(){
+  $("#chDept").textContent="種子商店"; $("#chFoot").textContent="在商店每件家具右上角按「👁 預覽」就能看到擺進家裡的樣子。";
+  $("#chFace").innerHTML=avatarSVG(CHIEF_AV); $("#chTitle").textContent=`部門村長　${CFG.chief}`;
+  $("#chSay").textContent=`你已經在種子商店買了 ${VIP_BUYS} 個商品，從現在起是 VIP 了！買家具之前，可以先預覽擺在家裡的樣子。`;
+  $("#chGift").innerHTML=`<span class="pv vipv">👑</span><div><p class="dbody"><b>種子商店 VIP</b></p><p class="ahint">家具、牆紙、地板、地毯都能先預覽再決定。</p></div>`;
+  const d=$("#cheatDlg"); if(!d.open) d.showModal(); Sound.sfx("levelup");
+}
 async function shopBuy(id){
   const it=shopItem(id); if(!it) return;
   const used=planPay(it.price);
   if(!used){ toast(`種子不夠，還差 ${it.price-seedTotal()} 顆`); Sound.sfx("error"); return; }
   if(it.price>=40&&!(await uiConfirm(`要用 ${it.price} 顆種子買「${it.name}」嗎？\n會用掉：${usedText(used)}`,"購買"))) return;
   paySeeds(used); shopState();
+  const wasVip=isVip(); S.shopBuys=shopBuysCount()+1;
+  if(!wasVip&&isVip()) setTimeout(vipCongrats,900);
   if(it.cat==="snack") S.snacks[id]=(S.snacks[id]||0)+1;
   else{ S.shopOwned[id]=true; if(it.cat==='floor'&&S.deco.floor&&!S.deco.floor2) S.deco.floor2=id; else S.deco[it.cat]=id; }
   save(); queueSync(); pushFarm(true); Sound.sfx("achieve");
@@ -8595,6 +8670,7 @@ $("#placeBody").addEventListener("click",async e=>{
   const fd2=t.closest("[data-feed]");
   if(fd2){ feedPet(fd2.dataset.feed); return; }
   if(t.closest("[data-syncnow]")){ syncNow(); return; }
+  const spv=t.closest("[data-shoppv]"); if(spv){ openPreview(spv.dataset.shoppv); return; }
   const sth=t.closest("[data-shoptheme]"); if(sth){ shopTheme=sth.dataset.shoptheme; Sound.sfx("select"); renderShop($("#homePanel")); return; }
   const sb=t.closest("[data-shopbuy]"); if(sb){ shopBuy(sb.dataset.shopbuy); return; }
   const su=t.closest("[data-shopuse]"); if(su){ const [c,i]=su.dataset.shopuse.split("|"); shopUse(c,i); return; }

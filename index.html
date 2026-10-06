@@ -799,6 +799,9 @@ body.tour-lock .mapframe{z-index:41}
 .npccount{margin:0 0 8px;padding:8px 10px;background:rgba(242,193,78,.12);border:1px solid var(--gold);border-radius:4px;font-size:14px}
 #spOpts .seed{font:inherit;color:inherit}
 
+.linkbtn.retract{margin-left:8px;font-size:12px;color:#FFB3AD;padding:0 4px}
+.linkbtn.retract:hover{color:#fff;text-decoration:underline}
+
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -2061,10 +2064,16 @@ const ACC_PAL={K:"#231F20",Y:"#FFD23F",R:"#E8453C",G:"#57C35A",B:"#A0522D",S:"#7
 const affOf=t=>Math.min(AFF_MAX,+((S.aff||{})[t])||0);
 const affFull=t=>affOf(t)>=AFF_MAX;
 const petSwatch=i=>i===RAINBOW?"linear-gradient(135deg,#E8453C,#FF9F43,#FFD23F,#57C35A,#4A7BF7,#9B6BD6)":(PETC[i]||PETC[0])[1];
+function petView(pet){                                 // 這一種寵物還沒滿級：不顯示彩虹色和專屬配件
+  const v=Object.assign({},pet||{});
+  if(+v.color===RAINBOW&&!affFull(v.type)) v.color=PETC[+v.baseColor]&&+v.baseColor!==RAINBOW?+v.baseColor:0;
+  if(v.acc&&!affFull(v.type)) v.acc=false;
+  return v;
+}
 function petSanitize(){                                // 換寵物種類後，沒解鎖的彩虹色與配件自動拿掉
   if(!S.pet) return;
   let changed=false;
-  if(+S.pet.color===RAINBOW&&!affFull(S.pet.type)){ S.pet.color=0; changed=true; }
+  if(+S.pet.color===RAINBOW&&!affFull(S.pet.type)){ S.pet.color=petView(S.pet).color; changed=true; }
   if(S.pet.acc&&!affFull(S.pet.type)){ S.pet.acc=false; changed=true; }
   if(changed) save();
 }
@@ -3521,19 +3530,20 @@ function renderPetSwap(){
     return;
   }
   swapDraft=swapDraft||{type:S.pet.type,color:S.pet.color};
-  const preview=Object.assign({},S.pet,swapDraft);
+  swapDraft=Object.assign(swapDraft,{color:petView(Object.assign({},S.pet,swapDraft)).color});
+  const preview=petView(Object.assign({},S.pet,swapDraft));
   box.innerHTML=head+`<div class="editor form">
       <div class="preview"><div class="pv" id="swapPv">${petSVG(preview)}</div></div>
       <div>
         <div class="orow" role="radiogroup" aria-label="種類"><span class="olab" aria-hidden="true">種類</span><div class="ochoices">
-          ${Object.entries(PETS).filter(([k])=>petKindOK(k)).map(([k,o])=>`<label class="opt"><input type="radio" name="swap-type" value="${k}" ${swapDraft.type===k?"checked":""}><span class="th" data-swapth="${k}">${petSVG(Object.assign({},preview,{type:k}))}</span>${o.name}</label>`).join("")}
+          ${Object.entries(PETS).filter(([k])=>petKindOK(k)).map(([k,o])=>`<label class="opt"><input type="radio" name="swap-type" value="${k}" ${swapDraft.type===k?"checked":""}><span class="th" data-swapth="${k}">${petSVG(petView(Object.assign({},S.pet,swapDraft,{type:k})))}</span>${o.name}</label>`).join("")}
         </div></div>
         <div class="orow" role="radiogroup" aria-label="顏色"><span class="olab" aria-hidden="true">顏色</span><div class="ochoices">
-          ${PETC.map((c,i)=>petColorOK(i)?`<label class="opt sw${i>=PETC_SPECIAL?" rare":""}" title="${c[0]}"><input type="radio" name="swap-color" value="${i}" ${+swapDraft.color===i?"checked":""}><i style="background:${petSwatch(i)}"></i></label>`:"").join("")}
+          ${PETC.map((c,i)=>petColorOK(i,swapDraft.type)?`<label class="opt sw${i>=PETC_SPECIAL?" rare":""}" title="${c[0]}"><input type="radio" name="swap-color" value="${i}" ${+swapDraft.color===i?"checked":""}><i style="background:${petSwatch(i)}"></i></label>`:"").join("")}
         </div></div>
         <div class="orow"><span class="olab" aria-hidden="true">名字</span><div class="ochoices">
           <label class="sr" for="swapName">寵物名字</label>
-          <input id="swapName" class="ainput" maxlength="8" value="${esc(S.pet.name||"")}">
+          <input id="swapName" class="ainput" maxlength="8" value="${esc(swapDraft.name!=null?swapDraft.name:(S.pet.name||""))}">
         </div></div>
       </div>
     </div>
@@ -3544,11 +3554,12 @@ function renderPetSwap(){
 $("#zChapters").addEventListener("change",e=>{
   const n=e.target.name; if(n!=="swap-type"&&n!=="swap-color") return;
   swapDraft=swapDraft||{type:S.pet.type,color:S.pet.color};
-  if(n==="swap-type") swapDraft.type=e.target.value; else swapDraft.color=+e.target.value;
+  if(n==="swap-type"){ swapDraft.type=e.target.value; const nm=$("#swapName"); if(nm) swapDraft.name=nm.value; Sound.sfx("cursor"); renderPetSwap(); return; }   // 換種類：重畫顏色選項
+  swapDraft.color=+e.target.value;
   Sound.sfx("cursor");
-  const preview=Object.assign({},S.pet,swapDraft);
+  const preview=petView(Object.assign({},S.pet,swapDraft));
   $("#swapPv").innerHTML=petSVG(preview);
-  document.querySelectorAll("#zChapters [data-swapth]").forEach(el=>{el.innerHTML=petSVG(Object.assign({},preview,{type:el.dataset.swapth}));});
+  document.querySelectorAll("#zChapters [data-swapth]").forEach(el=>{el.innerHTML=petSVG(petView(Object.assign({},S.pet,swapDraft,{type:el.dataset.swapth})));});
 });
 $("#zChapters").addEventListener("click",e=>{
   const box=$("#petSwap"); if(!box||!box.contains(e.target)) return;
@@ -3558,7 +3569,8 @@ $("#zChapters").addEventListener("click",e=>{
     if(!canSwapPet()){ box.dataset.open=""; renderPetSwap(); return; }
     const name=cleanText($("#swapName").value,8);
     if(!name){ $("#swapErr").textContent="請幫牠取個名字"; Sound.sfx("error"); $("#swapName").focus(); return; }
-    S.pet=Object.assign({},S.pet,swapDraft||{},{name});
+    const nd=Object.assign({},swapDraft||{}); delete nd.name;
+    S.pet=petView(Object.assign({},S.pet,nd,{name}));
     save(); swapDraft=null; box.dataset.open="";
     Sound.sfx("achieve"); toast(`夥伴換成了 ${name}（${PETS[S.pet.type].name}）`);
     renderHUD(); renderPetSwap(); queueSync();
@@ -4730,10 +4742,30 @@ function mergeConsults(a,b){
   (a||[]).concat(b||[]).forEach(c=>{ if(!c||!c.no) return; const o=m.get(c.no); m.set(c.no,o?Object.assign({},o,c,{withdrawn:!!(o.withdrawn||c.withdrawn)}):c); });
   return [...m.values()].sort((x,y)=>String(x.createdAt||"").localeCompare(String(y.createdAt||"")));
 }
+/* 筆記本：兩邊逐筆合併（以最後修改或移除的時間為準），換瀏覽器不會互相蓋掉 */
+const favTime=f=>String((f&&(f.mt||f.at))||"");
+function mergeFav(aFav,aDel,bFav,bDel){
+  aFav=aFav||{}; bFav=bFav||{}; aDel=aDel||{}; bDel=bDel||{};
+  const fav={}, del={}, ids=new Set([...Object.keys(aFav),...Object.keys(bFav),...Object.keys(aDel),...Object.keys(bDel)]);
+  ids.forEach(id=>{
+    const fa=aFav[id], fb=bFav[id], d=[aDel[id],bDel[id]].filter(Boolean).sort().pop()||"";
+    const f=!fa?fb:!fb?fa:(favTime(fb)>favTime(fa)?fb:fa);
+    if(f&&favTime(f)>=d) fav[id]=f; else if(d) del[id]=d;
+  });
+  return {fav,del};
+}
+function mergeFavInto(other){                          // 把另一份存檔的筆記本合併進目前的 S
+  if(!other) return false;
+  const before=JSON.stringify([S.fav,S.favDel]);
+  const m=mergeFav(S.fav,S.favDel,other.fav,other.favDel);
+  S.fav=m.fav; S.favDel=m.del;
+  return JSON.stringify([S.fav,S.favDel])!==before;
+}
 function applySave(obj){
   if(!obj||!obj.S) return false;
-  const keepCs=S.consults, keepIv=S.ivReplies;
+  const keepCs=S.consults, keepIv=S.ivReplies, keepFav=S.fav, keepDel=S.favDel;
   S=Object.assign({},S,obj.S);
+  { const m=mergeFav(keepFav,keepDel,obj.S.fav,obj.S.favDel); S.fav=m.fav; S.favDel=m.del; }
   S.consults=mergeConsults(keepCs,obj.S.consults);
   S.ivReplies=Object.assign({},keepIv||{},obj.S.ivReplies||{});
   save();
@@ -4768,7 +4800,7 @@ async function cloudSignIn(acc,pw,mode){
     let useCloud=true;
     if(S.group&&mine>theirs) useCloud=await uiConfirm(`這台電腦有 ${mine} 個已完成任務，雲端存檔只有 ${theirs} 個。要改用雲端存檔嗎？按「取消」則保留這台電腦的進度並覆蓋雲端。`,"用雲端存檔");
     if(useCloud){ applySave(loaded); toast("已載入雲端存檔"); }
-    else { await cloudPush(true); toast("已用這台電腦的進度覆蓋雲端"); }
+    else { mergeFavInto(loaded.S); save(); await cloudPush(true); toast("已用這台電腦的進度覆蓋雲端（筆記本兩邊都保留）"); }
     if(freshCode){ await cloudPush(true); showRecovery(freshCode,"這個帳號還沒有救援碼，系統剛剛幫你產生一組。"); }
   }else{
     await cloudPush(true);
@@ -4838,7 +4870,8 @@ async function cloudSyncOnStart(){
     const mine=progressCount(S), theirs=progressCount(loaded.S);
     const localAt=(()=>{ try{ return localStorage.getItem("sino22-cloud-at")||""; }catch(e){ return ""; } })();
     if(theirs>mine||(theirs===mine&&String(loaded.at||"")>localAt)){ applySave(loaded); if(theirs>mine) toast("已從雲端載入最新進度"); cloudSynced=true; cloudDirty=false; }
-    else { cloudSynced=true; if(mine>theirs) queueCloud(true); }
+    else { cloudSynced=true; const changed=mergeFavInto(loaded.S); if(changed){ save(); if(curPlace&&curPlace.id==="myhome") renderPlace(); }
+      if(mine>theirs||changed) queueCloud(true); }
   }catch(e){ cloudSynced=true; }
   finally{ cloudSynced=true; if(cloudDirty) queueCloud(); }
 }
@@ -5047,7 +5080,15 @@ function loungeData(){
   const seen=new Set(LOUNGE.rows.map(r=>r.type+"|"+r.code+"|"+r.target+"|"+r.msg));
   const pend=pendingRows().filter(r=>!seen.has(r.type+"|"+r.code+"|"+r.target+"|"+r.msg));
   const HID=hiddenCodes();
-  LOUNGE.rows.concat(pend).filter(r=>!HID.has(r.code)).forEach(r=>{
+  const RET=new Set();                                 // 本人收回的留言：kind|作者|目標|內容雜湊
+  LOUNGE.rows.concat(pend).forEach(r=>{ if(r.type==="retract"&&r.target) RET.add(`${r.msg}|${r.code}|${r.target}`); });
+  const gone=(kind,code,target,msg)=>RET.has(`${kind}|${code}|${target}`)||RET.has(`${kind}:${hashStr(msg||"")}|${code}|${target}`);
+  LOUNGE.rows.concat(pend).filter(r=>!HID.has(r.code)).filter(r=>{
+    if(r.type==="post") return !gone("post",r.code,r.target);
+    if(r.type==="reply") return !gone("reply",r.code,r.target,r.msg);     // 貼文被收回時，回應在最後一起移除
+    if(r.type==="visit"&&r.msg) return !gone("visit",r.code,r.target,r.msg);
+    return true;
+  }).forEach(r=>{
     if(r.type==="presence"){
       const p=people[r.code];
       if(!p||(r.at&&p.at&&r.at>p.at)||!p.at) people[r.code]={code:r.code,name:r.name,group:r.group,level:r.level,av:r.av,pet:r.pet,msg:r.msg,at:r.at};
@@ -5084,6 +5125,7 @@ function loungeData(){
   const top=list.slice().sort((a,b)=>b.likes-a.likes)[0];
   const champion=top&&top.likes>0?top.code:"";
   list.sort((a,b)=>(b.code===champion)-(a.code===champion)||b.online-a.online||b.likes-a.likes||String(a.name).localeCompare(String(b.name),"zh-Hant"));
+  Object.keys(replies).forEach(id=>{ if(!posts.some(x=>x.id===id)) delete replies[id]; });
   posts.sort((a,b)=>(b.at?b.at.getTime():0)-(a.at?a.at.getTime():0));
   Object.values(replies).forEach(l=>l.sort((a,b)=>(a.at?a.at.getTime():0)-(b.at?b.at.getTime():0)));
   Object.values(visits).forEach(l=>l.sort((a,b)=>(b.at?b.at.getTime():0)-(a.at?a.at.getTime():0)));
@@ -5432,10 +5474,10 @@ window.addEventListener("scroll",closeHelp,{passive:true});
 /* ---- 拜訪別人家 ---- */
 const VISIT_KEY="sino22-visited";
 let visitHost="";
-function visitItemHTML(v,people){
-  const p=people[v.code]||{};
+function visitItemHTML(v,people,host){
+  const p=people[v.code]||{}, mine=host&&v.msg&&v.code===myCode().toUpperCase();
   return `<article class="vsitem"><span class="vsav" aria-hidden="true">${avatarSVG(p.av||AV_DEFAULT)}</span>
-    <div><p><b>${esc(v.name||p.name||"冒險者")}</b><span class="ahint"> ${esc(fmtShort(v.at))}${v.pending?"・同步中":""}</span></p>
+    <div><p><b>${esc(v.name||p.name||"冒險者")}</b><span class="ahint"> ${esc(fmtShort(v.at))}${v.pending?"・同步中":""}</span>${mine?`<button class="linkbtn retract" type="button" data-retract="visit" data-target="${esc(host)}" data-msg="${esc(v.msg)}">收回</button>`:""}</p>
     <p>${v.msg?esc(v.msg):'<span class="ahint">來拜訪過</span>'}</p></div></article>`;
 }
 function renderVisit(){
@@ -5456,8 +5498,23 @@ function renderVisit(){
   renderVisitActions(p);
   $("#vsAct").onclick=e=>{ if(e.target.closest("#vsToss")) tossVeg(p,h); else if(e.target.closest("#vsGift")) giftVeg(p); };
   const list=(d.visits[visitHost]||[]).slice(0,20);
-  $("#vsBook").innerHTML=list.length?list.map(v=>visitItemHTML(v,d.people)).join(""):`<p class="empty-note">還沒有人留言，當第一個吧！</p>`;
+  $("#vsBook").innerHTML=list.length?list.map(v=>visitItemHTML(v,d.people,visitHost)).join(""):`<p class="empty-note">還沒有人留言，當第一個吧！</p>`;
 }
+async function retractMsg(kind,target,msg){
+  if(!(await uiConfirm(kind==="post"?"確定要收回這則留言嗎？底下的回應也會一起隱藏。":"確定要收回這則留言嗎？","收回"))) return;
+  const payload={type:"retract",code:myCode(),name:dispName(),target,msg:kind==="post"?"post":`${kind}:${hashStr(msg||"")}`};
+  const ok=await loungeSend(payload);
+  if(!ok){ toast("收回失敗，請稍後再試"); return; }
+  addPending(payload); Sound.sfx("undo");
+  toast("已收回。其他人最慢約 5 分鐘後就看不到了");
+  if(curPlace&&curPlace.id==="lounge") renderLounge($("#placeBody"));
+  if($("#visitDlg").open) renderVisit();
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest&&e.target.closest("[data-retract]"); if(!b) return;
+  e.preventDefault(); e.stopPropagation();
+  retractMsg(b.dataset.retract,b.dataset.target,b.dataset.msg||"");
+},true);
 /* ---- 自己家：角色和寵物一起玩 ---- */
 let homePlayTimer=null;
 function selfLines(){
@@ -5735,7 +5792,7 @@ async function giveToNpc(id){
 }
 function affinityMax(t){                              // 親密度滿級：彩虹毛色＋專屬配件
   const acc=PET_ACC[t], pn=S.pet&&S.pet.type===t?(S.pet.name||PETS[t].name):PETS[t].name;
-  if(S.pet&&S.pet.type===t){ S.pet.color=RAINBOW; S.pet.acc=true; save(); queueSync(true); pushFarm(true); }
+  if(S.pet&&S.pet.type===t){ if(+S.pet.color!==RAINBOW) S.pet.baseColor=+S.pet.color; S.pet.color=RAINBOW; S.pet.acc=true; save(); queueSync(true); pushFarm(true); }
   Sound.sfx("levelup");
   $("#chDept").textContent="親密度滿級"; $("#chFoot").textContent="彩虹毛色和配件可以在寵物窩隨時切換。";
   $("#chFace").innerHTML=petSVG(Object.assign({},S.pet||{type:t},{color:RAINBOW,acc:true}),"adult");
@@ -5933,9 +5990,9 @@ function renderLounge(box){
       <div class="lboard">${d.posts.length?d.posts.slice(0,30).map(x=>{
         const rs=d.replies[x.id]||[];
         return `<article class="lpost">
-          <p class="lphead"><b>${esc(x.name||"新人冒險者")}</b><span class="ahint">${esc(fmtShort(x.at))}${x.pending?"・同步中":""}</span></p>
+          <p class="lphead"><b>${esc(x.name||"新人冒險者")}</b><span class="ahint">${esc(fmtShort(x.at))}${x.pending?"・同步中":""}</span>${x.code===myCode().toUpperCase()?`<button class="linkbtn retract" type="button" data-retract="post" data-target="${esc(x.id)}">收回</button>`:""}</p>
           <p class="lptext">${esc(x.msg)}</p>
-          ${rs.length?`<div class="lreplies">${rs.map(r=>`<p><b>${esc(r.name||"新人")}</b>：${esc(r.msg)}<span class="ahint"> ${esc(fmtShort(r.at))}${r.pending?"・同步中":""}</span></p>`).join("")}</div>`:""}
+          ${rs.length?`<div class="lreplies">${rs.map(r=>`<p><b>${esc(r.name||"新人")}</b>：${esc(r.msg)}<span class="ahint"> ${esc(fmtShort(r.at))}${r.pending?"・同步中":""}</span>${r.code===myCode().toUpperCase()?`<button class="linkbtn retract" type="button" data-retract="reply" data-target="${esc(x.id)}" data-msg="${esc(r.msg)}">收回</button>`:""}</p>`).join("")}</div>`:""}
           <div class="lrow"><input class="ainput wide" maxlength="60" data-replyfor="${esc(x.id)}" placeholder="回應這則留言…"><button class="act ghost" type="button" data-lounge="reply" data-id="${esc(x.id)}">回應</button></div>
         </article>`;
       }).join(""):`<p class="empty-note">還沒有人留言，當第一個吧！</p>`}</div>
@@ -6424,10 +6481,11 @@ function isFav(id){return !!(S.fav&&S.fav[id]);}
 function toggleFav(){
   if(!curQ) return;
   S.fav=S.fav||{};
-  if(S.fav[curQ.id]){ delete S.fav[curQ.id]; toast("已從筆記本移除"); Sound.sfx("undo"); }
-  else{ S.fav[curQ.id]={at:new Date().toISOString(),memo:""}; toast("♥ 已加入最愛，回到溫暖的家打開筆記本就能查到"); Sound.sfx("stamp");
+  S.favDel=S.favDel||{};
+  if(S.fav[curQ.id]){ delete S.fav[curQ.id]; S.favDel[curQ.id]=new Date().toISOString(); toast("已從筆記本移除"); Sound.sfx("undo"); }
+  else{ const now=new Date().toISOString(); S.fav[curQ.id]={at:now,mt:now,memo:""}; delete S.favDel[curQ.id]; toast("♥ 已加入最愛，回到溫暖的家打開筆記本就能查到"); Sound.sfx("stamp");
     setTimeout(()=>tryFind((curQ.zone&&curQ.zone.id)||"",.3,"收藏"),900); }
-  save(); syncFavBtn(); renderZone(); refreshSearch(); checkAch();
+  save(); queueCloud(); syncFavBtn(); renderZone(); refreshSearch(); checkAch();
   if(curPlace&&curPlace.id==="myhome") renderPlace();
 }
 function syncFavBtn(){
@@ -6505,43 +6563,145 @@ const QUIZ_MULT=10;
 function seededRand(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; }
   return ()=>{ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
 const shuffleR=(arr,r)=>{ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+/* ---- NPC 情報問答：出題規則 v2 ----
+   ① 數字題：整段挖空完整的數字（時間區間、時間、日期、分機、帶單位的數字），不挖項目編號
+   ② 名詞題：挖有意義的名詞（「」引號詞、粗體詞、○○系統／○○組／○○單…），答案不能出現在任務標題
+   ③ 歸屬題、④ 分類題：前兩種出不了時備用 */
+function htmlLines(html){
+  return String(html||"").replace(/<table[\s\S]*?<\/table>/gi,"\n").replace(/<\s*(li|p|br|h3|h4|div|tr)\b[^>]*>/gi,"\n").replace(/<[^>]+>/g,"")
+    .replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").split(/\n/);
+}
+const LIST_NO=/^\s*(?:[\(（]\s*\d{1,2}\s*[\)）]|\d{1,2}\s*[\.、．\)）](?!\d)|[①-⑳]|第[一二三四五六七八九十]+[步點項條]?[、：:．.]?|step\s*\d+\s*[:：.]?|[一二三四五六七八九十][、．.])\s*/i;
 function questSentences(q){
-  const tmp=document.createElement("div"); tmp.innerHTML=String(q.body||"").replace(/<(li|p|br|h4|div|tr)\b/gi,"\n<$1");
-  return (tmp.textContent||"").split(/\n|。/).map(t=>t.replace(/\s+/g," ").trim()).filter(t=>t.length>=8&&t.length<=80);
+  const out=[];
+  htmlLines(q.body).forEach(line=>line.split(/。|；/).forEach(t=>{
+    t=t.replace(/\s+/g," ").trim().replace(LIST_NO,"").trim();
+    if(t.length>=8&&t.length<=80) out.push(t);
+  }));
+  return out;
 }
-const NUM_RE=/\d{1,4}(?::\d{2})?(?:\s*[～~\-–]\s*\d{1,4}(?::\d{2})?)?/;
-function numKind(tok){ if(/:/.test(tok)) return "time"; if(/[～~\-–]/.test(tok)) return "range"; const v=parseInt(tok,10); return v>=1900&&v<=2100?"year":"num"; }
-function similarTok(a,b){                              // 干擾選項要跟答案同類型、數值接近，才不會一眼看穿
-  if(a===b||numKind(a)!==numKind(b)) return false;
-  if(numKind(a)!=="num") return true;
-  const x=parseInt(a,10), y=parseInt(b,10);
-  if(String(y)!==b) return false;
-  return y>=Math.floor(x/4)&&y<=Math.max(12,x*4);
+const UNITS="萬元|元|點|天|日|小時|分鐘|週|個月|月|年|次|人|%|％|樓|公里|張|份|萬|歲|台|部";
+const NUM_PATS=[
+  ["timerange",new RegExp("\\d{1,2}:\\d{2}\\s*[～~\\-–至到]\\s*\\d{1,2}:\\d{2}","g")],
+  ["date",/\d{4}\/\d{1,2}\/\d{1,2}/g],
+  ["unitrange",new RegExp("\\d[\\d,]*\\s*[～~\\-–至到]\\s*\\d[\\d,]*\\s*(?:"+UNITS+")","g")],
+  ["time",/\d{1,2}:\d{2}/g],
+  ["ext",/#\d{3,6}/g],
+  ["unit",new RegExp("\\d[\\d,]*(?:\\.\\d+)?\\s*(?:"+UNITS+")","g")]
+];
+function numTokens(t){                                 // 找出句子裡「完整」的數字片段
+  const taken=[], out=[];
+  NUM_PATS.forEach(([kind,re])=>{ re.lastIndex=0; let m;
+    while((m=re.exec(t))){
+      const s=m.index, e=s+m[0].length;
+      if(taken.some(([a,b])=>s<b&&e>a)) continue;
+      const before=t.charAt(s-1), after=t.charAt(e);
+      if(/[0-9A-Za-z\/:.,#]/.test(before)) continue;          // 前面還連著數字或英文，就不是完整的數字
+      if(/[0-9]/.test(after)||(kind==="time"&&after===":")) continue;
+      if(kind==="date"&&/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(m[0])===false) continue;
+      taken.push([s,e]); out.push({kind,tok:m[0],s,e});
+    }
+  });
+  return out;
 }
-function fakeNums(tok,r){
-  const k=numKind(tok), out=new Set();
-  const bump=t=>t.replace(/\d+/g,(m,off)=>{ const n=parseInt(m,10); const d=[1,2,5,10,30][Math.floor(r()*5)]*(r()<.5?-1:1); let v=Math.max(0,n+d); if(/:\d{2}/.test(t)&&m.length===2&&off>0) v=[0,15,30,45][Math.floor(r()*4)]; return String(v).padStart(m.length>1&&m[0]==="0"?m.length:1,"0"); });
-  let guard=0; while(out.size<6&&guard++<60){ const f=bump(tok); if(f!==tok&&(numKind(tok)!=="num"||similarTok(tok,f))) out.add(f); }
+const unitOf=tok=>{ const m=tok.match(new RegExp("("+UNITS+")$")); return m?m[1]:""; };
+const toMin=t=>{ const [h,m]=t.split(":").map(Number); return h*60+m; };
+const fmtMin=v=>{ v=((v%1440)+1440)%1440; return `${Math.floor(v/60)}:${String(v%60).padStart(2,"0")}`; };
+function fakeNum(c,r){
+  const t=c.tok, out=new Set();
+  const nums=t.match(/\d[\d,]*(?:\.\d+)?/g)||[];
+  const fmtN=(v,orig)=>{ v=Math.round(v*100)/100; return /,/.test(orig)||v>=10000?v.toLocaleString("en-US"):String(v); };
+  for(let g=0;g<40&&out.size<6;g++){
+    let f=t;
+    if(c.kind==="timerange"||c.kind==="time"){ const d=[15,30,60,90][Math.floor(r()*4)]*(r()<.5?-1:1); f=t.replace(/\d{1,2}:\d{2}/g,x=>fmtMin(toMin(x)+d)); }
+    else if(c.kind==="date"){ const [y,mo,dd]=t.split("/").map(Number); const d=new Date(y,mo-1,dd+([1,2,3,7,-1,-2,-7][Math.floor(r()*7)])); f=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; }
+    else if(c.kind==="ext"){ f="#"+String(parseInt(t.slice(1),10)+[1,2,10,-1,-10,100][Math.floor(r()*6)]).padStart(t.length-1,"0"); }
+    else{
+      const ops=[v=>v+1,v=>v-1,v=>v*2,v=>Math.round(v/2),v=>v+5,v=>v-5,v=>v+10,v=>v*3,v=>v+v/2,v=>v-v/4];
+      const op=ops[Math.floor(r()*ops.length)];
+      f=t.replace(/\d[\d,]*(?:\.\d+)?/g,x=>{ const v=parseFloat(x.replace(/,/g,"")); const nv=op(v); return nv>0?fmtN(nv,x):x; });
+    }
+    if(f!==t) out.add(f);
+  }
   return [...out];
 }
-function makeNpcQuiz(n){
-  const today=new Date().toISOString().slice(0,10), r=seededRand(n.id+"|"+today+"|"+(n.zone||""));
+const NOUN_SUF="系統|平台|網站|專區|中心|小組|組|部|處|室|申請單|單|表|卡|證|假|費|App|APP|信箱|櫃台|後門|大門|樓|機|網";
+const NOUN_STOP=/^[請到至於在向的和與及或由從用把將先再可要需依並及等如若其]+/;
+const VERBISH=/[按填撥請務辦更寫打帶找送交洽問看算拿去來]|一週|隔天|以[內外上下]|之[前後]|暫緩|^(?:若|如|需|應|可|要|先|再)/;
+function nounOK(w){ return w.length>=2&&w.length<=12&&!/\d/.test(w)&&!/[，。、：:；「」()（）]/.test(w)&&!VERBISH.test(w); }
+function nounTerms(q){                                 // 這則任務裡有意義的名詞
+  const terms=new Map();
+  const add=(w,src)=>{ w=String(w||"").trim(); if(nounOK(w)&&!terms.has(w)) terms.set(w,src); };
+  String(q.body||"").replace(/<table[\s\S]*?<\/table>/gi,"").replace(/<(b|strong)>([^<]{2,12})<\/\1>/gi,(m,t,w)=>{ add(w,"bold"); return m; });
+  questSentences(q).forEach(t=>{
+    t.replace(/「([^」]{2,12})」/g,(m,w)=>{ add(w,"quote"); return m; });
+    const lab=t.match(/^([^：:，、]{2,8})[：:]/); if(lab) add(lab[1],"label");
+  });
+  return terms;
+}
+const sufOf=w=>{ const m=w.match(new RegExp("("+NOUN_SUF+")$")); return m?m[1]:""; };
+function makeNpcQuizV2(n,today,ZONES,ALLQ){
+  const r=seededRand(n.id+"|"+today+"|"+(n.zone||""));
   const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
   const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id); if(!qs.length) return null;
-  // ① 內容題：任務說明裡有數字的句子，把數字挖空
-  const cands=[];
-  qs.forEach(q=>questSentences(q).forEach(t=>{ const m=t.match(NUM_RE); if(m&&!/^\d+$/.test(t.trim())) cands.push({q,t,tok:m[0].replace(/\s+/g,"")}); }));
-  const zoneToks=[...new Set(cands.map(c=>c.tok))];
-  if(cands.length&&r()<.7){
-    const c=cands[Math.floor(r()*cands.length)];
-    let wrong=zoneToks.filter(t=>similarTok(c.tok,t));
-    wrong=shuffleR(wrong,r).slice(0,3);
-    if(wrong.length<3) wrong=wrong.concat(fakeNums(c.tok,r).filter(f=>!wrong.includes(f))).slice(0,3);
-    if(wrong.length===3){
+  // 全站名詞庫（干擾選項用）
+  const allNouns=new Map(); ALLQ.forEach(q=>nounTerms(q).forEach((src,w)=>{ if(!allNouns.has(w)) allNouns.set(w,src); }));
+  const numC=[], nounC=[], zoneNumToks=[];
+  qs.forEach(q=>questSentences(q).forEach(t=>{
+    numTokens(t).forEach(c=>{ zoneNumToks.push(c);
+      if(t.indexOf(c.tok)===t.lastIndexOf(c.tok)&&t.replace(c.tok,"").replace(/\s/g,"").length>=8) numC.push(Object.assign({q,t},c)); });
+    const terms=nounTerms(q);
+    terms.forEach((src,w)=>{ const i=t.indexOf(w);
+      if(i<0||t.indexOf(w,i+1)>=0) return;               // 句子裡要剛好出現一次
+      if(src==="label"&&i===0&&t.length-w.length<10) return;
+      if(q.title.includes(w)) return;                    // 答案不能寫在題目的任務標題裡
+      if(t.length-w.length<8) return;                    // 挖空後還要有足夠的線索
+      nounC.push({q,t,w,src,s:i,e:i+w.length});
+    });
+  }));
+  const pickNum=()=>{
+    for(const c of shuffleR(numC,r)){
+      const unit=unitOf(c.tok);
+      let wrong=shuffleR([...new Set(zoneNumToks.filter(x=>x.kind===c.kind&&x.tok!==c.tok&&unitOf(x.tok)===unit&&(!/個月/.test(c.tok)===!/個月/.test(x.tok))).map(x=>x.tok))],r);
+      const okTime=x=>!/\d{1,2}:\d{2}/.test(x)||(x.match(/\d{1,2}:\d{2}/g)||[]).every(h=>{ const v=toMin(h); return v>=360&&v<=1320; });
+      const val=x=>parseFloat(String(x).replace(/,/g,"")), u=unitOf(c.tok), v0=val(c.tok);
+      const okUnit=x=>{ const v=val(x); if(!(v>0)&&v!==0) return true;
+        if(u==="月"&&!/個月/.test(x)) return v>=1&&v<=12&&Number.isInteger(v);
+        if(u==="歲") return v>=18&&v<=70;
+        if(c.kind==="unit"&&Number.isInteger(v0)&&v0>=10&&v0%5===0) return v%5===0;   // 整數答案配整數選項
+        return true; };
+      const sane=x=>okTime(x)&&okUnit(x);
+      wrong=wrong.concat(shuffleR(fakeNum(c,r),r)).filter((x,i,a)=>a.indexOf(x)===i&&x!==c.tok&&!c.t.includes(x)&&sane(x)).slice(0,3);
+      if(wrong.length<3) continue;
       const opts=shuffleR([c.tok].concat(wrong),r);
-      return {kind:"內容題",text:`根據「${c.q.title}」：\n${c.t.replace(NUM_RE,"＿＿＿＿")}`,opts,ans:opts.indexOf(c.tok),quest:c.q.id,explain:c.t};
+      return {kind:"數字題",text:`根據「${c.q.title}」：\n${c.t.slice(0,c.s)}＿＿＿＿${c.t.slice(c.e)}`,opts,ans:opts.indexOf(c.tok),quest:c.q.id,explain:c.t};
     }
-  }
+    return null;
+  };
+  const pickNoun=()=>{
+    const pri=x=>x.src==="quote"||x.src==="bold"?0:1;
+    for(const c of shuffleR(nounC,r).sort((a,b)=>pri(a)-pri(b))){
+      const pool=[...allNouns.keys()].filter(w=>w!==c.w&&!c.t.includes(w)&&!c.w.includes(w)&&!w.includes(c.w));
+      const suf=sufOf(c.w);
+      let wrong=suf?shuffleR(pool.filter(w=>sufOf(w)===suf),r):[];
+      if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>allNouns.get(w)===c.src&&Math.abs(w.length-c.w.length)<=3),r));
+      if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>Math.abs(w.length-c.w.length)<=2),r));
+      wrong=wrong.filter((x,i,a)=>a.indexOf(x)===i).slice(0,3);
+      if(wrong.length<3) continue;
+      const opts=shuffleR([c.w].concat(wrong),r);
+      return {kind:"名詞題",text:`根據「${c.q.title}」：\n${c.t.slice(0,c.s)}＿＿＿＿${c.t.slice(c.e)}`,opts,ans:opts.indexOf(c.w),quest:c.q.id,explain:c.t};
+    }
+    return null;
+  };
+  const roll=r();
+  const first=roll<.5?pickNoun:pickNum, second=roll<.5?pickNum:pickNoun;
+  return first()||second()||null;
+}
+function makeNpcQuiz(n){
+  const today=new Date().toISOString().slice(0,10), r=seededRand(n.id+"|"+today+"|"+(n.zone||"")+"|mix");
+  const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
+  const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id); if(!qs.length) return null;
+  if(r()<.75){ const q=makeNpcQuizV2(n,today,ZONES,ALLQ); if(q) return q; }
   // ② 歸屬題：哪一項可以在這裡查到
   const others=ALLQ.filter(q=>q.zone&&q.zone.id!==z.id);
   if(others.length>=3&&(r()<.6||new Set(qs.map(q=>q.chapter)).size<2)){
@@ -7114,17 +7274,29 @@ function renderMyHome(body){
   });
 }
 
+let memoCloudTimer=null;
+function memoSync(){                                   // 停止打字 3 秒後立刻同步到雲端
+  if(!CLOUD||!cloudReady()) return;
+  cloudDirty=true;
+  if(!cloudSynced) return;
+  clearTimeout(memoCloudTimer); clearTimeout(cloudTimer);
+  memoCloudTimer=setTimeout(()=>cloudPush(),3000);
+}
 function renderNotebook(panel){
   if(panel.dataset.kind!=="notebook"){
     panel.dataset.kind="notebook";
     panel.innerHTML=`<section class="window pbox notebook">
       <h3>我的筆記本 ${helpBtn("notebook")}</h3>
       <p class="ahint">執行任務時按「♡ 加入最愛」，資料就會收進這裡。每筆都可以寫自己的小筆記。</p>
+      <p class="ahint nbcloud" id="nbCloud"></p>
       <label class="sr" for="nbSearch">搜尋筆記本</label>
       <input id="nbSearch" class="ainput wide" type="search" placeholder="搜尋標題、內容或我的筆記，例如：分機、便當、出差">
       <div class="pages" id="nbList"></div>
     </section>`;
   }
+  const nc=$("#nbCloud");
+  if(nc) nc.innerHTML=!cloudReady()?"":CLOUD?"☁ 已登入雲端存檔：筆記會自動同步，換電腦或瀏覽器登入同一個帳號就看得到。"
+    :`⚠ 筆記目前只存在這台電腦的瀏覽器。<button class="linkbtn" type="button" data-cloud="login">登入雲端存檔</button>後，換電腦或瀏覽器也看得到。`;
   const q=$("#nbSearch").value.trim().toLowerCase();
   const all=favList();
   const list=all.filter(x=>!q||(x.title+" "+x.zone.name+" "+plain(x.body)+" "+((S.fav[x.id]||{}).memo||"")).toLowerCase().includes(q));
@@ -7308,7 +7480,7 @@ function renderPetPanel(panel){
     return;
   }
   if(!S.pet||petAdopting){
-    petDraft=petDraft||Object.assign({},PET_DEFAULT,S.pet||{});
+    petDraft=petView(petDraft||Object.assign({},PET_DEFAULT,S.pet||{}));
     panel.innerHTML=`<section class="window pbox form">
       <h3>${S.pet?"換一隻夥伴":"領養夥伴"} <span class="st ${stage==="adult"?"st-info":"st-wait"}">${stage==="adult"?"成年":"寶寶"}模式</span></h3>
       <p class="ahint">${stage==="adult"?"你已經 LV 4，領養後就是成年的樣子。":"現在領養的是寵物寶寶，等你升到 LV 4 牠就會長大。"}選好種類、顏色，再幫牠取個名字。</p>
@@ -7316,10 +7488,10 @@ function renderPetPanel(panel){
         <div class="preview"><div class="pv" id="petPv">${petSVG(petDraft)}</div></div>
         <div>
           <div class="orow" role="radiogroup" aria-label="種類"><span class="olab" aria-hidden="true">種類</span><div class="ochoices">
-            ${Object.entries(PETS).filter(([k])=>petKindOK(k)).map(([k,o])=>`<label class="opt"><input type="radio" name="pet-type" value="${k}" ${petDraft.type===k?"checked":""}><span class="th" data-petth="${k}">${petSVG(Object.assign({},petDraft,{type:k}))}</span>${o.name}</label>`).join("")}
+            ${Object.entries(PETS).filter(([k])=>petKindOK(k)).map(([k,o])=>`<label class="opt"><input type="radio" name="pet-type" value="${k}" ${petDraft.type===k?"checked":""}><span class="th" data-petth="${k}">${petSVG(petView(Object.assign({},petDraft,{type:k})))}</span>${o.name}</label>`).join("")}
           </div></div>
           <div class="orow" role="radiogroup" aria-label="顏色"><span class="olab" aria-hidden="true">顏色</span><div class="ochoices">
-            ${PETC.map((c,i)=>petColorOK(i)?`<label class="opt sw${i>=PETC_SPECIAL?" rare":""}" title="${c[0]}"><input type="radio" name="pet-color" value="${i}" ${+petDraft.color===i?"checked":""}><i style="background:${petSwatch(i)}"></i></label>`:"").join("")}
+            ${PETC.map((c,i)=>petColorOK(i,petDraft.type)?`<label class="opt sw${i>=PETC_SPECIAL?" rare":""}" title="${c[0]}"><input type="radio" name="pet-color" value="${i}" ${+petDraft.color===i?"checked":""}><i style="background:${petSwatch(i)}"></i></label>`:"").join("")}
           </div></div>
           <div class="orow"><span class="olab" aria-hidden="true">名字</span><div class="ochoices">
             <label class="sr" for="petName">寵物名字</label>
@@ -7549,8 +7721,8 @@ $("#placeBody").addEventListener("input",e=>{
   if(e.target.id==="nbSearch"){ renderNotebook($("#homePanel")); return; }
   const m=e.target.closest("[data-memo]");
   if(m&&S.fav[m.dataset.memo]){
-    S.fav[m.dataset.memo].memo=m.value.slice(0,MEMO_MAX);
-    clearTimeout(memoTimer); memoTimer=setTimeout(()=>{save();},400);
+    S.fav[m.dataset.memo].memo=m.value.slice(0,MEMO_MAX); S.fav[m.dataset.memo].mt=new Date().toISOString();
+    clearTimeout(memoTimer); memoTimer=setTimeout(()=>{ save(); memoSync(); },400);
   }
 });
 $("#placeBody").addEventListener("change",e=>{
@@ -7559,6 +7731,7 @@ $("#placeBody").addEventListener("change",e=>{
     petDraft=petDraft||Object.assign({},PET_DEFAULT);
     petDraft[n==="pet-type"?"type":"color"]=n==="pet-color"?+e.target.value:e.target.value;
     Sound.sfx("cursor");
+    if(n==="pet-type"){ const nm=$("#petName"); if(nm) petDraft.name=nm.value; petDraft=petView(petDraft); renderPlace(); return; }
     $("#petPv").innerHTML=petSVG(petDraft);
     document.querySelectorAll("#placeBody [data-petth]").forEach(el=>{el.innerHTML=petSVG(Object.assign({},petDraft,{type:el.dataset.petth}));});
     return;
@@ -7575,6 +7748,7 @@ $("#placeBody").addEventListener("change",e=>{
     return;
   }
   if(n==="pet-acc"&&S.pet){ S.pet.acc=!!e.target.checked&&affFull(S.pet.type); save(); queueSync(); pushFarm(true); Sound.sfx("cursor"); renderHUD(); buildMap(); renderPlace(); return; }
+  if(n==="pet-color-home"&&S.pet&&+e.target.value!==RAINBOW) S.pet.baseColor=+e.target.value;
   if(n==="pet-color-home"&&S.pet){
     S.pet.color=+e.target.value; save(); Sound.sfx("cursor");
     renderHUD(); buildMap(); renderPlace();
@@ -7592,7 +7766,7 @@ $("#placeBody").addEventListener("click",async e=>{
     const name=cleanText(($("#petName")||{}).value,8);
     if(!name){ $("#petErr").textContent="請幫牠取個名字"; Sound.sfx("error"); const i=$("#petName"); if(i){i.classList.add("missing");i.focus();} return; }
     const isNew=!S.pet;
-    S.pet=Object.assign({},PET_DEFAULT,petDraft||{},{name,wear:S.pet?S.pet.wear:"none",wc:S.pet?S.pet.wc:1});
+    S.pet=petView(Object.assign({},PET_DEFAULT,S.pet||{},petDraft||{},{name,wear:S.pet?S.pet.wear:"none",wc:S.pet?S.pet.wc:1}));
     petAdopting=false; petDraft=null; save();
     Sound.sfx("achieve"); toast(isNew?`🐾 ${name} 加入了你的冒險！${petStage()==="baby"?"（寶寶模式）":""}`:`夥伴換成了 ${name}`);
     checkAch(); renderHUD(); renderPlace();
@@ -7611,7 +7785,7 @@ $("#placeBody").addEventListener("click",async e=>{
   const of=t.closest("[data-openfav]");
   if(of){ const list=favList(); openQuest(of.dataset.openfav,list); return; }
   const uf=t.closest("[data-unfav]");
-  if(uf){ delete S.fav[uf.dataset.unfav]; save(); Sound.sfx("undo"); toast("已移出筆記本"); renderPlace(); return; }
+  if(uf){ delete S.fav[uf.dataset.unfav]; S.favDel=S.favDel||{}; S.favDel[uf.dataset.unfav]=new Date().toISOString(); save(); queueCloud(); Sound.sfx("undo"); toast("已移出筆記本"); renderPlace(); return; }
   if(t.closest("[data-certdl]")){ downloadCert($("#homeCertCanvas")); return; }
   const bc=t.closest("[data-bonus]"); if(bc){ showBonusCert(+bc.dataset.bonus); return; }
   if(t.closest("[data-bonusdl]")){ downloadCert($("#bonusCertCanvas"),`Bonus進修證書${bonusShown+1}`); return; }

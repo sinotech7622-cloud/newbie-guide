@@ -431,6 +431,18 @@ pre.code,textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:13p
 
 /* ---------- cloud login dialog ---------- */
 #cloudDlg{max-width:min(560px,calc(100vw - 28px))}
+#syncDlg{max-width:min(640px,calc(100vw - 28px))}
+.synccmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.synccard{border:2px solid var(--line);border-radius:4px;padding:10px;background:rgba(255,255,255,.05)}
+.synccard.rec{border-color:var(--gold)}
+.syncname{font-family:var(--pixel);font-size:16px;margin:0 0 2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.syncfacts{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:6px 0 0;font-size:14px}
+.syncfacts dt{color:var(--muted,#B9A8DA)}.syncfacts dd{margin:0}
+.syncbtns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.syncbtns .act small{font-size:12px;opacity:.85}
+@media (max-width:520px){.synccmp{grid-template-columns:1fr}.syncbtns .act{flex:1 1 100%}}
+
 .cloudwrap{max-width:min(520px,calc(100vw - 28px))}
 .cloudwrap .body{display:grid;gap:18px;padding:20px 26px 16px}
 .cloudwrap .intro{margin:0!important;line-height:1.85}
@@ -1823,6 +1835,21 @@ footer.site p{margin:4px 0}
   </form>
 </dialog>
 
+<dialog id="syncDlg" aria-labelledby="syncTitle">
+  <div class="window dlg form syncwrap">
+    <div class="head"><div><p class="dept">雲端存檔</p><h3 id="syncTitle">這台和線上的進度不一樣</h3></div></div>
+    <div class="body">
+      <p class="dbody" id="syncIntro"></p>
+      <div class="synccmp" id="syncCmp"></div>
+      <p class="ahint">筆記本的內容兩邊都會保留，不會因為選哪一邊而不見。</p>
+    </div>
+    <div class="foot"><div class="row syncbtns">
+      <button class="act" type="button" id="syncUp">⬆ 更新線上<small>用這台的進度上傳</small></button>
+      <button class="act" type="button" id="syncDown">⬇ 覆蓋這台<small>用線上的進度取代</small></button>
+    </div></div>
+  </div>
+</dialog>
+
 <dialog id="rcDlg" aria-labelledby="rcTitle">
   <div class="window dlg form rcwrap">
     <div class="head"><div><p class="dept">雲端存檔</p><h3 id="rcTitle">你的救援碼</h3></div></div>
@@ -2766,7 +2793,7 @@ const ACH=[
 const KEY="sino22-quest-v1";
 let S={name:"",emp:"",av:null,pet:null,group:"",fav:{},achSeen:{},consults:[],ivReplies:{},done:{},visited:{},points:0,ach:{},loc:"village"};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw)||{});}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); localStorage.setItem("sino22-local-at",new Date().toISOString());}catch(e){}}
 
 const $=s=>document.querySelector(s);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -4186,7 +4213,7 @@ $("#map").addEventListener("keydown",e=>{
   if(g&&(e.key==="Enter"||e.key===" ")){e.preventDefault();g.dataset.place?openPlace(g.dataset.place):openZone(g.dataset.zone);}
 });
 document.querySelectorAll("dialog").forEach(d=>{
-  const keep=d.id==="cloudDlg"||d.id==="cDlg";     // 登入與建立角色視窗：避免誤點外面關掉
+  const keep=d.id==="cloudDlg"||d.id==="cDlg"||d.id==="syncDlg";     // 登入與建立角色視窗：避免誤點外面關掉
   if(!keep) d.addEventListener("click",e=>{if(e.target===d)d.close();});
   d.addEventListener("close",()=>{setTimeout(topHost,0);Sound.sfx("back",{soft:true});});
 });
@@ -4786,7 +4813,7 @@ function cloudLogout(){
   CLOUD=null; try{ localStorage.removeItem(CLOUD_KEY); }catch(e){}
   renderCloudBox(); renderHUD();
 }
-function snapshot(){ return {v:1,S,code:myCode(),at:new Date().toISOString()}; }
+function snapshot(){ return {v:1,S,code:myCode(),at:new Date().toISOString(),dev:deviceText()}; }
 function progressCount(st){ return Object.keys((st&&st.done)||{}).filter(k=>QIDS.has(k)&&st.done[k]).length; }
 function makeRecoveryCode(){
   const raw=randChars(16);
@@ -4854,6 +4881,7 @@ async function cloudPush(now){
     await sendForm("save",{acc:CLOUD.code,data,note:myCode()});
     cloudDirty=false; cloudLastAt=new Date().toISOString();
     try{ localStorage.setItem("sino22-cloud-at",cloudLastAt); }catch(e){}
+    markSynced();
     renderCloudBox();
     return true;
   }catch(e){ cloudDirty=true; return false; }
@@ -4864,7 +4892,7 @@ function queueCloud(now){
   cloudDirty=true;
   if(!cloudSynced) return;          // 先和雲端比對完，才允許上傳，避免蓋掉較新的存檔
   clearTimeout(cloudTimer);
-  cloudTimer=setTimeout(()=>cloudPush(),now?0:20000);
+  cloudTimer=setTimeout(()=>cloudPushSafe(),now?0:20000);
 }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden"&&cloudDirty){ clearTimeout(cloudTimer); cloudPush(); } });
 function mergeConsults(a,b){
@@ -4928,8 +4956,8 @@ async function cloudSignIn(acc,pw,mode){
   if(loaded){
     const mine=progressCount(S), theirs=progressCount(loaded.S);
     let useCloud=true;
-    if(S.group&&mine>theirs) useCloud=await uiConfirm(`這台電腦有 ${mine} 個已完成任務，雲端存檔只有 ${theirs} 個。要改用雲端存檔嗎？按「取消」則保留這台電腦的進度並覆蓋雲端。`,"用雲端存檔");
-    if(useCloud){ applySave(loaded); toast("已載入雲端存檔"); }
+    if(S.group&&saveFingerprint(S)!==saveFingerprint(loaded.S)) useCloud=(await askSyncChoice(loaded,true))==="down";
+    if(useCloud){ applySave(loaded); setCloudAt(new Date().toISOString()); markSynced(); toast("已載入雲端存檔"); }
     else { mergeFavInto(loaded.S); save(); await cloudPush(true); toast("已用這台電腦的進度覆蓋雲端（筆記本兩邊都保留）"); }
     if(freshCode){ await cloudPush(true); showRecovery(freshCode,"這個帳號還沒有救援碼，系統剛剛幫你產生一組。"); }
   }else{
@@ -4985,26 +5013,87 @@ async function cloudChangePassword(oldPw,newPw){
   toast("密碼已變更，其他電腦請改用新密碼登入");
   return true;
 }
-async function cloudSyncOnStart(){
-  if(!CLOUD||!cloudReady()){ cloudSynced=true; return; }
-  try{
-    const remote=await cloudFetch(CLOUD.code);
-    if(!remote){ cloudSynced=true; await cloudPush(true); return; }
-    let opened;
-    try{ opened=await openSave(remote.data,CLOUD.key,"pw"); }
-    catch(e){ cloudSynced=true; cloudLogout(); toast("雲端存檔的密碼已被重設，請用新的密碼重新登入"); return; }
-    const loaded=opened.payload;
-    if(opened.body&&!opened.body.esc&&CFG.escrowKey) setTimeout(()=>queueCloud(true),3000);
-    if(opened.dek&&!CLOUD.dek) await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek:opened.dek,rcKey:CLOUD.rcKey});
-    else if(opened.dek) CLOUD.dek=opened.dek;
-    const mine=progressCount(S), theirs=progressCount(loaded.S);
-    const localAt=(()=>{ try{ return localStorage.getItem("sino22-cloud-at")||""; }catch(e){ return ""; } })();
-    if(theirs>mine||(theirs===mine&&String(loaded.at||"")>localAt)){ applySave(loaded); if(theirs>mine) toast("已從雲端載入最新進度"); cloudSynced=true; cloudDirty=false; }
-    else { cloudSynced=true; const changed=mergeFavInto(loaded.S); if(changed){ save(); if(curPlace&&curPlace.id==="myhome") renderPlace(); }
-      if(mine>theirs||changed) queueCloud(true); }
-  }catch(e){ cloudSynced=true; }
-  finally{ cloudSynced=true; if(cloudDirty) queueCloud(); }
+/* ---- 電腦、手機各自有新進度時：詢問要更新線上，還是用線上的覆蓋這台 ---- */
+const cloudAt=()=>{ try{ return localStorage.getItem("sino22-cloud-at")||""; }catch(e){ return ""; } };
+const setCloudAt=v=>{ try{ localStorage.setItem("sino22-cloud-at",v); }catch(e){} };
+const localMt=()=>{ try{ return localStorage.getItem("sino22-local-at")||""; }catch(e){ return ""; } };
+const syncFp=()=>{ try{ return localStorage.getItem("sino22-sync-fp")||""; }catch(e){ return ""; } };
+function markSynced(){ try{ localStorage.setItem("sino22-sync-fp",hashStr(saveFingerprint(S))); }catch(e){} }
+const localChangedSinceSync=()=>!!S.group&&hashStr(saveFingerprint(S))!==syncFp();
+const FP_SKIP=new Set(["seenQuests","bonusSeen","fav","favDel","consults","ivReplies","pdClaimed","giftClaimed","ixSeen","achSeen","seenContent","loc","seedAt","lvMax","ach","guardUntil","starUntil","farmSeed","tourDone","npcMile","cleanedAt"]);
+const stableStr=v=>v&&typeof v==="object"?(Array.isArray(v)?"["+v.map(x=>x===undefined?"null":stableStr(x)).join(",")+"]":"{"+Object.keys(v).filter(k=>v[k]!==undefined&&typeof v[k]!=="function").sort().map(k=>JSON.stringify(k)+":"+stableStr(v[k])).join(",")+"}"):JSON.stringify(v);
+function fpNorm(v){                                   // 空的預設值（空物件、空田地、預設牆紙地板）視為沒有
+  if(Array.isArray(v)){ const a=v.map(fpNorm); return a.every(x=>x===undefined)?undefined:a.map(x=>x===undefined?null:x); }
+  if(v&&typeof v==="object"){ const o={}; Object.keys(v).forEach(k=>{ const x=fpNorm(v[k]); if(x!==undefined) o[k]=x; }); return Object.keys(o).length?o:undefined; }
+  return v===null||v===""||v==="wp_default"||v==="fl_wood"?undefined:v;
 }
+function saveFingerprint(st){ const o={}; Object.keys(st||{}).forEach(k=>{ if(k[0]!=="_"&&!FP_SKIP.has(k)) o[k]=st[k]; }); return stableStr(fpNorm(JSON.parse(JSON.stringify(o)))||{}); }   // 只比對真正的遊戲進度
+function saveSummaryHTML(st,title,dev,at,mark){
+  st=st||{};
+  const done=progressCount(st), seeds=Object.values(st.seeds||{}).reduce((a,b)=>a+(+b||0),0), barn=Object.values(st.barn||{}).reduce((a,b)=>a+(+b||0),0);
+  const ach=Object.keys(st.ach||{}).filter(k=>st.ach[k]).length, furn=Object.keys(st.shopOwned||{}).length;
+  const pet=st.pet&&PETS[st.pet.type]?(st.pet.name||PETS[st.pet.type].name):"—";
+  return `<div class="synccard${mark?" rec":""}"><p class="syncname">${esc(title)}${mark?`<span class="st st-gold">建議</span>`:""}</p>
+    <p class="ahint">${esc(dev||"")}${at?`・${esc(fmtShort(new Date(at)))}`:""}</p>
+    <dl class="syncfacts"><dt>等級</dt><dd>LV ${esc(String(st.lvMax||1))}</dd><dt>完成任務</dt><dd>${done} / ${TOTAL}</dd><dt>成就</dt><dd>${ach} 個</dd>
+      <dt>種子</dt><dd>${seeds} 顆</dd><dt>倉庫蔬菜</dt><dd>${barn} 份</dd><dt>家具</dt><dd>${furn} 件</dd><dt>寵物</dt><dd>${esc(pet)}</dd></dl></div>`;
+}
+let syncAsk=null;
+function askSyncChoice(loaded,localChanged){
+  if(syncAsk) return syncAsk;
+  syncAsk=new Promise(res=>{
+    const d=$("#syncDlg"), rec=localChanged?"":"down";
+    $("#syncIntro").innerHTML=localChanged
+      ?"線上存檔在別的裝置（例如手機或另一台電腦）更新過，這台也有還沒上傳的新進度。請選一邊當作最新的進度："
+      :"線上存檔在別的裝置（例如手機或另一台電腦）更新過。這台上次同步後沒有新進度，<b>建議用線上的進度覆蓋這台</b>：";
+    $("#syncCmp").innerHTML=saveSummaryHTML(S,`這台（${deviceText()}）`,"目前的進度",localMt(),rec==="up")
+      +saveSummaryHTML(loaded.S,"線上存檔",loaded.dev?`由${loaded.dev}儲存`:"由其他裝置儲存",loaded.at,rec==="down");
+    $("#syncUp").classList.toggle("ghost",rec==="down"); $("#syncDown").classList.toggle("ghost",false);
+    const done=v=>{ $("#syncUp").onclick=$("#syncDown").onclick=null; d.close(); syncAsk=null; res(v); };
+    $("#syncUp").onclick=()=>done("up"); $("#syncDown").onclick=()=>done("down");
+    if(!d.open) d.showModal(); Sound.sfx("open");
+  });
+  return syncAsk;
+}
+$("#syncDlg").addEventListener("cancel",e=>e.preventDefault());       // 一定要選一邊
+let reconcileJob=null, lastRemoteCheck=0;
+async function cloudReconcile(){
+  if(!CLOUD||!cloudReady()){ cloudSynced=true; return; }
+  if(reconcileJob) return reconcileJob;
+  reconcileJob=(async()=>{
+    try{
+      const remote=await cloudFetch(CLOUD.code); lastRemoteCheck=Date.now();
+      if(!remote){ cloudSynced=true; await cloudPush(true); return; }
+      let opened;
+      try{ opened=await openSave(remote.data,CLOUD.key,"pw"); }
+      catch(e){ cloudSynced=true; cloudLogout(); toast("雲端存檔的密碼已被重設，請用新的密碼重新登入"); return; }
+      const loaded=opened.payload;
+      if(opened.body&&!opened.body.esc&&CFG.escrowKey) setTimeout(()=>queueCloud(true),3000);
+      if(opened.dek&&!CLOUD.dek) await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek:opened.dek,rcKey:CLOUD.rcKey});
+      else if(opened.dek) CLOUD.dek=opened.dek;
+      cloudSynced=true;
+      const rAt=String(loaded.at||""), lAt=cloudAt(), localChanged=localChangedSinceSync();
+      if(rAt<=lAt){                                    // 線上沒有別的裝置的新存檔：這台有新進度就上傳
+        const changed=mergeFavInto(loaded.S); if(changed) save();
+        if(localChanged||changed) await cloudPush(true);
+        if(changed&&curPlace&&curPlace.id==="myhome") renderPlace();
+        return;
+      }
+      if(!S.group||saveFingerprint(S)===saveFingerprint(loaded.S)){   // 這台是空的，或兩邊其實一樣：直接合併
+        if(!S.group){ applySave(loaded); }
+        else{ const changed=mergeFavInto(loaded.S); if(changed){ save(); await cloudPush(true); } }
+        setCloudAt(new Date().toISOString()); cloudDirty=false; markSynced(); return;
+      }
+      const pick=await askSyncChoice(loaded,localChanged);
+      if(pick==="up"){ mergeFavInto(loaded.S); save(); await cloudPush(true); toast("⬆ 已用這台的進度更新線上存檔（筆記本兩邊都保留）"); }
+      else{ applySave(loaded); setCloudAt(new Date().toISOString()); cloudDirty=false; markSynced(); toast("⬇ 已用線上的進度覆蓋這台"); }
+    }catch(e){ cloudSynced=true; }
+    finally{ cloudSynced=true; reconcileJob=null; }
+  })();
+  return reconcileJob;
+}
+async function cloudSyncOnStart(){ await cloudReconcile(); }
+function cloudPushSafe(){ return Date.now()-lastRemoteCheck>5*60e3?cloudReconcile():cloudPush(); }   // 至少每 5 分鐘先確認線上有沒有別的裝置的新存檔
 
 const LOGIN_HINT_KEY="sino22-loginhint";
 function updateLoginBtn(){
@@ -8543,8 +8632,8 @@ $("#placeBody").addEventListener("click",async e=>{
       if(!(await uiConfirm("登出後，這台電腦的進度仍在，但不會再自動同步。確定登出嗎？","登出"))) return;
       cloudLogout(); toast("已登出雲端存檔");
     }else if(act==="push"){
-      cb.disabled=true; const ok=await cloudPush(true); cb.disabled=false;
-      toast(ok?"已同步到雲端":"同步失敗，請稍後再試"); renderCloudBox();
+      cb.disabled=true; await cloudReconcile(); cb.disabled=false;
+      toast(cloudDirty?"同步失敗，請稍後再試":"已同步到雲端"); renderCloudBox();
     }
     return;
   }
@@ -9570,7 +9659,7 @@ async function autoSync(){
   autoSyncBusy=true; markAutoSync();
   try{
     if(CLOUD&&cloudReady()){                           // 本機有還沒上傳的進度就先上傳；沒有的話，看雲端有沒有別台電腦的新進度
-      if(cloudDirty) await cloudPush(true); else await cloudSyncOnStart();
+      await cloudReconcile();
     }
     pushFarm(true);                                    // 交誼廳名片、房子佈置、田地
     queueSync(true);                                   // 進度回報給部門

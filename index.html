@@ -262,7 +262,8 @@ main{max-width:1180px;margin:0 auto;padding:6px 16px 40px}
 /* ---------- dialogs ---------- */
 dialog{padding:0;border:0;background:none;max-width:min(760px,calc(100vw - 28px));width:100%;color:var(--win-text)}
 dialog::backdrop{background:rgba(8,10,30,.72)}
-.dlg{max-height:calc(100vh - 60px);display:flex;flex-direction:column}
+.dlg{max-height:calc(100vh - 60px);max-height:calc(100dvh - 60px);display:flex;flex-direction:column}
+dialog:modal{overflow:visible;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px)}
 .dlg header{display:flex;gap:14px;align-items:flex-start;padding:18px 22px 12px;border-bottom:2px solid rgba(255,255,255,.25)}
 .dlg header h2{font-family:var(--pixel);font-weight:400;font-size:clamp(20px,3vw,26px);line-height:1.35;margin:0;flex:1}
 .dlg header .from{display:block;font-family:var(--pixel);font-size:13px;color:var(--gold);margin-bottom:2px}
@@ -801,6 +802,82 @@ body.tour-lock .mapframe{z-index:41}
 
 .linkbtn.retract{margin-left:8px;font-size:12px;color:#FFB3AD;padding:0 4px}
 .linkbtn.retract:hover{color:#fff;text-decoration:underline}
+
+/* 種子商店 */
+.seedchips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
+.seedchip{display:inline-flex;align-items:center;gap:6px;background:#1B2466;border:1px solid var(--line);border-radius:12px;padding:2px 10px 2px 4px;font-size:13px}
+.seedchip .seedicon{width:22px;height:22px;padding:1px;border-width:1px}
+.shopgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.shopcard{display:flex;flex-direction:column;align-items:center;gap:4px;background:#1B2466;border:2px solid var(--line);border-radius:4px;padding:10px 6px;text-align:center}
+.shopcard.on{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.shopcard b{font-family:var(--pixel);font-weight:400;font-size:15px}
+.shopbtns{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:2px}
+.shopbtns .act{padding:4px 10px;font-size:13px}
+.shopic{display:block;width:52px;height:52px;background:#3A2A55;border:2px solid #fff;border-radius:3px;padding:4px}
+.shopsw{display:block;width:72px;height:52px;border:2px solid #fff;border-radius:3px;position:relative;overflow:hidden}
+.shopsw.showroom{height:52px;margin:0}
+.rugsw{background:#8A5A32}
+.rugsw .sr-rug{left:8px!important;right:8px;width:auto!important;bottom:12px!important;height:24px!important}
+/* 牆紙 */
+.showroom.wp_star{background:radial-gradient(circle at 20% 30%,#fff 0 1px,transparent 2px),radial-gradient(circle at 70% 20%,#fff 0 1px,transparent 2px),radial-gradient(circle at 45% 55%,#FFF3B0 0 1px,transparent 2px),linear-gradient(180deg,#141a3c,#2A3A7A)}
+.showroom.wp_forest{background:repeating-linear-gradient(90deg,#2E6B3F 0 30px,#2A6239 30px 32px)}
+.showroom.wp_wood{background:repeating-linear-gradient(90deg,#9A6A3C 0 22px,#8C5E33 22px 24px)}
+.showroom.wp_brick{background:linear-gradient(#5A2A22 2px,transparent 2px) 0 0/40px 20px,linear-gradient(90deg,#5A2A22 2px,transparent 2px) 0 0/40px 40px,linear-gradient(90deg,#5A2A22 2px,transparent 2px) 20px 20px/40px 40px,#9E4A3A}
+.showroom.wp_sakura{background:radial-gradient(circle at 15px 15px,#FFD1DE 0 3px,transparent 4px) 0 0/40px 40px,#E8A8BC}
+/* 地毯 */
+.sr-rug{position:absolute;left:28%;width:44%;bottom:8px;height:26px;border-radius:50%;z-index:1;box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.sr-rug.rug_red{background:radial-gradient(ellipse,#F2726A 0 30%,#D8434B 31% 60%,#9E2E35 61%)}
+.sr-rug.rug_blue{border-radius:4px;background:repeating-linear-gradient(90deg,#3F6FD8 0 10px,#F7F7FB 10px 20px)}
+.sr-rug.rug_grass{border-radius:6px;background:repeating-linear-gradient(90deg,#57C35A 0 4px,#4FAE52 4px 8px)}
+.sr-rug.rug_rainbow{background:linear-gradient(90deg,#E8453C,#FF9F43,#FFD23F,#57C35A,#4A7BF7,#9B6BD6)}
+/* 掛飾、擺設 */
+.sr-walldeco{position:absolute;right:5%;top:20px;width:64px;height:64px;z-index:1;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.35))}
+.sr-floordeco{position:absolute;left:3%;bottom:28px;width:78px;height:78px;z-index:1;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.35))}
+@media (max-width:600px){.sr-floordeco{left:1%;bottom:6px;width:48px;height:48px}.sr-walldeco{width:48px;height:48px;right:3%}}
+/* 寵物串門子＋交友錄 */
+.roompet.guestpet{left:70%}
+.rp-name{position:absolute;left:50%;top:100%;transform:translateX(-50%);background:rgba(35,31,32,.72);color:#FFF3B0;font-family:var(--pixel);font-size:11px;line-height:1.3;padding:0 5px;border-radius:3px;white-space:nowrap;pointer-events:none}
+.sr-photo{position:absolute;left:calc(50% + 98px);top:30px;margin:0;width:96px;background:#FFFDF6;padding:5px 5px 2px;box-shadow:0 0 0 2px #3B2412,3px 5px 0 rgba(0,0,0,.4);transform:rotate(4deg);z-index:1}
+.sr-photo .ph-pic,.photopv{display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(#BFE6FF,#E8F7FF 70%,#B9E59A 70%);height:52px;position:relative;overflow:hidden}
+.photopv{width:120px;height:72px;border:4px solid #FFFDF6;box-shadow:0 0 0 2px #3B2412}
+.ph-pet{display:block;width:44%;height:auto;aspect-ratio:1}
+.ph-pet.flip svg{transform:scaleX(-1)}
+.ph-heart{position:absolute;top:2px;left:50%;transform:translateX(-50%);color:#FF6B8B;font-size:13px;line-height:1}
+.sr-photo figcaption{font-family:var(--pixel);font-size:10px;color:#3B2412;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-top:2px}
+@media (max-width:640px){.sr-photo{left:auto;right:4%;top:auto;bottom:118px;width:66px;padding:3px 3px 1px}.sr-photo .ph-pic{height:34px}.sr-photo figcaption{font-size:8px}}
+.pdtag{background:#FFE3EC!important;color:#8A2848!important}
+.friendbook .flvbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:6px 0 10px}
+.friendbook .flvbar small{color:var(--muted,#7a6a58);margin-right:8px}
+.flv{display:inline-block;font-family:var(--pixel);font-size:12px;padding:1px 7px;border-radius:3px;border:2px solid #3B2412;background:#F4E1C1;color:#3B2412}
+.flv1{background:#FFD1DE}.flv2{background:#FFD23F}.flv3{background:linear-gradient(90deg,#FF8FB1,#FFD23F,#7FD1F7);font-weight:700}
+.collarsw{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;font-weight:700;cursor:pointer}
+.flist{display:grid;gap:10px}
+.fcard{display:flex;align-items:center;gap:12px;padding:10px;border:2px solid rgba(242,193,78,.45);background:rgba(255,255,255,.07);border-radius:4px}
+.roompet.say-l .rh-say{transform:translateX(-88%)}.roompet.say-r .rh-say{transform:translateX(-12%)}
+.fpair{display:flex;align-items:flex-end;flex:0 0 auto}
+.fpair>span{display:block;width:48px;height:48px}
+.fpair>span.flip svg{transform:scaleX(-1)}
+.finfo{flex:1 1 auto;min-width:0}
+.finfo p{margin:0 0 4px}
+.fbar{height:10px;border:2px solid #3B2412;background:#F4E1C1;margin:4px 0;max-width:280px}
+.fbar i{display:block;height:100%;background:linear-gradient(90deg,#FF8FB1,#E8453C)}
+.fbtns{display:flex;flex-wrap:wrap;gap:6px}
+.fphoto{position:relative;flex:0 0 auto;width:100px;height:96px}
+.fphoto .sr-photo{position:relative;left:auto;top:auto;right:auto;bottom:auto}
+@media (max-width:640px){.fcard{flex-wrap:wrap}.fphoto{display:none}}
+
+/* 稀有作物 */
+.rarebook{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.rarecard{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;background:#1B2466;border:2px solid var(--gold);border-radius:4px;padding:8px 6px;box-shadow:0 0 10px rgba(242,193,78,.25)}
+.rarecard.alock{border-color:var(--line);box-shadow:none}
+.rarecard b{font-family:var(--pixel);font-weight:400;font-size:15px}
+.rareic{display:block;width:44px;height:44px;background:#3A2A55;border:2px solid #fff;border-radius:3px;padding:3px}
+.rarecard.alock .rareic{background:#1F2A6B;border-color:#3D4A96}
+.rarehint{font-size:12px;color:#FFF3B0;line-height:1.5}
+.rarehintdot{font-size:12px}
+.rarebarn{margin-top:8px}
+.rareitem{border-color:var(--gold)}
+.rarepv{background:#3A2A55!important}
 
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
@@ -2124,9 +2201,10 @@ function petParts(pet,stage){
     acc.rows.forEach((r,y)=>{ const gy=oy+y; if(gy<0||gy>=32) return;
       let row=grid[gy]; for(let x=0;x<r.length;x++){ const gx=ox+x; if(r[x]!=="."&&gx>=0&&gx<32) row=row.slice(0,gx)+r[x]+row.slice(gx+1); } grid[gy]=row; });
   }
+  if(pet.collar&&!petIsImg(pet.type)&&grid.length===32) collarOverlay(grid,pet.type,st);   // 友誼項圈
   const rb=+pet.color===RAINBOW;
   const main=(PETC[pet.color]||PETC[0])[1], oc=(CLOTH[pet.wc]||CLOTH[1])[1];
-  if(petIsImg(pet.type)) return {rows:grid,img:PET_IMG[pet.type],type:pet.type,stage:st,color:pet.color,acc:!!acc,pal:{}};
+  if(petIsImg(pet.type)) return {rows:grid,img:PET_IMG[pet.type],type:pet.type,stage:st,color:pet.color,acc:!!acc,collar:!!pet.collar,pal:{}};
   const pal=Object.assign({k:"#231F20",P:main,Q:tint(main,-.28),d:tint(main,-.4),z:"#8A6A4A",L:tint(main,.62),l:tint(main,.4),f:"#F3D3B8",w:"#F7F7FB",n:"#231F20",y:"#F2C14E",r:"#D8434B",c:"#F4929A",O:oc,p:tint(oc,.3)},ACC_PAL);
   if(rb) Object.assign(pal,{P:"url(#petRbw)",Q:"url(#petRbwD)",d:"url(#petRbwD)",l:"url(#petRbwL)",L:"url(#petRbwL)"});
   return {rows:grid,pal};
@@ -2135,7 +2213,8 @@ function petSVG(pet,stage){
   const q=petParts(pet,stage);
   if(q.img){
     const acc=q.acc&&PET_ACC[q.type];
-    return `<svg viewBox="0 0 16 16" width="100%" height="100%" aria-hidden="true">${petImgTag(q.type,16,q.stage,0,0,q.color)}${acc?spriteRects(acc.rows,.5,acc.off[0]/2,acc.off[1]/2,ACC_PAL):""}</svg>`;
+    const co=q.collar?collarOff(q.type,q.stage):null;
+    return `<svg viewBox="0 0 16 16" width="100%" height="100%" aria-hidden="true">${petImgTag(q.type,16,q.stage,0,0,q.color)}${acc?spriteRects(acc.rows,.5,acc.off[0]/2,acc.off[1]/2,ACC_PAL):""}${co?spriteRects(COLLAR_ROWS,.5,co[0]/2,co[1]/2,ACC_PAL):""}</svg>`;
   }
   const n=q.rows.length||16;
   return `<svg viewBox="0 0 ${n} ${n}" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(q.rows,1,0,0,q.pal)}</svg>`;
@@ -2624,6 +2703,8 @@ const ACH=[
  {id:"armory_full",icon:"⚔️",name:"武器大師",desc:"武器庫收集全部 15 把武器"},
  {id:"closet_full",icon:"👗",name:"時尚達人",desc:"衣櫃收集全部 16 套服裝"},
  {id:"finds_full",icon:"🎒",name:"蒐藏大師",desc:"蒐藏箱收集全部 20 種小物（含隱藏小物）"},
+ {id:"breeder",icon:"🧬",name:"品種改良大師",desc:"稀有作物圖鑑集滿 6 種"},
+ {id:"petpals",icon:"🐶",name:"寵物社交達人",desc:"寵物交到 10 位朋友"},
  {id:"explorer",icon:"🧭",name:"地圖全開",desc:"造訪全部五個區域"},
  {id:"z_village",icon:"🏠",name:"新手村畢業",desc:"完成新手村所有任務"},
  {id:"z_tavern",icon:"🍺",name:"情報通",desc:"完成情報酒館所有任務"},
@@ -3663,6 +3744,8 @@ function checkAch(){
     armory_full:()=>weaponOwnedCount()>=WEAPONS.filter(w=>!w.hidden).length,
     closet_full:()=>outfitOwnedCount()>=Object.keys(OUTFIT).length,
     finds_full:()=>findCount()>=FINDS.length,
+    breeder:()=>rareCount()>=Object.keys(RARE).length,
+    petpals:()=>friendCount()>=FRIEND_ACH,
     explorer:()=>ZONES.every(z=>S.visited[z.id]),
     stamp50:()=>S.points>=CFG.goal,
     legend:()=>xp()===TOTAL*XP_PER
@@ -5055,7 +5138,7 @@ async function loadLounge(force){
   if(!loungeReady()) return;
   try{ await getFeed(!!force); }catch(e){}
   if(LOUNGE.busy) return;
-  if(!force&&Date.now()-LOUNGE.at<20000){ try{ claimGifts(); }catch(e){} return; }
+  if(!force&&Date.now()-LOUNGE.at<20000){ try{ claimGifts(); }catch(e){} try{ claimPlaydates(); }catch(e){} return; }
   LOUNGE.busy=true;
   try{
     const rows=await fetchSheet("lounge",force);
@@ -5066,6 +5149,7 @@ async function loadLounge(force){
     })).filter(r=>r.type&&r.code);
     LOUNGE.at=Date.now(); LOUNGE.err="";
     try{ claimGifts(); }catch(e){}
+    try{ claimPlaydates(); }catch(e){}
     try{ checkNpcMilestones(); }catch(e){}
     const champ=loungeData().champion===myCode().toUpperCase();
     if(champ!==IS_CHAMP){
@@ -5076,7 +5160,7 @@ async function loadLounge(force){
   finally{ LOUNGE.busy=false; }
 }
 function loungeData(){
-  const people={}, likes={}, posts=[], replies={}, visits={}, steals={}, tosses={}, gifts={}, npcgifts={};
+  const people={}, likes={}, posts=[], replies={}, visits={}, steals={}, tosses={}, gifts={}, npcgifts={}, playdates={};
   const seen=new Set(LOUNGE.rows.map(r=>r.type+"|"+r.code+"|"+r.target+"|"+r.msg));
   const pend=pendingRows().filter(r=>!seen.has(r.type+"|"+r.code+"|"+r.target+"|"+r.msg));
   const HID=hiddenCodes();
@@ -5098,6 +5182,8 @@ function loungeData(){
       if(!posts.some(x=>x.id===r.target)) posts.push({id:r.target,code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
     }else if(r.type==="npcgift"&&r.target){
       (npcgifts[r.target]=npcgifts[r.target]||[]).push({code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
+    }else if(r.type==="playdate"&&r.target){
+      (playdates[String(r.target).toUpperCase()]=playdates[String(r.target).toUpperCase()]||[]).push({code:r.code,name:r.name,level:r.level,pet:r.pet,msg:r.msg,at:r.at,pending:r.pending});
     }else if(r.type==="toss"&&r.target){
       (tosses[r.target]=tosses[r.target]||[]).push({code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
     }else if(r.type==="gift"&&r.target){
@@ -5129,7 +5215,7 @@ function loungeData(){
   posts.sort((a,b)=>(b.at?b.at.getTime():0)-(a.at?a.at.getTime():0));
   Object.values(replies).forEach(l=>l.sort((a,b)=>(a.at?a.at.getTime():0)-(b.at?b.at.getTime():0)));
   Object.values(visits).forEach(l=>l.sort((a,b)=>(b.at?b.at.getTime():0)-(a.at?a.at.getTime():0)));
-  return {list,posts,replies,visits,steals,tosses,gifts,npcgifts,people,champion,online:list.filter(p=>p.online).length};
+  return {list,posts,replies,visits,steals,tosses,gifts,npcgifts,playdates,people,champion,online:list.filter(p=>p.online).length};
 }
 async function loungeSend(payload){
   if(!loungeReady()) return false;
@@ -5396,6 +5482,7 @@ function runCheat(msg){
     S.finds=S.finds||{}; FINDS.forEach(f=>{ S.finds[f.id]=Math.max(1,S.finds[f.id]||0); });
     S.album=S.album||{}; ALBUM.forEach(a=>{ S.album[a.id]=true; }); if(!S.frame) S.frame=ALBUM[0].id;
     S.aff=S.aff||{}; Object.keys(PETS).forEach(k=>{ S.aff[k]=AFF_MAX; });
+    S.rareSeen=S.rareSeen||{}; Object.keys(RARE).forEach(k=>{ if(!S.rareSeen[k]) S.rareSeen[k]=new Date().toISOString().slice(0,10); });
     gift=`<div><ul>
       <li>成就 <b>${ACH.length}</b> 個全部解鎖</li>
       <li>武器 <b>${WEAPONS.length}</b> 種全部入手（含隱藏版請假卡）</li>
@@ -5427,9 +5514,11 @@ const HELP={
   armory:"走進海裡撈寶，或拜訪村長的家、數位總合辦公室時有機會拿到武器，分成普通、稀有、史詩、傳說四個等級。暗色剪影是還沒拿到的，點武器可以裝備或卸下。",
   closet:"基本款一開始就有；秘密服裝要在地圖上散步時遇到村長或總長才拿得到。可以在這裡換衣服、換顏色，點衣服能先預覽穿上的樣子。",
   album:"同一種小物收集到 30 個，就能兌換一張隱藏畫框；另外 4 幅要送蔬菜給村長或總長才拿得到。畫框可以掛在展示區的牆上，別人拜訪時也看得到。",
-  farm:"先選種子，再點空地播種。作物依真實時間長大，成熟後點一下收成，蔬菜會放進展示區下方的倉庫。種子用完可以到任務地點撿；按「立即同步」讓別人馬上看到你的田。",
+  shop:"用種子買展示空間的牆紙、地毯、掛飾、擺設，以及寵物零食。價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具可以隨時換上或收起，訪客也看得到；零食能讓目前的寵物親密度提升。",
+  farm:"先選種子，再點空地播種。相鄰（左右或上下）的兩塊田種了合適的不同作物，收成時有機率長出稀有品種，記錄在下方的稀有作物圖鑑。作物依真實時間長大，成熟後點一下收成，蔬菜會放進展示區下方的倉庫。種子用完可以到任務地點撿；按「立即同步」讓別人馬上看到你的田。",
   barn:"收成的、偷來的、別人送的蔬菜都在這裡。可以餵寵物（餵完 5 分鐘寵物會看守農場）、帶去別人家送禮或砸過去，也可以送給村長、總長換回禮。",
   showroom:"這就是別人拜訪你家時看到的樣子：牆上的畫框、展示的服裝／小物／武器，還有你和寵物。點角色或寵物會有反應；牆上的蔬菜漬可以清理並回收。",
+  friends:"拜訪別人家時，你的寵物會跟著去玩。兩隻寵物每天第一次見面，雙方寵物親密度 +1、友誼 +1（屋主下次上線時收到）。友誼 5 次變成好朋友並拍一張合照，可以掛在展示區牆上；15 次是麻吉，送一個寵物蛋糕；30 次成為最佳拍檔，得到友誼項圈。交到 10 位朋友可以解鎖成就。",
   guest:"別人在交誼廳點你的人像，就會來拜訪並留下紀錄或留言。有新訪客時，家具按鈕上會顯示人數。",
   gear:"顯示目前拿在手上的武器。想換武器或看還沒拿到的武器，請到「武器庫」。",
   cloud:"建立雲端存檔帳號後，進度會自動存到部門試算表，換電腦或清除瀏覽器資料也能接著玩。請記好密碼和救援碼。",
@@ -5485,8 +5574,9 @@ function renderVisit(){
   const h=(p.av&&p.av.home)||{};
   $("#vsDept").textContent=`拜訪 ${p.group||""}`;
   $("#vsTitle").textContent=`${p.name||"冒險者"} 的溫暖的家`;
-  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",host:p.name||"屋主",hostId:"visitHost",label:`${p.name}的溫暖的家`,empty:`${p.name||"主人"}還沒在牆上掛畫。`});
+  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.name||"屋主",hostId:"visitHost",label:`${p.name}的溫暖的家`,empty:`${p.name||"主人"}還沒在牆上掛畫。`});
   startRoomPet("#visitPet",true);
+  startPlaydate();
   const hostEl=$("#visitHost");
   if(hostEl){
     startWalker(hostEl,"visit:host",{start:.5,speed:55,rest:.45,delay:1500});
@@ -5494,6 +5584,7 @@ function renderVisit(){
     setTimeout(()=>{ if(document.body.contains(hostEl)&&!hostEl.dataset.greeted) hostGreet(hostEl,p,h,true); },900);   // 一進門先打招呼
   }
   $("#vsStats").innerHTML=`<span>LV ${esc(p.level||"1")}</span>`+(h.ach!=null?`<span>🏆 成就 ${h.ach}/${ACH.length}</span>`:"")+(h.finds!=null?`<span>🧳 收藏 ${h.finds}/${FINDS.length}</span>`:"")+(h.album!=null?`<span>🖼 相簿 ${h.album}/${ALBUM.length}</span>`:"")+(p.msg?`<span>「${esc(p.msg)}」</span>`:"");
+  renderVisitPlayTag(p);
   renderVisitFarm(p,h);
   renderVisitActions(p);
   $("#vsAct").onclick=e=>{ if(e.target.closest("#vsToss")) tossVeg(p,h); else if(e.target.closest("#vsGift")) giftVeg(p); };
@@ -5673,6 +5764,7 @@ function barnHTML(got){
     <div class="abar"><b class="hb-title">倉庫 ${helpBtn("barn")}</b><span class="ahint">共 ${total} 份${pn?`・點「餵」看${esc(pn)}的反應`:""}</span>
       ${g?`<span class="st st-gold">🐾 ${esc(pn)}看守中 ${fmtLeft(left)}</span>`:""}</div>
     <div class="barn">${Object.entries(CROPS).map(([k,c])=>`<div class="barnitem${barn[k]?"":" none"}${got[k]?" got":""}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}${S.pet&&PET_FAV[S.pet.type]===k?' <span title="寵物最愛">♥</span>':""}</b><span>${barn[k]||0} ${esc(c.unit)}</span>${got[k]?`<span class="gotplus">+${got[k]}</span>`:""}${S.pet&&barn[k]?`<button class="mini-btn" type="button" data-feed="${k}" title="拿來餵寵物">餵</button>`:""}</div>`).join("")}</div>
+    ${Object.keys(RARE).some(k=>(S.rare||{})[k]>0)?`<div class="barn rarebarn">${Object.entries(RARE).filter(([k])=>(S.rare||{})[k]>0).map(([k,R])=>`<div class="barnitem rareitem"><span class="seedicon" aria-hidden="true">${spriteSVG(R.id)}</span><b>${esc(R.name)}</b><span>${S.rare[k]} ${esc(CROPS[k].unit)}</span>${S.pet?`<button class="mini-btn" type="button" data-rarefeed="${k}" title="拿來餵寵物（親密度 +${RARE_FEED}）">餵</button>`:""}</div>`).join("")}</div>`:""}
     <p class="ahint" style="margin:8px 0 0">${pn?`餵完 5 分鐘內，${esc(pn)}會更專心看守農場，小偷更容易被抓到。`:""}蔬菜也可以帶去別人家送禮或砸過去，去村長家和總長辦公室送菜還有驚喜。</p>
     ${log.length?`<details class="ixlog"><summary>互動紀錄（${log.length}）</summary>${log.map(x=>{ const c=CROPS[x.crop]||{name:"蔬菜",unit:"份"};
       return `<p>${x.kind==="toss"?"🍅":x.kind==="gift"?"🎁":"🧺"} <b>${esc(x.name||"有人")}</b> ${word[x.kind]} 1 ${esc(c.unit)}${esc(c.name)} <span class="ahint">${esc(fmtShort(x.at))}</span></p>`; }).join("")}</details>`:""}
@@ -5941,6 +6033,7 @@ async function openVisit(code){
   renderVisit();
   const dlg=$("#visitDlg"); if(!dlg.open) dlg.showModal();
   Sound.sfx("open");
+  sendPlaydate(code,d.people[code]).catch(()=>{});      // 寵物串門子：每對寵物每天第一次見面
   // 自動留下拜訪紀錄（同一個人一天一次）
   let log={}; try{ log=JSON.parse(localStorage.getItem(VISIT_KEY)||"{}"); }catch(e){}
   const today=new Date().toISOString().slice(0,10);
@@ -6988,7 +7081,8 @@ const ALBUM=[
   {id:"n1",name:"豐收的田",npc:"home",img:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAEACAIAAABqIe5QAAAE1klEQVR42u3dTagNbxwHcEdnRV4SK0WsRHFZCAtslHTDQim3sJDN9ZqyICuxULpespEFSlEW1E1KcVlg5yKyQRQLbvISW3ankTNm5syZc+Y58/msJv/nPqa5336/X+c85l+79/HnOGjVeI8AAUKAECAECAQIASIUdY8gLKvH1jWuR6bfUoHQwhAgaE3Nd2GoQAgQAkQF+RyoQ8r2+U277kcFQgtDgAiUz4ECmJmy6uSMpQIhQAgQZiC6Ofd0ax5SgRAgBIhQZ6Crr394Cl20+Wd/8qI5+5PXvB1KXHJt4rAKhBaGAIEZKPy5pwTzkAqEACFABMqZ6DLJM/fE7ZNiHlKB0MIQIMxA5BX9jKeI757Kdv8qEFoYAoQZiFDnnjz3rwKhhSFAmIHILfq9VcHngVQgtDAEiIpzJrrL/LswtDAQILozAw09/+oplMS+3xvavuep2k0VCC0MAQIzUCXmoaLnHhUIAUKAMAPRykzTyRml6PtRgdDCECDMQMmmDKxpXH+7csfTV4EQIBAgenYGis49ccxD6ZXt8yQVCAFCgDADZZt7zEMqEAgQAkRIM9Cbz3sb14v3vezYjT45NT9xzdwZp/1GVSAECAGCVDPQ7rvbMv1AJ+eePPNQGmYmFQgBQoAwA5V97il6HirDnPT4xbbSPudlCy6pQGhhCBCVm4GiBo+Ndf2mzx2e3vV7SDMblXmmUYEQIASIivP/C2tRFeYbFQgBQoAwA1XXp09fPQQVCAFCgDADZTZ7+Ebimnf9G809KhACBAJET81AZWbWUYEQIAQIM5C5BxUIAUKAMAOF48TyC43rg492JM49Fzdcb1xvv7kpcX/rVSC0MASInlQ78nhXph8YOPw20/oizgNdOTancX1o0ZDfogqEACFAkFVPfRd2/On+xDXRmcn6/OtVILQwBIhem4FmzZzbuH7/4U3jOvoZTBqzxs423ecvKfaM3s+4uH06KO75VO1+VCAECAEiULHfhd1/9qXpn69aOC3TX2Cf3t5HBUILQ4AIVH3SmYfN/8vqeU3/OHZ9HPv09D4qEFoYAkSgaie2LPEUUIEQIAQIAQIBQoAQIHpf/ceeFS3/cLvO4don3H1UILQwBIhAZX4/UJRzwfZRgdDCECACVc98ZjbKueDK76MCoYUhQATKmWhUIAQIAUKAQIAQIASIaog9E+1csH3S7KMCoYUhQATKe6Ltk2sfFQgtDAEiUN4TbZ9c+6hAaGEIEIFyJhoVCAFCgBAgECAECAGiGrwn2j659lGB0MIQIALlPdH28Z5otDAEiCrynmj7eE80WhgCRBU5E40KhAAhQAgQCBAChABRDd4TbZ9c+6hAaGEIEIHynmj75NpHBUILQ4AIlPdE2yfXPioQWhgCRKCciQ7Yzr7viWvOj05WgdDCECD4V90j6IzhyOcr/SOvCp174tYXMQ+pQAgQAkSgcr0j0bng/xs8Mpq45tzRvsQ1Bx7cbvsv/uTKtW15PioQWhgCRBVnIOeCW5t7ss5DRcxA66cubcvzUYHQwhAgAuU90W3fZ0LLjzN2/75iQ+A90WhhCBAV5Ex0m2393PoMdHnGr8Q1Wc8DRTkPhBaGAIEZqCzzUJq5J8885N+FoYUhQNB8BspzHghUIAQIAUKAECAQIASIYPwB2fxiuOSRdtMAAAAASUVORK5CYII="},
   {id:"n2",name:"村長的茶席",npc:"home",img:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAEACAIAAABqIe5QAAAE/UlEQVR42u3dT6hUVRzA8V7MwiihhbwICYRELHAT1C5sUWRkG0GFHiS5dKEtLMIgUVDi5SJdvKVlIGiSG5+gO6OVCi79h4IQEj1aBBYt2rSbTuB1zszcc+eccz+f1SDPO/Pu+3Lmx517587du/r9UzCpp+0CBISAKNNg9fPz9gJWIASEgBAQCAgBISAEBAJCQAiIGg3G/Q97V0afP/TrrdHbefGV0T9zYv6j4nboqUMHqolj18GjViC8hSEgej0Dxcw9TfNNOA/FzD1Nz1viPGQFAgEhIPKdgR79sVLECy3ldTZ5/djPrWzn+v43k25z3H1uBcJbGAKi1Bko6rqwDMYP16/luc+tQHgLQ0CUOgPF/FD4OdQ05wON+7mYz7+sQAgIBMQsZ6CY+SbJdhz6sQIhIBAQmcxA5zb/d2xm+0/tf8d0uH2sQAgIBISAEBACAgHRmrm27hd2/vg3w8fLb20c+fNbr9wePt6275Nqdmi4H0oX83exAuEtDAFRqCT3Cwvnmxh9uOarxGvjXReGtzAEhIBAQAgIASEgEBACQkAICAGBgBAQAkJAICAERAGyuF9Y6fcCq5X7heEtDAFRsbnf7lyyF1p06tCBan6XXQePWoHwFoaAEBAICAEhIOrhOBBWIASEgBAQCAgBISAEBAJCQAiIWg1ck4UVCAEhIPo4A/XhXl1YgRAQAgIBISAEhIBAQAgIASEgBAQCQkAICAGBgBAQAqJargvDCoSAEBC9nIFKuS5sx9K6if/vD3se+EtbgRAQAgIBISAEhIAQEAgIASEg+ie7e6ZO85nXuHxGZgVCQAgIM1Duc8+lr16eePtbPr8/k3lofsO7w8crdy8Xt30rEAJCQNQ8A11d/HAmT/zZwy+z3SmLaw+3vs03Pj09fHzt64Xitm8FQkAIiMoM7IJuhHNJinkl9fatQAgIAVGZTo8D5XzsZxoxx40cBwIBISDymoG+27apsyf79qVzj/33ts71SX3OUJOPf9luBQIBISAEhIBAQAiI3BV/PtA0x35i9PkYjxUIASEgap6BVh79bS88Qcz+ufjqcuvP+/7NrZ1t3wqEtzAERB9noPnVz3T2ZOExlfDcoLbO6RlX0zlA/zv20+H+CaX+u7S1fSsQAkJAlDoD5faCUs9D05z73CR8nfs/2Djxdo5duD18fHahu+1bgfAWhoAwA3Wn6ZhQinkoZu5p67yfcM5IIfX2rUAICAFhBsp3HkrxvFiBEBACwgyUyzwUapqNzDpWIASEgGACc4vvrLcXsAIhIARE33R6XRhWIBAQAiKXGSjnF7fz9I2Zv4azC6+pxAqEgBAQZqBOZ5qHv//V+mt4bvfo7wb88+TyxK+5bzOTFQgBISAKleSeqTFzw6ozW1p/3s3/vDB8fPK9pbHmnph5qMnaNc/2djayAiEgBEShWjsOFDP3hMd1UnwbdDj3pPDFgz3Dx0fWLT3292qah8L9U9M8ZAVCQAiIUmeg1PcLa/o86/7bPxaxg8K5p615qKZ7tFmBEBACotQZKPV1YeEckOL8nhjh51njng90JGLuafp9m9R0LZ4VCAEhIAo1s/OBZjUPpZ7zmjgfCASEgKh/BppmNsptToqZb/ow61iBEBACwgzUHd8PZAVCQCAg+jgDYQVCQCAgEhnUdI0SViAEhIAgdgZyvzCsQAgIASEgEBACQkAICASEgBAQlfoXeXU7UYFi8jAAAAAASUVORK5CYII="},
   {id:"n3",name:"數位星空",npc:"digital",img:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAEACAIAAABqIe5QAAAFeklEQVR42u3dP2geZRwH8LwSqJRWRZqijaNFaBAriEUaQxREdHdzcNJBF8XJzG6iix3cHNzcLSJoiQapKAqSQVwrSuNSUVFcHIR7T+yZe3LPc/c8z30+05Em75/rl9/z5blL3sWpM5srcFS3OAUIEAJEmVadgn8cfPdqc7x23xtOiAmEACFA1G2R8z7QwQ+fNsdXfvy9OX7moSf9z5lACBAC5BRQbQca0/tffnjkjjXkZ4c4vbZ16PdcurzTHG/ffbw5Xlt/1ATCEoYAoQNFWNen6gGxek+7H+S259Sn64S6frB706+399769CQTCEsYAkRtHShFz4jVJ0p5zFDte5LaNja/GK0DmUBYwhAgdKA4fSLn/ZXctDtQit6Tog+ZQFjCECAKFfx7YX32S9pfb38//997TCAsYSBA5NuBQvdv7PeYQCBACBA5dqBjx8/N6g1f+/rp5vieBz/I9nXuf/Zwc5ziutiN335ujodkwATCEoYAUWoHmtsb7uo97+2+1Rw/u/XyaF2q/bPtxzSBsISBAJHUYv3e56t/k9e+f2fZOc6+kO/rDOxAffaH2vs9JhCWMAQI5tWBiu9wPbrRVNf1TCAECAGiUL2uhZVyD02thpzz0Gt8JhCWMASImUiyD5R63aX/+e/6+0yx/l9MIAQIAUIHylcp9wOl7kO97vUOPFcmEJYwBAgdCBMIBAgBohiDfjfefUKYQAgQAkShFuceeC3pE6T+W3+5uXR5pzl+8anXTSAQIASImXYg6uhYXc9rAmEJQ4Ao1KpTUJbtkx9N8rxdfcsEwhKGAKED0deQvZzcrieaQAgQAkShXAtjUD8zgbCEIUDoQPXYf+5Cc7zx7lUnxARCgBAgdKBqfXx699Dvefz61qzOSZ89IRMISxgCRKHcD1Sw/W+WvWTj/E70x3ctDEsYAoQOxJRdpMuYz2UCIUAIELV1oDv+uuEs9NR1ri5uvLT8ngLf197VJ5bv5ULY796bQFjCECBK7UBze8Pf/rR3839YP3H0n225/66L2faVLkMexwTCEoYAoQOV7exXv47WV/b2315+vbWHlLqvmEBYwhAg0IFWVlZWfrlye3N823b8a4JdfSW095hAWMJAgCijA3Xtc6S4jjNEit5jAoEAIUDMtwN17XPkdh2nFH3uQwoV674lEwgBQoDQgcrzyiefN8dvPvbIod+f+tqZCYQAgQBRdgfKed+irU/vacuh93T1sKn6mQmEACFA6ECMoavfTNXPTCAECAFCB6qfa2EmEAKEAFGNxakzm9Ef9M8/4v+tnWO3nsj2taV4nV2vOfQeptSv0wRCgBAgCmUfqDBDeo8JhCUMAYLxOpDrRyYQCBACxBw70Nx6T+prbSYQAgQChAAhQAgQAgRHtDq3fYu2WNfpYt2nXOJ1QxMIAUKAKNTi5J3ni3ihpfxeWCn8XhiWMASImfvX/UBd+xld+xOx9j8YX6wuaAIhQAgQhZpsHyj0uk+KfaDQz52I9fWauqMJhAAhQOhA5Ngdhzxmn+cygbCEIUDU0IG69idc88IEQoAQIGruQGNK0ati7ZGEPk6sa2QmEJYwECDq70Dk0x1NIAQIAUIHKns9xgRCgBAgGKMDpe5JU/3twamuqZlAWMJAgKinA5G/IV3NBMIShgAxxw7kM+ExgRAgBIg5dqDcelLo37kOfc2pH98EwhIGAkQ9HYhxOuWQXjWk25lAWMIQIGroQHP+zAdMIAQIAWK+HSiFIfsWoR0r9ed8pT4nJhCWMBAg6ulA5NMpU3Q1EwhLGAJEzR3I54hhAiFACBBz7EBDDNm3iLXnkfoaWeg9xTV9jpgJhAAhQOhATMm1MCxhCBDoQJhACBACBAKEACFACBD8x99otf22Wn7GDAAAAABJRU5ErkJggg=="},
-  {id:"n4",name:"電路花園",npc:"digital",img:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAEACAIAAABqIe5QAAAG90lEQVR42u3dQYhVVRzH8XmlIEhgW1vMY2blokCYQGYzYoYtxNUsWqgIoQUZiAkudBFkhGAyC4PEjaCbwE3gIqGk2YiQ4NI2A28WtZZgIKiwRXDvMeb03p13z7xz7vt8V2fO3Hlz77k//v8fh//7n97cmaUZYKu8YglAQCAglMmOv//40ypABAIBgYBAQAABgYBAQOg+OyxBtxlc2FmN+9fa3/MTgUBAICCU6oFe3bXTKnSMtbPD/dD8DREIUhgICNPtgdQDdY/+tc19j30gSGEgIKD2QJag26wPdgc/PReBIIWBgIAWPNDtD7+pxqduftT6PEQgEBBAQEhEr2l/oN6D9W27uRdHZr2hMXl4tN4HOnR/QwSCFAYCAv6lcT1QuHG0cHexGj85/qj1m0tRq5S6PiZnUqynCAQCAgGhVA80zh+n8D0pCH1PbP7lupm8WLr3XASCFAYQEDLyQDlw6tMfq/Htr97Z9Jpwvye+D5SXz1hd3iMCQQoDCAgJPVDO/YFi93bi4++H+qE7X7+36TVhX5xSeiO1dZ8pnlcEAgGBgFCqBxqnHig14b3F9nuazpdIW3U86oEghYGAgIlYmsaEPiY2/9lbu+pfjHB96X5IBAIBAQSEyXigv5b21n4icX+gkfZ1pmAfSAQCAQEEhNZp3B8oB2L1QCGxeqBSaKuvj/5AkMJAQMCmFHleWM77PSn6D6kHghQGEBBapzd7crHoBzhwul+ND/cXqvGVS/cm4nti5NB/KEWfIREIBAQCQqF06szUFL5nlH2dFP2Hwv5AeiRCCgMICO17oNx65IT1K6NwMeIbxmG2vzHUD4V9hkJS9B/KuY+RCAQCAgGhVA+Ucz3QaPsf9TUpqrtzOF9snHeUul5KBAIBgYBQqgeyBP9PieeqntrGPkkiEAgIBAQeCLn4nu3soy0CQQoDAaFUD1TieWHTxjjnpjXto920r5IIBCkMBIRSPVDO9UBt3VvyftYN59tahxz6aItAkMJAQCiU7PoDtfWd8B2rv2W76OF5IynWIVYPFPNPIhCkMBAQppDk9UCD/fW31/tPr07kIRfu1j7vyfFHnX+p29lHWwQCAYGAUKoHSlFzs7bv/FA/NP/s+tDPaevecvM9TZ9rnHX45fcPqvHlL5ar8ZeffycCQQoDAWGqPVBbNTex/Z6m8yHj3FvOX3hr+lxtvaMUfbRFIBAQCAileqC2fE90/tyxen5l+Oesz9z0Vv7DOP2vU/TRDuuTRCBIYSAgTKMHGmm/Z6XZ9avze7yVmTbPCKs/Z5w+2jH/JAJBCgMBoVQP1FbNTVjfM8r+UHh97B662h+o9OcK718EghQGAkKpHihFf6CmdT8x1APlf/8iEKQwEBBK9UCp/8H7C99W48vL9feSUtTnQgQCAYGAgFw8UMh2+p6wD2EOfaIPvvZJNS7xHFYRCAQEAkLH6M2dWUr6D94+8UY1/vnOr0Ovf3h0dzU+dH+j6MVdOzv8mvkbZTxL7L2IQJDCQEAolOTnhT2+Ndjy35ZeN9O/Vo8HF3YG8+qBAAICAWHSHsgSbA/rg93BT89FIICAQEDggbBFcjjfXgSCFAYCQqFE64HC+o9JUXo9UGw9x3mu3oP1bbvnF0dmh96/CAQpDASEQhmpHqi9nsWYmWmv79HC3cVqnOJc2Nh9qgeCFAYCQhc8kCUolxS+RwQCAYGAwANNF1363pYIBAICAQHDPdAoZ1d19dyuWP+e0A+l6N9TynqOco6bCAQpDASEUj3QKLUppffpifmbcL+n6fw4lHIOmnogSGEgIHTZA03DQ4Y+Jjr/5k/B/MFG/kkEAggIBAQeKEdG2+852Oh6iEAgIBAQyvZA01YPFNb3jLI/FF7f1jqoBwIICASEyXugaasHCpnUeV5jrefS3mqYvE+0eiBIYSAgdJfe7MnFTX+xurynTrsJeiSGn58DF1+v7+dwf6Eav/v0h9b/V4k9J2N6EIEghYGAUChZ1APl4AkOnK5z/JVL9+oxjYhAICAQEDrpgXKoB8qtPqar/ZBSrI8IBCkMBIRSPVAO9UA51Bs9vjWghi28LxEIUhgICAQEAgIICASEYnBeWMsM9l+sxv2nV0UggIBAQMjUA6kHGp+1feeH+qH5Z9c7Ixr1QJDCQEDoggdSD7Q1Yvs9TedLRD0QpDAQELrggSzB1nxPdP7csXp+pZl/EoEghQEEhMl7oNn+RtJ/nPrzUzDSfs9Ks+tLIfa+RCBIYSAgFEpv7sxS9cPa2eF/EJ6f1ZTUnz8pYvVALz1XgfVAo7wvEQhSGAgIpXqg2FkZqc/P6up57F39XljsfYlAkMJAQOiaB8LWOHC6X43Dc8fC8zdEIICAQECYOGqiE9JV3yMCgYBAQOgA/wA/YJXt1u+TQgAAAABJRU5ErkJggg=="}
+  {id:"n4",name:"電路花園",npc:"digital",img:"data:image/png;base64,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"},
+  {id:"n5",name:"豐收之心",breed:true,img:"data:image/png;base64,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"}
 ];
 const albumOwned=()=>ALBUM.filter(a=>S.album&&S.album[a.id]);
 const redeemable=()=>FINDS.filter(f=>((S.finds||{})[f.id]||0)>=ALBUM_COST);
@@ -6998,7 +7092,7 @@ function renderAlbum(panel){
   const opts=can.map(f=>`<option value="${esc(f.id)}">${esc(f.name)}（現有 ${(S.finds||{})[f.id]} 個）</option>`).join("");
   panel.innerHTML=`<section class="window pbox">
     <div class="abar"><h3>相簿 ${helpBtn("album")}</h3><span class="ahint">已收藏 ${owned} / ${ALBUM.length} 張</span></div>
-    <p class="dbody">蒐藏箱裡<b>同一種小物累積到 ${ALBUM_COST} 個</b>，就能拿來兌換一張隱藏畫框；另外 4 幅要<b>送蔬菜給村長或總長</b>才拿得到。畫框都可以掛在溫暖的家的牆上。</p>
+    <p class="dbody">蒐藏箱裡<b>同一種小物累積到 ${ALBUM_COST} 個</b>，就能拿來兌換一張隱藏畫框；另外 4 幅要<b>送蔬菜給村長或總長</b>、1 幅要<b>集滿稀有作物圖鑑</b>才拿得到。畫框都可以掛在溫暖的家的牆上。</p>
     ${can.length?`<div class="lrow"><label for="albumPay" class="ahint" style="margin:0">用哪種小物兌換</label>
       <select id="albumPay" class="ainput">${opts}</select></div>`
       :`<p class="empty-note">目前還沒有任何小物滿 ${ALBUM_COST} 個。多查看任務文件、多收藏任務就會越撿越多。</p>`}
@@ -7008,6 +7102,7 @@ function renderAlbum(panel){
         <div class="apic">${got?`<img src="${a.img}" alt="${esc(a.name)}">`:`<span class="qmark">？</span>`}</div>
         <p class="fname">${got?esc(a.name):"隱藏畫框"}</p>
         ${got?`<button class="act ${hung?"ghost":""}" type="button" data-hang="${hung?"":a.id}">${hung?"從牆上取下":"掛到牆上"}</button>`
+             :a.breed?`<span class="ahint npchint">集滿稀有作物圖鑑取得</span>`
              :a.npc?`<span class="ahint npchint">送蔬菜給${a.npc==="home"?"村長":"總長"}取得</span>`
              :`<button class="act" type="button" data-redeem="${a.id}" ${can.length?"":"disabled"}>兌換（${ALBUM_COST} 個）</button>`}
       </article>`;
@@ -7040,24 +7135,30 @@ function myHomeSnapshot(){
     item:L.item.some(x=>x[0]===sc.item)?sc.item:"",
     weapon:L.weapon.some(x=>x[0]===sc.weapon)?sc.weapon:"",
     ach:ACH.filter(x=>S.ach&&S.ach[x.id]).length, finds:findCount(), album:albumOwned().length,
-    farm:farmPlots().map(pl=>pl&&CROPS[pl.c]?{c:pl.c,t:pl.t}:0), clean:S.cleanedAt||0, guard:S.guardUntil||0};
+    farm:farmPlots().map(pl=>pl&&CROPS[pl.c]?{c:pl.c,t:pl.t}:0), clean:S.cleanedAt||0, guard:S.guardUntil||0, deco:decoSnapshot(), photo:photoSnapshot()};
 }
 function roomHTML(h,opt){
   opt=opt||{};
   const a=ALBUM.find(x=>x.id===h.frame);
   const out=OUTFIT[h.outfit]?h.outfit:"", item=findById(h.item)?h.item:"", wep=weaponById(h.weapon)&&SPR["w_"+h.weapon]?h.weapon:"";
-  const tall=!!(a||out||item||wep||opt.host), pid=opt.petId||"roomPet";
+  const dc=h.deco||{}, wd=shopItem(dc.wall), fd=shopItem(dc.floor), rg=shopItem(dc.rug), wp=shopItem(dc.paper);
+  const tall=!!(a||out||item||wep||opt.host||wd||fd||h.photo), pid=opt.petId||"roomPet";
   const av=h.av||S.av||AV_DEFAULT;
-  return `<div class="showroom${tall?" tall":""}" aria-label="${esc(opt.label||"溫暖的家展示空間")}">
+  return `<div class="showroom${tall?" tall":""}${wp&&wp.cat==="paper"&&wp.id!=="wp_default"?" "+wp.id:""}" aria-label="${esc(opt.label||"溫暖的家展示空間")}">
     <div class="sr-wall">${a?`<figure class="wframe"><img src="${a.img}" alt="${esc(a.name)}"><figcaption>${esc(a.name)}</figcaption></figure>`:`<p class="sr-empty">${esc(opt.empty||"到「相簿」兌換畫框，就能掛在這面牆上。")}</p>`}</div>
     ${wep?`<div class="sr-weapon ${tierOf(weaponById(wep)).cls}" title="${esc(weaponById(wep).name)}"><span class="sr-wpic">${spriteSVG("w_"+wep)}</span><span class="sr-tag">${esc(tierOf(weaponById(wep)).stars)} ${esc(weaponById(wep).name)}</span></div>`:""}
     ${(()=>{ const L=Array.isArray(h.splats)?h.splats:Array.from({length:+h.splats||0},()=>"tomato"); if(!L.length) return "";
       return `<div class="sr-splats" aria-label="牆上有 ${L.length} 個蔬菜漬">${L.slice(0,10).map((c,i)=>`<span class="splat" style="left:${8+(i*29+7)%80}%;top:${6+(i*17+5)%46}%">${splatSVG(c)}</span>`).join("")}</div>`; })()}
     <div class="sr-floor"></div>
+    ${rg&&rg.cat==="rug"?`<div class="sr-rug ${rg.id}" title="${esc(rg.name)}"></div>`:""}
+    ${wd&&wd.cat==="wall"?`<div class="sr-walldeco" title="${esc(wd.name)}">${spriteSVG(wd.id)}</div>`:""}
+    ${photoHTML(h.photo)}
+    ${fd&&fd.cat==="floor"?`<div class="sr-floordeco" title="${esc(fd.name)}">${spriteSVG(fd.id)}</div>`:""}
     ${item?`<div class="sr-item" title="${esc(findById(item).name)}"><span class="sr-case">${spriteSVG("i_"+item)}</span><span class="sr-stand"></span><span class="sr-tag">${esc(findById(item).name)}</span></div>`:""}
     ${out?`<div class="sr-outfit" title="${esc(OUTFIT[out].name)}"><span class="sr-hook"></span><span class="sr-cloth">${outfitDisplaySVG(out,av)}</span><span class="sr-pole"></span><span class="sr-base"></span><span class="sr-tag">${esc(OUTFIT[out].name)}</span></div>`:""}
     ${opt.host?`<button type="button" class="roomhost" id="${opt.hostId||"roomHost"}" title="跟${esc(opt.host)}打招呼"><span class="rh-body">${avatarSVG(av)}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
     ${h.pet&&PETS[h.pet.type]?`<button type="button" class="roompet" id="${pid}" title="摸摸${esc(h.pet.name||PETS[h.pet.type].name)}"><span class="rp-body">${petSVG(h.pet,h.petStage)}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
+    ${opt.guestPet&&PETS[opt.guestPet.type]?`<button type="button" class="roompet guestpet" id="visitGuestPet" title="你的${esc(petNameOf(opt.guestPet))}"><span class="rp-body">${petSVG(opt.guestPet,petStage())}</span><span class="rp-name">${esc(petNameOf(opt.guestPet))}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
   </div>`;
 }
 function showroomHTML(){
@@ -7159,12 +7260,13 @@ function renderFarm(panel){
       const st=plotState(pl), stolen=st.stage!=="empty"?stealsOn(myCodeU,i,pl.t).length:0;
       return `<button type="button" class="plot ${st.stage}" data-plot="${i}">
         <span class="ploticon" aria-hidden="true">${plotIcon(st,pl)}</span>
-        <span class="plotname">${st.stage==="empty"?"空地":esc(st.crop.name)}</span>
+        <span class="plotname">${st.stage==="empty"?"空地":esc(st.crop.name)}${st.stage!=="empty"&&RARE[pl.c]&&plotNeighbors(i).some(j=>plots[j]&&plots[j].c===RARE[pl.c].need)&&S.rareSeen&&S.rareSeen[pl.c]?' <span class="rarehintdot" title="旁邊有合適的鄰居，收成時可能長出稀有品種">✨</span>':""}</span>
         <span class="plotmeta" data-left="${i}">${st.stage==="empty"?"點一下播種":st.stage==="ripe"?(stolen?`可收成（被偷 ${stolen}）`:"可收成！"):`還要 ${fmtLeft(st.left)}`}</span>
         ${st.stage!=="empty"&&st.stage!=="ripe"?`<span class="plotbar"><i style="width:${Math.round(st.ratio*100)}%"></i></span>`:""}
       </button>`;
     }).join("")}</div>
     <p class="ahint" style="margin-top:12px">收成的蔬菜放在展示區下方的「倉庫」，可以餵寵物、送人或砸過去。</p>
+    ${rareBookHTML()}
     <p class="dsec">偷菜紀錄</p>
     ${stolenLog.length?`<div class="vsbook" style="max-height:none">${stolenLog.map(x=>{ const c=CROPS[String(x.msg||"").split("|")[1]]||{name:"蔬菜",unit:"份"};
       return `<article class="vsitem"><span class="vsav" aria-hidden="true">${avatarSVG(((loungeData().people[x.code]||{}).av)||AV_DEFAULT)}</span><div><p><b>${esc(x.name||"某人")}</b> 偷走了 1 ${esc(c.unit)}${esc(c.name)} <span class="ahint">${esc(fmtShort(x.at))}</span></p></div></article>`; }).join("")}</div>`
@@ -7194,14 +7296,415 @@ function farmClick(i){
     Sound.sfx("step"); toast(`種下了${CROPS[k].name}，${fmtDur(CROPS[k].ms)}後成熟`);
   }else if(st.stage==="ripe"){
     const stolen=stealsOn(myCode(),i,pl.t).length, amount=Math.max(1,st.crop.yield-stolen);
+    const rare=tryRare(i,pl);                          // 先看鄰居，再清空這塊田
     S.barn=S.barn||{}; S.barn[pl.c]=(S.barn[pl.c]||0)+amount; plots[i]=null;
     save(); queueSync(); pushFarm(); Sound.sfx("get");
     toast(`收成${st.crop.name} ×${amount}，放進倉庫了${stolen?`（被偷了 ${stolen} ${st.crop.unit}）`:""}`);
+    if(rare) setTimeout(()=>rareFound(rare),700);
   }else{
     toast(`${st.crop.name}還要 ${fmtLeft(st.left)} 才會成熟`); Sound.sfx("cursor");
   }
   renderPlace();
 }
+/* ================= 種子商店與品種改良 ================= */
+Object.assign(SPR,{"r_tomato":[".F...KK...F.","F...KGGK....","...KGGGGK..F","..KYYYYYYK..",".KYWFYYYYYK.",".KYYFYYYYYK.",".KYYYYYYYYK.",".KYYYYYYYYK.","..KYYYYYYK..","F..KKKKKK...","...........F","............"],"r_bokchoy":[".W........W.","W...KKKK....","...KSSSSK..W","..KSSSSSSK..","..KSSCCSSK..","..KSQCCQSK..","..KSSCCSSK..","..KSQCCQSK..","..KSSCCSSK..","W.KSSCCSSK..","...KWWWWK..W","....KKKK...."],"r_carrot":[".Y...KK...Y.","Y...KOOK....","...KOOOOK..Y","...KRRRRK...","...KYRRRK...","...KRRRRK...","....KRYK....","....KRRK....","....KYRK....","Y...KRRK....","....KRK....Y",".....K......"],"r_pumpkin":[".F...KK...F.","F...KZZKK...","...KKZZSSK.F","..KAAAAAAK..",".KAAIAAIAAK.",".KAWIAAIAAK.",".KAAIAAIAAK.",".KAAIAAIAAK.",".KAAIAAIAAK.","FKAAIAAIAAK.","..KAAAAAAK.F","...KKKKKK..."],"r_strawberry":[".Y...KK...Y.","Y..KKGGKK...","..KGGGGGGK.Y","..KWPPPPPK..","..KPYPYPPK..","..KPPPPPYK..","..KPPYPPPK..","...KPPPYK...","...KPYPPK...","Y...KPPK....",".....KK....Y","............"],"r_corn":[".W...KK...W.","W...KUVK....","...KUVRRK..W","...KVRROK...","...KRROYK...","..KKROYYKK..",".KGGOYYGGGK.",".KGGYYGUGGK.",".KGGYGUVGGK.","WKGGGUVRGGK.",".KGGGGGGGGKW","..KKKKKKKK.."],"d_clock":[".....KKKKKK.....","....KTTTTTTK....","...KTTWZWWTTK...","..KTWWWWWWWWTK..",".KTWCWWKWWWWWTK.","KTTWWWWKWWWWWTTK","KTWWWWWKWWWWWWTK","KTZWWWWKKKKWWZTK","KTWWWWWWWWWWWWTK","KTWWWWWWWWWWWWTK","KTTWWWWWWWWWWTTK",".KTWWWWWWWWWWTK.","..KTWWWWWWWWTK..","...KTTWZWWTTK...","....KTTTTTTK....",".....KKKKKK....."],"d_window":["................",".KKKKKKKKKKKKKK.","KJJJJJJJJJJJJJJK","KJSSSSSJJSSSSSJK","KJSSWWSJJSSSWSJK","KJSSSSSJJSWWSSJK","KJSSSSSJJSSSSSJK","KJJJJJJJJJJJJJJK","KJJJJJJJJJJJJJJK","KJGGGGGJJGGGGGJK","KJGGHGGJJGGHGGJK","KJGGGGGJJGGGHGJK","KJGGGGGJJGGGGGJK","LLLLLLLLLLLLLLLL","LLLLLLLLLLLLLLLL","KKKKKKKKKKKKKKKK"],"d_banner":[".KKKKKKKKKKKKKK.","KYTTTTTTTTTTTTYK",".KKRRRRRRRRRRKK.","..KRRRRRRRRRRK..","..KRRYYYYYYRRK..","..KRRRRRRRRRRK..","..KRRYYYYYYRRK..","..KRRRRRRRRRRK..","..KRRRYYYYRRRK..","..KRRRRRRRRRRK..","..KRRRRRRRRRRK..","..KRRRRRRRRRRK..","..KRRKKKKKKRRK..","...KKRRKKRRKK...",".....KKRRKK.....",".......KK......."],"d_shelf":[".KK..KKKYYK..K..","KRRKKGGKYYK.KVK.","KRRUUGGKYYKKVK..","KRRUUGGKYYKVKK..","KRRUUGGKYYKVVVKK","JJJJJJJJJJJJJJJJ","JJJJJJJJJJJJJJJJ","KKKKKKKKKKKKKKKK",".KHK.KOOKKKEEEEK","KGGGKKOOPPKETEEK","KGGGKKOOPPKEETEK","KGGGKKOOPPKEEEEK","JJJJJJJJJJJJJJJJ","JJJJJJJJJJJJJJJJ","KKKKKKKKKKKKKKKK","................"],"d_plant":[".......KGK......","......KGGGK.....",".....KGGGHGK....",".....KGGGGGK....","....KGHGGGGGK...","...KGGGGGGGGGK..","..KGHGGGGGHGGGK.","..KGGGGGGGGGGGK.","..KGGGGGDGGGGGK.","...KGGGKDKGGGK..","..KJJJJJJJJJJK..","...KBBBBBBBBK...","...KBLBBBBBBK...","...KBLBBBBBBK...","...KBBBBBBBBK...","...KBBBBBBBBK..."],"d_lamp":["....KKKKKKKK....","...KFFFFFFFFK...","...KFWWFFFFFK...","...KFFFFFFFFK...","...KFFFFFFFFK...","..KYYYYYYYYYYK..","..KYYYYYYYYYYK..","...KKKKZZKKKK...","......KZZK......","......KZZK......","......KZZK......","......KZZK......","......KZZK......",".....KKZZKK.....","....KZZZZZZK....","....KZZZZZZK...."],"d_bookcase":["KJJJJJJJJJJJJJJK","KJRUGBYVBBOEBBJK","KJRUGBYVBBOEBBJK","KJRUGBYVBBOEBBJK","KJRUGBYVBBOEBBJK","KJJJJJJJJJJJJJJK","KJBPSRBBGUBBYBJK","KJBPSRBBGUBBYBJK","KJBPSRBBGUBBYBJK","KJBPSRBBGUBBYBJK","KJJJJJJJJJJJJJJK","KJBBBBBBBBBBBBJK","KJBEEEEBBBGGBBJK","KJBEEEEBBBGGGBJK","KJBEEEEBBBGGGBJK","KJJJJJJJJJJJJJJK"],"d_fishtank":["................","................",".KKKKKKKKKKKKKK.","KCCCCCCCCCCCCCCK","KCCCCCCCCCCCCCCK","KSSSSSSSWSSSWSSK","KSSOSOSSSWSSSSSK","KSSSOOOSSSSSSSSK","KSSOSOSSSYSYSSSK","KSSGSSSSSSYYYSSK","KSGGSSSSSYSYSSSK","KEEEEEEEEEEEEEEK","KEEEEEEEEEEEEEEK","JJJJJJJJJJJJJJJJ","JJJJJJJJJJJJJJJJ","JJJJJJJJJJJJJJJJ"],"d_beanbag":["................","................","................","................",".....KKKKKK.....","...KKVVVVVVKK...","..KVVPPVVVVVVK..",".KVVPVVVVVVVVVK.","KVVVPVVVVVVVVVVK","KVVVVVVVVVVVVVVK","KVVVVVVVVVVVVVVK","KVVVVVVVVVVNVVVK","KVVVVVVVVVNVVVVK",".KVVVVVVVVVVVVK.","..KVVVVVVVVVVK..","...KKVVVVVVKK..."],"s_biscuit":["............","............","............","..KK....KK..",".KLLKKKKLLK.",".KLLELELLLK.",".KLLLLLLLLK.",".KLLKKKKLLK.","..KK....KK..","............","............","............"],"s_can":["............","............","..KKKKKKKK..",".KWWWWWWWWK.",".KAAAAAAAAK.",".KRRRRRRRRK.",".KRRWWWWRRK.",".KRRRRRRRRK.",".KAAAAAAAAK.",".KIIIIIIIIK.","..KKKKKKKK..","............"],"s_cake":["....KOK.....","....KYK.....","....KYK.....","...KKYYKK...","..KPPPPPPK..",".KPRPPRPRPK.",".KEEEEEEEEK.",".KEEEEEEEEK.",".KLLLLLLLLK.",".KEEEEEEEEK.","..KKKKKKKK..","............"]});
+/* ---- 付款：以種子總數計價，自動從庫存最多的種子扣 ---- */
+const seedTotal=()=>Object.values(seeds()).reduce((a,b)=>a+(+b||0),0);
+function planPay(n){
+  const sd=Object.assign({},seeds()), used={}; let left=n;
+  while(left>0){
+    const k=Object.keys(sd).sort((a,b)=>(sd[b]||0)-(sd[a]||0))[0];
+    if(!k||!(sd[k]>0)) return null;
+    sd[k]--; used[k]=(used[k]||0)+1; left--;
+  }
+  return used;
+}
+function paySeeds(used){ const sd=seeds(); Object.entries(used).forEach(([k,v])=>{ sd[k]=Math.max(0,(sd[k]||0)-v); }); save(); }
+const usedText=u=>Object.entries(u).map(([k,v])=>`${CROPS[k].name}×${v}`).join("、");
+
+/* ---- 商品 ---- */
+const SHOP={
+  paper:{name:"牆紙",items:[["wp_default","經典紫",0],["wp_star","星空藍",40],["wp_forest","森林綠",40],["wp_wood","原木牆",40],["wp_brick","紅磚牆",50],["wp_sakura","櫻花粉",50]]},
+  rug:{name:"地毯",items:[["rug_red","紅色圓毯",30],["rug_blue","藍白條紋毯",30],["rug_grass","草皮地墊",35],["rug_rainbow","彩虹地毯",80]]},
+  wall:{name:"牆面掛飾",items:[["d_clock","圓時鐘",50],["d_window","小窗戶",60],["d_banner","部門錦旗",60],["d_shelf","壁掛書架",70]]},
+  floor:{name:"地面擺設",items:[["d_plant","盆栽",60],["d_lamp","落地燈",60],["d_beanbag","懶骨頭",70],["d_bookcase","書櫃",90],["d_fishtank","魚缸",100]]},
+  snack:{name:"寵物零食",items:[["s_biscuit","小骨頭餅乾",15,2],["s_can","高級罐頭",40,5],["s_cake","寵物蛋糕",90,12]]}
+};
+const shopItem=id=>{ for(const [cat,c] of Object.entries(SHOP)){ const it=c.items.find(x=>x[0]===id); if(it) return {cat,id,name:it[1],price:it[2],aff:it[3]||0}; } return null; };
+function shopState(){
+  S.shopOwned=S.shopOwned||{}; S.snacks=S.snacks||{};
+  S.deco=Object.assign({paper:"wp_default",rug:"",wall:"",floor:""},S.deco||{});
+  return S.deco;
+}
+function decoSnapshot(){                               // 只放已經買下的，訪客才看得到
+  const d=shopState(), own=id=>id==="wp_default"||!!S.shopOwned[id];
+  return {paper:own(d.paper)?d.paper:"wp_default",rug:own(d.rug)?d.rug:"",wall:own(d.wall)?d.wall:"",floor:own(d.floor)?d.floor:""};
+}
+function shopPreview(cat,id){
+  if(cat==="paper") return `<span class="shopsw showroom ${id}" aria-hidden="true"></span>`;
+  if(cat==="rug") return `<span class="shopsw rugsw" aria-hidden="true"><i class="sr-rug ${id}"></i></span>`;
+  return `<span class="shopic" aria-hidden="true">${spriteSVG(id)}</span>`;
+}
+function renderShop(panel){
+  panel.dataset.kind="shop";
+  const d=shopState(), total=seedTotal(), pn=S.pet&&PETS[S.pet.type]?(S.pet.name||PETS[S.pet.type].name):"";
+  panel.innerHTML=`<section class="window pbox">
+    <div class="abar"><h3>種子商店 ${helpBtn("shop")}</h3><span class="ahint">你有 <b>${total}</b> 顆種子</span></div>
+    <p class="ahint">價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具會擺在上方的展示空間，訪客也看得到。</p>
+    <div class="seedchips">${Object.entries(CROPS).map(([k,c])=>`<span class="seedchip"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span>${esc(c.name)} ${seeds()[k]||0}</span>`).join("")}</div>
+    ${Object.entries(SHOP).map(([cat,c])=>`<div class="catblock"><p class="cattitle">${esc(c.name)}${cat==="snack"?`<span class="ahint">任何寵物都能吃，可以提升親密度</span>`:""}</p>
+      <div class="shopgrid">${c.items.map(([id,name,price,aff])=>{
+        const owned=cat!=="snack"&&(id==="wp_default"||!!S.shopOwned[id]), using=cat!=="snack"&&d[cat]===id, n=S.snacks[id]||0;
+        const can=total>=price;
+        let btn;
+        if(cat==="snack") btn=`<button class="act ghost" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>買 1 個（${price}）</button>${n?`<button class="act" type="button" data-snackfeed="${id}" ${pn?"":"disabled"}>餵${pn?esc(pn):""}</button>`:""}`;
+        else if(!owned) btn=`<button class="act" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>購買（${price} 顆）</button>`;
+        else if(using) btn=cat==="paper"?`<span class="st st-gold">使用中</span>`:`<button class="act ghost" type="button" data-shopuse="${cat}|">使用中・收起</button>`;
+        else btn=`<button class="act" type="button" data-shopuse="${cat}|${id}">${cat==="paper"?"換上":"擺上"}</button>`;
+        return `<article class="shopcard${using?" on":""}">${shopPreview(cat,id)}
+          <b>${esc(name)}</b>
+          <span class="ahint">${cat==="snack"?`親密度 +${aff}・擁有 ${n}`:owned?"已擁有":`${price} 顆種子`}${!owned&&cat!=="snack"&&!can?`・還差 ${price-total}`:""}</span>
+          <span class="shopbtns">${btn}</span></article>`;
+      }).join("")}</div></div>`).join("")}
+  </section>`;
+}
+function petAffAdd(n){                                 // 目前寵物的親密度 +n，回傳是否剛好滿級
+  if(!S.pet) return false;
+  const t=S.pet.type; S.aff=S.aff||{};
+  const before=affOf(t); S.aff[t]=Math.min(AFF_MAX,before+n);
+  return before<AFF_MAX&&S.aff[t]>=AFF_MAX;
+}
+function petEatFx(line,big){
+  const el=$("#roomPet");
+  if(el){ sayAt(el,line); heartAt(el); if(big) setTimeout(()=>heartAt(el),400); }
+}
+async function shopBuy(id){
+  const it=shopItem(id); if(!it) return;
+  const used=planPay(it.price);
+  if(!used){ toast(`種子不夠，還差 ${it.price-seedTotal()} 顆`); Sound.sfx("error"); return; }
+  if(it.price>=40&&!(await uiConfirm(`要用 ${it.price} 顆種子買「${it.name}」嗎？\n會用掉：${usedText(used)}`,"購買"))) return;
+  paySeeds(used); shopState();
+  if(it.cat==="snack") S.snacks[id]=(S.snacks[id]||0)+1;
+  else{ S.shopOwned[id]=true; S.deco[it.cat]=id; }
+  save(); queueSync(); pushFarm(true); Sound.sfx("achieve");
+  toast(it.cat==="snack"?`買了 1 個${it.name}`:`買下「${it.name}」，已經擺進展示空間！`);
+  renderPlace();
+}
+function shopUse(cat,id){
+  shopState(); S.deco[cat]=id||(cat==="paper"?"wp_default":"");
+  save(); queueSync(); pushFarm(true); Sound.sfx(id?"get":"undo"); renderPlace();
+}
+function feedSnack(id){
+  const it=shopItem(id); if(!it||!S.pet||!(S.snacks[id]>0)) return;
+  S.snacks[id]--; const reached=petAffAdd(it.aff); save(); queueSync();
+  const pn=S.pet.name||PETS[S.pet.type].name;
+  Sound.sfx("achieve"); petEatFx(`${it.name}！好吃～`,it.aff>=5);
+  toast(`💗 ${pn}吃了${it.name}，親密度 +${it.aff}（${affOf(S.pet.type)}/${AFF_MAX}）`);
+  if(reached) setTimeout(()=>affinityMax(S.pet.type),900);
+  setTimeout(()=>{ if(curPlace&&curPlace.id==="myhome"&&homeTab==="shop") renderShop($("#homePanel")); },60);
+}
+
+/* ---- 品種改良：相鄰（左右、上下）種了指定作物，收成時有機率長出稀有品種 ---- */
+const RARE={
+  tomato:    {id:"r_tomato",    name:"金番茄",    need:"corn",       hint:"番茄好像很喜歡高高的黃色鄰居。"},
+  corn:      {id:"r_corn",      name:"彩虹玉米",  need:"strawberry", hint:"玉米旁邊如果有紅紅甜甜的小果實……"},
+  strawberry:{id:"r_strawberry",name:"星星草莓",  need:"pumpkin",    hint:"草莓想要一個圓滾滾的大鄰居。"},
+  pumpkin:   {id:"r_pumpkin",   name:"月光南瓜",  need:"bokchoy",    hint:"南瓜喜歡安靜的綠葉鄰居。"},
+  bokchoy:   {id:"r_bokchoy",   name:"水晶白菜",  need:"carrot",     hint:"小白菜跟橘色的根莖類很合得來。"},
+  carrot:    {id:"r_carrot",    name:"火焰紅蘿蔔",need:"tomato",     hint:"紅蘿蔔旁邊要有熱情的紅色果實。"}
+};
+const RARE_COLS=3, RARE_ODDS=.35, RARE_LUCK=.05, RARE_FRAME="n5", RARE_FEED=5;
+function plotNeighbors(i){
+  const r=Math.floor(i/RARE_COLS), c=i%RARE_COLS, out=[];
+  [[0,-1],[0,1],[-1,0],[1,0]].forEach(([dr,dc])=>{ const rr=r+dr, cc=c+dc, j=rr*RARE_COLS+cc;
+    if(cc>=0&&cc<RARE_COLS&&rr>=0&&j>=0&&j<PLOTS) out.push(j); });
+  return out;
+}
+const rareCount=()=>Object.keys(RARE).filter(k=>S.rareSeen&&S.rareSeen[k]).length;
+function tryRare(i,pl){
+  const R=RARE[pl.c]; if(!R) return null;
+  const nb=plotNeighbors(i).map(j=>farmPlots()[j]).filter(x=>x&&CROPS[x.c]).map(x=>x.c);
+  const match=nb.includes(R.need), other=nb.some(c=>c!==pl.c);
+  const odds=match?(starActive()?1:RARE_ODDS):other?RARE_LUCK:0;
+  if(!odds||Math.random()>=odds) return null;
+  S.rare=S.rare||{}; S.rareSeen=S.rareSeen||{};
+  S.rare[pl.c]=(S.rare[pl.c]||0)+1;
+  const first=!S.rareSeen[pl.c];
+  if(first) S.rareSeen[pl.c]=new Date().toISOString().slice(0,10);
+  return {k:pl.c,R,first};
+}
+function rareFound(res){
+  const {k,R,first}=res;
+  Sound.sfx("levelup");
+  if(!first){ toast(`✨ 品種改良成功！多收成了 1 個${R.name}`); return; }
+  const done=rareCount()>=Object.keys(RARE).length;
+  $("#chDept").textContent="品種改良"; $("#chFoot").textContent=done?"稀有作物圖鑑集滿了！":"到「開心農場」可以查看稀有作物圖鑑。";
+  $("#chFace").innerHTML=spriteSVG(R.id);
+  $("#chTitle").textContent=`發現新品種：${R.name}`;
+  $("#chSay").textContent=`${CROPS[k].name}旁邊種了${CROPS[R.need].name}，長出了稀有的${R.name}！已經記錄到稀有作物圖鑑（${rareCount()}/${Object.keys(RARE).length}）。`;
+  $("#chGift").innerHTML=`<span class="pv rarepv">${spriteSVG(R.id)}</span><div><p class="dbody"><b>${esc(R.name)} ×1</b></p><p class="ahint">稀有作物可以拿來餵寵物，親密度 +${RARE_FEED}。</p></div>`;
+  const d=$("#cheatDlg"); if(!d.open) d.showModal();
+  if(done) d.addEventListener("close",()=>rareComplete(),{once:true});
+  checkAch();
+}
+function rareComplete(){
+  S.album=S.album||{};
+  if(S.album[RARE_FRAME]) return;
+  S.album[RARE_FRAME]=true; save(); queueSync(true); checkAch();
+  const a=ALBUM.find(x=>x.id===RARE_FRAME); Sound.sfx("achieve");
+  $("#chDept").textContent="稀有作物圖鑑 集滿"; $("#chFoot").textContent="到「溫暖的家 → 相簿」可以把它掛到牆上。";
+  $("#chFace").innerHTML=avatarSVG(CHIEF_AV); $("#chTitle").textContent=`部門村長　${CFG.chief}`;
+  $("#chSay").textContent="六種稀有作物都被你種出來了，真是了不起的品種改良大師！這幅畫送給你。";
+  $("#chGift").innerHTML=`<span class="pv framepv"><img src="${a.img}" alt="${esc(a.name)}"></span><div><p class="dbody"><b>畫框：${esc(a.name)}</b>＋成就「品種改良大師」</p></div>`;
+  const d=$("#cheatDlg"); if(!d.open) d.showModal();
+}
+function rareBookHTML(){
+  const n=rareCount(), all=Object.keys(RARE).length;
+  return `<p class="dsec">稀有作物圖鑑 <span class="ahint">${n} / ${all}${n>=all?"・已集滿！":"・集滿可以拿到畫框和成就"}</span></p>
+    <div class="rarebook">${Object.entries(RARE).map(([k,R])=>{
+      const seen=S.rareSeen&&S.rareSeen[k], own=(S.rare||{})[k]||0;
+      return `<article class="rarecard${seen?"":" alock"}">
+        <span class="rareic" aria-hidden="true">${seen?spriteSVG(R.id):silhouetteSVG(R.id)}</span>
+        <b>${seen?esc(R.name):"？？？"}</b>
+        <span class="ahint">${seen?`${esc(CROPS[k].name)} × ${esc(CROPS[R.need].name)}・擁有 ${own}`:`${esc(CROPS[k].name)}的稀有品種`}</span>
+        ${seen?"":`<span class="rarehint">💡 ${esc(R.hint)}</span>`}
+      </article>`; }).join("")}</div>`;
+}
+function feedRare(k){
+  const R=RARE[k]; if(!R||!S.pet||!((S.rare||{})[k]>0)) return;
+  S.rare[k]--; const reached=petAffAdd(RARE_FEED); save(); queueSync();
+  const pn=S.pet.name||PETS[S.pet.type].name;
+  Sound.sfx("achieve"); petEatFx(`哇！${R.name}！閃閃發亮好好吃！`,true);
+  toast(`💗 ${pn}吃了${R.name}，親密度 +${RARE_FEED}（${affOf(S.pet.type)}/${AFF_MAX}）`);
+  if(reached) setTimeout(()=>affinityMax(S.pet.type),900);
+  const hb=$("#homeBarn"); if(hb) hb.innerHTML=barnHTML();
+}
+
+/* ================= 寵物串門子＋寵物交友錄 ================= */
+const FRIEND_LV=[[1,"認識"],[5,"好朋友"],[15,"麻吉"],[30,"最佳拍檔"]];
+const FRIEND_ACH=10;
+Object.assign(SPR,{friendbook:["............",".KKKKKKKKKK.",".KEPPPPPPPK.",".KEPRRPRRPK.",".KEPRRRRRPK.",".KEPPRRRPPK.",".KEPPPRPPPK.",".KEPPPPPPPK.",".KEPPPPPPPK.",".KEWWWWWWWK.",".KKKKKKKKKK.","............"]});
+const PET_PLAY={dog:"汪汪！來追我～",cat:"喵！抓到你了！",guinea:"啾啾啾～一起滾！",slime:"噗嚕！彈彈彈～",chicken:"咕咕！一起散步！",sheep:"咩～好開心！",horse:"嘶～來賽跑吧！",rabbit:"跳跳跳～",scruffy:"汪嗚！",grumpy:"……好啦，陪你玩一下。",tiger:"吼～來玩摔角！",caterpillar:"沙沙～一起曬太陽"};
+const dayKey=d=>{ const x=d instanceof Date&&!isNaN(d)?d:new Date(); return `${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`; };
+function friends(){ if(!S.friends||typeof S.friends!=="object") S.friends={}; return S.friends; }
+function friendLv(n){ let i=-1; FRIEND_LV.forEach(([m],k)=>{ if(n>=m) i=k; }); return i; }
+const friendLvName=n=>{ const i=friendLv(n); return i<0?"":FRIEND_LV[i][1]; };
+const friendNext=n=>FRIEND_LV.find(([m])=>m>n)||null;
+const friendCount=()=>Object.values(friends()).filter(f=>f&&f.n>=1).length;
+const petNameOf=p=>p&&PETS[p.type]?(p.name||PETS[p.type].name):"";
+function petSnap(p){                                     // 合照、交友錄用的精簡寵物資料
+  if(!p||!PETS[p.type]) return null;
+  const v=p===S.pet?petView(p):p;
+  return {type:v.type,color:+v.color||0,name:String(v.name||"").slice(0,8),wear:v.wear||"none",wc:+v.wc||0,acc:!!v.acc,collar:!!v.collar};
+}
+function friendBump(code,owner,pet,stage,day){          // 同一對寵物每天只算一次
+  const F=friends(); code=String(code).toUpperCase();
+  const f=F[code]=F[code]||{n:0,last:"",owner:"",pet:null,first:Date.now()};
+  if(owner) f.owner=owner;
+  const ps=petSnap(pet); if(ps){ f.pet=ps; f.stage=stage||f.stage||"adult"; }
+  if(f.last===day) return null;
+  const lb=friendLv(f.n); f.n++; f.last=day; f.at=Date.now();
+  const la=friendLv(f.n);
+  return {code,n:f.n,up:la>lb?la:-1};
+}
+function photoOf(code){ const f=friends()[code]; return f&&f.photo&&f.photo.a&&f.photo.b?f.photo:null; }
+function photoSnapshot(){ const ph=S.photoWall&&photoOf(S.photoWall); return ph?{a:ph.a,as:ph.as,b:ph.b,bs:ph.bs}:null; }
+function photoPics(ph){ return `<span class="ph-pet">${petSVG(ph.a,ph.as||"adult")}</span><span class="ph-heart" aria-hidden="true">♥</span><span class="ph-pet flip">${petSVG(ph.b,ph.bs||"adult")}</span>`; }
+function photoHTML(ph){
+  if(!ph||!ph.a||!ph.b||!PETS[ph.a.type]||!PETS[ph.b.type]) return "";
+  const cap=`${petNameOf(ph.a)} & ${petNameOf(ph.b)}`;
+  return `<figure class="sr-photo" title="好朋友合照：${esc(cap)}"><span class="ph-pic">${photoPics(ph)}</span><figcaption>${esc(cap)}</figcaption></figure>`;
+}
+/* 友誼項圈：心形墜子，每種寵物掛的位置不同 */
+const COLLAR_ROWS=["Y.......Y",".Y.....Y.","..WR.RR..","..RRRRR..","...RRR...","....R...."];
+const PET_COLLAR={dog:{adult:[11,18],baby:[11,19]},cat:{adult:[11,18],baby:[11,22]},guinea:{adult:[11,22],baby:[11,23]},
+  slime:{adult:[11,21],baby:[11,20]},chicken:{adult:[11,18],baby:[11,19]},sheep:{adult:[11,20],baby:[11,22]},
+  horse:{adult:[11,18],baby:[11,19]},rabbit:{adult:[11,22],baby:[11,22]},tiger:{adult:[11,17],baby:[11,20]},
+  caterpillar:{adult:[19,17],baby:[16,19]},scruffy:{adult:[9,20],baby:[9,22]},grumpy:{adult:[11,20],baby:[11,22]}};
+const collarOff=(t,st)=>((PET_COLLAR[t]||PET_COLLAR.dog)[st]||PET_COLLAR.dog.adult);
+function collarOverlay(grid,t,st){
+  const [ox,oy]=collarOff(t,st);
+  COLLAR_ROWS.forEach((r,y)=>{ const gy=oy+y; if(gy<0||gy>=grid.length) return;
+    let row=grid[gy]; for(let x=0;x<r.length;x++){ const gx=ox+x; if(r[x]!=="."&&gx>=0&&gx<row.length) row=row.slice(0,gx)+r[x]+row.slice(gx+1); } grid[gy]=row; });
+}
+
+/* ---- 拜訪時：自己的寵物跟著去玩 ---- */
+function playdateLine(p){ return PET_PLAY[p&&p.type]||"一起玩吧！"; }
+function startPlaydate(){
+  const g=$("#visitGuestPet"), h=$("#visitPet");
+  if(!g) return;
+  startWalker(g,"visit:guest",{start:.15,speed:80,rest:.25,delay:600});
+  g.onclick=()=>{ heartAt(g); sayAt(g,playdateLine(S.pet)); Sound.sfx("get"); };
+  if(!h) return;
+  const host=(loungeData().people[visitHost]||{}).pet;
+  const play=first=>{
+    if(!document.body.contains(g)||!document.body.contains(h)) return;
+    if(!g.classList.contains("talking")&&!h.classList.contains("talking")){
+      h.style.transition="none"; h.style.left=h.offsetLeft+"px"; h.classList.remove("walk"); h.classList.add("talking");
+      const side=h.offsetLeft>70?-60:60, target=Math.max(0,h.offsetLeft+side);
+      const dur=Math.max(.45,Math.abs(target-g.offsetLeft)/110);
+      g.classList.toggle("flip",target<g.offsetLeft); g.classList.add("walk","talking");
+      g.style.transition=`left ${dur}s linear`; g.style.left=target+"px";
+      WALKERS["visit:play2"]=setTimeout(()=>{
+        if(!document.body.contains(g)) return;
+        g.classList.remove("walk"); g.classList.toggle("flip",h.offsetLeft<g.offsetLeft); h.classList.toggle("flip",g.offsetLeft<h.offsetLeft);
+        const gl=g.offsetLeft<h.offsetLeft; g.classList.toggle("say-l",gl); g.classList.toggle("say-r",!gl); h.classList.toggle("say-l",!gl); h.classList.toggle("say-r",gl);
+        sayAt(g,playdateLine(S.pet)); heartAt(g);
+        WALKERS["visit:play3"]=setTimeout(()=>{ if(document.body.contains(h)){ sayAt(h,playdateLine(host)); heartAt(h); } },700);
+        WALKERS["visit:play4"]=setTimeout(()=>{ heartAt(g); heartAt(h); },1500);
+        WALKERS["visit:play5"]=setTimeout(()=>{ g.classList.remove("talking","say-l","say-r"); h.classList.remove("talking","say-l","say-r"); },3800);
+      },dur*1000);
+    }
+    WALKERS["visit:play"]=setTimeout(()=>play(false),first?9000:8000+Math.random()*6000);
+  };
+  WALKERS["visit:play"]=setTimeout(()=>play(true),2600);
+}
+async function sendPlaydate(code,p){                   // 打開拜訪視窗時呼叫：每對寵物每天第一次見面
+  if(!S.group||!S.pet||!PETS[S.pet.type]||!p||!p.pet||!PETS[p.pet.type]||!loungeReady()) return;
+  const day=dayKey(), f=friends()[code];
+  if(f&&f.last===day) return;
+  const payload={type:"playdate",code:myCode(),name:dispName(),group:S.group||"",level:String(myLv()),
+    pet:JSON.stringify(petSnap(S.pet)),target:code,msg:`${S.pet.type}|${randChars(6)}`};
+  if(!(await loungeSend(payload))) return;
+  addPending(payload);
+  const r=friendBump(code,p.name,p.pet,(+p.level||1)>=4?"adult":"baby",day); if(!r) return;
+  const reached=petAffAdd(1); save(); queueSync();
+  const mine=petNameOf(S.pet), theirs=petNameOf(p.pet), nx=friendNext(r.n);
+  Sound.sfx("achieve");
+  toast(`🐾 ${mine}和${theirs}一起玩了！${mine}親密度 +1（${affOf(S.pet.type)}/${AFF_MAX}）・友誼 ${r.n}${nx?`，再 ${nx[0]-r.n} 次變成「${nx[1]}」`:""}`);
+  if(r.up>=1) setTimeout(()=>friendReward([r]),1200);
+  if(reached) setTimeout(()=>affinityMax(S.pet.type),r.up>=1?2600:900);
+  checkAch();
+  if($("#visitDlg").open&&visitHost===code) renderVisitPlayTag(p);
+}
+function renderVisitPlayTag(p){
+  const box=$("#vsStats"); if(!box) return;
+  const old=box.querySelector(".pdtag"); if(old) old.remove();
+  const html=playTagHTML(p); if(html) box.insertAdjacentHTML("afterbegin",html);
+}
+function playTagHTML(p){
+  if(!S.pet||!PETS[S.pet.type]) return "";
+  if(!p.pet||!PETS[p.pet.type]) return `<span class="pdtag">🐾 屋主還沒養寵物，${esc(petNameOf(S.pet))}自己逛逛</span>`;
+  const f=friends()[String(p.code).toUpperCase()], n=f?f.n:0;
+  return `<span class="pdtag">🐾 ${esc(petNameOf(S.pet))} × ${esc(petNameOf(p.pet))}${n?`・${esc(friendLvName(n))}（友誼 ${n}）`:""}</span>`;
+}
+
+/* ---- 屋主回家：領取別人帶寵物來玩的紀錄 ---- */
+function claimPlaydates(){
+  if(!S.group||!loungeReady()||!LOUNGE.at) return;
+  const me=myCode().toUpperCase(), L=((loungeData().playdates||{})[me]||[]).slice();
+  S.pdClaimed=S.pdClaimed||{};
+  const fresh=L.filter(x=>{ const id=String(x.msg||"").split("|")[1]; return id&&!S.pdClaimed[id]&&!x.pending&&x.code!==me; })
+    .sort((a,b)=>(a.at?a.at.getTime():0)-(b.at?b.at.getTime():0));
+  if(!fresh.length) return;
+  let aff=0; const who=[], ups=[];
+  fresh.forEach(x=>{
+    S.pdClaimed[String(x.msg).split("|")[1]]=1;
+    const pet=typeof x.pet==="string"?parseJSONish(x.pet):x.pet;
+    const r=friendBump(x.code,x.name,pet,(+x.level||1)>=4?"adult":"baby",dayKey(x.at));
+    if(r){ aff++; if(r.up>=1) ups.push(r); }
+    const label=`${x.name||"有人"}的${petNameOf(pet)||"寵物"}`; if(!who.includes(label)) who.push(label);
+  });
+  let reached=false;
+  if(aff&&S.pet) reached=petAffAdd(aff);
+  save(); queueSync();
+  const mine=S.pet?petNameOf(S.pet):"你家";
+  Sound.sfx("achieve");
+  toast(`🐾 ${who.slice(0,3).join("、")}${who.length>3?` 等 ${who.length} 位`:""}來找${mine}玩了！${aff&&S.pet?`${mine}親密度 +${aff}`:""}`);
+  if(ups.length) setTimeout(()=>friendReward(ups),1400);
+  if(reached) setTimeout(()=>affinityMax(S.pet.type),ups.length?2800:900);
+  checkAch();
+  if(curPlace&&curPlace.id==="myhome"&&homeTab==="friends") renderFriends($("#homePanel"));
+}
+
+/* ---- 友誼升級獎勵：好朋友→合照、麻吉→寵物蛋糕、最佳拍檔→友誼項圈 ---- */
+function friendReward(list){
+  let show=null;
+  list.forEach(r=>{
+    const f=friends()[r.code]; if(!f) return;
+    if(r.up>=1&&!f.photo&&S.pet&&f.pet){
+      f.photo={a:petSnap(S.pet),as:petStage(),b:f.pet,bs:f.stage||"adult",at:Date.now()};
+      if(!S.photoWall) S.photoWall=r.code;
+    }
+    if(r.up===2){ shopState(); S.snacks.s_cake=(S.snacks.s_cake||0)+1; }
+    if(r.up===3){ S.collarOK=true; if(S.pet) S.pet.collar=true; }
+    if(!show||r.up>show.up) show=r;
+  });
+  save(); queueSync(true); pushFarm(true);
+  if(!show) return;
+  const f=friends()[show.code], mine=petNameOf(S.pet)||"你的寵物", theirs=petNameOf(f.pet)||"牠";
+  const lvName=FRIEND_LV[show.up][1];
+  const d=$("#cheatDlg");
+  if(d.open){ toast(`🐾 ${mine}和${theirs}變成「${lvName}」了！到「溫暖的家 → 交友錄」看看`); return; }
+  Sound.sfx("levelup");
+  $("#chDept").textContent="寵物交友錄";
+  $("#chFace").innerHTML=S.pet?petSVG(petView(S.pet),petStage()):"";
+  $("#chTitle").textContent=`${mine} × ${theirs}　${lvName}`;
+  if(show.up===1){
+    $("#chSay").textContent=`${mine}和${f.owner||"朋友"}家的${theirs}變成好朋友了！牠們一起拍了一張合照。`;
+    $("#chGift").innerHTML=`<span class="pv photopv">${photoPics(f.photo)}</span><div><p class="dbody"><b>好朋友合照</b></p><p class="ahint">${S.photoWall===show.code?"已經掛到展示區的牆上，訪客也看得到。":"到「交友錄」可以把它掛到牆上。"}</p></div>`;
+    $("#chFoot").textContent="到「溫暖的家 → 交友錄」可以換掛別張合照。";
+  }else if(show.up===2){
+    $("#chSay").textContent=`${mine}和${theirs}已經是麻吉了！送你一個寵物蛋糕慶祝。`;
+    $("#chGift").innerHTML=`<span class="pv">${spriteSVG("s_cake")}</span><div><p class="dbody"><b>寵物蛋糕 ×1</b></p><p class="ahint">到「種子商店」的零食區可以餵給寵物。</p></div>`;
+    $("#chFoot").textContent="再一起玩到 30 次，就會變成最佳拍檔。";
+  }else{
+    $("#chSay").textContent=`${mine}和${theirs}成為最佳拍檔！兩隻寵物都戴上了一樣的友誼項圈。`;
+    $("#chGift").innerHTML=`<span class="pv">${S.pet?petSVG(Object.assign({},petView(S.pet),{collar:true}),petStage()):""}</span><div><p class="dbody"><b>友誼項圈</b></p><p class="ahint">每一隻寵物都可以戴，在「交友錄」可以隨時戴上或拿下。</p></div>`;
+    $("#chFoot").textContent="朋友那邊最慢約 5 分鐘後也會收到項圈。";
+  }
+  d.showModal();
+  if(curPlace&&curPlace.id==="myhome"){ const wall=$("#homeWall"); if(wall){ wall.innerHTML=showroomHTML(); startRoomPet(); startHomePlay(); } }
+}
+
+/* ---- 溫暖的家 → 交友錄 ---- */
+function renderFriends(panel){
+  panel.dataset.kind="friends";
+  const F=friends(), list=Object.entries(F).filter(([,f])=>f&&f.n>=1).sort((a,b)=>b[1].n-a[1].n||(b[1].at||0)-(a[1].at||0));
+  const people=loungeReady()&&LOUNGE.at?loungeData().people:{};
+  const best=list.filter(([,f])=>f.n>=30).length, mine=S.pet?petNameOf(S.pet):"";
+  const lvBadge=n=>`<span class="flv flv${friendLv(n)}">${esc(friendLvName(n))}</span>`;
+  panel.innerHTML=`<section class="window pbox friendbook">
+    <div class="abar"><h3>寵物交友錄 ${helpBtn("friends")}</h3><span class="ahint">朋友 ${list.length} 位・最佳拍檔 ${best} 位</span></div>
+    <p class="ahint">${S.pet?`到交誼廳點別人的名片去拜訪，${esc(mine)}會跟著去玩。兩隻寵物每天第一次見面，雙方寵物的親密度都 +1、友誼 +1；屋主不用在線上，下次上線就會收到。`:`LV 3 領養寵物後，拜訪別人家時寵物就會跟著去交朋友。`}</p>
+    <div class="flvbar">${FRIEND_LV.map(([m,n],i)=>`<span class="flv flv${i}">${n}</span><small>${m} 次${i===1?"・合照":i===2?"・寵物蛋糕":i===3?"・友誼項圈":""}</small>`).join("")}<span class="ahint">・交到 ${FRIEND_ACH} 位朋友解鎖成就</span></div>
+    ${S.collarOK?`<label class="collarsw"><input type="checkbox" data-collar ${S.pet&&S.pet.collar?"checked":""} ${S.pet?"":"disabled"}> 讓${esc(mine||"寵物")}戴上友誼項圈</label>`:""}
+    ${list.length?`<div class="flist">${list.map(([code,f])=>{
+      const nx=friendNext(f.n), prev=FRIEND_LV[Math.max(0,friendLv(f.n))][0];
+      const pct=nx?Math.round((f.n-prev)/(nx[0]-prev)*100):100;
+      const ph=photoOf(code), hung=S.photoWall===code;
+      return `<article class="fcard">
+        <span class="fpair" aria-hidden="true"><span>${S.pet?petSVG(petView(S.pet),petStage()):""}</span><span class="flip">${f.pet?petSVG(f.pet,f.stage||"adult"):""}</span></span>
+        <div class="finfo">
+          <p><b>${esc(petNameOf(f.pet)||"寵物")}</b> <span class="ahint">${esc(f.owner||"冒險者")}家的${esc(f.pet&&PETS[f.pet.type]?PETS[f.pet.type].name:"寵物")}</span> ${lvBadge(f.n)}</p>
+          <div class="fbar" role="progressbar" aria-valuenow="${f.n}" aria-valuemax="${nx?nx[0]:f.n}" aria-label="友誼"><i style="width:${pct}%"></i></div>
+          <p class="ahint">友誼 ${f.n}${nx?`・再 ${nx[0]-f.n} 次變成「${nx[1]}」`:"・已經是最佳拍檔"}${f.at?`・上次一起玩 ${esc(fmtShort(new Date(f.at)))}`:""}</p>
+          <div class="fbtns">${people[code]?`<button class="mini-btn" type="button" data-fvisit="${esc(code)}">🏠 去串門子</button>`:""}
+            ${ph?`<button class="mini-btn" type="button" data-fphoto="${hung?"":esc(code)}">${hung?"🖼 從牆上取下合照":"🖼 掛上合照"}</button>`:""}</div>
+        </div>
+        ${ph?`<span class="fphoto">${photoHTML(ph)}</span>`:""}
+      </article>`; }).join("")}</div>`
+    :`<p class="empty-note">還沒有寵物朋友。到交誼廳點別人的名片去拜訪${S.pet?`，${esc(mine)}就會跟著去玩`:""}！</p>`}
+  </section>`;
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest&&e.target.closest("[data-fvisit],[data-fphoto]"); if(!t) return;
+  if(t.dataset.fvisit!=null){
+    const code=t.dataset.fvisit;
+    if(!loungeData().people[code]){ toast("對方最近不在交誼廳名單裡"); return; }
+    openVisit(code); return;
+  }
+  S.photoWall=t.dataset.fphoto||""; save(); queueSync(); pushFarm(true);
+  Sound.sfx(S.photoWall?"get":"undo"); toast(S.photoWall?"合照掛到展示區的牆上了":"已從牆上取下合照");
+  renderPlace();
+});
+document.addEventListener("change",e=>{
+  const c=e.target.closest&&e.target.closest("[data-collar]"); if(!c||!S.pet||!S.collarOK) return;
+  S.pet.collar=!!c.checked; save(); queueSync(); pushFarm(true);
+  Sound.sfx(c.checked?"get":"undo"); toast(c.checked?`${petNameOf(S.pet)}戴上友誼項圈了`:`拿下友誼項圈了`);
+  renderPlace();
+});
+
 function myVisits(){
   if(!loungeReady()||!LOUNGE.at) return [];
   return (loungeData().visits[myCode().toUpperCase()]||[]);
@@ -7234,7 +7737,7 @@ function renderGuestbook(panel){
   S.guestSeen=new Date().toISOString(); save();
   setTimeout(checkAch,300);
 }
-const FURN_TIP={"notebook": "收藏的任務與自己的筆記", "pet": "領養、照顧寵物", "trophy": "已解鎖的成就", "cert": "結業證書與 Bonus 進修證書", "collect": "撿到的小物", "armory": "所有武器，可以裝備或卸下", "closet": "換衣服、換顏色", "album": "用小物兌換畫框", "farm": "種菜、收成", "guest": "誰來拜訪過你家", "wardrobe": "角色外觀與雲端存檔"};
+const FURN_TIP={"friends": "寵物朋友、合照與友誼項圈", "notebook": "收藏的任務與自己的筆記", "pet": "領養、照顧寵物", "trophy": "已解鎖的成就", "cert": "結業證書與 Bonus 進修證書", "collect": "撿到的小物", "armory": "所有武器，可以裝備或卸下", "closet": "換衣服、換顏色", "album": "用小物兌換畫框", "farm": "種菜、收成、稀有作物圖鑑", "shop": "用種子買家具、牆紙和寵物零食", "guest": "誰來拜訪過你家", "wardrobe": "角色外觀與雲端存檔"};
 function renderMyHome(body){
   const tabs=[["notebook","筆記本","notebook",`${favList().length} 筆`],
     ["pet","寵物窩",S.pet?null:"petbed",S.pet?`${S.pet.name||PETS[S.pet.type].name}・${petStage()==="adult"?"成年":"寶寶"}`:petUnlocked()?"可以領養了":`LV 3 解鎖・還差 ${tasksToLevel(3)} 個任務`],
@@ -7245,6 +7748,8 @@ function renderMyHome(body){
     ["closet","衣櫃","wardrobe",`${outfitOwnedCount()}/${Object.keys(OUTFIT).length} 套`],
     ["album","相簿","album",`${albumOwned().length}/${ALBUM.length} 張`],
     ["farm","開心農場","f_farm",(()=>{ const n=ripeCount(); return n?`${n} 塊可收成`:`倉庫 ${Object.values(S.barn||{}).reduce((a,b)=>a+(+b||0),0)} 份`; })()],
+    ["shop","種子商店","d_plant",`種子 ${seedTotal()} 顆`],
+    ["friends","交友錄","friendbook",(()=>{ const n=friendCount(); return n?`朋友 ${n} 位`:S.pet?"帶寵物去串門子":"LV 3 領養寵物後開放"; })()],
     ["guest","訪客簿","guestbook",(()=>{ const n=newVisitCount(), t=myVisits().length; return n?`${n} 位新訪客`:t?`${t} 筆紀錄`:"還沒有訪客"; })()],
     ["wardrobe","角色設定","mirror","造型・雲端存檔"]];
   if(body.dataset.kind!=="myhome"){
@@ -7259,6 +7764,8 @@ function renderMyHome(body){
   else if(homeTab==="album") renderAlbum(panel);
   else if(homeTab==="guest") renderGuestbook(panel);
   else if(homeTab==="farm") renderFarm(panel);
+  else if(homeTab==="shop") renderShop(panel);
+  else if(homeTab==="friends") renderFriends(panel);
   else if(homeTab==="pet") renderPetPanel(panel);
   else if(homeTab==="collect") renderCollection(panel);
   else if(homeTab==="armory") renderArmory(panel);
@@ -7824,6 +8331,10 @@ $("#placeBody").addEventListener("click",async e=>{
   const fd2=t.closest("[data-feed]");
   if(fd2){ feedPet(fd2.dataset.feed); return; }
   if(t.closest("[data-syncnow]")){ syncNow(); return; }
+  const sb=t.closest("[data-shopbuy]"); if(sb){ shopBuy(sb.dataset.shopbuy); return; }
+  const su=t.closest("[data-shopuse]"); if(su){ const [c,i]=su.dataset.shopuse.split("|"); shopUse(c,i); return; }
+  const sf=t.closest("[data-snackfeed]"); if(sf){ feedSnack(sf.dataset.snackfeed); return; }
+  const rf=t.closest("[data-rarefeed]"); if(rf){ feedRare(rf.dataset.rarefeed); return; }
   const ng=t.closest("[data-npcgift]"); if(ng){ giveToNpc(ng.dataset.npcgift); return; }
   const pt=t.closest("[data-plot]");
   if(pt){ farmClick(+pt.dataset.plot); return; }

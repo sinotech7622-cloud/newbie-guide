@@ -722,6 +722,28 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .tossfly{position:absolute;left:50%;top:92%;width:34px;height:34px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.6,.4,1),top .6s cubic-bezier(.2,-0.4,.5,1),transform .6s linear;z-index:6;pointer-events:none}
 .vsactrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .rpsrow .act{min-width:86px}
+.stabbar{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 10px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.stab{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:15px;padding:6px 12px;border:2px solid var(--line);border-radius:4px;background:#1B2466;color:var(--text);cursor:pointer;white-space:nowrap}
+.stab small{font-size:12px;color:var(--muted);background:rgba(0,0,0,.25);border-radius:8px;padding:0 6px}
+.stab:hover{border-color:#9AA6C8}
+.stab.on{background:var(--gold);color:#2B1D16;border-color:#fff;box-shadow:0 0 0 2px var(--line)}
+.stab.on small{color:#2B1D16;background:rgba(255,255,255,.45)}
+.stab .tier{margin:0}
+.stabpane>.catblock:first-child{margin-top:0}
+.stabpane[hidden]{display:none!important}
+#placeBody>.stabbar,.dlg .stabbar{margin-top:4px}
+@media (max-width:640px){
+  .stabbar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;margin-left:-2px;margin-right:-2px}
+  .stab{font-size:14px;padding:6px 10px}
+  .furniture{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:8px;padding:8px!important;margin-bottom:12px}
+  .furniture .furn{flex:0 0 auto;padding:6px 10px 6px 6px;gap:6px}
+  .furniture .furn .fspr{width:38px;height:38px}
+  .furniture .furn .fl{font-size:15px}
+  .furniture .furn .fl small{font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .albumgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .homebarn .barn{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .aframe{padding:8px 6px;gap:6px}.aframe .apic{border-width:4px}.aframe .act{font-size:13px;padding:6px 4px}.aframe .fname{font-size:13px}
+}
 .chatcard{margin-top:12px;padding:10px 14px;border:2px dashed var(--gold);border-radius:4px;background:rgba(27,36,102,.5)}
 .chatcard .dsec{margin-top:0}
 .cheatcode{display:inline-block;margin:6px 0;padding:6px 14px;font-size:20px;letter-spacing:2px;background:#0E1440;border:2px solid var(--line);border-radius:4px;color:#FFF0A8;user-select:all}
@@ -2145,8 +2167,10 @@ footer.site p{margin:4px 0}
       <div id="vsRoom"></div>
       <div id="vsRps" class="vsrps"></div>
       <div class="vsstats" id="vsStats"></div>
-      <div id="vsFarm"></div>
-      <div id="vsAct"></div>
+      <div class="stabbar" role="tablist" data-stabbar="visit"><button type="button" role="tab" class="stab on" data-stabgo="visit" data-stabid="farm" aria-selected="true">🌱 農場</button><button type="button" role="tab" class="stab" data-stabgo="visit" data-stabid="act" aria-selected="false">🥕 互動</button><button type="button" role="tab" class="stab" data-stabgo="visit" data-stabid="book" aria-selected="false">📒 訪客簿</button></div>
+      <div class="stabpane" role="tabpanel" data-stabpane="visit" data-stabid="farm"><div id="vsFarm"></div></div>
+      <div class="stabpane" role="tabpanel" data-stabpane="visit" data-stabid="act" hidden><div id="vsAct"></div></div>
+      <div class="stabpane" role="tabpanel" data-stabpane="visit" data-stabid="book" hidden>
       <p class="dsec">訪客簿 <button type="button" class="help" data-help="進門會自動留下拜訪紀錄，也可以留一句話給屋主。" aria-label="說明" title="說明">?</button></p>
       <div class="lrow">
         <label class="sr" for="vsMsg">留言</label>
@@ -2154,6 +2178,7 @@ footer.site p{margin:4px 0}
         <button class="act" type="button" id="vsSend">留言</button>
       </div>
       <div id="vsBook" class="vsbook"></div>
+      </div>
     </div>
   </div>
 </dialog>
@@ -5507,7 +5532,7 @@ function renderLoginHint(){
 $("#btnLogin").addEventListener("click",()=>{
   Sound.sfx("select");
   if(!CLOUD) openCloud("login");
-  else { openHome("wardrobe"); setTimeout(()=>{ const b=$("#cloudBox"); if(b) b.scrollIntoView({behavior:"smooth",block:"center"}); },400); }
+  else { STAB.wardrobe="cloud"; openHome("wardrobe"); setTimeout(()=>{ const b=$("#cloudBox"); if(b) b.scrollIntoView({behavior:"smooth",block:"center"}); },400); }
 });
 $("#loginHint").addEventListener("click",e=>{
   const b=e.target.closest("[data-loginhint]"); if(!b) return;
@@ -6201,6 +6226,7 @@ function renderVisit(){
   const h=(p.av&&p.av.home)||{};
   $("#vsDept").textContent=`拜訪 ${p.group||""}`;
   $("#vsTitle").textContent=`${p.name||"冒險者"} 的溫暖的家`;
+  stabGo("visit",["farm","act","book"].includes(STAB.visit)?STAB.visit:"farm");
   $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.name||"屋主",hostId:"visitHost",label:`${p.name}的溫暖的家`});
   startRoomPet("#visitPet",true);
   startPlaydate();
@@ -6974,7 +7000,7 @@ function renderHome(body){
 function renderDigital(body){
   if(body.dataset.kind!=="digital"){
     body.dataset.kind="digital";
-    body.innerHTML=`<div id="wpTradeSlot"></div><div class="pgrid">
+    body.innerHTML=`${tabsHTML("digital",[{id:"consult",label:"💬 技術諮詢",html:`<div class="pgrid">
       <section class="window pbox form">
         <h3>申請技術諮詢</h3>
         <p class="ahint" id="csHint"></p>
@@ -6995,7 +7021,7 @@ function renderDigital(body){
         <p class="ahint">${esc(CFG.director)}回覆後，最慢約 5 分鐘會出現在這裡（Google 試算表的更新間隔），按「重新整理」可以立刻檢查。${INBOX.at?`最後更新：${fmtShort(new Date(INBOX.at))}`:""}</p>
         <div id="csMine"></div>
       </section>
-    </div>`;
+    </div>`},{id:"wp",label:"🔧 武器分解",badge:spareWeapons().length||"",html:`<div id="wpTradeSlot"></div>`}])}`;
     try{ $("#csContact").value=localStorage.getItem("sino22-contact")||""; }catch(e){}
   }
   { const sl=$("#wpTradeSlot"); if(sl) sl.innerHTML=dismantleHTML(); }
@@ -8032,6 +8058,27 @@ const ALBUM=[
 ];
 const albumOwned=()=>ALBUM.filter(a=>S.album&&S.album[a.id]);
 const redeemable=()=>FINDS.filter(f=>((S.finds||{})[f.id]||0)>=ALBUM_COST);
+/* ---- 分頁：太長的區塊改成分頁切換（記住每個分頁上次看的那一頁） ---- */
+const STAB_KEY="sino22-stabs", STAB={};
+try{ Object.assign(STAB,JSON.parse(localStorage.getItem(STAB_KEY)||"{}")); }catch(e){}
+function tabsHTML(key,items,opt){                      // items：[{id,label,badge,html}]，可以有空值
+  const L=(items||[]).filter(Boolean); if(!L.length) return (opt&&opt.empty)||"";
+  const cur=L.some(t=>t.id===STAB[key])?STAB[key]:((opt&&opt.def&&L.some(t=>t.id===opt.def))?opt.def:L[0].id);
+  return `<div class="stabbar" role="tablist" data-stabbar="${esc(key)}">${L.map(t=>`<button type="button" role="tab" class="stab${t.id===cur?" on":""}" data-stabgo="${esc(key)}" data-stabid="${esc(t.id)}" aria-selected="${t.id===cur}">${t.label}${t.badge!=null&&t.badge!==""?`<small>${t.badge}</small>`:""}</button>`).join("")}</div>
+    ${L.map(t=>`<div class="stabpane" role="tabpanel" data-stabpane="${esc(key)}" data-stabid="${esc(t.id)}"${t.id===cur?"":" hidden"}>${t.html}</div>`).join("")}`;
+}
+function stabGo(key,id){
+  STAB[key]=id; try{ localStorage.setItem(STAB_KEY,JSON.stringify(STAB)); }catch(e){}
+  document.querySelectorAll(`[data-stabbar="${CSS.escape(key)}"]`).forEach(bar=>{
+    bar.querySelectorAll(".stab").forEach(b=>{ const on=b.dataset.stabid===id; b.classList.toggle("on",on); b.setAttribute("aria-selected",String(on)); });
+  });
+  document.querySelectorAll(`[data-stabpane="${CSS.escape(key)}"]`).forEach(pn=>{ pn.hidden=pn.dataset.stabid!==id; if(!pn.hidden) pn.querySelectorAll(".showroom").forEach(fitBed); });
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-stabgo]"); if(!b) return;
+  stabGo(b.dataset.stabgo,b.dataset.stabid); Sound.sfx("cursor");
+  const bar=b.closest(".stabbar"); if(bar&&bar.getBoundingClientRect().top<0) bar.scrollIntoView({block:"start",behavior:"smooth"});
+});
 function renderAlbum(panel){
   panel.dataset.kind="album";
   const can=redeemable(), owned=albumOwned().length;
@@ -8042,7 +8089,7 @@ function renderAlbum(panel){
     ${can.length?`<div class="lrow"><label for="albumPay" class="ahint" style="margin:0">用哪種小物兌換</label>
       <select id="albumPay" class="ainput">${opts}</select></div>`
       :`<p class="empty-note">目前還沒有任何小物滿 ${ALBUM_COST} 個。多查看任務文件、多收藏任務就會越撿越多。</p>`}
-    <div class="albumgrid">${ALBUM.map(a=>{
+    ${(()=>{ const card=a=>{
       const got=!!(S.album&&S.album[a.id]), hung=S.frame===a.id;
       return `<article class="aframe${got?"":" alock"}${hung?" hung":""}">
         <div class="apic">${got?`<img src="${a.img}" alt="${esc(a.name)}">`:`<span class="qmark">？</span>`}</div>
@@ -8053,7 +8100,10 @@ function renderAlbum(panel){
              :a.npc?`<span class="ahint npchint">送蔬菜給${a.npc==="home"?"村長":"總長"}取得</span>`
              :`<button class="act" type="button" data-redeem="${a.id}" ${can.length?"":"disabled"}>兌換（${ALBUM_COST} 個）</button>`}
       </article>`;
-    }).join("")}</div>
+    };
+      const mine=ALBUM.filter(a=>S.album&&S.album[a.id]), lock=ALBUM.filter(a=>!(S.album&&S.album[a.id]));
+      return tabsHTML("album",[{id:"got",label:"我的畫框",badge:mine.length,html:mine.length?`<div class="albumgrid">${mine.map(card).join("")}</div>`:`<p class="empty-note">還沒有畫框，看看「還沒拿到」怎麼取得。</p>`},
+        {id:"lock",label:"還沒拿到",badge:lock.length,html:lock.length?`<div class="albumgrid">${lock.map(card).join("")}</div>`:`<p class="empty-note">全部畫框都收齊了！</p>`}],{def:can.length||!mine.length?"lock":"got"}); })()}
   </section>`;
 }
 function showcaseLists(){
@@ -8268,7 +8318,7 @@ function renderFarm(panel){
     <div class="abar"><h3>開心農場 ${helpBtn("farm")}</h3><span class="afilters"><span class="ahint">${ripeCount()?`🌾 有 ${ripeCount()} 塊田可以收成`:"作物會依真實時間長大"}</span>
       <button class="act ghost" type="button" data-syncnow title="除了手動同步，網站開著時每小時也會自動同步一次">☁ 立即同步</button></span></div>
     <p class="ahint autosync" data-autosync>${esc(autoSyncText())}</p>
-    <p class="dsec">選種子</p>
+    ${tabsHTML("farm",[{id:"plots",label:"🌱 田地",badge:ripeCount()?`${ripeCount()} 可收成`:"",html:`<p class="dsec">選種子</p>
     <div class="seedrow" role="radiogroup" aria-label="種子">${Object.entries(CROPS).map(([k,c])=>`<label class="seed${k===seed?" on":""}">
       <input type="radio" name="farm-seed" value="${k}" ${k===seed?"checked":""}>
       <span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}</b><small>${fmtDur(c.ms)}・收 ${c.yield} ${esc(c.unit)}</small><span class="seedcnt${seeds()[k]?"":" zero"}">種子 ×${seeds()[k]||0}</span></label>`).join("")}</div>
@@ -8285,12 +8335,12 @@ function renderFarm(panel){
         ${st.stage!=="empty"&&st.stage!=="ripe"?`<span class="plotbar"><i style="width:${Math.round(st.ratio*100)}%"></i></span>`:""}
       </button></div>`;
     }).join("")}</div>
-    <p class="ahint" style="margin-top:12px">收成的蔬菜放在展示區下方的「倉庫」，可以餵寵物、送人或砸過去。</p>
-    ${rareBookHTML()}
-    <p class="dsec">偷菜紀錄</p>
+    <p class="ahint" style="margin-top:12px">收成的蔬菜放在展示區下方的「倉庫」，可以餵寵物、送人或砸過去。</p>`},
+      {id:"rare",label:"📖 稀有圖鑑",badge:`${rareCount()}/${Object.keys(RARE).length}`,html:rareBookHTML()},
+      {id:"steal",label:"🕵 偷菜紀錄",badge:stolenLog.length||"",html:`
     ${stolenLog.length?`<div class="vsbook" style="max-height:none">${stolenLog.map(x=>{ const c=CROPS[String(x.msg||"").split("|")[1]]||{name:"蔬菜",unit:"份"};
       return `<article class="vsitem"><span class="vsav" aria-hidden="true">${avatarSVG(((loungeData().people[x.code]||{}).av)||AV_DEFAULT)}</span><div><p><b>${esc(x.name||"某人")}</b> 偷走了 1 ${esc(c.unit)}${esc(c.name)} <span class="ahint">${esc(fmtShort(x.at))}</span></p></div></article>`; }).join("")}</div>`
-      :`<p class="ahint">還沒有人來偷菜。到交誼廳點別人的人像拜訪，成熟的菜也可以偷 1 份喔！</p>`}
+      :`<p class="ahint">還沒有人來偷菜。到交誼廳點別人的人像拜訪，成熟的菜也可以偷 1 份喔！</p>`}`}])}
   </section>`;
   // 倒數計時：每秒更新文字，階段改變時重畫
   farmTimer=setInterval(()=>{
@@ -8392,7 +8442,8 @@ const SHOP={
   snack:{name:"寵物零食",items:[["s_biscuit","小骨頭餅乾",15,2],["s_can","高級罐頭",40,5],["s_cake","寵物蛋糕",90,12]]},
   fert:{name:"肥料",items:[["fz_basic","一般肥料",20],["fz_super","高級肥料",60]]}
 };
-const CONSUME=new Set(["snack","fert"]);               // 消耗品：可以重複買，不擺進家裡
+const CONSUME=new Set(["snack","fert"]);
+const SHOP_GROUPS=[["paper","🧱 牆紙"],["ground","🟫 地板"],["rug","🧶 地毯"],["wall","🖼 掛飾"],["floor","🛋 擺設"],["bed","🛏 寵物窩"],["pets","🐶 寵物"],["petgear","🎀 寵物配件"],["snack","🍖 零食"],["wear","👕 服裝"],["avacc","🎩 人物配件"],["fert","🌱 肥料"]].map(([k,n])=>({id:k,name:n,cats:[k]}));               // 消耗品：可以重複買，不擺進家裡
 const FERT={fz_basic:{desc:"剩下的時間少 30 分鐘",use:left=>Math.min(left,30*60e3)},fz_super:{desc:"剩下的時間減半",use:left=>Math.ceil(left/2)}};
 const FERT_MAX=2;                                      // 每塊田每一輪最多施肥 2 次
 const SHOP_THEMES=[["classic","經典"],["xmas","聖誕節"],["halloween","萬聖節"],["thanks","感恩節"],["office","辦公室"],["forest","森林"],["space","太空"],["disco","迪斯可"],["spy","spy"]];
@@ -8441,7 +8492,7 @@ function renderShop(panel){
     <div class="themechips" role="group" aria-label="商品主題">${[["all","全部"]].concat(SHOP_THEMES).map(([k,n])=>{
       const L=Object.keys(SHOP_THEME).filter(id=>k==="all"||SHOP_THEME[id]===k), own=L.filter(id=>FREE_DECO.has(id)||S.shopOwned[id]).length;
       return `<button type="button" class="themechip${shopTheme===k?" on":""}" data-shoptheme="${k}" aria-pressed="${shopTheme===k}">${esc(n)}<small>${own}/${L.length}</small></button>`; }).join("")}</div>
-    ${Object.entries(SHOP).filter(([cat,c])=>shopTheme==="all"||(!CONSUME.has(cat)&&c.items.some(([id])=>SHOP_THEME[id]===shopTheme))).map(([cat,c])=>`<div class="catblock"><p class="cattitle">${esc(c.name)}${cat==="fert"?`<span class="ahint">在開心農場選好肥料，點正在長的作物就能讓它早點成熟；每塊田每一輪最多施 ${FERT_MAX} 次</span>`:cat==="snack"?`<span class="ahint">任何寵物都能吃，可以提升親密度</span>`:cat==="wear"?`<span class="ahint">固定配色，買了也會收進衣櫃</span>`:cat==="avacc"?`<span class="ahint">也可以在「角色設定」的配件換</span>`:cat==="petgear"?`<span class="ahint">所有寵物都能戴，也可以在「寵物窩」換</span>`:cat==="bed"?`<span class="ahint">擺在家裡，寵物會走過去睡覺；睡自己專屬的窩更常去，每天親密度 +1</span>`:cat==="pets"?`<span class="ahint">買了就能換成牠，名字和配件會保留；之後在寵物交換所也選得到</span>`:""}</p>
+    ${(()=>{ const blk=([cat,c])=>`<div class="catblock"><p class="cattitle">${esc(c.name)}${cat==="fert"?`<span class="ahint">在開心農場選好肥料，點正在長的作物就能讓它早點成熟；每塊田每一輪最多施 ${FERT_MAX} 次</span>`:cat==="snack"?`<span class="ahint">任何寵物都能吃，可以提升親密度</span>`:cat==="wear"?`<span class="ahint">固定配色，買了也會收進衣櫃</span>`:cat==="avacc"?`<span class="ahint">也可以在「角色設定」的配件換</span>`:cat==="petgear"?`<span class="ahint">所有寵物都能戴，也可以在「寵物窩」換</span>`:cat==="bed"?`<span class="ahint">擺在家裡，寵物會走過去睡覺；睡自己專屬的窩更常去，每天親密度 +1</span>`:cat==="pets"?`<span class="ahint">買了就能換成牠，名字和配件會保留；之後在寵物交換所也選得到</span>`:""}</p>
       <div class="shopgrid">${c.items.filter(([id])=>shopTheme==="all"||SHOP_THEME[id]===shopTheme).map(([id,name,price,aff])=>{
         const owned=!CONSUME.has(cat)&&(FREE_DECO.has(id)||!!S.shopOwned[id]), n=cat==="fert"?((S.fert||{})[id]||0):S.snacks[id]||0;
         const using=cat==="wear"?(S.av||AV_DEFAULT).outfit===id:cat==="avacc"?(S.av||AV_DEFAULT).acc===id:cat==="petgear"?!!(S.pet&&S.pet.gear===id):!CONSUME.has(cat)&&(d[cat]===id||(cat==="floor"&&d.floor2===id));
@@ -8468,7 +8519,15 @@ function renderShop(panel){
           <b>${esc(name)}</b>${cat==="bed"?(()=>{ const t=id.slice(2), mine=S.pet&&S.pet.type===t; return `<span class="bedfor${mine?" mine":""}">${mine?"★ 你的":""}${esc(PETS[t]?PETS[t].name:"")}專屬</span>`; })():""}
           <span class="ahint">${cat==="fert"?`${FERT[id].desc}・擁有 ${n} 包`:cat==="snack"?`親密度 +${aff}・擁有 ${n}`:owned?"已擁有":`${price} 顆種子`}${!owned&&!CONSUME.has(cat)&&!can?`・還差 ${price-total}`:""}</span>
           <span class="shopbtns">${btn}</span></article>`;
-      }).join("")}</div></div>`).join("")}
+      }).join("")}</div></div>`;
+      const show=([cat,c])=>shopTheme==="all"||(!CONSUME.has(cat)&&c.items.some(([id])=>SHOP_THEME[id]===shopTheme));
+      return tabsHTML("shopcat",SHOP_GROUPS.map(g=>{
+        const L=g.cats.filter(k=>SHOP[k]).map(k=>[k,SHOP[k]]);
+        const ids=L.filter(([k])=>!CONSUME.has(k)).flatMap(([,c])=>c.items.map(x=>x[0])).filter(id=>shopTheme==="all"||SHOP_THEME[id]===shopTheme);
+        const own=ids.filter(id=>FREE_DECO.has(id)||(S.shopOwned||{})[id]).length, vis=L.filter(show);
+        return {id:g.id,label:g.name,badge:ids.length?`${own}/${ids.length}`:"",html:vis.length?vis.map(blk).join(""):`<p class="empty-note">「${esc((SHOP_THEMES.find(t=>t[0]===shopTheme)||[,""])[1])}」主題沒有這一類的商品，換個分頁或選「全部」看看。</p>`};
+      }));
+    })()}
   </section>`;
 }
 function petAffAdd(n){                                 // 目前寵物的親密度 +n，回傳是否剛好滿級
@@ -8567,9 +8626,12 @@ function renderSeedShop(body){
   body.dataset.kind="seedshop";
   stopWalkers("shop:");
   const snap=myHomeSnapshot();
-  body.innerHTML=bossBoxHTML()+buybackHTML()+`<details class="window pbox shoproom"${SHOP_ROOM_OPEN?" open":""}><summary>🏠 看看我家的展示空間<span class="ahint">買了家具、換了衣服，可以馬上看到效果</span></summary>
+  const bst=bossState(), spare=spareFinds().reduce((a,f)=>a+S.finds[f.id]-1,0);
+  body.innerHTML=tabsHTML("seedshop",[{id:"shop",label:"🛒 商店",html:`<details class="window pbox shoproom"${SHOP_ROOM_OPEN?" open":""}><summary>🏠 看看我家的展示空間<span class="ahint">買了家具、換了衣服，可以馬上看到效果</span></summary>
       ${roomHTML(Object.assign({},snap,{pet:S.pet,petStage:petStage(),av:S.av,splats:[]}),{host:dispName(),hostId:"shopHost",petId:"shopPet",label:"我家"})}</details>
-    <div id="shopPanel"></div>`;
+    <div id="shopPanel"></div>`},
+    {id:"quiz",label:"❓ 每日問答",badge:bst==="new"?"可挑戰":bst==="pick"?"種子待領":"",html:bossBoxHTML()},
+    {id:"buy",label:"🧳 小物收購",badge:spare?`可賣 ${spare}`:"",html:buybackHTML()}],{def:bst==="new"||bst==="pick"?"quiz":"shop"});
   renderShop($("#shopPanel"));
   const dt=body.querySelector("details.shoproom"); if(!dt) return;
   const walk=()=>{ const h=$("#shopHost"), pt=$("#shopPet"); if(h) startWalker(h,"shop:host",{start:.5,speed:55,rest:.45,delay:700}); if(pt) startWalker(pt,"shop:pet"); };
@@ -9156,6 +9218,7 @@ function renderMyHome(body){
   tabs.forEach(([id,,,sub])=>{
     const b=body.querySelector(`[data-htab="${id}"]`);
     b.setAttribute("aria-selected",String(id===homeTab));
+    if(id===homeTab){ const f=b.parentElement; if(f&&f.scrollWidth>f.clientWidth+4) f.scrollLeft=Math.max(0,b.offsetLeft-f.clientWidth/2+b.offsetWidth/2); }
     body.querySelector(`[data-hsub="${id}"]`).textContent=id==="trophy"&&fresh?`${sub}・新 ${fresh}`:sub;
   });
 }
@@ -9200,7 +9263,10 @@ function renderTrophy(panel){
   const fresh=new Set(ACH.filter(a=>S.ach[a.id]&&!(S.achSeen&&S.achSeen[a.id])).map(a=>a.id));
   panel.innerHTML=`<section class="window pbox">
     <h3>獎盃櫃 ${helpBtn("trophy")} <span class="ahint" style="margin:0">已解鎖 ${got} / ${ACH.length}</span></h3>
-    <ul class="achlist trophies">${ACH.map(a=>`<li class="${S.ach[a.id]?"got":""} ${fresh.has(a.id)?"newach":""}"><span class="ic" aria-hidden="true">${a.icon}</span><div><b>${a.name}${fresh.has(a.id)?' <span class="tag">NEW</span>':""}${S.ach[a.id]?"":"<span class='sr'>（未解鎖）</span>"}</b><span>${a.desc}</span></div></li>`).join("")}</ul>
+    ${(()=>{ const li=a=>`<li class="${S.ach[a.id]?"got":""} ${fresh.has(a.id)?"newach":""}"><span class="ic" aria-hidden="true">${a.icon}</span><div><b>${a.name}${fresh.has(a.id)?' <span class="tag">NEW</span>':""}${S.ach[a.id]?"":"<span class='sr'>（未解鎖）</span>"}</b><span>${a.desc}</span></div></li>`;
+      const gotL=ACH.filter(a=>S.ach[a.id]), todo=ACH.filter(a=>!S.ach[a.id]);
+      return tabsHTML("trophy",[{id:"got",label:"已解鎖",badge:gotL.length,html:gotL.length?`<ul class="achlist trophies">${gotL.map(li).join("")}</ul>`:`<p class="empty-note">還沒有解鎖的成就，先去完成任務吧！</p>`},
+        {id:"todo",label:"還沒解鎖",badge:todo.length,html:todo.length?`<ul class="achlist trophies">${todo.map(li).join("")}</ul>`:`<p class="empty-note">全部成就都解鎖了，太厲害了！</p>`}],{def:fresh.size?"got":undefined}); })()}
     ${S.awarded?`<div class="formfoot"><span class="ahint" style="margin:0">結業日期：${esc(S.awarded)}</span><button class="act" type="button" data-replayaward>重看頒獎典禮</button></div>`:""}
   </section>`;
   S.achSeen=S.achSeen||{};
@@ -9212,7 +9278,7 @@ function renderWardrobe(panel){
   panel.dataset.kind="wardrobe";
   setTimeout(()=>{ renderGearBox(); renderCloudBox(); },0);
   const v=xp(), lv=lvOf(v);
-  panel.innerHTML=`<div class="pgrid">
+  panel.innerHTML=`${tabsHTML("wardrobe",[{id:"me",label:"🧑 我的角色",html:`<div class="pgrid">
     <section class="window pbox">
       <h3>我的角色</h3>
       <div class="me">
@@ -9234,13 +9300,13 @@ function renderWardrobe(panel){
         return `<li><button class="plink" type="button" data-zone="${z.id}">${z.name}</button><div class="mbar"><div class="bar"><i style="width:${pc}%"></i></div><em>${n}/${t}</em></div></li>`;}).join("")}</ul>
     </section>
   </div>
-  <section class="window pbox" id="gearBox"></section>
-  <section class="window pbox" id="cloudBox"></section>
-  <section class="window pbox danger">
+  <section class="window pbox" id="gearBox"></section>`},
+  {id:"cloud",label:"☁ 雲端存檔",html:`<section class="window pbox" id="cloudBox"></section>`},
+  {id:"reset",label:"⚠ 重新開始",html:`<section class="window pbox danger">
     <h3>重新開始</h3>
     <p class="ahint">清除這台電腦上的角色、任務進度、成就、筆記本與申請紀錄，並換一組新的新人代碼。已經送到部門試算表的紀錄會保留。</p>
     <button class="act ghost" type="button" data-reset>重新開始冒險</button>
-  </section>`;
+  </section>`}])}`;
 }
 
 const FIND_SPOTS={冒險:"新手村、情報酒館",都市計畫:"行政塔",土木工程:"寶物庫",程式開發:"存摺神殿",隱藏:"村長的家、數位總合辦公室"};
@@ -9268,10 +9334,10 @@ function renderCollection(panel){
   panel.innerHTML=`<section class="window pbox">
     <div class="abar"><h3>蒐藏箱 ${helpBtn("collect")}</h3><span class="ahint">已收集 ${n} / ${total} 種</span></div>
     <p class="ahint">滑鼠移到圖示上可以看說明。在各區域查看任務文件，或把任務「♡ 加入最愛」時，有機會發現小物：新手村、情報酒館偏<b>冒險</b>，行政塔偏<b>都市計畫</b>，寶物庫偏<b>土木工程</b>，存摺神殿偏<b>程式開發</b>。拜訪村長的家或數位總合辦公室，還可能找到<b>隱藏</b>小物。同一種小物收集到 30 個，可以到「相簿」兌換隱藏畫框。</p>
-    ${FIND_CATS.map(cat=>{
+    ${tabsHTML("collect",FIND_CATS.map(cat=>{
       const list=FINDS.filter(f=>f.cat===cat);
       const mine=list.filter(f=>findSeen(f.id)).length;
-      return `<div class="catblock">
+      return {id:cat,label:esc(cat),badge:`${mine}/${list.length}`,html:`<div class="catblock">
         <p class="cattitle">${esc(cat)}<span class="ahint">${mine}/${list.length}</span></p>
         <div class="findgrid">${list.map(f=>{
           const c=got[f.id]||0, seen=findSeen(f.id);
@@ -9280,8 +9346,8 @@ function renderCollection(panel){
             <p class="fname">${seen?esc(f.name):"未發現"}${seen&&c!==1?`<span class="ahint">×${c}</span>`:""}</p>
           </button>`;
         }).join("")}</div>
-      </div>`;
-    }).join("")}
+      </div>`};
+    }),{def:FIND_CATS.find(cat=>FINDS.some(f=>f.cat===cat&&findSeen(f.id)))})}
   </section>`;
 }
 function renderCertWall(panel){
@@ -9379,8 +9445,7 @@ function renderPetPanel(panel){
     return;
   }
   const pet=S.pet, wearLocked=!petWearUnlocked();
-  panel.innerHTML=`<div class="pgrid">
-    <section class="window pbox">
+  panel.innerHTML=`${tabsHTML("pet",[{id:"me",label:"🐾 我的夥伴",html:`<section class="window pbox">
       <h3>我的夥伴 ${helpBtn("pet")} <span class="st ${stage==="adult"?"st-ok":"st-wait"}">${stage==="adult"?"成年":"寶寶"}</span></h3>
       <div class="me">
         <span class="petbig" aria-hidden="true">${petSVG(pet)}</span>
@@ -9399,8 +9464,7 @@ function renderPetPanel(panel){
         ${PETC.map((c,i)=>petColorOK(i)?`<label class="opt sw${i>=PETC_SPECIAL?" rare":""}" title="${esc(c[0])}"><input type="radio" name="pet-color-home" value="${i}" ${+pet.color===i?"checked":""}><i style="background:${petSwatch(i)}"></i></label>`:"").join("")}
       </div></div>
       <p class="ahint" style="margin:10px 0 0">想換夥伴嗎？到「存摺神殿」的寵物交換所，智慧存摺點數滿 ${PET_SWAP_MIN} 點就能更換。</p>
-    </section>
-    <section class="window pbox form">
+    </section>`},{id:"wear",label:"🎀 衣服與配件",html:`<section class="window pbox form">
       <h3>衣服與配件 ${wearLocked&&!petNoWear(pet.type)?`<span class="st st-off">LV 5 解鎖</span>`:""}</h3>
       ${petNoWear(pet.type)?`<p class="empty-note">${PETS[pet.type].shop?"商店寵物":"隱藏版寵物"}不能換基本款衣服，但可以戴下方「種子商店配件」。</p>`:wearLocked?`<p class="empty-note">升到 <b>LV 5</b> 就能幫牠換衣服和配件，還差 ${tasksToLevel(5)} 個任務。</p>
         <p class="ahint">可以換的有：項圈鈴鐺、圍巾、小帽子、蝴蝶結、小披風、太陽眼鏡，顏色也能自己選。</p>`
@@ -9411,8 +9475,7 @@ function renderPetPanel(panel){
           ${CLOTH.map((c,i)=>`<label class="opt sw" title="${c[0]}"><input type="radio" name="pet-wc" value="${i}" ${+pet.wc===i?"checked":""}><i style="background:${c[1]}"></i></label>`).join("")}
         </div></div>`}
       ${petGearHTML(pet)}
-    </section>
-  </div>`;
+    </section>`}])}`;
 }
 function petGearHTML(pet){
   const own=Object.keys(PET_GEAR).filter(k=>S.shopOwned&&S.shopOwned[k]);
@@ -9505,10 +9568,10 @@ function renderCloset(panel){
       ${CLOTH.map((c,i)=>`<label class="opt sw" title="${esc(c[0])}"><input type="radio" name="closet-oc" value="${i}" ${+((S.av||AV_DEFAULT).oc)===i?"checked":""}><i style="background:${c[1]}"></i></label>`).join("")}
     </div></div>
     <p class="ahint" style="margin-top:4px">部分秘密服裝（例如雨衣、實驗白袍、公司藍色運動外套、梅傑德白袍）有固定配色，不受顏色影響。</p>
-    ${CLOSET_GROUPS.map(g=>{
+    ${tabsHTML("closet",CLOSET_GROUPS.map(g=>{
       const list=Object.keys(OUTFIT).filter(g.test); if(!list.length) return "";
       const mine=list.filter(outfitOK).length;
-      return `<div class="catblock">
+      return {id:g.id||g.name,label:esc(g.name),badge:`${mine}/${list.length}`,html:`<div class="catblock">
         <p class="cattitle">${esc(g.name)}${g.who?`<span class="ahint">秘密服裝</span>`:g.id==="商店"?`<span class="ahint">用種子購買</span>`:""}<span class="ahint">${mine}/${list.length}</span></p>
         <div class="armgrid">${list.map(k=>{
           const own=outfitOK(k), on=wear===k;
@@ -9517,8 +9580,8 @@ function renderCloset(panel){
             <span class="armname">${own?esc(OUTFIT[k].name):"？？？"}</span>
             <span class="armmeta">${on?'<span class="st st-gold">穿著中</span>':own?"已取得":"未取得"}</span>
           </button>`;
-        }).join("")}</div></div>`;
-    }).join("")}
+        }).join("")}</div></div>`};
+    }),{def:(CLOSET_GROUPS.find(g=>g.test(wear))||{}).id||(CLOSET_GROUPS.find(g=>g.test(wear))||{}).name})}
   </section>`;
 }
 function openOutfit(k){
@@ -9555,10 +9618,11 @@ function renderArmory(panel){
   panel.innerHTML=`<section class="window pbox">
     <div class="abar"><h3>武器庫 ${helpBtn("armory")}</h3><span class="ahint">已收集 ${got} / ${total} 把${weaponOwned("leave_card")?"・另有隱藏武器 1 把":""}</span></div>
     <p class="dbody">目前裝備：${cur?`${tierBadge(cur)} <b>${esc(cur.name)}</b>`:"<b>沒有裝備</b>"}　點武器可以看詳情、裝備或卸下；暗色剪影是還沒拿到的武器。</p>
-    ${order.map(t=>{
+    ${tabsHTML("armory",order.map(t=>{
       const list=WEAPONS.filter(w=>w.tier===t); if(!list.length) return "";
       const mine=list.filter(w=>weaponOwned(w.id)).length, T=TIERS[t];
-      return `<div class="catblock">
+      if(t==="X"&&!mine) return "";
+      return {id:t,label:`<span class="tier ${T.cls}"><b>${T.stars}</b>${T.name}</span>`,badge:`${mine}/${list.length}`,html:`<div class="catblock">
         <p class="cattitle"><span class="tier ${T.cls}"><b>${T.stars}</b>${T.name}</span><span class="ahint">${mine}/${list.length}</span></p>
         <div class="armgrid">${list.map(w=>{
           const own=weaponOwned(w.id), n=(S.items||{})[w.id]||0, on=S.weapon===w.id;
@@ -9567,8 +9631,8 @@ function renderArmory(panel){
             <span class="armname">${own?esc(w.name):"？？？"}</span>
             <span class="armmeta">${on?'<span class="st st-gold">裝備中</span>':own?(n>1?`×${n}`:"已取得"):"未取得"}</span>
           </button>`;
-        }).join("")}</div></div>`;
-    }).join("")}
+        }).join("")}</div></div>`};
+    }),{def:S.weapon&&weaponById(S.weapon)?weaponById(S.weapon).tier:(order.find(t=>WEAPONS.some(w=>w.tier===t&&weaponOwned(w.id)))||"N")})}
   </section>`;
 }
 function renderGearBox(){
@@ -9731,7 +9795,7 @@ $("#placeBody").addEventListener("click",async e=>{
   const pt=t.closest("[data-plot]");
   if(pt){ farmClick(+pt.dataset.plot); return; }
   const ft=t.closest("[data-fertool]"); if(ft){ FERT_TOOL=FERT_TOOL===ft.dataset.fertool?"":ft.dataset.fertool; Sound.sfx("cursor"); renderPlace(); return; }
-  const gf=t.closest("[data-gofarm]"); if(gf){ FERT_TOOL=gf.dataset.gofarm; openHome("farm"); return; }
+  const gf=t.closest("[data-gofarm]"); if(gf){ FERT_TOOL=gf.dataset.gofarm; STAB.farm="plots"; openHome("farm"); return; }
   const oc=t.closest("[data-outfit]");
   if(oc){ openOutfit(oc.dataset.outfit); return; }
   const wc=t.closest("[data-weapon]");

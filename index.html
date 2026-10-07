@@ -1473,6 +1473,9 @@ footer.site p{margin:4px 0}
           <p class="ahint" style="margin-top:12px">「回覆資料」工作表的 A1（排除姓名與員工編號，這個工作表要發布，選填）：</p>
           <pre class="code" id="fxIvReplies"></pre>
           <button class="mini-btn" type="button" data-copy="fxIvReplies">複製公式</button>
+          <p class="ahint" style="margin-top:12px">「交誼廳精簡」工作表的 A1（每人只留最新一張名片和最新一筆上線紀錄，送菜、偷菜、猜拳、串門子等領取紀錄只留 60 天，留言、按讚、訪客簿全部保留；這個工作表要發布，選填）：</p>
+          <pre class="code" id="fxLoungeLite"></pre>
+          <button class="mini-btn" type="button" data-copy="fxLoungeLite">複製公式</button>
           <p class="ahint" style="margin-top:12px">「筆數統計」工作表的 A1（只有各表單的筆數，這個工作表要發布，選填；給「容量檢查」用）：</p>
           <pre class="code" id="fxStats"></pre>
           <button class="mini-btn" type="button" data-copy="fxStats">複製公式</button>
@@ -4473,7 +4476,7 @@ $("#cForm").addEventListener("submit",async e=>{
   renderPortals(); buildMap(); renderHUD(); syncSoundBtns(); checkAch();
   toast(isNew?`${dispName()} 加入了${grp}！`:"角色資料已更新");
   if(isNew) setTimeout(()=>loadInbox(false),2500);
-  loungePresence(true).catch(()=>{});                  // 建立角色就出現在交誼廳（修改造型也會更新名片）
+  loungePresence(true,{here:true}).catch(()=>{});      // 建立角色就出現在交誼廳（修改造型也會更新名片）
   if(isNew&&cloudReady()&&!CLOUD&&S.tourDone) setTimeout(()=>{ if(!CLOUD&&!$("#cDlg").open&&!$("#wDlg").open&&!TOUR) openCloud("create"); },1800);
   if(curPlace) renderPlace();
   if(isNew&&wAfterChar){ wAfterChar=false; }
@@ -4499,7 +4502,8 @@ const FORM_KEYS={
 };
 const SHEET_KEYS={
   feed:{label:"後台資料",headers:["時間戳記","類型","編號","分段","資料","操作者"]},
-  lounge:{label:"交誼廳資料",optional:true,headers:["時間戳記","類型","新人代碼","名字","組別","等級","造型","寵物","一句話","對象代碼"]},
+  lounge:{label:"交誼廳資料",optional:true,hint:"（選填：開啟交誼廳。另外設定「交誼廳精簡」時，這張只在讀不到精簡版時備用，也給「容量檢查」計算筆數）",headers:["時間戳記","類型","新人代碼","名字","組別","等級","造型","寵物","一句話","對象代碼"]},
+  loungeLite:{label:"交誼廳精簡",optional:true,hint:"（選填：設定後網站改讀這張，每次下載的資料量小很多；公式在管理者專區的「試算表公式」）",headers:["時間戳記","類型","新人代碼","名字","組別","等級","造型","寵物","一句話","對象代碼"]},
   consults:{label:"諮詢資料",optional:true,headers:["時間戳記","申請編號","新人代碼","名字","組別","類別","主題","內容","希望時間"]},
   roster:{label:"名冊資料",optional:true,headers:["時間戳記","新人代碼","名字","組別","等級","進度","結業"]},
   saves:{label:"存檔資料",optional:true,headers:["時間戳記","帳號代碼","存檔資料","備註"]},
@@ -5485,7 +5489,8 @@ function pendingRows(){
     name:r.name||"",group:r.group||"",level:r.level||"",av:r.av||null,pet:r.pet||null,msg:r.msg||"",target:String(r.target||""),pending:true}));
 }
 let LOUNGE={rows:[],at:0,busy:false,err:""}, loungeTimer=null, lastPresence=0, IS_CHAMP=false;
-const loungeReady=()=>!!(formCfg("lounge")&&sheetUrl("lounge"));
+const loungeSheet=()=>sheetUrl("loungeLite")?"loungeLite":"lounge";   // 有「交誼廳精簡」就讀精簡版
+const loungeReady=()=>!!(formCfg("lounge")&&(sheetUrl("loungeLite")||sheetUrl("lounge")));
 function parseJSONish(v){ try{ return JSON.parse(String(v||"")); }catch(e){ return null; } }
 async function loadLounge(force){
   if(!loungeReady()) return;
@@ -5494,7 +5499,9 @@ async function loadLounge(force){
   if(!force&&Date.now()-LOUNGE.at<20000){ try{ claimGifts(); }catch(e){} try{ claimRps(); }catch(e){} try{ claimPlaydates(); }catch(e){} return; }
   LOUNGE.busy=true;
   try{
-    const rows=await fetchSheet("lounge",force);
+    let rows;
+    try{ rows=await fetchSheet(loungeSheet(),force); }
+    catch(e){ if(loungeSheet()==="loungeLite"&&sheetUrl("lounge")) rows=await fetchSheet("lounge",force); else throw e; }
     LOUNGE.rows=(rows||[]).map(r=>({
       at:parseSheetTs(r[0]), type:String(r[1]||"").trim(), code:String(r[2]||"").trim().toUpperCase(),
       name:String(r[3]||""), group:String(r[4]||""), level:String(r[5]||""),
@@ -5506,6 +5513,7 @@ async function loadLounge(force){
     try{ claimPlaydates(); }catch(e){}
     try{ checkBoardFrame(); }catch(e){}
     try{ checkNpcMilestones(); }catch(e){}
+    try{ ensureCard(); }catch(e){}
     const champ=loungeData().champion===myCode().toUpperCase();
     if(champ!==IS_CHAMP){
       IS_CHAMP=champ; renderHUD(); if(!$("#viewMap").hidden) buildMap();
@@ -5515,7 +5523,7 @@ async function loadLounge(force){
   finally{ LOUNGE.busy=false; }
 }
 function loungeData(){
-  const people={}, likes={}, posts=[], replies={}, visits={}, steals={}, tosses={}, gifts={}, npcgifts={}, playdates={}, rpss={};
+  const people={}, seenAt={}, likes={}, posts=[], replies={}, visits={}, steals={}, tosses={}, gifts={}, npcgifts={}, playdates={}, rpss={};
   const seen=new Set(LOUNGE.rows.map(r=>r.type+"|"+r.code+"|"+r.target+"|"+r.msg));
   const pend=pendingRows().filter(r=>!seen.has(r.type+"|"+r.code+"|"+r.target+"|"+r.msg));
   const HID=hiddenCodes();
@@ -5531,6 +5539,8 @@ function loungeData(){
     if(r.type==="presence"){
       const p=people[r.code];
       if(!p||(r.at&&p.at&&r.at>p.at)||!p.at) people[r.code]={code:r.code,name:r.name,group:r.group,level:r.level,av:r.av,pet:r.pet,msg:r.msg,at:r.at};
+    }else if(r.type==="here"){                           // 名片沒變時只送的小筆上線紀錄
+      if(r.at&&(!seenAt[r.code]||r.at>seenAt[r.code])) seenAt[r.code]=r.at;
     }else if(r.type==="like"&&r.target){
       (likes[r.target]=likes[r.target]||new Set()).add(r.code);
     }else if(r.type==="post"&&r.target){
@@ -5553,6 +5563,7 @@ function loungeData(){
       (replies[r.target]=replies[r.target]||[]).push({code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
     }
   });
+  Object.keys(seenAt).forEach(c=>{ const p=people[c]; if(p&&(!p.at||seenAt[c]>p.at)) people[c]=Object.assign({},p,{at:seenAt[c]}); });
   const me=myCode().toUpperCase();
   if(S.group){
     people[me]=Object.assign({},people[me]||{},{code:me,name:dispName(),group:S.group,
@@ -5578,12 +5589,37 @@ async function loungeSend(payload){
   if(!loungeReady()) return false;
   try{ await sendForm("lounge",payload); return true; }catch(e){ return false; }
 }
-async function loungePresence(force){
+/* 交誼廳名片：內容有變才送完整名片；沒變時只在需要顯示「上線中」時送一筆很小的 here 紀錄 */
+const CARD_KEY="sino22-card-key", CARD_AT="sino22-card-at", HERE_MS=4*60*1000;
+let lastHere=0;
+function cardPayload(){
+  return {type:"presence",code:myCode(),name:dispName(),group:S.group||"",
+    level:String(myLv()),av:JSON.stringify(Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||"",home:myHomeSnapshot()})),pet:S.pet?JSON.stringify(S.pet):"",msg:S.loungeMsg||""};
+}
+async function loungePresence(force,opt){
+  opt=opt||{};
   if(!loungeReady()||!S.group) return;
   if(!force&&Date.now()-lastPresence<90000) return;
   lastPresence=Date.now();
-  await loungeSend({type:"presence",code:myCode(),name:dispName(),group:S.group||"",
-    level:String(myLv()),av:JSON.stringify(Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||"",home:myHomeSnapshot()})),pet:S.pet?JSON.stringify(S.pet):"",msg:S.loungeMsg||""});
+  const pl=cardPayload(), k=hashStr([pl.code,pl.name,pl.group,pl.level,pl.av,pl.pet,pl.msg].join("|"));
+  let last=""; try{ last=localStorage.getItem(CARD_KEY)||""; }catch(e){}
+  if(opt.card||k!==last){
+    try{ localStorage.setItem(CARD_KEY,k); localStorage.setItem(CARD_AT,String(Date.now())); }catch(e){}
+    lastHere=Date.now();
+    if(!(await loungeSend(pl))){ try{ localStorage.setItem(CARD_KEY,last); }catch(e){} }
+    return;
+  }
+  if(!opt.here||Date.now()-lastHere<HERE_MS) return;
+  lastHere=Date.now();
+  await loungeSend({type:"here",code:myCode(),name:dispName(),group:S.group||"",level:String(myLv())});
+}
+function ensureCard(){                                 // 試算表裡找不到自己的名片（例如資料被清過）就補送一次
+  if(!S.group||!LOUNGE.at) return;
+  const me=myCode().toUpperCase();
+  if(LOUNGE.rows.some(r=>r.type==="presence"&&r.code===me&&r.av)) return;
+  let at=0; try{ at=+localStorage.getItem(CARD_AT)||0; }catch(e){}
+  if(Date.now()-at<15*60*1000) return;                 // 剛送過：試算表發布有延遲，先等等
+  loungePresence(true,{card:true}).catch(()=>{});
 }
 
 /* ---- 新人登錄紀錄（Google 表單） ---- */
@@ -5963,7 +5999,7 @@ function renderVisit(){
   const h=(p.av&&p.av.home)||{};
   $("#vsDept").textContent=`拜訪 ${p.group||""}`;
   $("#vsTitle").textContent=`${p.name||"冒險者"} 的溫暖的家`;
-  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.name||"屋主",hostId:"visitHost",label:`${p.name}的溫暖的家`,empty:`${p.name||"主人"}還沒在牆上掛畫。`});
+  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.name||"屋主",hostId:"visitHost",label:`${p.name}的溫暖的家`});
   startRoomPet("#visitPet",true);
   startPlaydate();
   const hostEl=$("#visitHost");
@@ -6642,11 +6678,11 @@ function renderPlaceInner(greet){
     if(greet) typeInto($("#plSay"),"來交誼廳看看大家的角色和寵物吧！點人像可以去他家拜訪，幫喜歡的人按讚，按讚最多的人會戴上皇冠。");
     renderLounge($("#placeBody"),!!greet);
     if(!greet&&loungeTimer) return;                    // 只是重畫畫面：不用重新送上線紀錄與重設計時器
-    loungePresence(true).then(()=>loadLounge(true)).then(()=>{ if(curPlace&&curPlace.id==="lounge") renderLounge($("#placeBody")); });
+    loungePresence(true,{here:true}).then(()=>loadLounge(true)).then(()=>{ if(curPlace&&curPlace.id==="lounge") renderLounge($("#placeBody")); });
     clearInterval(loungeTimer);
     loungeTimer=setInterval(async()=>{
       if(!curPlace||curPlace.id!=="lounge"){ clearInterval(loungeTimer); loungeTimer=null; return; }
-      await loungePresence(); await loadLounge(true);
+      await loungePresence(false,{here:true}); await loadLounge(true);
       if(curPlace&&curPlace.id==="lounge") renderLounge($("#placeBody"));
     },60000);
     return;
@@ -6795,7 +6831,7 @@ $("#placeBody").addEventListener("click",async e=>{
     if(act==="refresh"){ lg.disabled=true; await loadLounge(true); lg.disabled=false; renderLounge($("#placeBody"),true); Sound.sfx("select"); return; }
     if(act==="me"){
       S.loungeMsg=cleanText($("#lgMsg").value,30); save();
-      lg.disabled=true; lastPresence=0; await loungePresence(true); await loadLounge(true); lg.disabled=false;
+      lg.disabled=true; lastPresence=0; await loungePresence(true,{card:true}); await loadLounge(true); lg.disabled=false;
       addPending({type:"presence",code:myCode(),name:dispName(),group:S.group||"",level:String(myLv()),
         av:Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||""}),pet:S.pet||null,msg:S.loungeMsg||""});
       toast("名片已更新"); renderLounge($("#placeBody"),true); return;
@@ -7456,9 +7492,9 @@ async function loadRoster(force){
   // ② 交誼廳名片（補上最後上線時間，或在沒有名冊資料時當作名冊）
   if(loungeReady()){
     try{
-      const rows=await fetchSheet("lounge",true);
+      const rows=await fetchSheet(loungeSheet(),true);
       (rows||[]).forEach(r=>{
-        if(String(r[1]||"").trim()!=="presence") return;
+        const ty=String(r[1]||"").trim(); if(ty!=="presence"&&ty!=="here") return;
         const code=String(r[2]||"").trim().toUpperCase(); if(!code) return;
         const at=parseSheetTs(r[0]);
         const o=map[code]||(map[code]={code,name:String(r[3]||""),group:String(r[4]||""),level:String(r[5]||""),progress:"",awarded:""});
@@ -7840,7 +7876,7 @@ function myHomeSnapshot(){
     item:L.item.some(x=>x[0]===sc.item)?sc.item:"",
     weapon:L.weapon.some(x=>x[0]===sc.weapon)?sc.weapon:"",
     ach:ACH.filter(x=>S.ach&&S.ach[x.id]).length, finds:findCount(), album:albumOwned().length,
-    farm:farmPlots().map(pl=>pl&&CROPS[pl.c]?{c:pl.c,t:pl.t}:0), barn:Object.fromEntries(Object.keys(CROPS).map(k=>[k,Math.max(0,+((S.barn||{})[k])||0)])), clean:S.cleanedAt||0, guard:S.guardUntil||0, deco:decoSnapshot(), photo:photoSnapshot()};
+    farm:farmPlots().map(pl=>pl&&CROPS[pl.c]?{c:pl.c,t:pl.t}:0), barn:Object.fromEntries(Object.keys(CROPS).map(k=>[k,Math.max(0,+((S.barn||{})[k])||0)]).filter(x=>x[1]>0)), clean:S.cleanedAt||0, guard:S.guardUntil||0, deco:decoSnapshot(), photo:photoSnapshot()};
 }
 /* 家具與地毯（原創點陣，尺寸依實物比例） */
 const DECO_PAL={"K":"#2B1D16","a":"#5C3A1E","b":"#8A5A2E","c":"#B07A42","d":"#D9A566","g":"#B9842A","h":"#F2C14E","i":"#FFF0A8","m":"#4A4E60","n":"#7D8399","o":"#B9BED0","w":"#F7F7FB","e":"#2E6B3F","f":"#4FA35A","j":"#8FD27A","r":"#9E2E2E","s":"#D9473A","t":"#F28A70","u":"#2F5FA8","v":"#5B93E8","x":"#A9D3F7","y":"#E3F4FF","p":"#4E3380","q":"#7B57C0","z":"#AE90E6","P":"#D9658A","Q":"#FFB0C6","O":"#E8812E","Y":"#FFD23F","E":"#E9D3AE","F":"#FFF6DC","B":"#7A3E22","C":"#A85A32","D":"#D07B45","G":"#1F4A2B","N":"#18204A","M":"#2E3C86","H":"#E4E7EF","L":"#5E6478","A":"#C9A27A","R":"#6E1F1F","T":"#3B7DD8","V":"#C7F0FF","X":"#FF9FB8","Z":"#FFE4EC","I":"#FF4FD8","J":"#3FF0FF","S":"#B6FF3F","U":"#12081F"};
@@ -7867,7 +7903,7 @@ function roomHTML(h,opt){
   const av=h.av||S.av||AV_DEFAULT;
   const fdOn=fd&&fd.cat==="floor"&&DECO_SPR[fd.id];
   return `<div class="showroom${tall?" tall":""}${fdOn?" hasfloor":""}${out?" hasoutfit":""}${wp&&wp.cat==="paper"&&wp.id!=="wp_default"?" "+wp.id:""}"${fdOn?` style="--fw:${DECO_SPR[fd.id][0].length}"`:""} aria-label="${esc(opt.label||"溫暖的家展示空間")}">
-    <div class="sr-wall">${a?`<figure class="wframe"><img src="${a.img}" alt="${esc(a.name)}"><figcaption>${esc(a.name)}</figcaption></figure>`:`<p class="sr-empty">${esc(opt.empty||"到「相簿」兌換畫框，就能掛在這面牆上。")}</p>`}</div>
+    <div class="sr-wall">${a?`<figure class="wframe"><img src="${a.img}" alt="${esc(a.name)}"><figcaption>${esc(a.name)}</figcaption></figure>`:""}</div>
     ${wep?`<div class="sr-weapon ${tierOf(weaponById(wep)).cls}" title="${esc(weaponById(wep).name)}"><span class="sr-wpic">${spriteSVG("w_"+wep)}</span><span class="sr-tag">${esc(tierOf(weaponById(wep)).stars)} ${esc(weaponById(wep).name)}</span></div>`:""}
     ${(()=>{ const L=Array.isArray(h.splats)?h.splats:Array.from({length:+h.splats||0},()=>"tomato"); if(!L.length) return "";
       return `<div class="sr-splats" aria-label="牆上有 ${L.length} 個蔬菜漬">${L.slice(0,10).map((c,i)=>`<span class="splat" style="left:${8+(i*29+7)%80}%;top:${6+(i*17+5)%46}%">${splatSVG(c)}</span>`).join("")}</div>`; })()}
@@ -9478,6 +9514,7 @@ function openAdminView(){
   $("#fxRosterPub").textContent=`={"時間戳記","新人代碼","名字","組別","等級","進度","結業";QUERY(SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE), "select Col1, Col2, Col3, Col4, Col5, Col6, Col7 where Col2 is not null", 0)}`;
   $("#fxSaves").textContent=`=SORTN(SORT('進度存檔'!A2:D, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxStats").textContent=`={"表單","筆數";"進度存檔",IFERROR(COUNTA('進度存檔'!A2:A),"");"進度回報",IFERROR(COUNTA('進度回報'!A2:A),"");"交誼廳",IFERROR(COUNTA('交誼廳'!A2:A),"");"登錄紀錄",IFERROR(COUNTA('登錄紀錄'!A2:A),"");"技術諮詢",IFERROR(COUNTA('技術諮詢'!A2:A),"");"面談回覆",IFERROR(COUNTA('面談回覆'!A2:A),"");"後台更新",IFERROR(COUNTA('後台更新'!A2:A),"")}`;
+  $("#fxLoungeLite").textContent=`=LET(s,FILTER('交誼廳'!A2:J,'交誼廳'!B2:B<>""),t,INDEX(s,0,2),d,INDEX(s,0,1),c,IFERROR(SORTN(SORT(FILTER(s,t="presence"),1,FALSE),9^9,2,3,TRUE)),h,IFERROR(SORTN(SORT(FILTER(s,t="here"),1,FALSE),9^9,2,3,TRUE)),e,IFERROR(FILTER(s,(t<>"presence")*(t<>"here")*((REGEXMATCH(t,"^(gift|steal|toss|playdate|rps)$")=FALSE)+(d>=TODAY()-60)))),a,VSTACK(c,h,e),FILTER(a,IFERROR(INDEX(a,0,2),"")<>""))`;
   $("#fxIvReplies").textContent=`=QUERY('面談回覆'!A:F, "select A, B, C, E, F where B is not null", 1)`;
   $("#fxRoster").textContent=`=SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxGroups").textContent=`=QUERY('新人名冊'!A2:I, "select D, count(B) where B is not null group by D label D '組別', count(B) '人數'", 0)`;
@@ -9657,7 +9694,7 @@ async function capacityCheck(){
       }catch(e){ items.push({name:"筆數統計工作表",err:"讀不到，請確認已發布"}); }
     }
     if(!exact){
-      if(loungeReady()){ try{ items.push({name:"「交誼廳」表單",cur:((await fetchSheet("lounge",true))||[]).length,max:100000,unit:"筆"}); }catch(e){} }
+      if(sheetUrl("lounge")){ try{ items.push({name:"「交誼廳」表單",cur:((await fetchSheet("lounge",true))||[]).length,max:100000,unit:"筆"}); }catch(e){} }
       if(sheetUrl("feed")){ try{ items.push({name:"「後台更新」表單",cur:((await fetchSheet("feed",true))||[]).length,max:100000,unit:"筆"}); }catch(e){} }
     }
     if(sheetUrl("saves")){
@@ -9739,6 +9776,8 @@ function gvizDate(v){
   return m?new Date(+m[1],+m[2],+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0)):null;
 }
 function parseSheetTs(t){
+  const sv=String(t||"").trim();
+  if(/^\d{5}(\.\d+)?$/.test(sv)){ const ms=Math.round((+sv-25569)*864e5); const u=new Date(ms); return new Date(u.getUTCFullYear(),u.getUTCMonth(),u.getUTCDate(),u.getUTCHours(),u.getUTCMinutes(),u.getUTCSeconds()); }   // 公式工作表沒套日期格式時是序號
   const m=/(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})\s*(上午|下午|AM|PM)?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i.exec(String(t||""));
   if(!m) return null;
   let h=+m[5]; const ap=(m[4]||m[8]||"").toUpperCase();
@@ -10492,7 +10531,7 @@ cloudRestoreSession().then(()=>{ renderCloudBox(); setTimeout(()=>cloudSyncOnSta
 bootstrap().then(()=>{
   hideBoot();
   try{ const M={chief:`村長 ${CFG.chief}`,director:CFG.director}; npcList().forEach(n=>{ M[n.id]=`${n.title} ${n.name}`; }); localStorage.setItem("sino22-bootnames",JSON.stringify(M)); }catch(e){}
-  if(S.group) setTimeout(()=>{ loungePresence(true).catch(()=>{}); },3000);   // 每次開站都讓大家看到自己在線上
+  if(S.group) setTimeout(()=>{ loungePresence(true,{here:true}).catch(()=>{}); },3000);   // 每次開站都讓大家看到自己在線上
   try{ if(!S.seenContent||!Object.keys(S.seenContent).length) markContentUpdates(); else refreshBonus(); }catch(e){}
   if(S.group){
     setTimeout(()=>loadInbox(),1500);

@@ -1470,6 +1470,9 @@ footer.site p{margin:4px 0}
           <p class="ahint" style="margin-top:12px">「存檔資料」工作表的 A1（新人的雲端存檔，內容已加密，這個工作表要發布，選填）：</p>
           <pre class="code" id="fxSaves"></pre>
           <button class="mini-btn" type="button" data-copy="fxSaves">複製公式</button>
+          <p class="ahint" style="margin-top:12px">「存檔索引」工作表的 A1（每個帳號只有代碼和一小段存檔標記，網站用它判斷別台裝置有沒有新存檔，這個工作表要發布，選填）：</p>
+          <pre class="code" id="fxSaveIndex"></pre>
+          <button class="mini-btn" type="button" data-copy="fxSaveIndex">複製公式</button>
           <p class="ahint" style="margin-top:12px">「回覆資料」工作表的 A1（排除姓名與員工編號，這個工作表要發布，選填）：</p>
           <pre class="code" id="fxIvReplies"></pre>
           <button class="mini-btn" type="button" data-copy="fxIvReplies">複製公式</button>
@@ -4494,7 +4497,7 @@ const CONF=(window.SINO22_CONFIG&&typeof window.SINO22_CONFIG==="object")?window
 const FORM_KEYS={
   signup:{label:"新人登錄紀錄",fields:[["code","新人代碼"],["name","姓名"],["empno","員工編號"],["group","組別"],["event","事件"],["device","裝置"]]},
   lounge:{label:"交誼廳",fields:[["type","類型"],["code","新人代碼"],["name","名字"],["group","組別"],["level","等級"],["av","造型"],["pet","寵物"],["msg","一句話"],["target","對象代碼"]]},
-  save:{label:"進度存檔",fields:[["acc","帳號代碼"],["data","存檔資料"],["note","備註"]]},
+  save:{label:"進度存檔",fields:[["acc","帳號代碼"],["data","存檔資料"],["note","備註"],["data2","存檔資料2",1],["data3","存檔資料3",1],["data4","存檔資料4",1]]},
   progress:{label:"新人進度回報",fields:[["code","新人代碼"],["name","名字"],["group","組別"],["level","等級"],["progress","完成進度"],["awarded","結業日期"],["detail","詳細資料"],["empno","員工編號"]]},
   consult:{label:"技術諮詢申請",fields:[["no","申請編號"],["code","新人代碼"],["name","名字"],["group","組別"],["category","類別"],["topic","主題"],["detail","問題說明"],["preferred","希望時段"],["contact","聯絡方式"],["empno","員工編號"]]},
   ivReply:{label:"面談回覆",fields:[["notice","通知編號"],["code","新人代碼"],["name","名字"],["status","回覆"],["message","說明"],["empno","員工編號"]]},
@@ -4507,6 +4510,7 @@ const SHEET_KEYS={
   consults:{label:"諮詢資料",optional:true,headers:["時間戳記","申請編號","新人代碼","名字","組別","類別","主題","內容","希望時間"]},
   roster:{label:"名冊資料",optional:true,headers:["時間戳記","新人代碼","名字","組別","等級","進度","結業"]},
   saves:{label:"存檔資料",optional:true,headers:["時間戳記","帳號代碼","存檔資料","備註"]},
+  saveIndex:{label:"存檔索引",optional:true,hint:"（選填：網站先看這張小表，確認別台裝置有沒有新存檔，不用每次下載全部人的存檔；公式在管理者專區的「試算表公式」）",headers:["帳號代碼","存檔標記"]},
   ivreplies:{label:"回覆資料",optional:true,headers:["時間戳記","通知編號","新人代碼","回覆","說明"]},
   stats:{label:"筆數統計",optional:true,hint:"（選填：管理者專區的「容量檢查」會顯示每張表單的確切筆數）",headers:["表單","筆數"]},
   settings:{label:"網站設定",legacy:true,headers:["項目","內容"]},
@@ -5047,13 +5051,53 @@ async function openSave(str,kek,which){
   if(body.z) return {payload:JSON.parse(await inflateBytes(await decryptBytes(dek,body.d))),dek,body};
   return {payload:await decryptSave(dek,"e1:"+body.d),dek,body};
 }
+/* 存檔分格：試算表一格最多 5 萬字元，太長的存檔切成好幾格放在同一列（存檔資料、存檔資料2～4） */
+const SAVE_CELL=45000;
+const saveCells=()=>{ const f=formCfg("save"); if(!f) return 1; let n=1; for(const k of ["data2","data3","data4"]){ if(/^\d+$/.test(String(f.fields[k]||"").replace(/^entry\./,""))) n++; else break; } return n; };
+const saveCap=()=>saveCells()*SAVE_CELL;
+function saveFields(data){                             // 切成表單欄位；放不下就回傳 null（寧可不送，也不要送出被截斷的壞存檔）
+  data=String(data||""); const n=saveCells();
+  if(data.length>n*SAVE_CELL) return null;
+  const o={data:data.slice(0,SAVE_CELL)};
+  for(let i=1;i<n;i++) o["data"+(i+1)]=data.slice(i*SAVE_CELL,(i+1)*SAVE_CELL);
+  return o;
+}
+const saveRowData=r=>[2,4,5,6].map(i=>String((r&&r[i])||"")).join("");   // 公式範圍 A:G：C 是第 1 格，E～G 是第 2～4 格
+async function sendSave(acc,data,note){
+  const f=saveFields(data); if(!f) throw new Error("toobig");
+  return sendForm("save",Object.assign({acc,note},f));
+}
+let saveWarnAt=0, SAVE_FULL=0;
+function saveSizeCheck(len){                           // 快滿時提醒整理筆記本（10 分鐘最多提醒一次）
+  const cap=saveCap(), r=len/cap;
+  SAVE_FULL=r>1?2:r>=.8?1:0;
+  if(SAVE_FULL&&Date.now()-saveWarnAt>10*60e3){
+    saveWarnAt=Date.now();
+    toast(SAVE_FULL===2?"⚠ 雲端存檔太大，這次沒有上傳。請刪減筆記本裡較長的筆記":"⚠ 雲端存檔快滿了，建議刪減筆記本裡較長的筆記");
+  }
+}
 async function cloudFetch(code){
   const rows=await fetchSheet("saves",true);
   const hit=(rows||[]).find(r=>String(r[1]||"").trim()===code);
   if(!hit) return null;
-  const data=String(hit[2]||"");
+  const data=saveRowData(hit);
   if(/^reset:/.test(data)) return null;             // 管理者已重置：當作沒有存檔，可以重新建立
   return {data,ts:String(hit[0]||"")};
+}
+/* 存檔索引：每個帳號最新一筆存檔的「標記」（存檔內容最後 16 個字，每次上傳都不同）。
+   標記是這台上傳過或已經看過的，就代表別台沒有新存檔，不必下載整張存檔資料表 */
+const saveTag=d=>String(d||"").slice(-16);
+const KNOWN_TAGS="sino22-save-tags";
+function knownTags(){ try{ const a=JSON.parse(localStorage.getItem(KNOWN_TAGS)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+function rememberTag(d){ const t=saveTag(d); if(!t) return; const a=knownTags().filter(x=>x!==t); a.push(t); try{ localStorage.setItem(KNOWN_TAGS,JSON.stringify(a.slice(-8))); }catch(e){} }
+async function remoteUnchanged(code){                  // true：確定沒有別台的新存檔；false：要下載完整存檔確認
+  if(!sheetUrl("saveIndex")) return false;
+  try{
+    const rows=(await fetchSheet("saveIndex",true))||[];
+    const hit=rows.find(r=>String(r[0]||"").trim()===code); if(!hit) return false;
+    const t=String(hit[1]||"").trim();
+    return !!t&&knownTags().includes(t);
+  }catch(e){ return false; }
 }
 /* 上傳前比對內容：跟上次上傳一模一樣就不再送（只看會影響進度的欄位） */
 const PUSH_SKIP=new Set(["loc","digAt","seedAt","ixSeen","achSeen"]);
@@ -5064,29 +5108,37 @@ async function cloudPush(force){
   if(cloudBusy) return false;
   const h=pushHash();
   let last=""; try{ last=localStorage.getItem(PUSH_KEY)||""; }catch(e){}
-  if(!force&&h===last){ cloudDirty=false; return true; }        // 沒有變化：不新增一列
+  if(!force&&h===last){ cloudDirty=false; cloudDirtySince=0; return true; }        // 沒有變化：不新增一列
   cloudBusy=true;
   try{
     const data=CLOUD.dek?await packSave(CLOUD.dek,CLOUD.key,CLOUD.rcKey,snapshot())
                         :await encryptSave(CLOUD.key,snapshot());
-    await sendForm("save",{acc:CLOUD.code,data,note:myCode()});
+    saveSizeCheck(data.length);
+    if(data.length>saveCap()){ cloudDirty=true; renderCloudBox(); return false; }   // 放不下：保留線上那份完好的存檔
+    await sendSave(CLOUD.code,data,myCode());
+    rememberTag(data);
     try{ localStorage.setItem(PUSH_KEY,h); }catch(e){}
-    cloudDirty=false; cloudLastAt=new Date().toISOString();
+    cloudDirty=false; cloudDirtySince=0; cloudLastAt=new Date().toISOString();
     try{ localStorage.setItem("sino22-cloud-at",cloudLastAt); }catch(e){}
-    markSynced();
+    markSynced(h);
     renderCloudBox();
     return true;
   }catch(e){ cloudDirty=true; return false; }
   finally{ cloudBusy=false; }
 }
+const CLOUD_MAX_WAIT=10*60e3;
+let cloudDirtySince=0;
 function queueCloud(now){
   if(!CLOUD||!cloudReady()) return;
-  cloudDirty=true;
+  cloudDirty=true; if(!cloudDirtySince) cloudDirtySince=Date.now();
   if(!cloudSynced) return;          // 先和雲端比對完，才允許上傳，避免蓋掉較新的存檔
   clearTimeout(cloudTimer);
-  cloudTimer=setTimeout(()=>cloudPushSafe(),now?10000:120000);   // 一般變動 2 分鐘後才存；重要動作 10 秒（連續操作合併成一筆）
+  const wait=Math.max(0,Math.min(now?10000:120000,cloudDirtySince+CLOUD_MAX_WAIT-Date.now()));   // 一般變動 2 分鐘後才存；重要動作 10 秒；一直在玩最多 10 分鐘也會存一次
+  cloudTimer=setTimeout(()=>cloudPushSafe(),wait);
 }
-document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden"&&cloudDirty){ clearTimeout(cloudTimer); cloudPush(); } });
+const flushCloud=()=>{ if(cloudDirty){ clearTimeout(cloudTimer); cloudPush(); } };
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") flushCloud(); });
+addEventListener("pagehide",flushCloud);               // 關分頁、iPhone 切走時補存
 function mergeConsults(a,b){
   const m=new Map();
   (a||[]).concat(b||[]).forEach(c=>{ if(!c||!c.no) return; const o=m.get(c.no); m.set(c.no,o?Object.assign({},o,c,{withdrawn:!!(o.withdrawn||c.withdrawn)}):c); });
@@ -5196,7 +5248,9 @@ async function cloudChangePassword(oldPw,newPw){
   let dek=CLOUD.dek, rcKey=CLOUD.rcKey, fresh="";
   if(!dek){ dek=await newDek(); fresh=makeRecoveryCode(); rcKey=await deriveKey(CLOUD.acc,recoveryPhrase(fresh)); }
   const data=await packSave(dek,newKey,rcKey,snapshot());
-  await sendForm("save",{acc:CLOUD.code,data,note:myCode()});
+  saveSizeCheck(data.length);
+  if(data.length>saveCap()) throw new Error("toobig");
+  await sendSave(CLOUD.code,data,myCode()); rememberTag(data);
   await cloudRemember(CLOUD.acc,CLOUD.code,newKey,{dek,rcKey});
   if(fresh) setTimeout(()=>showRecovery(fresh,"順便幫你產生了救援碼，忘記密碼時可以用它還原。"),400);
   cloudDirty=false; cloudLastAt=new Date().toISOString();
@@ -5210,7 +5264,7 @@ const cloudAt=()=>{ try{ return localStorage.getItem("sino22-cloud-at")||""; }ca
 const setCloudAt=v=>{ try{ localStorage.setItem("sino22-cloud-at",v); }catch(e){} };
 const localMt=()=>{ try{ return localStorage.getItem("sino22-local-at")||""; }catch(e){ return ""; } };
 const syncFp=()=>{ try{ return localStorage.getItem("sino22-sync-fp")||""; }catch(e){ return ""; } };
-function markSynced(){ try{ localStorage.setItem("sino22-sync-fp",hashStr(saveFingerprint(S))); }catch(e){} }
+function markSynced(ph){ try{ localStorage.setItem("sino22-sync-fp",hashStr(saveFingerprint(S))); localStorage.setItem(PUSH_KEY,ph||pushHash()); }catch(e){} }   // 線上已經是這份：之後沒變就不用再送
 const localChangedSinceSync=()=>!!S.group&&hashStr(saveFingerprint(S))!==syncFp();
 const FP_SKIP=new Set(["rpsClaimed","seenQuests","bonusSeen","fav","favDel","consults","ivReplies","pdClaimed","giftClaimed","ixSeen","achSeen","seenContent","loc","seedAt","lvMax","ach","guardUntil","starUntil","farmSeed","tourDone","npcMile","cleanedAt"]);
 const stableStr=v=>v&&typeof v==="object"?(Array.isArray(v)?"["+v.map(x=>x===undefined?"null":stableStr(x)).join(",")+"]":"{"+Object.keys(v).filter(k=>v[k]!==undefined&&typeof v[k]!=="function").sort().map(k=>JSON.stringify(k)+":"+stableStr(v[k])).join(",")+"}"):JSON.stringify(v);
@@ -5254,8 +5308,14 @@ async function cloudReconcile(){
   if(reconcileJob) return reconcileJob;
   reconcileJob=(async()=>{
     try{
+      if((cloudSynced||CLOUD.dek)&&await remoteUnchanged(CLOUD.code)){   // 存檔索引：線上最新的就是這台知道的那份
+        lastRemoteCheck=Date.now();
+        cloudSynced=true; await cloudPush(localChangedSinceSync());
+        return;
+      }
       const remote=await cloudFetch(CLOUD.code); lastRemoteCheck=Date.now();
       if(!remote){ cloudSynced=true; await cloudPush(true); return; }
+      rememberTag(remote.data);
       let opened;
       try{ opened=await openSave(remote.data,CLOUD.key,"pw"); }
       catch(e){ cloudSynced=true; cloudLogout(); toast("雲端存檔的密碼已被重設，請用新的密碼重新登入"); return; }
@@ -5267,7 +5327,7 @@ async function cloudReconcile(){
       const rAt=String(loaded.at||""), lAt=cloudAt(), localChanged=localChangedSinceSync();
       if(rAt<=lAt){                                    // 線上沒有別的裝置的新存檔：這台有新進度就上傳
         const changed=mergeFavInto(loaded.S); if(changed) save();
-        if(localChanged||changed) await cloudPush(true);
+        await cloudPush(localChanged||changed);           // 筆記本等其他還沒上傳的變動也一起送（沒變就不送）
         if(changed&&curPlace&&curPlace.id==="myhome") renderPlace();
         return;
       }
@@ -5446,6 +5506,7 @@ $("#cloudForm").addEventListener("submit",async e=>{
       m==="exists"?"這個帳號目前還有雲端存檔。如果是管理者剛幫你重置，Google 試算表約需 1–5 分鐘同步，網站會自動幫你每 30 秒再試一次；不是重置的話，請改按「我已經有帳號了」登入。":
       m==="badpw"?"密碼錯誤，或這個帳號的存檔無法解開":
       m==="oldpw"?"目前密碼不正確":
+      m==="toobig"?"雲端存檔太大，請先到筆記本刪減較長的筆記再試一次":
       m==="badrc"?"救援碼不正確，請確認有沒有輸入錯誤":
       m==="offline"&&LOGIN_GATE?((()=>{ $("#cloudOffline").hidden=false; return "連不上部門試算表。可以稍後再試，或先離線使用這台電腦的進度。"; })()):
       m==="norc"?"這個帳號是舊版存檔，沒有救援碼。請用密碼登入後重新產生，或用同一個帳號重新建立（舊進度會被覆蓋）":m==="offline"?"連不上部門試算表，請稍後再試":"處理失敗，請稍後再試";
@@ -7761,7 +7822,7 @@ $("#rsLookup").addEventListener("click",async()=>{
   let rows; try{ rows=await fetchSheet("saves",true); }catch(e){ err.textContent="讀不到存檔資料，請稍後再試"; return; }
   const hit=(rows||[]).find(r=>String(r[1]||"").trim()===code);
   if(!hit){ out.innerHTML=`<p class="empty-note">找不到帳號「${esc(acc)}」的存檔。請確認帳號拼法（大小寫不影響），或新人可能還沒建立雲端存檔。</p>`; return; }
-  const data=String(hit[2]||""), body=parseSave(data);
+  const data=saveRowData(hit), body=parseSave(data);
   RS_FOUND={acc,code,data,body,note:String(hit[3]||""),ts:String(hit[0]||"")};
   const kind=/^reset:/.test(data)?"已被重置":body?(body.esc?"可協助重設密碼":"舊版存檔（沒有救援資料）"):"舊版存檔（e1 格式，沒有救援資料）";
   const canRescue=!!(body&&body.esc);
@@ -7790,7 +7851,7 @@ $("#rsResult").addEventListener("click",async e=>{
     const pwKey=await deriveKey(RS_FOUND.acc,temp);
     const body=Object.assign({},RS_FOUND.body,{pw:await wrapDek(pwKey,dek),tmp:true});
     const data=serializeSave(body);
-    try{ await sendForm("save",{acc:RS_FOUND.code,data,note:RS_FOUND.note||"管理者重設"}); }
+    try{ await sendSave(RS_FOUND.code,data,RS_FOUND.note||"管理者重設"); }
     catch(ex){ $("#rsErr").textContent="送出失敗，請確認「進度存檔」表單已設定"; return; }
     Sound.sfx("achieve");
     done.innerHTML=`<p class="warnbox">臨時密碼：<b style="font-size:20px;letter-spacing:.1em">${esc(temp)}</b><br>請把帳號「${esc(RS_FOUND.acc)}」和這組臨時密碼交給新人。約 5 分鐘後（Google 試算表更新後）就能登入，登入時會要求改成新密碼。</p>`;
@@ -9317,6 +9378,7 @@ function renderCloudBox(){
   box.innerHTML=`<h3>雲端存檔 ${helpBtn("cloud")} <span class="st st-ok">已登入</span></h3>
     <dl class="cloudfacts"><dt>姓名</dt><dd>${esc(S.name||"—")}${S.nick?`（暱稱 ${esc(S.nick)}）`:""}</dd><dt>員工編號</dt><dd>${esc(S.emp||"—")}</dd><dt>組別</dt><dd>${esc(S.group||"—")}</dd><dt>新人代碼</dt><dd>${esc(myCode())}</dd></dl>
     <p class="ahint">${[`帳號 <b>${esc(CLOUD.acc)}</b>`,at?`最後同步 ${fmtDate(at)}`:"",cloudDirty?"有尚未同步的進度":""].filter(Boolean).join("・")}</p>
+    ${SAVE_FULL?`<p class="warnbox">${SAVE_FULL===2?"⚠ 雲端存檔太大，最近的進度沒有上傳（線上保留的是上一份完好的存檔）。":"⚠ 雲端存檔快滿了。"}請到筆記本刪減較長的筆記，存檔就會變小。</p>`:""}
     <p class="ahint">進度會自動同步，換電腦時用同一組帳密登入就能接著玩。密碼忘記將無法還原存檔。</p>
     <p class="ahint autosync" data-autosync>${esc(autoSyncText())}</p>
     <div class="formfoot"><span></span><span class="afilters">
@@ -9512,7 +9574,8 @@ function openAdminView(){
   $("#fxFeed").textContent=`=QUERY('後台更新'!A:G, "select A, C, D, E, F, G where C is not null", 1)`;
   $("#fxConsultPub").textContent=`={"時間戳記","申請編號","新人代碼","名字","組別","類別","主題","內容","希望時間";QUERY('技術諮詢'!A2:I, "select A, B, C, D, E, F, G, H, I where B is not null order by A desc", 0)}`;
   $("#fxRosterPub").textContent=`={"時間戳記","新人代碼","名字","組別","等級","進度","結業";QUERY(SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE), "select Col1, Col2, Col3, Col4, Col5, Col6, Col7 where Col2 is not null", 0)}`;
-  $("#fxSaves").textContent=`=SORTN(SORT('進度存檔'!A2:D, 1, FALSE), 9^9, 2, 2, TRUE)`;
+  $("#fxSaveIndex").textContent=`=LET(s,SORTN(SORT(FILTER('進度存檔'!A2:C,'進度存檔'!B2:B<>""),1,FALSE),9^9,2,2,TRUE),{INDEX(s,0,2),RIGHT(INDEX(s,0,3),16)})`;
+  $("#fxSaves").textContent=`=SORTN(SORT('進度存檔'!A2:G, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxStats").textContent=`={"表單","筆數";"進度存檔",IFERROR(COUNTA('進度存檔'!A2:A),"");"進度回報",IFERROR(COUNTA('進度回報'!A2:A),"");"交誼廳",IFERROR(COUNTA('交誼廳'!A2:A),"");"登錄紀錄",IFERROR(COUNTA('登錄紀錄'!A2:A),"");"技術諮詢",IFERROR(COUNTA('技術諮詢'!A2:A),"");"面談回覆",IFERROR(COUNTA('面談回覆'!A2:A),"");"後台更新",IFERROR(COUNTA('後台更新'!A2:A),"")}`;
   $("#fxLoungeLite").textContent=`=LET(s,FILTER('交誼廳'!A2:J,'交誼廳'!B2:B<>""),t,INDEX(s,0,2),d,INDEX(s,0,1),c,IFERROR(SORTN(SORT(FILTER(s,t="presence"),1,FALSE),9^9,2,3,TRUE)),h,IFERROR(SORTN(SORT(FILTER(s,t="here"),1,FALSE),9^9,2,3,TRUE)),e,IFERROR(FILTER(s,(t<>"presence")*(t<>"here")*((REGEXMATCH(t,"^(gift|steal|toss|playdate|rps)$")=FALSE)+(d>=TODAY()-60)))),a,VSTACK(c,h,e),FILTER(a,IFERROR(INDEX(a,0,2),"")<>""))`;
   $("#fxIvReplies").textContent=`=QUERY('面談回覆'!A:F, "select A, B, C, E, F where B is not null", 1)`;
@@ -9642,7 +9705,7 @@ function renderStatus(){
   const rows=[];
   Object.entries(FORM_KEYS).forEach(([k,def])=>{
     const f=formCfg(k);
-    const missing=f?def.fields.filter(([fk])=>!/^\d+$/.test(String(f.fields[fk]||"").replace(/^entry\./,""))).map(([,l])=>l):[];
+    const missing=f?def.fields.filter(([fk,,opt])=>!opt&&!/^\d+$/.test(String(f.fields[fk]||"").replace(/^entry\./,""))).map(([,l])=>l):[];
     const state=!f?`<span class="st st-off">未設定</span>`:missing.length?`<span class="st st-warn">缺少欄位</span>`:`<span class="st st-ok">已設定</span>`;
     const btn=!f?"":k==="admin"?`<button class="mini-btn" type="button" data-ping>測試後台更新</button>`:`<button class="mini-btn" type="button" data-testform="${k}">送出測試</button>`;
     rows.push(`<tr><td>表單</td><td>${def.label}</td><td>${state}</td><td style="white-space:normal">${!f?"請到「設定小幫手」設定":missing.length?"缺少："+missing.join("、"):`${def.fields.length} 個欄位${k==="admin"?"・送出時需要管理密碼":""}`}</td><td>${btn}</td></tr>`);
@@ -9699,10 +9762,10 @@ async function capacityCheck(){
     }
     if(sheetUrl("saves")){
       try{
-        const sizes=((await fetchSheet("saves",true))||[]).map(r=>String(r[2]||"")).filter(d=>/^e[123]:/.test(d)).map(d=>d.length);
+        const sizes=((await fetchSheet("saves",true))||[]).map(saveRowData).filter(d=>/^e[123]:/.test(d)).map(d=>d.length);
         if(sizes.length){
-          const mx=Math.max(...sizes), avg=Math.round(sizes.reduce((a,b)=>a+b,0)/sizes.length);
-          items.push({name:"單一雲端存檔（最大的一份）",cur:mx,max:50000,unit:"字元",note:`共 ${sizes.length} 個帳號，平均 ${avg.toLocaleString()} 字元`});
+          const mx=Math.max(...sizes), avg=Math.round(sizes.reduce((a,b)=>a+b,0)/sizes.length), cells=saveCells();
+          items.push({name:"單一雲端存檔（最大的一份）",cur:mx,max:saveCap(),unit:"字元",note:`共 ${sizes.length} 個帳號，平均 ${avg.toLocaleString()} 字元・可用 ${cells} 格${cells<4?"（表單加上「存檔資料2～4」可以放大到 4 格）":""}`});
         }
       }catch(e){}
     }
@@ -10030,7 +10093,7 @@ function parsePrefill(link,k){
     const hit=FORM_KEYS[k].fields.find(([fk])=>fk.toLowerCase()===val);
     if(hit) fields[hit[0]]=key.slice(6); else unknown.push(v);
   });
-  const missing=FORM_KEYS[k].fields.filter(([fk])=>!fields[fk]).map(([fk,l])=>`${l}（${fk}）`);
+  const missing=FORM_KEYS[k].fields.filter(([fk,,opt])=>!opt&&!fields[fk]).map(([fk,l])=>`${l}（${fk}）`);
   return {action:`https://docs.google.com/forms/d/e/${m[1]}/formResponse`,fields,missing,unknown};
 }
 function normSheetUrl(v){
@@ -10049,7 +10112,7 @@ function renderSetup(){
     return `<div class="setform">
       <h4>${def.label} ${cur?'<span class="st st-ok">目前已設定</span>':'<span class="st st-off">目前未設定</span>'}${k==="admin"?' <span class="st st-info">管理者用</span>':""}</h4>
       <div class="tscroll"><table class="atable mini"><thead><tr><th>題號</th><th>題目名稱</th><th>代號（預先填入時輸入）</th><th>題型</th></tr></thead><tbody>
-        ${def.fields.map(([fk,l],i)=>`<tr><td>${i+1}</td><td>${l}</td><td><code>${fk}</code></td><td>${fieldType(k,fk)}</td></tr>`).join("")}
+        ${def.fields.map(([fk,l,opt],i)=>`<tr><td>${i+1}</td><td>${l}${opt?'<span class="ahint">（選填，建議加）</span>':""}</td><td><code>${fk}</code></td><td>${fieldType(k,fk)}</td></tr>`).join("")}
       </tbody></table></div>
       ${k==="admin"?`<p class="ahint">取得預先填入連結後，再到「管理密碼」這題：開啟「必填」，按「⋮ → 回應驗證」，選「規則運算式 → 符合模式」，模式填 <code>^你的密碼$</code>（建議只用英文字母和數字，至少 12 碼）。</p>`:""}
       <label class="elabel" for="pf-${k}">貼上預先填入的連結${cur?"（不貼則沿用目前設定）":""}</label>

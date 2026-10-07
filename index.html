@@ -2130,11 +2130,11 @@ footer.site p{margin:4px 0}
         <span class="seaoct" aria-hidden="true"></span>
         <p class="seasay" id="seaSay"></p>
       </div>
-      <p class="dsec">牠想幫你的夥伴換個顏色</p>
-      <p class="dbody">選一個顏色，海怪就會當場施法。<b>銀色和黃金色是海怪限定</b>，選過之後會永久解鎖，之後在存摺神殿換寵物時也能挑；選「保持原色」牠也不會生氣。</p>
+      <p class="dsec" id="seaSec">牠想幫你的夥伴換個顏色</p>
+      <p class="dbody" id="seaBody">選一個顏色，海怪就會當場施法。<b>銀色和黃金色是海怪限定</b>，選過之後會永久解鎖，之後在存摺神殿換寵物時也能挑；選「保持原色」牠也不會生氣。</p>
       <div class="seapick" id="seaPick"></div>
     </div>
-    <div class="foot seafoot"><span class="ahint">選好之後，海怪就會沉回浪花裡。</span></div>
+    <div class="foot seafoot"><span class="ahint" id="seaFoot">選好之後，海怪就會沉回浪花裡。</span></div>
   </div>
 </dialog>
 
@@ -3429,8 +3429,28 @@ function celebrate(w){
 let lastDig=0, MAPLAND=null;
 const SEA_LINES=["撲通！只撈到一個空瓶。","浪花打過來，什麼都沒撈到。","腳邊滑過一群小魚。","好像踩到什麼…只是石頭。"];
 let lastOct=0;
+const SEA_SEEDS=10;
+const octMet=()=>!!(S.octMet||(S.petColors&&(S.petColors[9]||S.petColors[10])));   // 以前選過海怪限定色的也算遇過
 function openSeaMonster(){
   if(!S.pet) return;
+  if(octMet()){                                        // 遇過了：不再換色，改送隨機一種種子 10 顆
+    const ks=Object.keys(CROPS), k=ks[Math.floor(Math.random()*ks.length)], c=CROPS[k];
+    seeds()[k]=(seeds()[k]||0)+SEA_SEEDS; save(); queueSync();
+    $("#seaSay").textContent=`「吼——又見面啦！你的${PETS[S.pet.type].name}今天也很可愛。這些是我在海底撿到的，拿去種吧。」`;
+    $("#seaDlg .seaoct").innerHTML=spriteSVG("octopus");
+    $("#seaSec").textContent="海怪送你種子";
+    $("#seaBody").innerHTML=`你收到 <b>${SEA_SEEDS} 顆${esc(c.name)}種子</b>，已經放進種子袋了。`;
+    $("#seaPick").innerHTML=`<div class="seedchips"><span class="seedchip"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span>${esc(c.name)} ×${SEA_SEEDS}</span></div>
+      <div class="formfoot"><span></span><button class="act" type="button" data-seathanks>謝謝海怪！</button></div>`;
+    $("#seaFoot").textContent="收下之後，海怪就會沉回浪花裡。";
+    const d=$("#seaDlg"); if(!d.open) d.showModal();
+    Sound.sfx("get"); toast(`🐙 海怪送你 ${SEA_SEEDS} 顆${c.name}種子！`);
+    if(curPlace&&curPlace.id==="myhome") renderPlace();
+    return;
+  }
+  $("#seaSec").textContent="牠想幫你的夥伴換個顏色";
+  $("#seaBody").innerHTML="選一個顏色，海怪就會當場施法。<b>銀色和黃金色是海怪限定</b>，選過之後會永久解鎖，之後在存摺神殿換寵物時也能挑；選「保持原色」牠也不會生氣。";
+  $("#seaFoot").textContent="選好之後，海怪就會沉回浪花裡。";
   const opts=[{k:9,label:"銀色",sub:"海怪限定"},{k:10,label:"黃金色",sub:"海怪限定"},{k:-1,label:"保持原色",sub:"這次先不用"}];
   $("#seaSay").textContent=`「吼——這隻${PETS[S.pet.type].name}很可愛嘛。要不要我幫牠換個顏色？」`;
   $("#seaDlg .seaoct").innerHTML=spriteSVG("octopus");
@@ -4350,15 +4370,16 @@ document.addEventListener("click",e=>{
     $("#npcDlg").close();
     return;
   }
+  if(e.target.closest("[data-seathanks]")){ Sound.sfx("back"); $("#seaDlg").close(); return; }
   const sp=e.target.closest("[data-seapick]");
   if(sp&&S.pet){
-    const k=+sp.dataset.seapick;
+    const k=+sp.dataset.seapick; S.octMet=true;
     if(k>=0){
       S.petColors=S.petColors||{}; S.petColors[k]=true; S.pet.color=k; save();
       Sound.sfx("achieve");
       toast(`${S.pet.name||PETS[S.pet.type].name} 變成${PETC[k][0]}了！之後換寵物時也能選這個顏色`);
       renderHUD(); buildMap(); if(curPlace&&curPlace.id==="myhome") renderPlace();
-    }else{ Sound.sfx("back"); toast("海怪聳聳觸手，沉回海裡了。"); }
+    }else{ save(); Sound.sfx("back"); toast("海怪聳聳觸手，沉回海裡了。"); }
     $("#seaDlg").close();
     return;
   }

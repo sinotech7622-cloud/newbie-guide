@@ -722,6 +722,9 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .tossfly{position:absolute;left:50%;top:92%;width:34px;height:34px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.6,.4,1),top .6s cubic-bezier(.2,-0.4,.5,1),transform .6s linear;z-index:6;pointer-events:none}
 .vsactrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .rpsrow .act{min-width:86px}
+.vsrps{margin:8px 0 4px;padding:8px 12px 10px;border:2px solid var(--line);border-radius:4px;background:rgba(27,36,102,.55)}
+.vsrps .dsec{margin-top:0}
+@media (max-width:640px){.vsrps{padding:6px 8px 8px}.rpsrow{gap:8px}.rpsrow .act{min-width:0;flex:1 1 0;white-space:nowrap;padding-left:4px;padding-right:4px}.rpsrow .ahint{flex-basis:100%;margin:0}}
 .rpsres{margin:8px 0 0;padding:8px 12px;border-radius:4px;border:2px solid var(--line);background:#1B2466}
 .rpsres.win{border-color:var(--gold)}
 .rpsres.lose{border-color:#F4929A}
@@ -2101,6 +2104,7 @@ footer.site p{margin:4px 0}
     </div>
     <div class="body">
       <div id="vsRoom"></div>
+      <div id="vsRps" class="vsrps"></div>
       <div class="vsstats" id="vsStats"></div>
       <div id="vsFarm"></div>
       <div id="vsAct"></div>
@@ -6072,7 +6076,8 @@ function renderVisit(){
   renderVisitPlayTag(p);
   renderVisitFarm(p,h);
   renderVisitActions(p);
-  $("#vsAct").onclick=e=>{ const r=e.target.closest("[data-rps]"); if(r){ playRps(p,+r.dataset.rps); return; } if(e.target.closest("#vsToss")) tossVeg(p,h); else if(e.target.closest("#vsGift")) giftVeg(p); };
+  $("#vsAct").onclick=e=>{ if(e.target.closest("#vsToss")) tossVeg(p,h); else if(e.target.closest("#vsGift")) giftVeg(p); };
+  $("#vsRps").onclick=e=>{ const r=e.target.closest("[data-rps]"); if(r) playRps(p,+r.dataset.rps); };
   const list=(d.visits[visitHost]||[]).slice(0,20);
   $("#vsBook").innerHTML=list.length?list.map(v=>visitItemHTML(v,d.people,visitHost)).join(""):`<p class="empty-note">還沒有人留言，當第一個吧！</p>`;
 }
@@ -6416,8 +6421,8 @@ function renderVisitActions(p){
       <button class="act" type="button" id="vsToss" ${opts.length?"":"disabled"}>💥 砸過去</button>
       <button class="act ghost" type="button" id="vsGift" ${opts.length?"":"disabled"}>🎁 送給${esc(p.name||"屋主")}</button>
     </div>
-    ${opts.length?`<p class="ahint">砸過去的蔬菜會留在牆上，屋主清理時可以撿回去；每天最多對同一家砸 3 次。</p>`:`<p class="ahint">倉庫是空的。回家種菜，或偷別人的菜，就能來互動囉！</p>`}
-    ${rpsHTML(p)}`;
+    ${opts.length?`<p class="ahint">砸過去的蔬菜會留在牆上，屋主清理時可以撿回去；每天最多對同一家砸 3 次。</p>`:`<p class="ahint">倉庫是空的。回家種菜，或偷別人的菜，就能來互動囉！</p>`}`;
+  const rb=$("#vsRps"); if(rb){ rb.innerHTML=rpsHTML(p); rb.hidden=!rb.innerHTML; }   // 猜拳放在展示空間正下方，出拳時看得到寵物的反應
 }
 /* ---- 跟對方寵物猜拳：贏了拿走主人倉庫 1 份蔬菜，輸了餵寵物 1 份牠最愛吃的蔬菜 ---- */
 const RPS_KEY="sino22-rps", RPS_PER_DAY=3, RPS_HOST_LOSS=3, RPS_HOST_AFF=5;

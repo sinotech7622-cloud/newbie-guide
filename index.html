@@ -722,6 +722,24 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .tossfly{position:absolute;left:50%;top:92%;width:34px;height:34px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.6,.4,1),top .6s cubic-bezier(.2,-0.4,.5,1),transform .6s linear;z-index:6;pointer-events:none}
 .vsactrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .rpsrow .act{min-width:86px}
+.fertrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fertbtn{display:grid;grid-template-columns:34px auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:left;padding:6px 12px 6px 8px;border:2px solid var(--line);border-radius:4px;background:#1B2466;color:inherit;cursor:pointer;font:inherit}
+.fertbtn.on{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}
+.fertbtn .fertic{grid-row:1/3;width:34px;height:36px;display:block}.fertbtn .fertic svg{width:100%;height:100%;display:block}
+.fertbtn small{font-size:12px;color:var(--muted)}
+.plotwrap .plot{position:relative}
+.fertdot{position:absolute;left:4px;top:4px;font-size:11px;background:rgba(0,0,0,.45);border-radius:8px;padding:0 5px;line-height:16px}
+.tradebox .abar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tradebox .nqtop{align-items:flex-start}
+.tradeseed{display:inline-flex;align-items:center;gap:8px;font-size:14px}
+.tradeseed select{min-width:120px}
+.tradelist{display:grid;gap:6px;margin-top:10px}
+.traderow{display:grid;grid-template-columns:40px 1fr auto auto;align-items:center;gap:10px;padding:6px 10px;border:2px solid var(--line);border-radius:4px;background:rgba(27,36,102,.45)}
+.tradeic{width:36px;height:36px;display:block}.tradeic svg{width:100%;height:100%;display:block}
+.tradename{display:flex;flex-direction:column;min-width:0}.tradename b{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.tradename small{color:var(--muted);font-size:12px}
+.tradeprice{font-size:13px;white-space:nowrap}.tradeprice b{color:var(--gold)}
+.tradebtns{display:flex;gap:6px}
+@media (max-width:640px){.traderow{grid-template-columns:36px 1fr auto}.tradebtns{grid-column:1/-1;justify-content:flex-end}.tradebtns .mini-btn{flex:1}}
 .vsrps{margin:8px 0 4px;padding:8px 12px 10px;border:2px solid var(--line);border-radius:4px;background:rgba(27,36,102,.55)}
 .vsrps .dsec{margin-top:0}
 @media (max-width:640px){.vsrps{padding:6px 8px 8px}.rpsrow{gap:8px}.rpsrow .act{min-width:0;flex:1 1 0;white-space:nowrap;padding-left:4px;padding-right:4px}.rpsrow .ahint{flex-basis:100%;margin:0}}
@@ -5981,8 +5999,8 @@ function runCheat(msg){
     setTimeout(()=>{ pushFarm(true); },300);
   }else if(c.kind==="deco"){
     shopState(); shopBuysCount(); S.decoCheat=true; let n=0;
-    Object.entries(SHOP).forEach(([cat,cc])=>{ if(cat==="snack"||WEAR_CATS.has(cat)) return; cc.items.forEach(([id])=>{ if(!S.shopOwned[id]){ S.shopOwned[id]=true; n++; } }); });
-    const tot=Object.entries(SHOP).filter(([cat])=>cat!=="snack"&&!WEAR_CATS.has(cat)).reduce((a,[,cc])=>a+cc.items.length,0);
+    Object.entries(SHOP).forEach(([cat,cc])=>{ if(CONSUME.has(cat)||WEAR_CATS.has(cat)) return; cc.items.forEach(([id])=>{ if(!S.shopOwned[id]){ S.shopOwned[id]=true; n++; } }); });
+    const tot=Object.entries(SHOP).filter(([cat])=>!CONSUME.has(cat)&&!WEAR_CATS.has(cat)).reduce((a,[,cc])=>a+cc.items.length,0);
     gift=`<span class="pv">${decoSVG("d_xmastree")}</span><div><p class="dbody"><b>全部家具解鎖</b>（${tot} 件，這次新增 ${n} 件）</p><p class="ahint">牆紙、地毯、掛飾、地面擺設都可以在地圖上的「種子商店」直接換上；寵物零食還是要用種子買。</p></div>`;
     setTimeout(()=>{ if(curPlace&&curPlace.id==="myhome") renderPlace(); },50);
   }else{
@@ -6023,6 +6041,8 @@ const HELP={
   armory:"走進海裡撈寶，或拜訪村長的家、數位總合辦公室時有機會拿到武器，分成普通、稀有、史詩、傳說四個等級。暗色剪影是還沒拿到的，點武器可以裝備或卸下。",
   closet:"基本款一開始就有；秘密服裝要在地圖上散步時遇到村長或總長才拿得到。可以在這裡換衣服、換顏色，點衣服能先預覽穿上的樣子。",
   album:"同一種小物收集到 30 個，就能兌換一張隱藏畫框；另外 4 幅要送蔬菜給村長或總長、1 幅要集滿稀有作物圖鑑，在交誼廳留言板留言 1 次也能拿到「吶喊兔」。畫框可以掛在展示區的牆上，別人拜訪時也看得到。",
+  buyback:"多出來的小物可以賣給豆豆老闆換種子，每種至少會留 1 個，蒐藏箱的進度不受影響。越少見的小物越值錢：常見 2 顆、少見 4 顆、稀有 8 顆、隱藏小物 15 顆。要兌換相簿畫框需要同款 30 個，賣之前想一下喔。",
+  dismantle:"重複拿到的武器可以交給總長分解成種子，每把至少會留 1 把，武器庫的收集進度和裝備都不受影響。普通 10 顆、稀有 25 顆、史詩 60 顆、傳說 150 顆。",
   boss:"種子商店老闆每天出一題，題目從五大項目的任務內容隨機挑選。答對了可以自己挑一種種子，拿 30 顆；答錯會拿到 3 顆隨機種子當安慰獎。每天一次，晚上 12 點換新題目；題目當天固定，關掉視窗再打開還是同一題。",
   shop:"種子商店在地圖上（新手村旁邊），也可以從溫暖的家的「種子商店」按鈕過去。可以用種子買展示空間的牆紙、地毯、掛飾、擺設，以及寵物零食。地板樣式和地面擺設都可以換；累積買 30 個商品成為 VIP，可以先預覽家具擺在家裡的樣子。地面擺設可以同時擺兩件（左邊和右邊）。上方可以依主題（經典、聖誕節、萬聖節、感恩節、辦公室、森林、太空、迪斯可、spy）篩選，旁邊的數字是已收集／全部。價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具可以隨時換上或收起，訪客也看得到；零食能讓目前的寵物親密度提升。",
   farm:"先選種子，再點空地播種；種錯了可以按「⛏ 挖掉」退還種子重種。相鄰（左右或上下）的兩塊田種了合適的不同作物，收成時有機率長出稀有品種，記錄在下方的稀有作物圖鑑（集滿 6 種送隱藏寵物「雪人」）。作物依真實時間長大，成熟後點一下收成，蔬菜會放進展示區下方的倉庫。種子用完可以到任務地點撿；按「立即同步」讓別人馬上看到你的田。",
@@ -6857,7 +6877,7 @@ function renderHome(body){
 function renderDigital(body){
   if(body.dataset.kind!=="digital"){
     body.dataset.kind="digital";
-    body.innerHTML=`<div class="pgrid">
+    body.innerHTML=`<div id="wpTradeSlot"></div><div class="pgrid">
       <section class="window pbox form">
         <h3>申請技術諮詢</h3>
         <p class="ahint" id="csHint"></p>
@@ -6881,6 +6901,7 @@ function renderDigital(body){
     </div>`;
     try{ $("#csContact").value=localStorage.getItem("sino22-contact")||""; }catch(e){}
   }
+  { const sl=$("#wpTradeSlot"); if(sl) sl.innerHTML=dismantleHTML(); }
   $("#csHint").textContent=`送出後會通知${CFG.director}。處理進度與回覆會顯示在「我的申請」，${CFG.director}也可能直接用你留下的聯絡方式找你。`;
   const list=INBOX.consults.slice().sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
   $("#csMine").innerHTML=list.length?list.map(x=>`<article class="icard ${csUnseen(x)||freshNow.has(x.id)?"fresh":""}" data-cs="${esc(x.id)}">
@@ -6895,6 +6916,8 @@ function renderDigital(body){
 
 $("#placeBody").addEventListener("click",async e=>{
   const t=e.target;
+  const td=t.closest("[data-trade]");
+  if(td){ td.disabled=true; await doTrade(td.dataset.trade,td.dataset.tid,td.dataset.n); return; }
   const vs=t.closest("[data-visit]");
   if(vs){ openVisit(vs.dataset.visit); return; }
   const lk=t.closest("[data-like]");
@@ -7962,7 +7985,7 @@ function myHomeSnapshot(){
     item:L.item.some(x=>x[0]===sc.item)?sc.item:"",
     weapon:L.weapon.some(x=>x[0]===sc.weapon)?sc.weapon:"",
     ach:ACH.filter(x=>S.ach&&S.ach[x.id]).length, finds:findCount(), album:albumOwned().length,
-    farm:farmPlots().map(pl=>pl&&CROPS[pl.c]?{c:pl.c,t:pl.t}:0), barn:Object.fromEntries(Object.keys(CROPS).map(k=>[k,Math.max(0,+((S.barn||{})[k])||0)]).filter(x=>x[1]>0)), clean:S.cleanedAt||0, guard:S.guardUntil||0, deco:decoSnapshot(), photo:photoSnapshot()};
+    farm:farmPlots().map(pl=>pl&&CROPS[pl.c]?(pl.g?{c:pl.c,t:pl.t,g:pl.g}:{c:pl.c,t:pl.t}):0), barn:Object.fromEntries(Object.keys(CROPS).map(k=>[k,Math.max(0,+((S.barn||{})[k])||0)]).filter(x=>x[1]>0)), clean:S.cleanedAt||0, guard:S.guardUntil||0, deco:decoSnapshot(), photo:photoSnapshot()};
 }
 /* 家具與地毯（原創點陣，尺寸依實物比例） */
 const DECO_PAL={"K":"#2B1D16","a":"#5C3A1E","b":"#8A5A2E","c":"#B07A42","d":"#D9A566","g":"#B9842A","h":"#F2C14E","i":"#FFF0A8","m":"#4A4E60","n":"#7D8399","o":"#B9BED0","w":"#F7F7FB","e":"#2E6B3F","f":"#4FA35A","j":"#8FD27A","r":"#9E2E2E","s":"#D9473A","t":"#F28A70","u":"#2F5FA8","v":"#5B93E8","x":"#A9D3F7","y":"#E3F4FF","p":"#4E3380","q":"#7B57C0","z":"#AE90E6","P":"#D9658A","Q":"#FFB0C6","O":"#E8812E","Y":"#FFD23F","E":"#E9D3AE","F":"#FFF6DC","B":"#7A3E22","C":"#A85A32","D":"#D07B45","G":"#1F4A2B","N":"#18204A","M":"#2E3C86","H":"#E4E7EF","L":"#5E6478","A":"#C9A27A","R":"#6E1F1F","T":"#3B7DD8","V":"#C7F0FF","X":"#FF9FB8","Z":"#FFE4EC","I":"#FF4FD8","J":"#3FF0FF","S":"#B6FF3F","U":"#12081F"};
@@ -7977,6 +8000,11 @@ Object.assign(DECO_SPR,{"d_bats":["..............................","nnnnnnn.....
 Object.assign(DECO_SPR,{"d_softclock":["..............................","..............................","..............................","..............................","...........KKKK...............","......KKKKKhhhhKKKKK..........","....KKhhhFFFFKFFFhhhKK........",".KKKhhFFFFFKFFFFFFFFhhK.......","KhhghFFFKFFFKsKKKFKFFhhKKKK...","KggghhEEEEEEEEEhFKKFFFFFFEhK..","KKKKKhhhEEEEEKEEhFFKFFFFFEhK..","dddddddddhhhhhhhFFFFKFFFFEhK..","cccccccccccccccchFFFKFFFFEhK..","aaaaaaaaaaaaaaaaahFFFFFFFEhK..","KKKbbbbbKKKbbbbbKhFFKFFFFEhK..","..KbbbbK...KbbbbKKhFFFFFFEhK..","..KbbbK.....KbbbKKhFFFFFFEhK..","..KbbK.......KbbKKhFFFFFFEhK..","..KbK.........KbK.KhEEKEEEhK..","...K...........K..KhEEEEEhK...","..................KhEEEEEhK...","...................KEEEEEhK...","...................KhEEEEhK...","...................KhEEEhK....","...................KhEEEhK....","...................KhEEhK.....","....................KhhK......",".....................KgK......"]});
 Object.assign(DECO_SPR,{"d_discoball":["...........KnK..........","...........KnK..........","...........KnK..........","...........KnK..........","...........KnK..........","...........KnK..........","..........KoooK.........","........KKKHwoKK........","......KKHHwwHoHHKK......","..i..KwwHHwwooHHooK.....",".iYiKwHHwwHoHHooHHnK....","..iKwwHHwwooHHooQonnK...","...KHHxwHoHHooHHnnooK...","..KwHHwwooHHooHonnoonK..","..KHwwHoHHooHHnxoonnoK..","..KHwwooQHooHonnoonnnK..",".KwwHoHHooHHnnoonnonLLK.",".KwwooHHooHonnoonnnnLLK.","..KoHHooHHnnoonnonLLnK..","..KoHHooHxnnoonnnnLLni..","..KHooHHnnoonnonLLnniYi.","...KooHonnoonnnnLxnnKi..","...KHHnnoonnonQLnnLLK...","...iKonnoonnnnLLnnLK....","..iYiKoonnoxLLnnLLK.....","...i..KKnnnnLLnnKK......","........KKKLnKKK........","...........KK...........","........................","........................"],"d_neon":["mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm","mUUUUUUUUUUUUUUUUUUUUUUUUUUUUU","mUJJJJJJJJJJJJJJJJJJJJJJJJJJUU","mUJUUUUUUUUUUUUUUUUUUUUUUUUJUU","mUJUUIIUUIIIUIIIUIIIUIIIUUUJUU","mUJUUIUIUUIUUIUUUIUUUIUIUUUJUU","mUJUUIUIUUIUUIIIUIUUUIUIUUUJUU","mUJUUIUIUUIUUUUIUIUUUIUIUUUJUU","mUJUUIIUUIIIUIIIUIIIUIIIUUUJUU","mUJUUUUUUUUUUUUUUUUUUUUUUUUJUU","mUJUUUUUUUUUUUUUUUUUUUUUUUUJUU","mUJJJJJJJJJJJJJJJJJJJJJJJJJJUU","mUUUUUUUUUUUUUUUUUUUUUUUUUUUUU","mUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"],"d_vinylwall":[".KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK","Kooooooooooooooooooooooooooooooooo","KnHHHKKKHHHnnHHHKKKHHHnnHHHKKKHHHn","KnHKLLKLLKHnnHKLLKLLKHnnHKLLKLLKHn","KnHLnKKKKLHnnHLnKKKKLHnnHLnKKKKLHn","KnKLKKsKKLKnnKLKKvKKLKnnKLKKYKKLKn","KnKKKswsKKKnnKKKvwvKKKnnKKKYwYKKKn","KnKLKKsKKLKnnKLKKvKKLKnnKLKKYKKLKn","KnHLKKKKKLHnnHLKKKKKLHnnHLKKKKKLHn","KnHKLLKLLKHnnHKLLKLLKHnnHKLLKLLKHn","KnHHHKKKHHHnnHHHKKKHHHnnHHHKKKHHHn","KnHHHHHHHHHnnHHHHHHHHHnnHHHHHHHHHn","Knnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",".KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"],"d_jukebox":["......KKrrrrrrrrKK......","....KKrrJIIIYYYJrrKK....","...KrrJJrrssssrrJJrrK...","..KrYYrssssssssssrIIrK..",".KrYYrsssNNNNNNsssrIIrK.","KrrYrsssNNNNNNNNsssrIrrK","KrIYsssNnKNnKNnKNsssIYrK","KrIrssNNKKNKKNKKNNssrYrK","KrIrssMMKKMKKMKKMMssrYrK","KrIsssMMKKMKKMKKMMsssYrK","KrsIssssKKsKKsKKssssYsrK","KrsIssssssssssssssssYsrK","KrsYssNNNNNNNNNNNNssJsrK","KrsYssNJJJJJJJJJJNssJsrK","KrsYssNNNINNNNYNNNssJsrK","KrsJssNNNNNNNNNNNNssIsrK","KrsJssssssssssssssssIsrK","KrsJsshhhhhhhhhhhhssIsrK","KrsIsshgggggggggghssYsrK","KrsIsshhhhhhhhhhhhssYsrK","KrsIsshgggggggggghssYsrK","KrsYsshhhhhhhhhhhhssJsrK","KrsYsshgggggggggghssJsrK","KrsYsshhhhhhhhhhhhssJsrK","KrsJsshgggggggggghssIsrK","KrsJsshhhhhhhhhhhhssIsrK","KrsJssssssssssssssssIsrK","KrsIsswwwwwwwwwwwwssYsrK","KrsIssoooooooooooossYsrK","KrsIssoooooooooooossYsrK","KrsYssssssssssssssssJsrK","KrsYssssssssssssssssJsrK","KmmmmmmmmmmmmmmmmmmmmmmK","KmmmmmmmmmmmmmmmmmmmmmmK"],"d_speaker":["KnnnnnnnnnnnnnnnnK","KnLLLLLLLLLLLLLLmK","KnLLLLLLLLLLLLLLmK","KnLLLLLnnnLLLLLLmK","KnLLLLnKKKnLLLLLmK","KnLLLLKoooKLLLLLmK","KnLLLLKoooKLLLLLmK","KnLLLLnKKKnLLLLLmK","KnLLLLLnnnLLLLLLmK","KnLLLLLLLLLLLLLLmK","KnLLLLLLLLLLLLLLmK","KnLLLLnnnnnLLLLLmK","KnLLLnmmmmmnLLLLmK","KnLLmmKKKKKmmLLLmK","KnLnmKKKKKKKmnLLmK","KnLmmKKHoKKKmmLLmK","KnLmKKHoooKKKmLLmK","KnLmKKKoooKKKmLLmK","KnLmmKKKoKKKmmLLmK","KnLnmKKKKKKKmnLLmK","KnLLmmKKKKKmmLLLmK","KnLLLnmmmmmnLLLLmK","KnLLLLnnnnnLLLLLmK","KnLLLLLLLLLLLLLLmK","KnLLLLLLLLLLLLLLmK","KnLLJJJJJJJJJJLLmK","KnLLIIIIIIIIIILLmK","KnLLLLLLLLLLLLLLmK","KnKKLLLLLLLLLLKKmK","KnKKLLLLLLLLLLKKmK"],"d_djbooth":["............................KKKK....","...........................K....K...","..........................KK....KKK.","...........K...KKKKKK....KmmK.K.KmmK","........K.KoK.KmmmmmmK...KmmKKoKKmmK","....KKKKnKKKoKKmJmJmJK.KKKKnKKKoKKK.","...KKKssssKKK.KmmYmmmKKKKssssKKK....","...KKKssssKKK.KImImImKKKKssssKKK....",".KKKKKKKKKKKKKKmmmmmmKKKKKKKKKKKKKK.","KnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnK","KooooooooooooooooooooooooooooooooooK","KLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLK","KLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLK","KLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLK","KLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLK","KLIIJJJJSSSSYYYYIIIIJJJJSSSSYYYYIILK","KLIIJJJJSSSSYYYYIIIIJJJJSSSSYYYYIILK","KLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLK","KLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLK","KLLLmmmmmmmmmmmmmmmmmmmmmmmmmmmmLLLK","KLLLmmmmmmmmmmmmmmmmmmmmmmmmmmmmLLLK","KLLLmmmmmmmmmmmmmmmmmmmmmmmmmmmmLLLK","KLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLK","KLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLK"],"d_lavalamp":["...KhhhhK...","...KggggK...","...KggggK...","...KppppK...","...KpIXpK...","..KppIXppK..","..KppIXppK..","..KppIXppK..","..KppppppK..","..KpIXXppK..",".KppIXXpppK.",".KppIXXpppK.",".KppIXXpppK.",".KppppppppK.","KpppppXppppK","KppppIXXpppK","KppppIXXpppK","KpppppXppppK","KppppppppppK","pppppppppppp","Khgggggggggg","KhgggggggggK","KhgggggggggK",".KhgggggggK.",".KhgggggggK.","..KhggggggK.",".KhgggggggK.","KhgggggggggK","KhgggggggggK","KmmmmmmmmmmK"],"rug_vinyl":["..........UUUUUUUUUUKKKKKKKKUUUUUUUUUU..........","......UUUUKKKLLLLLKKKKKKKKKKKKLLLLLKKKUUUU......","...UUUKKLLLKKKLLLLLKKKKKKKKKKLLLLLKKKLLLKKUUU...",".UUKKLLKnnnnLKKKKLLLLLLLLLLLLLLKKKKLLLKKKLLKKUU.","UKKLLKKLLLKKnnnnLLKKssssssssKKLLLLLKKKLLLKKLLKKU","KKLLKKLLLKKKLLLKKssssswwwwsssssKKLLLKKKLLLKKLLKK","KKLLKKLLLKKKLLLKKssssswwwwsssssKKLLLKKKLLLKKLLKK","UKKLLKKLLLKKKLLLLLKKssssssssKKLLLLLKKKLLLKKLLKKU",".UUKKLLKKKLLLKKKKLLLLLLLLLLLLLLKKKKLLLKKKLLKKUU.","...UUUKKLLLKKKLLLLLKKKKKKKKKKLLLLLKKKLLLKKUUU...","......UUUUKKKLLLLLKKKKKKKKKKKKLLLLLKKKUUUU......","..........UUUUUUUUUUKKKKKKKKUUUUUUUUUU.........."]});
 Object.assign(DECO_SPR,{"d_spymap":["ddddddddddddddddddddddddddddddda","bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba","bbxxxxxxxxxxxxxxxxxxxxxxxxxxxxba","bbxxxxxxxxxxxxxxxxxxxxxxxxxxxxba","bbxxxxxxxxxxxxEdtEEExxxxxxxxxxba","bbxxxEdtdEExxxEdsEEExEdEEdExxxba","bbxxxEEsEEExrrrrrrrdxEEdtEExxxba","bbxxxdErrrrrxxEEEEdrrrEdsddxxxba","bbxxxEdEEEExxxxxEEdxxErrrEExxxba","bbxxxEddEEExxxxxEEExxdrrEEdxxxba","bbxxxxxddExxxxxxEEExxrxxxxxxxxba","bbxxxxxEEExxxxxxdtExrxxxxxxxxxba","bbxxxxxEddxxxxxxdsrrxxxxxxxxxxba","bbxxxxxEdExxxxxxErrxxxxxxxxxxxba","bbxxxxxEEExxxxxxEEErrrxxEtEExxba","bbxwwwwwswxxxxxxxxxxxxrrdsEExxba","bbxwooooowxxxxxxxxxxxxxxrrEExxba","bbxwoooowwxxxxxxxxxxxxxxxxxxxxba","bbxwwwwwwwxxxxxxxxxxxxxxxxxxxxba","bbxxxxxxxxxxxxxxxxxxxxxxxxxxxxba","bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],"d_famphoto":["hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh","hggggggggggggggggggggggggggggg","hgFFFFFFFFFFFFFFFFFFFFFFFFFFgg","hgFFFLLLFFFFFFFFFFFFFFFFFFFFgg","hgFFLLLLLFFFFFFFFLLLFFFFFFFFgg","hgFFLLLLLFFFFFFFFLLLFFFFFFFFgg","hgFFFLLLFFFFFFFFLLLLFFFFFFFFgg","hgFFFLLFFFFFFFFFLLLLFFFFFFFFgg","hgFFLLLLFFFLLLFFLLLLFFFFFFFFgg","hgFLLLLLLFFLLLFFLLLLFFFFFFFFgg","hgFLLLLLLFFLLLFLLLLLLFFFFFFFgg","hgFLLLLLLFFLLFFLLLLLLFFFFFFFgg","hgFLLLLLLFLLLLFLLLLLLFFFFLLFgg","hgELLLLLLELLLLELLLLLLEEEELLLgg","hgELLLLLLELLLLELLLLLLLLLLLLEgg","hgELLLLLLELLLLELLLLLLELLLLEEgg","hgELLLLLLELLLLELLLLLLELLLLEEgg","hgEEEEEEEEEEEEEEEEEEEEEEEEEEgg","hggggggggggggggggggggggggggggg","hggggggggggggggggggggggggggggg"],"d_hiddensafe":["KKKKKKK.....................","hhhhhhhKKKKKKKKKKKKKKKKKKK..","geeeeegKmmmmmmmmmmmmmmmmmmK.","geejeegKmnnnnnnnnnnnnnnnnmK.","geejeegKmLLLLLLLLLLLLLLLLmK.","geejeegKmLLLLLLLLLLLLLLLLmK.","geejeegKmLLLLLLLLLLLLLLLLmK.","geejeegKmLLLLLLLLLLLLLLLLmK.","geeeeegKmLLLLLoooKooLLLLLmK.","geeeeegKmLLLLLonnnnoLLLLLmK.","geeeeegKmLLLLonnhhnnoLooLmK.","geeeeegKmLLLLoKhhhhnKLooLmK.","geeeeegKmLLLLonnhhnnoLooLmK.","geeeeegKmLLLLLonnnnoLLooLmK.","gfffffgKmLLLLLooooooLLLLLmK.","gfYfffgKmLLLLLLLLKLLLLLLLmK.","gfffffgKmLLLLLLLLLLLLLLLLmK.","gfffQfgKmLLLLLLLLLLLLLLLLmK.","gfffffgKmLLLLLLLLLLLLLLLLmK.","gfffffgKmLLLLLLLLLLLLLLLLmK.","gfffffgKmLLLLLLLLLLLLLLLLmK.","gfffffgKmmmmmmmmmmmmmmmmmmK.","gggggggKKKKKKKKKKKKKKKKKKK..","KKKKKKK....................."],"d_spysofa":["......................................","...KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK...","..KeffffffffffffffffffffffffffffffeK..","..KeeeeeeeeeGeeeeeeeeeeeeGeeeeeeeeeK..","KKKeeeeeeeeeGeeeeeeeeeeeeGeeeeeeeeeKK.","ffffeeeeeeeeGeeeeeeeeeeeeGeeeeeeeffffK","fffffeeheeeeGeeeeeheeeeeeGeeeeheefffff","eeeeeeeeeeeeGeeeeeeeeeeeeGeeeeeeeeeeee","eeeeeeeeeeeeGeeeeeeeeeeeeGeeeeeeeeeeee","eeeeeeeeeeeeGeeeeeeeeeeeeGeeeeeeeeeeee","eeeeeeeeeeeeGeeeeeeeeeeeeGeeeeeeeeeeee","eeeejjjjjjjjjjjjjjejjjjjjjjjjjjjjjeeee","eeeeffffffffffffffefffffffffffffffeeee","eeeeffffffffffffffefffffffffffffffeeee","eeeeffffffffffffffefffffffffffffffeeee","eeeeffffffffffffffefffffffffffffffeeee","eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee","eGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGe","KGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGK",".KaaKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKaaK",".KaaK.............................KaaK",".KaaK.............................KaaK"],"d_chess":[".......K........K.KwK...","......KKK.K....KwKwwK...",".......K..K...KwwwwwK...","..KKKKKKKKKKKKKwwwwwKK..",".KFFaaFFaaFFaaFFaaFFaaK.",".KaaFFaaFFaaFFaaFFaaFFK.",".KFFaaFFaaFFaaFFaaFFaaK.",".KaaFFaaFFaaFFaaFFaaFFK.",".KFFaaFFaaFFaaFFaaFFaaK.",".KaaFFaaFFaaFFaaFFaaFFK.","KbbbbbbbbbbbbbbbbbbbbbbK","KaaaaaaaaaaaaaaaaaaaaaaK",".KKKKKKKKKcbbbKKKKKKKKK.",".........KcbbbK.........",".........KcbbbK.........",".........KcbbbK.........",".........KcbbbK.........",".........KcbbbK.........",".....KKKKKcbbbKKKKK.....","....KccccccccccccccK....","....KbbbbbbbbbbbbbbK....","....KbbbbbbbbbbbbbbK...."],"d_peanutjar":["..KttttttttttK..","..KssssssssssK..","..KssssssssssK..",".KVyyyyyyyyyyxK.",".KVyyyyddyyyyxK.",".KVyddyyddyyyxK.",".KVddyyyycyyyxK.",".KVcyyyyyyyyyxK.",".KVyssssssssyxK.",".KVystttttssyxK.",".KVysFFFFFFsyxK.",".KVyssssssssyxK.",".KVyssssssssdxK.",".KVyyyddyyyycxK.",".KVyyycyyddyyxK.",".KVyddyyyyddyxK.",".KVddyyyyyycyxK.",".KVcyyyyddyyyxK.",".KVyyyyddyyyyxK.",".KVyyyycyyyyyxK.",".KVyyyyyyyyyyxK.",".KxxxxxxxxxxxxK."],"d_rotaryphone":["KrrrKKKKKKKKKKrrrK","KssssssssssssssssK","KrrrrrrrrrrrrrrrrK",".KKKtttsssssssKKK.","..KttttwwwwssssK..",".KsssswoooowssssK.",".KssssswwwwsssssK.","..KsssssssssssssK.","..KsssssssssssssK.","KKKrrrrrrrrrrrrrKK","dddddddddddddddddd","cccccccccccccccccc","KKbbEEEEEEEEEEbbKK",".KbbEEEEEEEEEEbbK.",".KbbEddddddddEbbK.",".KbbEEEEEEEEEEbbK.",".KbbEEEEEEEEEEbbK.",".KbbbbbbbbbbbbbbK.",".KbbbbbbbbbbbbbbK.",".KbbKKKKKKKKKKbbK.",".KbbK........KbbK.",".KbbK........KbbK.",".KbbK........KbbK.",".KbbK........KbbK.",".KbbK........KbbK.",".KbbK........KbbK.",".KbbK........KbbK.",".KbbK........KbbK.",".KbbK........KbbK.",".KbbK........KbbK."],"rug_spy":["ERERERERERERERERERERERERERERERERERERERERERERERE.","RhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhR","RhrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrhR","RhrssrsssrsssrsssrsshhhhuhhhhrsssrsssrsssrsssrhR","RhrsrsssrsssrsssrhhhhuuuuuuuhhhhrsssrsssrsssrrhR","RhrrsssrsssrsshhhhuuuuuuuuuuuuuhhhhrsssrsssrsrhR","RhrsssrsssrssshhhhuuuuuuuuuuuuuhhhhsssrsssrssrhR","RhrssrsssrsssrssshhhhuuuuuuuhhhhsrsssrsssrsssrhR","RhrsrsssrsssrsssrssshhhhuhhhhsssrsssrsssrsssrrhR","RhrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrhR","RhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhR",".ERERERERERERERERERERERERERERERERERERERERERERERE"]});
+/* 肥料袋（原創點陣） */
+Object.assign(DECO_SPR,{
+  fz_basic:["....KKKKKK....","...KddddddK...","....KbbbbK....","...KKddddKK...","..KddddddddK..",".KddddddddddK.",".KddwwwwwwddK.","KdddwwjjwwdddK","KdddwjffjwdddK","KdddwwjfwwdddK","KdddwwwwwwdddK","KccdddddddddcK","KcccddddddcccK",".KccccccccccK.","..KKKKKKKKKK.."],
+  fz_super:["....KKKKKK....","...KvvvvvvK...","....KuuuuK....","...KKvvvvKK...","..KvvvvvvvvK..",".KvvvvvvvvvvK.",".KvvwwwwwwvvK.","KvvvwwhhwwvvvK","KvvvwhiihwvvvK","KvvvwwhgwwvvvK","KvvvwwwwwwvvvK","KuuvvvvvvvvvuK","KuuuvvvvvvuuuK",".KuuuuuuuuuuK.","..KKKKKKKKKK.."]
+});
 /* 寵物窩（每種寵物一款，原創點陣） */
 Object.assign(DECO_SPR,{"b_dog":["...........KK...........", "..........KssK..........", ".........KssssK.........", ".......KKssssssKK.......", "......KssssssssssK......", "....KKsswwwwwwwwwsKK....", "...KsssswwwwwwwwwsssK...", "..KssssssssssssssssssK..", ".KrrrrrrrrrrrrrrrrrrrrK.", "..KddddddddddddddddddK..", "..KddddddddddddddddddK..", "..KccccccccccccccccccK..", "..KdddddddUUUUdddddddK..", "..KddddddUUUUUUddddddK..", "..KcccccUUUUUUUUcccccK..", "..KdddddUUUUUUUUdddddK..", "..KdddddUUUUUUUUdddddK..", "..KcccccUUUUUUUUcccccK..", "..KdddddUUUUUUUUdddddK..", "..KdddddUUUUUUUUUddddK..", "...KKKKKKKKKKKKKKKKKK..."],"b_cat":["..........................", "..........................", "......KKKKKKKKKKKK........", "....KKcccQQQQQQcccKK......", "..KKcQQQQQQQQQQQQQQcKK....", ".KccQQQQQQQQQQQQQQQQccK...", "KccQQQQQQQQQQQQQQQQQQccK..", "KcccQQQQQQQQQQQQQQQQqqqqK.", "KcccbQQQQQQQQQQQQQQqqqqqqK", "KccbccbccQQQQQQbccbqqzqzqK", ".KbccbccbccbccbccbcqqqqqqK", "..KKbccbccbccbccbccqqqzqqK", "....KKbccbccbccbccKKqqqqK.", "......KKKKKKKKKKKK..KKKK.."],"b_guinea":["........................", "........................", ".........KKKKKK.........", ".......KKdddcddKK.......", "......KdcdddcdddcK......", "....KKddcdddcdddcdKK....", "...KcdddcdddcdddcdddK...", "...KcdddcdddcdddcdddK...", "..KdcdddcdddcdddcdddcK..", ".KddcdddcdUUUUddcdddcdK.", ".KddcdddcUUUUUUdcdddcdK.", ".KddcdddUUUUUUUUcdddcdK.", "KdddcdddUUUUUUUUcdddcddK", "KdddcddUUUUUUUUUUdddcddK", "KhghhghhghhghhghhghhghhK", "KhhhhhhhhhhhhhhhhhhhhhhK"],"b_slime":["........................", "........................", ".....KKKKKKKKKKKKKK.....", "...KKxxxxxxxxxxxxxxKK...", "..KxxxVVVVVVVVVVVVxxxK..", ".KxxVVwwVVVVVVVVVVVVxxK.", "KxxVVVwVVVVVVVVVVyVVVxxK", "KxxxVVVVVVVVVVVVVVVVxxxK", ".KvvvvVVVVVVVVVVVVvvvvK.", "..KvvvvvvvvvvvvvvvvvvK..", "...KKvvvvvvvvvvvvvvKK...", ".....KKKKKKKKKKKKKK....."],"b_chicken":["........................", "........KK...KK.........", ".......KFFK.KwwK........", "......KFFFFKwwwwK.......", "...KKKKFwFFgwywwgKKKK...", "..KhhggFFFFgwwwwggghgK..", ".KhhgggFFFFgwwwwgggghgK.", "KhghhgggFFgggwwgggghhhgK", "KhhghhhgggggggggghghhhhK", ".KhhghhhhghhhhghhhhghhK.", "..KhhghhhhghhhhghhhhgK..", "...KKKKhhhhghhhhgKKKK..."],"b_sheep":["...KKKKKKKKKKKKKKKKKKKK...", "..KZZZZZZZZZZZZZZZZZZZZK..", "..KZXZZXZZXZZXZZXZZXZZZK..", ".KKXXXXXXXXXXXXXXXXXXXXKK.", "KhhXXXXXXXXXXXXXXXXXXXXhhK", "KhhhhhhhghhhhhhhhghhhhhhhK", "KggggggggggggggggggggggggK", "KhhhhhhhghhhhhhhhghhhhhhhK", "KhhhhhhhghhhhhhhhghhhhhhhK", "KggggggggggggggggggggggggK", "KhhhhhhhghhhhhhhhghhhhhhhK", "KhhhhhhhghhhhhhhhghhhhhhhK", "KggggggggggggggggggggggggK", "KhhhhhhhghhhhhhhhghhhhhhhK"],"b_horse":["...........KKccKK...........", "........KKKccccccKK.........", "......KKcccccccccccKKK......", "....KKccccccccccccccccKK....", ".KKKccccccccccccccccccccKK..", "KcccccccccccccccccccccccccK.", "KbbbbbbbbbbbbbbbbbbbbbbbbbbK", ".KbbEEEEEEEEEEEEEEEEEEEEbbK.", ".KbbEEEEEEEEEEEEEEEEEEEEbbK.", ".KbbEEEEEEhhhhhhhhEEEEEEbbK.", ".KbbEEEEEEhgggggghEEEEEEbbK.", ".KbbEEEEEEhgggggghEEEEEEbbK.", ".KbbEEEEEEhhhhhhhhEEEEEEbbK.", ".KbbbcbbbcbbbcbbbcbbbcbbbbK.", ".KbbbbbbbbbbbbbbbbbbbbbbbbK.", ".KbbEEEEEEEEEEEEEEEEEEEEbbK.", ".KbbbcbbbcbbbcbbbcbbbcbbbbK.", ".KbbbbbbbbbbbbbbbbbbbbbbbbK.", ".KbbhhhhhhhhhhhhhhhhhhhhbbK.", ".KbbhhhhhhhhhhhhhhhhhhhhbbK."],"b_rabbit":["......K....K...K......", ".....KfK..KjK.KfK.....", "......KfK.KjKKfK......", "......KffKjjKffK......", "......KfffjjfffK......", ".....KKOfOOOOfOKK.....", "...KKOOOOOOOOOOOOKK...", "..KOOOOOOOOOOOOOOOOK..", ".KOOOOOOOOOOOOOOOOOOK.", ".KDDDDDDDDDDDDDDDDDDK.", "KOOOOOOOOOOOOOOOOOOOOK", "KOOOOOOOOOOOOOOOOOOOOK", "KOOOOOOOOOOOOOOOOOOOOK", "KODDDDDDDUUUUDDDDDDDDK", ".KOOOOOOUUUUUUOOOOOOK.", ".KOOOOOOUUUUUUOOOOOOK.", "..KDDDDDUUUUUUDDDDDK..", "...KKOOOUUUUUUOOOKK...", ".....KKOUUUUUUOKK....."],"b_scruffy":["KKKKKK...........KKKKKK.", "ddddddK.........KddddddK", "KddddddK.......KddddddK.", "KddddddK.......KddddddK.", ".KddddddKKKKKKKddddddK..", ".KddddddddddddddddddddK.", ".KddddddddddddddddddddK.", ".KAAAAAAAAAAAAAAAAAAAAK.", ".KAAAAAAAAAAAAAAAAAAAAK.", ".KAAAAAAAAccccAAAAAAAAK.", ".KccccccccccccccccccccK.", ".KAAAAAAAAccccAAAAAAAAK.", ".KAAwLLLLwccccAAAAAAAAK.", ".KAAwwwwwwAAAAAAAAAAAAK.", ".KAAAAAAAAAAAAAAAAAAAAK.", ".KAAAAAAAAAAAAAAAAAAAAK."],"b_grumpy":["..........KKKKKK..........", ".........KHHHHHHK.........", "........KHHHHHHHHK........", "...KKKKKHHHHHHHHHHKKKKK...", "..KHHHHHHHHHHHHHHHHHHHHK..", ".KHHHHHHHHHHHHHHHHHHHHHHK.", "KHHHHHHHHHHHHHHHHHHHHHHHHK", "KHHHHHHHHHHHHHHHHHHHHHHHHK", "KHHHHHHooooooooooooHHHHHHK", "KHHHooooooooooooooooooHHHK", ".KHooooooooooooooooooooHK.", "..KooooooooooooooooooooK..", "...KKKooooooYYYooooooKK...", "......KooooYYYoooooHK.....", ".......KKKYYYKKKKKKK......", "..........KKYYYK..........", "...........KYYK...........", "..........KYYK............", "..........KYK............."],"b_tiger":["..........................", "..........................", "..........................", ".......KKKKKKKKKKKKK......", "......KsssssssssssssK.....", "......KshsshsshsshssK.....", "...KKKKsssssssssssssKK....", "..KnnnorrrrrrrrrrrrrLLKK..", ".KnnnnooooooooooooooLLLLK.", "KnnnnnooonnnnnnnnoooLLLLLK", "nnnnnnnnnnnnnnnnnnnnLLLLLL", "nnnnnnnnnnnnnnnnnnnLLLLLLL", "nnnnnnnnnnnnnnnnnnLLLLLLLL", "nnnnnnnnnnnnnnnnLLLLLLLLLL", "KnnnnnnnnnnnnLLLLLLLLLLLLK", ".KnnnnnnnnnnnnLLLLLLLLLLK.", "..KnnnnnnnnnnnnnLLLLLLKK.."],"b_caterpillar":["KbKKKKKKKKKKKKKKKKKKKKKKKKbK", "KagaaaaaaaaaaaaaaaaaaaaaagaK", "KbgKKKKKKKKKKKKKKKKKKKKKKgbK", "KbgK....................KgbK", "KbgKKK................KKKgbK", "KbKKejKKK..........KKKjfeKbK", "KbK.KejjfKKK....KKKfjjfeKKbK", "KbK..KeejjffKKKKffjjfeeK.KbK", "KbK...KKeejjjffjjjfeeKK..KbK", "KbK.....KfeeeejeeeeKK....KbK", "KbK......KKffjeffKK......KbK", "KbK........KffffK........KbK", "KbK.........KffK.........KbK", "KbK..........KK..........KbK"],"b_snowman":["..........................", "..........KKKKKK..........", ".......KKKwwwwwwKKK.......", "......KwwxwwwwwxwwwK......", ".....KwwwxwwwwwxwwwwK.....", "....KxxxxxxxxxxxxxxxxK....", "...KwwwwwwwwwwwwwwwwwwK...", "..KwwwwxwwwwwxwwwwwxwwwK..", "..KwwwwxwwwwwxwwwwwxwwwK..", ".KxxxxxxxxxNNNNxxxxxxxxxK.", ".KwwwwwwwwNNNNNNwwwwwwwwK.", "KwwwxwwwwwNNNNNNxwwwwwxwwK", "KwwwxwwwwNNNNNNNNwwwwwxwwK", "KxxxxxxxxNNNNNNNNxxxxxxxxK", "KwwwwwwwwNNNNNNNNwwwwwwwwK"],"b_pom":["......KKZZXXXXZZKK......", "....KKZZZXXXPXXZZZKK....", "...KZZZZZZXXXXZZZZZZK...", "..KZZZZZZKKKKKKZZZZZZK..", "..KZZZZKK......KKZZZZK..", ".KZZZZK..........KZZZZK.", "KXZZZZK..........KZZZZXK", "KXKKKK............KKKKXK", "KXK..................KXK", "KXK...KKKKKKKKKKKK...KXK", "KXK.KKPPQQQQQQQQPPKK.KXK", "KXKKPQQQQQQQQQQQQQQPKKXK", "KXKPQQQQQQQQQQQQQQQQPKXK", "KXPPQQQQQQQQQQQQQQQQPPXK", "KXPPPQQQQQQQQQQQQQQPPPXK", "KXKPPPPPQQQQQQQQPPPPPKXK", "KXKKPPPPPPPPPPPPPPPPKKXK", "KXK.KKPPPPPPPPPPPPKK.KXK", ".K....KKKKKKKKKKKK....K."],"b_shiba":["...........KOOfOK...........", ".KKKKKKKKKKKOOOOKKKKKKKKKKK.", "KccccccccccccOOccccccccccccK", ".KbbbbbbbbbbbbbbbbbbbbbbbbK.", ".KbbbbbbbbbbbbbbbbbbbbbbbbK.", ".KrrrrrrrrrrrrrrrrrrrrrrrrK.", ".KsssstssstssstssstssstsssK.", ".KssstssstssstssstssstssssK.", ".KsstssstssstssstssstssstsK.", ".KstssstssstssstssstssstssK.", ".KsssstssstssstssstssstsssK.", ".KssstssstssstssstssstssssK.", ".KsstssstssstssstssstssstsK.", ".KssssssssssssssssssssssssK."],"b_panda":["..........................", "..........................", "......KKKKKKKKKKKKKK...K..", "....KKffffffffffffffKKKjKK", "..KKffwwwwwwwwwwwwwwfejjKf", ".KfffwwwwwwwwwwwwwwwwejffK", "KfffwwwwwwwwwwwwwwwwwefffK", "KffffwwwwwwwwwwwwwwwwefffK", "KffeffwwwwwwwwwwwwwwfeffeK", "KffeffeffeffeffeffeffeffeK", ".KeeeeeeeeeeeeeeeeeeeeeeK.", "..KKffeffeffeffeffeffeKK..", "....KKeffeffeffeffefKK....", "......KKKKKKKKKKKKKK......"],"b_duck":["..............................", "..........KKKKKKKKKK..........", ".....KKKKKnnnnnnnnnnKKKKK.....", "...KKnnnnnnnvvvvvvnnnnnnnKK...", "..KnnnvvvvvvvvvvvvvvffvvnnnK..", ".KnnvvvxxxxxxxxxxxffffffvvnnK.", "KnnvvvxxxxxxxxxxxxfffvffvvvnnK", "KnnvvvvQQxxxxxxxxxxxffxvvvvnnK", ".KnnvvvQYvvvvvvvvvvvvvvvvvnnK.", "..KnnnvvvvvvvvvvvvvvvvvvnnnK..", "...KKnnnnnnnvvvvvvnnnnnnnKK...", ".....KKKKKnnnnnnnnnnKKKKK....."],"b_fireball":["........................", "KKKKKKKKKKKKKKKKKKKKKKKK", "LLLLLLLLLLLLLLLLLLLLLLLL", "LLLLLLLLLLLLLLLLLLLLLLLL", "LLLLLLLLLLLLLLLLLLLLLLLL", "KnnnonnnnnonnnnnonnnnnoK", "KnnnonnnnnonnnnnonnnnnoK", "KnnnonnnnnonnnnnonnnnnoK", "KonnnnnonnnnnonnnnnonnnK", "KonnnnnonnnnnonnnnnonnnK", "KonnnnnonnUUUUnnnnnonnnK", "KnnnonnnUUUUUUUUonnnnnoK", "KnnnonnUUUUUUUUUUnnnnnoK", "KnnnonnUUUUUUUUUUnnnnnoK", "KonnnnUUUUUUUUUUUUnonnnK", "KonnnnUUUOOOOOOUUUnonnnK", "KonnnUUUOOYYYYOOUUUonnnK", "KnnnoUUOOYYYYYYOOUUnnnoK", "KnnnoUUOOYYYYYYOOUUnnnoK", "KnnnoUbbbbbbbbbbbbbnnnoK", "KnnnnUbbbbbbbbbbbbbnnnnK"],"b_bear":["....KKKjjjjffffffKKK....", "..KKjjjjjjjjffffffffKK..", ".KfjjjjjjjjjjfffffffffK.", ".KfjjjjjjjjjjfffffffffK.", "KfffjjjjjjjjfffffffffffK", "KffffjjjjjjffffffffffffK", ".KffffffffffffffffffffK.", ".KffffffffffffffffffffK.", "..KcffffffffffffffffcK..", "..KccbcffffffffffccbcK..", "..KccbcccbcccccbcchbcK..", "..KccbcccbUUUUcbccObcK..", "..KccbcccUUUUUUbcccbcK..", "..KccbccUUUUUUUUcccbcK..", "..KccbcUUUUUUUUUUccbcK..", "..KccbcUUUUUUUUUUccbcK..", "..KccbcUUUUUUUUUUccbcK..", "..KccbcUUUUUUUUUUccbcK..", "..KccbcUUUUUUUUUUccbcK..", ".KKccbcUUUUUUUUUUccbcKK.", "KbbbbbbbbbbbbbbbbbbbbbbK"]});
 const decoDim=id=>{ const r=DECO_SPR[id]; return r?`--w:${r[0].length};--h:${r.length}`:""; };
@@ -8112,7 +8140,7 @@ let farmTimer=null;
 function farmPlots(){ S.farm=S.farm||{plots:[]}; if(!Array.isArray(S.farm.plots)) S.farm.plots=[]; while(S.farm.plots.length<PLOTS) S.farm.plots.push(null); return S.farm.plots; }
 function plotState(pl,now){
   if(!pl||!CROPS[pl.c]) return {stage:"empty"};
-  const c=CROPS[pl.c], e=(now||Date.now())-pl.t, r=Math.min(1,Math.max(0,e/c.ms));
+  const c=CROPS[pl.c], e=(now||Date.now())-pl.t+(+pl.g||0), r=Math.min(1,Math.max(0,e/c.ms));
   return {stage:r>=1?"ripe":r>=.66?"grow":r>=.33?"sprout":"seed",left:Math.max(0,c.ms-e),crop:c,ratio:r};
 }
 function fmtLeft(ms){ const t=Math.ceil(ms/1000), h=Math.floor(t/3600), m=Math.floor(t%3600/60), sc=t%60;
@@ -8148,12 +8176,14 @@ function renderFarm(panel){
       <input type="radio" name="farm-seed" value="${k}" ${k===seed?"checked":""}>
       <span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}</b><small>${fmtDur(c.ms)}・收 ${c.yield} ${esc(c.unit)}</small><span class="seedcnt${seeds()[k]?"":" zero"}">種子 ×${seeds()[k]||0}</span></label>`).join("")}</div>
     <p class="ahint" style="margin-top:6px">每次播種用掉 1 顆種子。到五個任務地點逛逛，有機會撿到種子。</p>
-    <p class="dsec">我的田地 <span class="ahint">點空地種「${esc(CROPS[seed].name)}」，成熟後點一下收成；種錯了可以按「⛏ 挖掉」重種</span></p>
+    ${fertRowHTML()}
+    <p class="dsec">我的田地 <span class="ahint">${FERT_TOOL&&fertHave(FERT_TOOL)?`🧪 施肥中：點正在長的作物使用「${esc(shopItem(FERT_TOOL).name)}」（${esc(FERT[FERT_TOOL].desc)}）`:`點空地種「${esc(CROPS[seed].name)}」，成熟後點一下收成；種錯了可以按「⛏ 挖掉」重種`}</span></p>
     <div class="plotgrid">${plots.map((pl,i)=>{
       const st=plotState(pl), stolen=st.stage!=="empty"?stealsOn(myCodeU,i,pl.t).length:0;
       return `<div class="plotwrap">${st.stage!=="empty"&&st.stage!=="ripe"?`<button type="button" class="digbtn" data-dig="${i}" title="種錯了？挖掉重種（種子會退還）" aria-label="挖掉${esc(st.crop.name)}重種">⛏ 挖掉</button>`:""}<button type="button" class="plot ${st.stage}" data-plot="${i}">
         <span class="ploticon" aria-hidden="true">${plotIcon(st,pl)}</span>
         <span class="plotname">${st.stage==="empty"?"空地":esc(st.crop.name)}${st.stage!=="empty"&&RARE[pl.c]&&plotNeighbors(i).some(j=>plots[j]&&plots[j].c===RARE[pl.c].need)&&S.rareSeen&&S.rareSeen[pl.c]?' <span class="rarehintdot" title="旁邊有合適的鄰居，收成時可能長出稀有品種">✨</span>':""}</span>
+        ${pl&&pl.f&&st.stage!=="empty"?`<span class="fertdot" title="已施肥 ${pl.f} 次">🧪${pl.f}</span>`:""}
         <span class="plotmeta" data-left="${i}">${st.stage==="empty"?"點一下播種":st.stage==="ripe"?(stolen?`可收成（被偷 ${stolen}）`:"可收成！"):`還要 ${fmtLeft(st.left)}`}</span>
         ${st.stage!=="empty"&&st.stage!=="ripe"?`<span class="plotbar"><i style="width:${Math.round(st.ratio*100)}%"></i></span>`:""}
       </button></div>`;
@@ -8188,7 +8218,33 @@ async function digPlot(i){                              // 種錯菜：挖掉、
   Sound.sfx("undo"); toast(`挖掉了${st.crop.name}，退還 1 顆種子。選好種子後點空地重種吧！`);
   renderPlace();
 }
+/* ---- 肥料：選好肥料再點正在長的作物（只記提早的時間 g 與施肥次數 f，不改播種時間） ---- */
+let FERT_TOOL="";
+const fertHave=id=>((S.fert||{})[id]||0);
+function fertRowHTML(){
+  const own=Object.keys(FERT).filter(id=>fertHave(id)>0);
+  if(FERT_TOOL&&!fertHave(FERT_TOOL)) FERT_TOOL="";
+  if(!own.length) return `<p class="ahint fertnone">🧪 想讓作物早點成熟？到地圖上的種子商店買肥料。</p>`;
+  return `<p class="dsec">施肥 <span class="ahint">選好肥料，再點正在長的作物；每塊田每一輪最多 ${FERT_MAX} 次</span></p>
+    <div class="fertrow">${own.map(id=>`<button type="button" class="fertbtn${FERT_TOOL===id?" on":""}" data-fertool="${id}" aria-pressed="${FERT_TOOL===id}"><span class="fertic" aria-hidden="true">${decoSVG(id)}</span><b>${esc(shopItem(id).name)}</b><small>${esc(FERT[id].desc)}・×${fertHave(id)}</small></button>`).join("")}
+      ${FERT_TOOL?`<button type="button" class="act ghost" data-fertool="">不施肥了</button>`:""}</div>`;
+}
+function useFert(i){
+  const plots=farmPlots(), pl=plots[i], st=plotState(pl), id=FERT_TOOL, it=shopItem(id);
+  if(!it||!fertHave(id)){ FERT_TOOL=""; renderPlace(); return; }
+  if(st.stage==="empty"){ toast("肥料要施在正在長的作物上，先播種吧"); Sound.sfx("error"); return; }
+  if(st.stage==="ripe"){ toast(`${st.crop.name}已經成熟了，點一下就能收成`); Sound.sfx("cursor"); FERT_TOOL=""; farmClick(i); return; }
+  if((pl.f||0)>=FERT_MAX){ toast(`這塊田這一輪已經施過 ${FERT_MAX} 次肥了`); Sound.sfx("error"); return; }
+  const gain=FERT[id].use(st.left);
+  pl.g=(+pl.g||0)+gain; pl.f=(pl.f||0)+1; S.fert[id]--;
+  if(!fertHave(id)) FERT_TOOL="";
+  save(); queueSync(); pushFarm(true); Sound.sfx("get");
+  const after=plotState(pl);
+  toast(after.stage==="ripe"?`🧪 施了${it.name}，${st.crop.name}馬上成熟了！`:`🧪 施了${it.name}，${st.crop.name}提早 ${fmtLeft(gain)}，還要 ${fmtLeft(after.left)}`);
+  renderPlace();
+}
 function farmClick(i){
+  if(FERT_TOOL){ useFert(i); return; }
   const plots=farmPlots(), pl=plots[i], st=plotState(pl);
   if(st.stage==="empty"){
     const k=CROPS[S.farmSeed]?S.farmSeed:"bokchoy";
@@ -8236,8 +8292,12 @@ const SHOP={
   avacc:{name:"人物配件",items:[["sa_beret","紅色貝雷帽",50],["sa_santahat","聖誕帽",70],["sa_witchhat","女巫帽",70],["sa_pilgrim","朝聖者帽",60],["sa_pencil","耳後鉛筆",30],["sa_flowers","花冠",50],["sa_helmet","太空頭盔",90],["sa_starglass","星星眼鏡",60],["sa_fedora","紳士帽",70]]},
   petgear:{name:"寵物配件",items:[["pg_bandana","紅色領巾",40],["pg_antler","麋鹿角",60],["pg_witch","迷你女巫帽",60],["pg_leaf","楓葉領巾",45],["pg_tie","小領帶",40],["pg_mushroom","蘑菇帽",55],["pg_antenna","外星天線",60],["pg_sparkbow","亮片領結",50],["pg_tophat","紳士小禮帽",60]]},
   pets:{name:"寵物",items:[["p_pom","博美狗",150],["p_shiba","柴犬",150],["p_panda","熊貓",200],["p_duck","鴨子",120],["p_fireball","火球",250],["p_bear","熊",180]]},
-  snack:{name:"寵物零食",items:[["s_biscuit","小骨頭餅乾",15,2],["s_can","高級罐頭",40,5],["s_cake","寵物蛋糕",90,12]]}
+  snack:{name:"寵物零食",items:[["s_biscuit","小骨頭餅乾",15,2],["s_can","高級罐頭",40,5],["s_cake","寵物蛋糕",90,12]]},
+  fert:{name:"肥料",items:[["fz_basic","一般肥料",20],["fz_super","高級肥料",60]]}
 };
+const CONSUME=new Set(["snack","fert"]);               // 消耗品：可以重複買，不擺進家裡
+const FERT={fz_basic:{desc:"剩下的時間少 30 分鐘",use:left=>Math.min(left,30*60e3)},fz_super:{desc:"剩下的時間減半",use:left=>Math.ceil(left/2)}};
+const FERT_MAX=2;                                      // 每塊田每一輪最多施肥 2 次
 const SHOP_THEMES=[["classic","經典"],["xmas","聖誕節"],["halloween","萬聖節"],["thanks","感恩節"],["office","辦公室"],["forest","森林"],["space","太空"],["disco","迪斯可"],["spy","spy"]];
 const SHOP_THEME={wp_spy:"spy",fl_spy:"spy",rug_spy:"spy",d_spymap:"spy",d_famphoto:"spy",d_hiddensafe:"spy",d_spysofa:"spy",d_chess:"spy",d_peanutjar:"spy",d_rotaryphone:"spy",
   fl_wood:"classic",fl_checker:"classic",fl_snow:"xmas",fl_stone:"halloween",fl_parquet:"thanks",fl_carpet:"office",fl_moss:"forest",fl_metal:"space",fl_disco:"disco",
@@ -8284,10 +8344,10 @@ function renderShop(panel){
     <div class="themechips" role="group" aria-label="商品主題">${[["all","全部"]].concat(SHOP_THEMES).map(([k,n])=>{
       const L=Object.keys(SHOP_THEME).filter(id=>k==="all"||SHOP_THEME[id]===k), own=L.filter(id=>FREE_DECO.has(id)||S.shopOwned[id]).length;
       return `<button type="button" class="themechip${shopTheme===k?" on":""}" data-shoptheme="${k}" aria-pressed="${shopTheme===k}">${esc(n)}<small>${own}/${L.length}</small></button>`; }).join("")}</div>
-    ${Object.entries(SHOP).filter(([cat,c])=>shopTheme==="all"||(cat!=="snack"&&c.items.some(([id])=>SHOP_THEME[id]===shopTheme))).map(([cat,c])=>`<div class="catblock"><p class="cattitle">${esc(c.name)}${cat==="snack"?`<span class="ahint">任何寵物都能吃，可以提升親密度</span>`:cat==="wear"?`<span class="ahint">固定配色，買了也會收進衣櫃</span>`:cat==="avacc"?`<span class="ahint">也可以在「角色設定」的配件換</span>`:cat==="petgear"?`<span class="ahint">所有寵物都能戴，也可以在「寵物窩」換</span>`:cat==="bed"?`<span class="ahint">擺在家裡，寵物會走過去睡覺；睡自己專屬的窩更常去，每天親密度 +1</span>`:cat==="pets"?`<span class="ahint">買了就能換成牠，名字和配件會保留；之後在寵物交換所也選得到</span>`:""}</p>
+    ${Object.entries(SHOP).filter(([cat,c])=>shopTheme==="all"||(!CONSUME.has(cat)&&c.items.some(([id])=>SHOP_THEME[id]===shopTheme))).map(([cat,c])=>`<div class="catblock"><p class="cattitle">${esc(c.name)}${cat==="fert"?`<span class="ahint">在開心農場選好肥料，點正在長的作物就能讓它早點成熟；每塊田每一輪最多施 ${FERT_MAX} 次</span>`:cat==="snack"?`<span class="ahint">任何寵物都能吃，可以提升親密度</span>`:cat==="wear"?`<span class="ahint">固定配色，買了也會收進衣櫃</span>`:cat==="avacc"?`<span class="ahint">也可以在「角色設定」的配件換</span>`:cat==="petgear"?`<span class="ahint">所有寵物都能戴，也可以在「寵物窩」換</span>`:cat==="bed"?`<span class="ahint">擺在家裡，寵物會走過去睡覺；睡自己專屬的窩更常去，每天親密度 +1</span>`:cat==="pets"?`<span class="ahint">買了就能換成牠，名字和配件會保留；之後在寵物交換所也選得到</span>`:""}</p>
       <div class="shopgrid">${c.items.filter(([id])=>shopTheme==="all"||SHOP_THEME[id]===shopTheme).map(([id,name,price,aff])=>{
-        const owned=cat!=="snack"&&(FREE_DECO.has(id)||!!S.shopOwned[id]), n=S.snacks[id]||0;
-        const using=cat==="wear"?(S.av||AV_DEFAULT).outfit===id:cat==="avacc"?(S.av||AV_DEFAULT).acc===id:cat==="petgear"?!!(S.pet&&S.pet.gear===id):cat!=="snack"&&(d[cat]===id||(cat==="floor"&&d.floor2===id));
+        const owned=!CONSUME.has(cat)&&(FREE_DECO.has(id)||!!S.shopOwned[id]), n=cat==="fert"?((S.fert||{})[id]||0):S.snacks[id]||0;
+        const using=cat==="wear"?(S.av||AV_DEFAULT).outfit===id:cat==="avacc"?(S.av||AV_DEFAULT).acc===id:cat==="petgear"?!!(S.pet&&S.pet.gear===id):!CONSUME.has(cat)&&(d[cat]===id||(cat==="floor"&&d.floor2===id));
         const can=total>=price;
         let btn;
         if(cat==="pets"&&owned){
@@ -8298,7 +8358,8 @@ function renderShop(panel){
           else if(cat==="avacc") btn=using?`<button class="act ghost" type="button" data-shopuse="avacc|">配戴中・拿下</button>`:`<button class="act" type="button" data-shopuse="avacc|${id}">戴上</button>`;
           else btn=!pn?`<span class="ahint">有寵物之後就能戴</span>`:using?`<button class="act ghost" type="button" data-shopuse="petgear|">配戴中・拿下</button>`:`<button class="act" type="button" data-shopuse="petgear|${id}">幫${esc(pn)}戴上</button>`;
         }else
-        if(cat==="snack") btn=`<button class="act ghost" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>買 1 個（${price}）</button>${n?`<button class="act" type="button" data-snackfeed="${id}" ${pn?"":"disabled"}>餵${pn?esc(pn):""}</button>`:""}`;
+        if(cat==="fert") btn=`<button class="act ghost" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>買 1 包（${price}）</button>${n?`<button class="act" type="button" data-gofarm="${id}">去施肥</button>`:""}`;
+        else if(cat==="snack") btn=`<button class="act ghost" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>買 1 個（${price}）</button>${n?`<button class="act" type="button" data-snackfeed="${id}" ${pn?"":"disabled"}>餵${pn?esc(pn):""}</button>`:""}`;
         else if(!owned) btn=`<button class="act" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>購買（${price} 顆）</button>`;
         else if(cat==="floor") btn=d.floor===id?`<button class="act ghost" type="button" data-shopuse="floor|">左邊・收起</button>`
           :d.floor2===id?`<button class="act ghost" type="button" data-shopuse="floor2|">右邊・收起</button>`
@@ -8306,9 +8367,9 @@ function renderShop(panel){
         else if(using) btn=cat==="paper"||cat==="ground"?`<span class="st st-gold">使用中</span>`:`<button class="act ghost" type="button" data-shopuse="${cat}|">使用中・收起</button>`;
         else btn=`<button class="act" type="button" data-shopuse="${cat}|${id}">${cat==="paper"||cat==="ground"?"換上":"擺上"}</button>`;
         const th=SHOP_THEMES.find(([k])=>k===SHOP_THEME[id]);
-        return `<article class="shopcard${using?" on":""}">${th&&shopTheme==="all"?`<span class="themetag t-${th[0]}">${esc(th[1])}</span>`:""}${cat!=="snack"&&!WEAR_CATS.has(cat)?`<button class="pvbtn${isVip()?"":" locked"}" type="button" data-shoppv="${id}" title="${isVip()?"預覽擺進家裡的樣子":`VIP 才能預覽（再買 ${VIP_BUYS-shopBuysCount()} 個）`}">${isVip()?"👁 預覽":"🔒 預覽"}</button>`:""}${shopPreview(cat,id)}
+        return `<article class="shopcard${using?" on":""}">${th&&shopTheme==="all"?`<span class="themetag t-${th[0]}">${esc(th[1])}</span>`:""}${!CONSUME.has(cat)&&!WEAR_CATS.has(cat)?`<button class="pvbtn${isVip()?"":" locked"}" type="button" data-shoppv="${id}" title="${isVip()?"預覽擺進家裡的樣子":`VIP 才能預覽（再買 ${VIP_BUYS-shopBuysCount()} 個）`}">${isVip()?"👁 預覽":"🔒 預覽"}</button>`:""}${shopPreview(cat,id)}
           <b>${esc(name)}</b>${cat==="bed"?(()=>{ const t=id.slice(2), mine=S.pet&&S.pet.type===t; return `<span class="bedfor${mine?" mine":""}">${mine?"★ 你的":""}${esc(PETS[t]?PETS[t].name:"")}專屬</span>`; })():""}
-          <span class="ahint">${cat==="snack"?`親密度 +${aff}・擁有 ${n}`:owned?"已擁有":`${price} 顆種子`}${!owned&&cat!=="snack"&&!can?`・還差 ${price-total}`:""}</span>
+          <span class="ahint">${cat==="fert"?`${FERT[id].desc}・擁有 ${n} 包`:cat==="snack"?`親密度 +${aff}・擁有 ${n}`:owned?"已擁有":`${price} 顆種子`}${!owned&&!CONSUME.has(cat)&&!can?`・還差 ${price-total}`:""}</span>
           <span class="shopbtns">${btn}</span></article>`;
       }).join("")}</div></div>`).join("")}
   </section>`;
@@ -8353,11 +8414,63 @@ function bossBoxHTML(){
     ${act?`<div class="formfoot"><span class="ahint">每天一次，晚上 12 點換新題目</span><span class="afilters">${act}</span></div>`:""}
   </section>`;
 }
+/* ---- 收購與分解：多出來的小物賣給豆豆老闆、重複的武器交給總長分解，換成種子（每種至少留 1 個） ---- */
+const findPrice=f=>f.hidden?15:f.w>=9?2:f.w>=5?4:8;
+const WP_PRICE={N:10,R:25,SR:60,SSR:150};
+const tradeSeed=()=>CROPS[S.tradeSeed]?S.tradeSeed:Object.keys(CROPS)[0];
+function tradeSeedSel(){
+  const k=tradeSeed();
+  return `<label class="tradeseed"><span>換成</span><select class="ainput" data-tradeseed aria-label="要換成哪一種種子">${Object.entries(CROPS).map(([id,c])=>`<option value="${id}" ${id===k?"selected":""}>${esc(c.name)}種子</option>`).join("")}</select></label>`;
+}
+const spareFinds=()=>FINDS.filter(f=>((S.finds||{})[f.id]||0)>1);
+const spareWeapons=()=>WEAPONS.filter(w=>WP_PRICE[w.tier]&&((S.items||{})[w.id]||0)>1);
+function tradeRow(kind,id,icon,name,sub,have,price){
+  return `<div class="traderow"><span class="tradeic" aria-hidden="true">${icon}</span>
+    <span class="tradename"><b>${name}</b><small>${sub}持有 ${have}・可${kind==="find"?"賣":"分解"} ${have-1}</small></span>
+    <span class="tradeprice">每${kind==="find"?"個":"把"} <b>${price}</b> 顆</span>
+    <span class="tradebtns"><button class="mini-btn" type="button" data-trade="${kind}" data-tid="${esc(id)}" data-n="1">${kind==="find"?"賣 1 個":"分解 1 把"}</button><button class="mini-btn" type="button" data-trade="${kind}" data-tid="${esc(id)}" data-n="all">全部（留 1）</button></span></div>`;
+}
+function buybackHTML(){
+  const L=spareFinds(), tot=L.reduce((a,f)=>a+(S.finds[f.id]-1)*findPrice(f),0);
+  return `<section class="window pbox tradebox" id="buyBack">
+    <div class="abar"><h3>🧳 小物收購 ${helpBtn("buyback")}</h3>${tradeSeedSel()}</div>
+    <div class="nqtop"><span class="npcface" aria-hidden="true">${avatarSVG(SHOPKEEPER.av)}</span><div><p class="mename">${esc(SHOPKEEPER.name)}<span class="ahint">・${esc(SHOPKEEPER.title)}</span></p>
+      <p class="dbody">${L.length?`「多出來的小物賣給我吧！每種我都會幫你留 1 個。全部賣掉可以換 <b>${tot} 顆</b>種子。」`:"「目前沒有多出來的小物喔。到各地點看任務文件，撿到重複的再拿來給我！」"}</p></div></div>
+    ${L.length?`<div class="tradelist">${L.map(f=>tradeRow("find",f.id,spriteSVG("i_"+f.id),esc(f.name),f.hidden?"隱藏・":"",S.finds[f.id],findPrice(f))).join("")}</div>
+    <p class="ahint">相簿兌換畫框需要同一種小物 30 個；常見 2 顆、少見 4 顆、稀有 8 顆、隱藏小物 15 顆。</p>`:""}
+  </section>`;
+}
+function dismantleHTML(){
+  const L=spareWeapons(), tot=L.reduce((a,w)=>a+(S.items[w.id]-1)*WP_PRICE[w.tier],0);
+  return `<section class="window pbox tradebox" id="wpTrade">
+    <div class="abar"><h3>🔧 武器分解 ${helpBtn("dismantle")}</h3>${tradeSeedSel()}</div>
+    <div class="nqtop"><span class="npcface" aria-hidden="true">${avatarSVG(DIRECTOR_AV)}</span><div><p class="mename">${esc(CFG.director)}<span class="ahint">・數位總合辦公室</span></p>
+      <p class="dbody">${L.length?`「重複的武器交給我，拆成零件回收，換成種子給你。每把都會幫你留 1 把。全部分解可以換 <b>${tot} 顆</b>種子。」`:"「目前沒有重複的武器。去海邊撈寶，或來村長家、我這裡逛逛，拿到重複的再來找我。」"}</p></div></div>
+    ${L.length?`<div class="tradelist">${L.map(w=>tradeRow("wp",w.id,spriteSVG("w_"+w.id),`${esc(w.name)} ${tierBadge(w)}`,"",S.items[w.id],WP_PRICE[w.tier])).join("")}</div>
+    <p class="ahint">普通 10 顆、稀有 25 顆、史詩 60 顆、傳說 150 顆。裝備中和展示中的武器都至少會留 1 把。</p>`:""}
+  </section>`;
+}
+async function doTrade(kind,id,n){
+  const isF=kind==="find", item=isF?FINDS.find(f=>f.id===id):weaponById(id);
+  const store=isF?(S.finds=S.finds||{}):(S.items=S.items||{});
+  const price=item?(isF?findPrice(item):WP_PRICE[item.tier]):0;
+  const have=+store[id]||0, spare=have-1;
+  if(!item||!price||spare<=0) return;
+  const cnt=n==="all"?spare:1, k=tradeSeed(), got=cnt*price;
+  if(n==="all"&&cnt>1&&!(await uiConfirm(`${isF?"把":"分解"} ${cnt} ${isF?"個":"把"}「${item.name}」${isF?"賣給"+SHOPKEEPER.name:""}，換成 ${got} 顆${CROPS[k].name}種子？（會留 1 ${isF?"個":"把"}）`,isF?"賣出":"分解"))){ const box=$(isF?"#buyBack":"#wpTrade"); if(box) box.outerHTML=isF?buybackHTML():dismantleHTML(); return; }
+  if((+store[id]||0)-cnt<1) return;                    // 確認期間數量變了
+  store[id]-=cnt; seeds()[k]=(seeds()[k]||0)+got;
+  S.tradeStat=S.tradeStat||{f:0,w:0}; S.tradeStat[isF?"f":"w"]+=cnt;
+  save(); queueSync(true); Sound.sfx("get");
+  toast(`${isF?"🧳 賣出":"🔧 分解了"} ${cnt} ${isF?"個":"把"}${item.name}，拿到 ${CROPS[k].name}種子 ×${got}`);
+  const box=$(isF?"#buyBack":"#wpTrade"); if(box) box.outerHTML=isF?buybackHTML():dismantleHTML();
+  renderMenu();
+}
 function renderSeedShop(body){
   body.dataset.kind="seedshop";
   stopWalkers("shop:");
   const snap=myHomeSnapshot();
-  body.innerHTML=bossBoxHTML()+`<details class="window pbox shoproom"${SHOP_ROOM_OPEN?" open":""}><summary>🏠 看看我家的展示空間<span class="ahint">買了家具、換了衣服，可以馬上看到效果</span></summary>
+  body.innerHTML=bossBoxHTML()+buybackHTML()+`<details class="window pbox shoproom"${SHOP_ROOM_OPEN?" open":""}><summary>🏠 看看我家的展示空間<span class="ahint">買了家具、換了衣服，可以馬上看到效果</span></summary>
       ${roomHTML(Object.assign({},snap,{pet:S.pet,petStage:petStage(),av:S.av,splats:[]}),{host:dispName(),hostId:"shopHost",petId:"shopPet",label:"我家"})}</details>
     <div id="shopPanel"></div>`;
   renderShop($("#shopPanel"));
@@ -8423,7 +8536,7 @@ function shopBuysCount(){ if(S.shopBuys==null){ S.shopBuys=S.decoCheat?0:Object.
 const isVip=()=>shopBuysCount()>=VIP_BUYS;
 let PV=null;
 function openPreview(id,slot){
-  const it=shopItem(id); if(!it||it.cat==="snack") return;
+  const it=shopItem(id); if(!it||CONSUME.has(it.cat)) return;
   if(!isVip()){ toast(`👑 再買 ${VIP_BUYS-shopBuysCount()} 個商品成為 VIP，就能預覽家具擺放`); Sound.sfx("error"); return; }
   shopState();
   PV={id,slot:it.cat==="floor"?(slot||(S.deco.floor===id?"floor":S.deco.floor2===id?"floor2":(!S.deco.floor?"floor":!S.deco.floor2?"floor2":"floor"))):it.cat};
@@ -8474,6 +8587,7 @@ async function shopBuy(id){
   const wasVip=isVip(); S.shopBuys=shopBuysCount()+1;
   if(!wasVip&&isVip()) setTimeout(vipCongrats,900);
   if(it.cat==="snack") S.snacks[id]=(S.snacks[id]||0)+1;
+  else if(it.cat==="fert"){ S.fert=S.fert||{}; S.fert[id]=(S.fert[id]||0)+1; }
   else if(it.cat==="pets"){ S.shopOwned[id]=true; S.petKinds=S.petKinds||{}; S.petKinds[shopPetType(id)]=true; }
   else if(WEAR_CATS.has(it.cat)){ S.shopOwned[id]=true; wearShopItem(it.cat,id); }
   else{ S.shopOwned[id]=true; if(it.cat==='floor'&&S.deco.floor&&!S.deco.floor2) S.deco.floor2=id; else S.deco[it.cat]=id; }
@@ -8485,7 +8599,7 @@ async function shopBuy(id){
     else if(!(await adoptShopPet(id,true))) toast(`買下「${it.name}」！之後在商店或寵物交換所都能換成牠`);
     renderPlace(); return;
   }
-  toast(it.cat==="snack"?`買了 1 個${it.name}`:it.cat==="petgear"&&!S.pet?`買下「${it.name}」，有寵物之後就能戴上`:WEAR_CATS.has(it.cat)?`買下「${it.name}」，已經${it.cat==="wear"?"換上":"戴上"}了！`:`買下「${it.name}」，已經擺進展示空間！`);
+  toast(it.cat==="fert"?`買了 1 包${it.name}，到開心農場就能施肥`:it.cat==="snack"?`買了 1 個${it.name}`:it.cat==="petgear"&&!S.pet?`買下「${it.name}」，有寵物之後就能戴上`:WEAR_CATS.has(it.cat)?`買下「${it.name}」，已經${it.cat==="wear"?"換上":"戴上"}了！`:`買下「${it.name}」，已經擺進展示空間！`);
   if(WEAR_CATS.has(it.cat)){ renderHUD(); buildMap(); }
   renderPlace();
 }
@@ -9403,6 +9517,7 @@ $("#placeBody").addEventListener("input",e=>{
   if(e.target.id==="nbSearch"){ renderNotebook($("#homePanel")); return; }
 });
 $("#placeBody").addEventListener("change",e=>{
+  if(e.target.matches("[data-tradeseed]")){ S.tradeSeed=e.target.value; save(); document.querySelectorAll("[data-tradeseed]").forEach(x=>{ x.value=S.tradeSeed; }); return; }
   const n=e.target.name;
   if(n==="pet-type"||n==="pet-color"){
     petDraft=petDraft||Object.assign({},PET_DEFAULT);
@@ -9413,7 +9528,7 @@ $("#placeBody").addEventListener("change",e=>{
     document.querySelectorAll("#placeBody [data-petth]").forEach(el=>{el.innerHTML=petSVG(Object.assign({},petDraft,{type:el.dataset.petth}));});
     return;
   }
-  if(n==="farm-seed"){ S.farmSeed=e.target.value; save(); Sound.sfx("cursor"); renderPlace(); return; }
+  if(n==="farm-seed"){ S.farmSeed=e.target.value; FERT_TOOL=""; save(); Sound.sfx("cursor"); renderPlace(); return; }
   if(n==="closet-oc"){
     S.av=Object.assign({},S.av||AV_DEFAULT,{oc:+e.target.value}); save(); pushFarm(); Sound.sfx("cursor");
     renderHUD(); buildMap(); renderPlace();
@@ -9518,6 +9633,8 @@ $("#placeBody").addEventListener("click",async e=>{
   const dg=t.closest("[data-dig]"); if(dg){ digPlot(+dg.dataset.dig); return; }
   const pt=t.closest("[data-plot]");
   if(pt){ farmClick(+pt.dataset.plot); return; }
+  const ft=t.closest("[data-fertool]"); if(ft){ FERT_TOOL=FERT_TOOL===ft.dataset.fertool?"":ft.dataset.fertool; Sound.sfx("cursor"); renderPlace(); return; }
+  const gf=t.closest("[data-gofarm]"); if(gf){ FERT_TOOL=gf.dataset.gofarm; openHome("farm"); return; }
   const oc=t.closest("[data-outfit]");
   if(oc){ openOutfit(oc.dataset.outfit); return; }
   const wc=t.closest("[data-weapon]");

@@ -722,6 +722,10 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .tossfly{position:absolute;left:50%;top:92%;width:34px;height:34px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.6,.4,1),top .6s cubic-bezier(.2,-0.4,.5,1),transform .6s linear;z-index:6;pointer-events:none}
 .vsactrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .rpsrow .act{min-width:86px}
+.chatcard{margin-top:12px;padding:10px 14px;border:2px dashed var(--gold);border-radius:4px;background:rgba(27,36,102,.5)}
+.chatcard .dsec{margin-top:0}
+.cheatcode{display:inline-block;margin:6px 0;padding:6px 14px;font-size:20px;letter-spacing:2px;background:#0E1440;border:2px solid var(--line);border-radius:4px;color:#FFF0A8;user-select:all}
+.chattip{margin-top:10px}
 .fertrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .fertbtn{display:grid;grid-template-columns:34px auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:left;padding:6px 12px 6px 8px;border:2px solid var(--line);border-radius:4px;background:#1B2466;color:inherit;cursor:pointer;font:inherit}
 .fertbtn.on{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}
@@ -2014,6 +2018,23 @@ footer.site p{margin:4px 0}
       <div class="seapick" id="npPick"></div>
     </div>
     <div class="foot"><span class="ahint">沒選也沒關係，下次還有機會遇到。</span></div>
+  </div>
+</dialog>
+
+<dialog id="chatDlg" aria-labelledby="ctTitle">
+  <div class="window dlg form seawrap">
+    <div class="head">
+      <div><p class="dept" id="ctDept">路上的閒聊</p><h3 id="ctTitle">村長</h3></div>
+      <button class="act ghost" type="button" data-close>再見</button>
+    </div>
+    <div class="body">
+      <div class="seatop">
+        <span class="npface" id="ctFace" aria-hidden="true"></span>
+        <p class="seasay" id="ctSay"></p>
+      </div>
+      <div id="ctCard"></div>
+    </div>
+    <div class="foot"><span class="ahint" id="ctFoot">在地圖上走動時，偶爾會遇到村長或總長停下來聊兩句。</span><button class="act ghost" type="button" id="ctMore">再聊一句</button></div>
   </div>
 </dialog>
 
@@ -3511,6 +3532,82 @@ function openNpcGift(){
   Sound.sfx("open");
   return true;
 }
+/* ---- 路上的閒聊：村長、總長偶爾停下來說密技（不含村長特權、我愛數數辦、0302009、ㄏㄟ）或遊戲提示 ---- */
+const CHAT_CHEATS=[
+  {who:"director",code:"我愛潦草小狗",has:()=>!!(S.petKinds&&S.petKinds.scruffy),say:"「跟你說個秘密：有一隻毛被風吹得亂七八糟的小狗，一直在找新主人。」",note:"隱藏寵物「潦草小狗」會直接變成你的夥伴（名字保留）。"},
+  {who:"director",code:"我愛生氣魯魯米",has:()=>!!(S.petKinds&&S.petKinds.grumpy),say:"「最近有一朵整天氣噗噗的小白雲在辦公室外面飄來飄去，好像想跟人回家。」",note:"隱藏寵物「氣噗噗」會直接變成你的夥伴（名字保留）。"},
+  {who:"director",code:"我不想上班",has:()=>((S.items||{}).leave_card||0)>0,say:"「……上班上到很累的時候，可以偷偷跟我說一句真心話。我什麼都沒聽到喔。」",note:"隱藏武器「請假卡」，不會隨機掉落。"},
+  {who:"director",code:"我愛吃花生",has:()=>!!(S.outfits&&S.outfits.peanut),say:"「你是花生派還是芝麻派？如果是花生派，我這裡有一套很適合你的衣服。」",note:"秘密服裝「花生裝」，會直接換上。"},
+  {who:"chief",code:"萬聖節快樂",has:()=>!!(S.outfits&&S.outfits.pumpkin),say:"「Trick or Treat！跟我說一聲節日快樂，我就送你一套南瓜裝。」",note:"秘密服裝「南瓜裝」，會直接換上。"},
+  {who:"chief",code:"聖誕節快樂",has:()=>!!(S.outfits&&S.outfits.snowman),say:"「天氣冷了，記得跟我說聲聖誕快樂，我這裡有一套暖呼呼的雪人裝。」",note:"秘密服裝「雪人裝」，會直接換上。"}
+];
+const CHAT_TIPS=[
+  ["any","「種子商店的豆豆老闆每天出一題，答對了可以自己挑一種種子，拿 30 顆。」"],
+  ["any","「各任務地點旁邊的 NPC 每天都會出一題情報問答，答對送 10 倍種子，題目就藏在任務說明裡。」"],
+  ["any","「倉庫裡打 ♥ 的蔬菜是寵物最愛吃的，餵牠親密度 +1；滿 100 會解鎖彩虹毛色和專屬配件。」"],
+  ["any","「幫寵物買一個牠專屬的窩，牠會走過去睡覺，每天第一次睡還會多 1 點親密度。」"],
+  ["chief","「有些菜種在隔壁會長出稀有品種，農場下面的圖鑑有線索，多試幾種組合吧。」"],
+  ["any","「草莓要 8 小時太久？種子商店有賣肥料，高級肥料可以讓剩下的時間減半。」"],
+  ["director","「重複拿到的武器拿來數位總合辦公室給我，我幫你分解成種子；每把都會幫你留 1 把。」"],
+  ["chief","「多出來的小物可以賣給豆豆老闆換種子，越少見的越值錢，不過相簿換畫框要同款 30 個喔。」"],
+  ["any","「走進海裡可以撈寶，運氣好會撈到武器；裝備黃金鏟的話，史詩和傳說會比較好撈。」"],
+  ["any","「海裡住著一隻章魚海怪，第一次見面牠會幫你的寵物換成銀色或黃金色。」"],
+  ["chief","「餵完寵物的 5 分鐘內，牠會認真看守農場，想來偷菜的人很容易被抓到。」"],
+  ["any","「去別人家拜訪，可以跟他的寵物猜拳，每天 3 局。贏了拿走一份蔬菜，輸了要餵牠最愛吃的菜。」"],
+  ["any","「帶寵物去串門子，同一對寵物每天第一次見面雙方親密度都 +1；常去玩還能拿到合照和友誼項圈。」"],
+  ["chief","「送蔬菜給我，第一次會拿到一隻小老虎；送到第 3 次、第 6 次還有畫框。」"],
+  ["director","「送蔬菜來數位總合辦公室，第一次我會送你一隻毛毛蟲；全站剛好第 100 份的人，可以挑 30 顆種子。」"],
+  ["any","「在交誼廳留言板留一次言或回應一次，就會收到一幅畫框『吶喊兔』。」"],
+  ["any","「交誼廳按讚最多的人會戴上皇冠，地圖上的角色也會跟著戴。」"],
+  ["any","「任務裡常用的資料，記得按『♡ 加入最愛』，回到溫暖的家打開筆記本就能搜尋。」"],
+  ["director","「雲端存檔的救援碼一定要記下來，忘記密碼的時候只能靠它還原進度。」"],
+  ["any","「在種子商店累積買 30 個商品就是 VIP，可以先預覽家具擺在家裡的樣子。」"],
+  ["any","「地圖上的建築亮起『！』，就代表那裡有新消息，記得過去看看。」"],
+  ["any","「種錯菜不用緊張，還沒成熟的田可以按『⛏ 挖掉』，種子會退還。」"]
+];
+let lastChat=0, CHAT=null;
+const CHAT_RECENT=[];
+function chatPick(who){
+  const fresh=CHAT_CHEATS.filter(c=>c.who===who&&!c.has()&&!CHAT_RECENT.includes(c.code));
+  if(fresh.length&&Math.random()<.4){ const c=fresh[Math.floor(Math.random()*fresh.length)]; CHAT_RECENT.push(c.code); return {cheat:c}; }
+  let tips=CHAT_TIPS.map((t,i)=>[t,i]).filter(([t,i])=>(t[0]==="any"||t[0]===who)&&!CHAT_RECENT.includes("t"+i));
+  if(!tips.length){ CHAT_RECENT.length=0; tips=CHAT_TIPS.map((t,i)=>[t,i]).filter(([t])=>t[0]==="any"||t[0]===who); }
+  const [t,i]=tips[Math.floor(Math.random()*tips.length)]; CHAT_RECENT.push("t"+i);
+  while(CHAT_RECENT.length>12) CHAT_RECENT.shift();
+  return {tip:t[1]};
+}
+function showChatLine(){
+  const c=CHAT, line=chatPick(c.who); c.n++;
+  if(line.cheat){
+    $("#ctSay").textContent=line.cheat.say;
+    $("#ctCard").innerHTML=`<div class="chatcard"><p class="dsec">🤫 悄悄話</p>
+      <p class="dbody">到<b>交誼廳的留言板</b>輸入下面這句，按「張貼」就好（不會真的貼出去）：</p>
+      <p class="cheatcode">${esc(line.cheat.code)}</p><p class="ahint">${esc(line.cheat.note)}</p></div>`;
+  }else{
+    $("#ctSay").textContent=line.tip;
+    $("#ctCard").innerHTML=`<p class="ahint chattip">💡 小提示・${c.who==="chief"?"村長":"總長"}的經驗談</p>`;
+  }
+  $("#ctMore").hidden=c.n>=3;
+}
+function openNpcChat(){
+  const who=Math.random()<.5?"chief":"director";
+  CHAT={who,n:0};
+  $("#ctFace").innerHTML=avatarSVG(who==="chief"?CHIEF_AV:DIRECTOR_AV);
+  $("#ctTitle").textContent=who==="chief"?`部門村長　${CFG.chief}`:`數位總合辦公室　${CFG.director}`;
+  $("#ctDept").textContent=who==="chief"?"路上的閒聊・村長剛巡完田":"路上的閒聊・總長出來透透氣";
+  showChatLine();
+  const d=$("#chatDlg"); if(!d.open) d.showModal();
+  Sound.sfx("open");
+  return true;
+}
+$("#ctMore").addEventListener("click",()=>{ if(CHAT){ showChatLine(); Sound.sfx("cursor"); } });
+function tryNpcChat(){
+  if(!S.group||TOUR) return false;
+  const now=Date.now(); if(now-lastChat<3*60*1000||now-lastNpc<60*1000) return false;   // 3 分鐘最多一次，剛送完衣服也不會馬上又來
+  if(document.querySelector("dialog[open]")) return false;
+  if(Math.random()>=0.06) return false;                            // 機率 6%
+  lastChat=now; return openNpcChat();
+}
 function tryNpcMeet(){
   if(!S.group) return false;
   const now=Date.now(); if(now-lastNpc<30*60*1000) return false;   // 30 分鐘一次
@@ -3720,7 +3817,7 @@ function moveHero(x,y,opt){
   const sea=inSea(x,y), walk=!!(opt&&opt.walk);      // 只有自由走動才會有事件，前往地點時不打擾
   hero.classList.toggle("swim",sea);
   if(walk&&sea) setTimeout(()=>{ if(heroPos&&inSea(heroPos.x,heroPos.y)&&!trySeaMonster()) trySeaTreasure(); },fast?320:740);
-  else if(walk) setTimeout(()=>{ if(heroPos&&!inSea(heroPos.x,heroPos.y)) tryNpcMeet(); },fast?320:740);
+  else if(walk) setTimeout(()=>{ if(heroPos&&!inSea(heroPos.x,heroPos.y)&&!tryNpcMeet()) tryNpcChat(); },fast?320:740);
 }
 function placeHero(id,instant){
   const z=ZONES.find(z=>z.id===id)||PLACES.find(p=>p.id===id)||ZONES[0];
@@ -6030,7 +6127,7 @@ function runCheat(msg){
 }
 /* ---- 各功能的說明提示（點「?」顯示） ---- */
 const HELP={
-  map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
+  map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝，或停下來聊兩句（有時會透露留言板的密技）；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
   zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
   places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。",
   notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題和內容。",

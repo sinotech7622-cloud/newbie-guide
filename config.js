@@ -90,10 +90,12 @@ window.SINO22_CONFIG = {
   "sheets": {
     "feed": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=592103693&single=true&output=csv",
     "lounge": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1321071480&single=true&output=csv",
+    "loungeLite": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1582108464&single=true&output=csv",
     "consults": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1696458819&single=true&output=csv",
     "roster": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1302753628&single=true&output=csv",
     "saves": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=29804008&single=true&output=csv",
     "ivreplies": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1271539101&single=true&output=csv",
+    "stats": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1664764467&single=true&output=csv",
     "settings": "",
     "interviews": "",
     "replies": "",

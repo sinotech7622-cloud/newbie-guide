@@ -833,6 +833,17 @@ body.tour-lock .mapframe{z-index:41}
 .linkbtn.retract:hover{color:#fff;text-decoration:underline}
 
 /* 種子商店 */
+.cpseeds{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin:6px 0 4px}
+.cpseed,.form label.cpseed:not(.switch){display:flex;flex-direction:column;margin:0;align-items:center;gap:4px;background:#1B2466;border:2px solid var(--line);border-radius:4px;padding:8px 6px;text-align:center}
+.cpseed b{font-family:var(--pixel);font-weight:400;font-size:14px;white-space:nowrap}
+.cpseed .seedicon{width:30px;height:30px;padding:1px;border-width:1px;flex:none}
+.cpseed .pickicon{display:grid;place-items:center;background:#2B3A8C;color:var(--gold);font-family:var(--pixel);font-size:16px}
+.cpseed input.ainput{width:64px;min-width:0;text-align:center;padding:4px 2px;margin:0}
+.cpwho{display:flex;flex-wrap:wrap;gap:6px 18px;margin:4px 0 6px}
+.cppl{display:flex;flex-wrap:wrap;gap:6px;max-height:150px;overflow:auto;margin:6px 0 2px}
+.cppl .mini-btn.on{border-color:var(--gold);color:var(--gold)}
+#compDlg .seedchips{margin:10px 0 6px}
+#cpdOpts{margin-top:6px}
 .seedchips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
 .seedchip{display:inline-flex;align-items:center;gap:6px;background:#1B2466;border:1px solid var(--line);border-radius:12px;padding:2px 10px 2px 4px;font-size:13px}
 .seedchip .seedicon{width:22px;height:22px;padding:1px;border-width:1px}
@@ -1396,6 +1407,7 @@ footer.site p{margin:4px 0}
       <button role="tab" type="button" data-tab="ivs" aria-selected="false">面談通知<span class="tabcount" id="ivTabCount" hidden></span></button>
       <button role="tab" type="button" data-tab="rps" aria-selected="false">諮詢回覆</button>
       <button role="tab" type="button" data-tab="npcs" aria-selected="false">NPC 設定</button>
+      <button role="tab" type="button" data-tab="comp" aria-selected="false">種子補償</button>
       <button role="tab" type="button" data-tab="roster" aria-selected="false">使用者名冊</button>
       <button role="tab" type="button" data-tab="rescue" aria-selected="false">帳號救援</button>
       <button role="tab" type="button" data-tab="setup" aria-selected="false">設定小幫手</button>
@@ -1580,6 +1592,39 @@ footer.site p{margin:4px 0}
           <button class="act" type="button" id="npcPublish">發布 NPC 設定</button></span></div>
         <p class="ahint">7 位 NPC 會出現在指定的任務地點（地圖上也會站在建築旁邊），新人每天可以找每位 NPC 答題領種子。可以修改名字、稱號、供應說明、一句話、出現地點和外觀；地點選「不出現」就會暫時隱藏。供應說明留白時會自動顯示「供應○○種子」；實際供應的種子種類固定。發布後約 5 分鐘生效。</p>
         <div id="npcAdmin" class="npcadmin"></div>
+      </section>
+    </div>
+    <div class="apanel" data-panel="comp" role="tabpanel" hidden>
+      <section class="window abox form">
+        <h3>發送種子補償</h3>
+        <p class="ahint">系統維修、活動或個別補發時使用。送出後約 5 分鐘生效，對象下次開啟網站（或每小時自動同步）時會收到「補償包裹」，按「領取」種子就會放進背包。同一個包裹每人只能領一次。</p>
+        <div class="two">
+          <div><label for="cpTitle">包裹名稱</label><input id="cpTitle" class="ainput wide" maxlength="30" placeholder="例如：10/7 菜園維修補償"></div>
+          <div><label for="cpUntil">領取期限（留白＝不限）</label><input id="cpUntil" class="ainput wide" type="date"></div>
+        </div>
+        <label for="cpMsg">給大家的話（選填）</label>
+        <input id="cpMsg" class="ainput wide" maxlength="120" placeholder="例如：昨天菜園暫時無法收成，送大家一些種子，謝謝耐心等候！">
+        <label>發送對象</label>
+        <div class="cpwho">
+          <label class="chk"><input type="radio" name="cpWho" value="all" checked> 所有人</label>
+          <label class="chk"><input type="radio" name="cpWho" value="codes"> 指定新人</label>
+          <label class="chk" id="cpOldRow"><input type="checkbox" id="cpOnlyOld" checked> 只給目前已加入的人（之後才註冊的人不會收到）</label>
+        </div>
+        <div id="cpCodesRow" hidden>
+          <label for="cpCodes">新人代碼（一行一個或用逗號分隔）</label>
+          <textarea id="cpCodes" class="ainput wide" rows="2" placeholder="例如：K7QM-2XPD"></textarea>
+          <input id="cpSearch" class="ainput" type="search" placeholder="從名冊找人：輸入名字、組別或代碼" style="max-width:280px;margin-top:6px">
+          <div class="cppl" id="cpPickList"></div>
+        </div>
+        <label>種子內容（每種 0–99 顆）</label>
+        <div class="cpseeds" id="cpSeeds"></div>
+        <p class="ahint">「自選」是讓收到的人自己挑一種作物，數量就是自選的顆數。</p>
+        <div class="formfoot"><span class="cerr" id="cpErr" role="alert"></span><button class="act" type="button" id="cpSend">發送補償</button></div>
+      </section>
+      <section class="window abox">
+        <div class="abar"><h3>已發送的補償</h3><button class="act ghost" type="button" id="cpReload">重新讀取</button></div>
+        <div class="tscroll"><table class="atable" id="cpTable"></table></div>
+        <p class="ahint" style="margin-top:10px">撤回後，還沒領取的人就不會再收到；已經領取的種子不會被收回。</p>
       </section>
     </div>
     <div class="apanel" data-panel="roster" role="tabpanel" hidden>
@@ -1996,6 +2041,18 @@ footer.site p{margin:4px 0}
       <div class="nqtop"><span class="npcface" id="spFace" aria-hidden="true"></span><p class="dbody" id="spSay"></p></div>
       <div class="seedrow" id="spOpts" style="margin-top:12px"></div>
     </div>
+  </div>
+</dialog>
+<dialog id="compDlg" aria-labelledby="cpdTitle">
+  <div class="window dlg form nqwrap">
+    <div class="head"><div><p class="dept">📦 補償包裹</p><h3 id="cpdTitle">種子補償</h3></div></div>
+    <div class="body">
+      <div class="nqtop"><span class="npcface" id="cpdFace" aria-hidden="true"></span><p class="dbody" id="cpdSay"></p></div>
+      <div class="seedchips" id="cpdList"></div>
+      <div id="cpdPick" hidden><p class="dbody" id="cpdPickTxt"></p><div class="seedrow" id="cpdOpts"></div></div>
+      <p class="ahint" id="cpdUntil"></p>
+    </div>
+    <div class="foot"><button class="act ghost" type="button" id="cpdLater">稍後再領</button><button class="act" type="button" id="cpdOk">領取</button></div>
   </div>
 </dialog>
 <dialog id="visitDlg" aria-labelledby="vsTitle">
@@ -4335,6 +4392,7 @@ $("#cForm").addEventListener("submit",async e=>{
   Sound.sfx("select");
   const isNew=!S.group;
   const profileChanged=!isNew&&(S.name!==name||S.emp!==emp||S.group!==grp);
+  if(isNew&&!S.since) S.since=Date.now();             // 加入時間（種子補償「只給目前已加入的人」用）
   S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; S.av=Object.assign({},draft); S.group=grp; save();
   if(isNew) logSignup("首次登錄"); else if(profileChanged) logSignup("修改資料");
   queueSync(true);
@@ -4538,7 +4596,7 @@ async function unpackPayload(str){
   return JSON.parse(t.startsWith("j:")?t.slice(2):t);
 }
 async function parseFeed(rows){
-  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map()};
+  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map()};
   rows.forEach((r,i)=>{
     const ts=String(r[0]||""), type=String(r[1]||"").trim(), id=String(r[2]||"").trim(), part=String(r[3]||"").trim(), data=String(r[4]||""), by=String(r[5]||"");
     if(!type||!id) return;
@@ -4561,6 +4619,9 @@ async function parseFeed(rows){
   for(const [id,rec] of recs.interview){ try{ out.interviews.push(Object.assign({},await unpackPayload(rec.data),{id,row:rec.row,ts:rec.ts,by:rec.by})); }catch(e){} }
   out.interviews.sort((a,b)=>a.row-b.row);
   for(const [id,rec] of recs.reply){ try{ out.replies[id]=Object.assign({},await unpackPayload(rec.data),{row:rec.row,ts:rec.ts,by:rec.by}); }catch(e){} }
+  out.comps=[];
+  for(const [id,rec] of recs.comp){ try{ out.comps.push(Object.assign({},await unpackPayload(rec.data),{id,row:rec.row,ts:rec.ts,by:rec.by})); }catch(e){} }
+  out.comps.sort((a,b)=>a.row-b.row);
   out.roster={};
   for(const [id,rec] of recs.roster){ try{ out.roster[id]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
   return out;
@@ -5229,6 +5290,7 @@ function openCloud(mode){
 let LOGIN_GATE=false, gateDone=false;
 function gateFinish(){
   if(gateDone) return; gateDone=true; LOGIN_GATE=false;
+  setTimeout(()=>{ if(S.group) loadInbox(false); },2500);   // 登入後再檢查一次通知與補償包裹（換裝置時存檔剛下載）
   const go=()=>{ if(document.querySelector("dialog[open]")){ setTimeout(go,400); return; } startWelcome(false); };   // 救援碼等視窗關掉後才開始
   setTimeout(go,300);
 }
@@ -5540,6 +5602,7 @@ async function loadInbox(notify,force){
       if(feed) Object.entries(feed.replies).forEach(([no,x])=>{ replyCache[no]={status:String(x.status||"").trim(),reply:String(x.reply||""),at:String(x.at||"")}; });
     }
     INBOX.consults=buildConsults(replyCache);
+    if(feed) checkComp(feed);
     inboxLoaded=true; INBOX.at=feed?Date.now():INBOX.at;
     if(notify!==false){
       const inHome=curPlace&&curPlace.id==="home", inDigital=curPlace&&curPlace.id==="digital";
@@ -6945,6 +7008,8 @@ function nounTerms(q){                                 // 這則任務裡有意�
   });
   return terms;
 }
+const optKey=x=>String(x).normalize("NFKC").replace(/[\s　]+/g,"").replace(/[～〜~]/g,"~").replace(/[－–—]/g,"-").toLowerCase();   // 比對選項是否重複（忽略空白、全形半形）
+const quizOK=q=>!!q&&new Set(q.opts.map(optKey)).size===q.opts.length;
 const sufOf=w=>{ const m=w.match(new RegExp("("+NOUN_SUF+")$")); return m?m[1]:""; };
 function makeNpcQuizV2(n,today,ZONES,ALLQ){
   const r=seededRand(n.id+"|"+today+"|"+(n.zone||""));
@@ -6968,7 +7033,8 @@ function makeNpcQuizV2(n,today,ZONES,ALLQ){
   const pickNum=()=>{
     for(const c of shuffleR(numC,r)){
       const unit=unitOf(c.tok);
-      let wrong=shuffleR([...new Set(zoneNumToks.filter(x=>x.kind===c.kind&&x.tok!==c.tok&&unitOf(x.tok)===unit&&(!/個月/.test(c.tok)===!/個月/.test(x.tok))).map(x=>x.tok))],r);
+      const ansTxt=c.tok.replace(/(\d)\s+(?=[^\d\s:～~\-–至到])/g,"$1"), ansK=optKey(ansTxt), tK=optKey(c.t);
+      let wrong=shuffleR([...new Set(zoneNumToks.filter(x=>x.kind===c.kind&&optKey(x.tok)!==ansK&&unitOf(x.tok)===unit&&(!/個月/.test(c.tok)===!/個月/.test(x.tok))).map(x=>x.tok.replace(/(\d)\s+(?=[^\d\s:～~\-–至到])/g,"$1")))],r);
       const okTime=x=>!/\d{1,2}:\d{2}/.test(x)||(x.match(/\d{1,2}:\d{2}/g)||[]).every(h=>{ const v=toMin(h); return v>=360&&v<=1320; });
       const val=x=>parseFloat(String(x).replace(/,/g,"")), u=unitOf(c.tok), v0=val(c.tok);
       const okUnit=x=>{ const v=val(x); if(!(v>0)&&v!==0) return true;
@@ -6977,10 +7043,10 @@ function makeNpcQuizV2(n,today,ZONES,ALLQ){
         if(c.kind==="unit"&&Number.isInteger(v0)&&v0>=10&&v0%5===0) return v%5===0;   // 整數答案配整數選項
         return true; };
       const sane=x=>okTime(x)&&okUnit(x);
-      wrong=wrong.concat(shuffleR(fakeNum(c,r),r)).filter((x,i,a)=>a.indexOf(x)===i&&x!==c.tok&&!c.t.includes(x)&&sane(x)).slice(0,3);
+      wrong=wrong.concat(shuffleR(fakeNum(c,r),r)).map(x=>String(x).replace(/(\d)\s+(?=[^\d\s:～~\-–至到])/g,"$1")).filter((x,i,a)=>a.findIndex(y=>optKey(y)===optKey(x))===i&&optKey(x)!==ansK&&!tK.includes(optKey(x))&&sane(x)).slice(0,3);
       if(wrong.length<3) continue;
-      const opts=shuffleR([c.tok].concat(wrong),r);
-      return {kind:"數字題",text:`根據「${c.q.title}」：\n${c.t.slice(0,c.s)}＿＿＿＿${c.t.slice(c.e)}`,opts,ans:opts.indexOf(c.tok),quest:c.q.id,explain:c.t};
+      const opts=shuffleR([ansTxt].concat(wrong),r);
+      return {kind:"數字題",text:`根據「${c.q.title}」：\n${c.t.slice(0,c.s)}＿＿＿＿${c.t.slice(c.e)}`,opts,ans:opts.indexOf(ansTxt),quest:c.q.id,explain:c.t};
     }
     return null;
   };
@@ -6992,7 +7058,7 @@ function makeNpcQuizV2(n,today,ZONES,ALLQ){
       let wrong=suf?shuffleR(pool.filter(w=>sufOf(w)===suf),r):[];
       if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>allNouns.get(w)===c.src&&Math.abs(w.length-c.w.length)<=3),r));
       if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>Math.abs(w.length-c.w.length)<=2),r));
-      wrong=wrong.filter((x,i,a)=>a.indexOf(x)===i).slice(0,3);
+      wrong=wrong.filter((x,i,a)=>a.findIndex(y=>optKey(y)===optKey(x))===i&&optKey(x)!==optKey(c.w)).slice(0,3);
       if(wrong.length<3) continue;
       const opts=shuffleR([c.w].concat(wrong),r);
       return {kind:"名詞題",text:`根據「${c.q.title}」：\n${c.t.slice(0,c.s)}＿＿＿＿${c.t.slice(c.e)}`,opts,ans:opts.indexOf(c.w),quest:c.q.id,explain:c.t};
@@ -7007,11 +7073,11 @@ function makeNpcQuiz(n){
   const today=new Date().toISOString().slice(0,10), r=seededRand(n.id+"|"+today+"|"+(n.zone||"")+"|mix");
   const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
   const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id); if(!qs.length) return null;
-  if(r()<.75){ const q=makeNpcQuizV2(n,today,ZONES,ALLQ); if(q) return q; }
+  if(r()<.75){ const q=makeNpcQuizV2(n,today,ZONES,ALLQ); if(quizOK(q)) return q; }
   // ② 歸屬題：哪一項可以在這裡查到
   const others=ALLQ.filter(q=>q.zone&&q.zone.id!==z.id);
   if(others.length>=3&&(r()<.6||new Set(qs.map(q=>q.chapter)).size<2)){
-    const right=qs[Math.floor(r()*qs.length)], wrong=shuffleR(others,r).slice(0,3);
+    const right=qs[Math.floor(r()*qs.length)], wrong=shuffleR(others,r).filter((q,i,a)=>optKey(q.title)!==optKey(right.title)&&a.findIndex(y=>optKey(y.title)===optKey(q.title))===i).slice(0,3);
     const opts=shuffleR([right].concat(wrong),r);
     return {kind:"歸屬題",text:`下列哪一項，是在「${z.name}」可以查到的情報？`,opts:opts.map(q=>q.title),ans:opts.indexOf(right),quest:right.id,
       explain:`「${right.title}」在${z.name}的「${right.chapter}」裡。`};
@@ -7187,6 +7253,158 @@ $("#rsTable").addEventListener("click",async e=>{
   const ok=await adminSend("roster",code,payload,`${on?"隱藏":"恢復"}人員：${x.name||code}`,"");
   b.disabled=false;
   if(ok){ RS_PENDING[code]=on; renderRoster(); }
+});
+
+/* ================= 種子補償（由後台發送） ================= */
+const COMP_MAX=99;
+const compNum=v=>Math.min(COMP_MAX,Math.max(0,Math.floor(+v||0)));
+const compSeedList=c=>Object.entries((c&&c.seeds)||{}).map(([k,n])=>[k,compNum(n)]).filter(([k,n])=>CROPS[k]&&n>0);
+const compEnd=c=>{ if(!c||!c.until) return 0; const d=new Date(String(c.until)+"T23:59:59"); return isNaN(d)?0:d.getTime(); };
+const compExpired=c=>{ const e=compEnd(c); return !!e&&Date.now()>e; };
+const compDesc=c=>{ const a=compSeedList(c).map(([k,n])=>`${CROPS[k].name}×${n}`); if(compNum(c.pick)) a.push(`自選×${compNum(c.pick)}`); return a.join("、")||"（沒有內容）"; };
+function compForMe(c){
+  if(!c||c.revoked||compExpired(c)) return false;
+  if(!compSeedList(c).length&&!compNum(c.pick)) return false;
+  if(c.to==="all"){ if(c.onlyOld&&S.since&&c.at&&S.since>+c.at) return false; return true; }
+  const me=normCode(myCode());
+  return !!me&&Array.isArray(c.to)&&c.to.some(x=>normCode(x)===me);
+}
+let COMP_Q=[], COMP_CUR=null, COMP_LATER=new Set();
+function checkComp(feed){
+  if(!feed||!feed.comps||!S.group) return;
+  S.compClaimed=S.compClaimed||{};
+  feed.comps.forEach(c=>{ if(compForMe(c)&&!S.compClaimed[c.id]&&!COMP_LATER.has(c.id)&&!COMP_Q.some(x=>x.id===c.id)&&!(COMP_CUR&&COMP_CUR.c.id===c.id)) COMP_Q.push(c); });
+  showNextComp();
+}
+function showNextComp(){
+  clearTimeout(showNextComp.t);
+  if(COMP_CUR) return;
+  COMP_Q=COMP_Q.filter(c=>compForMe(c)&&!(S.compClaimed||{})[c.id]&&!COMP_LATER.has(c.id));
+  if(!COMP_Q.length) return;
+  if(document.querySelector("dialog[open]")||!$("#viewAdmin").hidden||TOUR){ showNextComp.t=setTimeout(showNextComp,2500); return; }
+  const c=COMP_Q.shift(); COMP_CUR={c,pick:""};
+  const list=compSeedList(c), pick=compNum(c.pick);
+  $("#cpdTitle").textContent=cleanText(c.title,30)||"種子補償";
+  $("#cpdFace").innerHTML=avatarSVG(CHIEF_AV);
+  $("#cpdSay").textContent=`村長${CFG.chief}：「${cleanText(c.msg,120)||"這是給你的種子補償，請收下！"}」`;
+  $("#cpdList").innerHTML=list.map(([k,n])=>`<span class="seedchip"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span>${esc(CROPS[k].name)}種子 ×${n}</span>`).join("");
+  $("#cpdList").hidden=!list.length;
+  $("#cpdPick").hidden=!pick;
+  if(pick){
+    $("#cpdPickTxt").innerHTML=`${list.length?"另外":"包裹裡"}有 <b>${pick}</b> 顆自選種子，挑一種你想要的：`;
+    $("#cpdOpts").innerHTML=Object.entries(CROPS).map(([k,cr])=>`<button type="button" class="seed" data-cpk="${k}" aria-pressed="false"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(cr.name)}</b><small>×${pick}</small></button>`).join("");
+  }
+  const end=compEnd(c);
+  $("#cpdUntil").textContent=end?`領取期限：${new Date(end).toLocaleDateString("zh-TW")}`:"";
+  $("#cpdOk").disabled=!!pick;
+  $("#cpdOk").textContent=pick?"先選一種自選種子":"領取";
+  $("#compDlg").showModal(); Sound.sfx("mail");
+}
+$("#cpdOpts").addEventListener("click",e=>{
+  const b=e.target.closest("[data-cpk]"); if(!b||!COMP_CUR) return;
+  COMP_CUR.pick=b.dataset.cpk; Sound.sfx("cursor");
+  $("#cpdOpts").querySelectorAll("[data-cpk]").forEach(x=>{ const on=x===b; x.classList.toggle("on",on); x.setAttribute("aria-pressed",String(on)); });
+  $("#cpdOk").disabled=false; $("#cpdOk").textContent="領取";
+});
+$("#cpdOk").addEventListener("click",()=>{
+  const cur=COMP_CUR; if(!cur) return;
+  const c=cur.c, pick=compNum(c.pick);
+  if(pick&&!CROPS[cur.pick]) return;
+  S.compClaimed=S.compClaimed||{};
+  if(S.compClaimed[c.id]){ $("#compDlg").close(); return; }
+  const got=[];
+  compSeedList(c).forEach(([k,n])=>{ seeds()[k]=(seeds()[k]||0)+n; got.push(`${CROPS[k].name}×${n}`); });
+  if(pick){ seeds()[cur.pick]=(seeds()[cur.pick]||0)+pick; got.push(`${CROPS[cur.pick].name}×${pick}`); }
+  S.compClaimed[c.id]=Date.now(); save(); queueSync(true);
+  Sound.sfx("achieve"); toast(`📦 收到補償種子：${got.join("、")}`);
+  $("#compDlg").close();
+  if(curPlace&&!placeEditing()) renderPlace();
+});
+$("#cpdLater").addEventListener("click",()=>{ if(COMP_CUR) COMP_LATER.add(COMP_CUR.c.id); $("#compDlg").close(); toast("包裹先放著，下次開啟網站會再提醒你"); });
+$("#compDlg").addEventListener("cancel",()=>{ if(COMP_CUR) COMP_LATER.add(COMP_CUR.c.id); });
+$("#compDlg").addEventListener("close",()=>{ COMP_CUR=null; showNextComp.t=setTimeout(showNextComp,700); });
+
+/* ---- 後台：種子補償 ---- */
+let CP_PEND={};
+function cpWho(){ const r=document.querySelector('input[name="cpWho"]:checked'); return r?r.value:"all"; }
+function cpCodes(){ return [...new Set($("#cpCodes").value.split(/[\s,，、;；]+/).map(x=>x.trim().toUpperCase()).filter(Boolean))]; }
+function cpWhoState(){ const codes=cpWho()==="codes"; $("#cpCodesRow").hidden=!codes; $("#cpOldRow").hidden=codes; if(codes) cpPickList(); }
+function cpPickList(){
+  const el=$("#cpPickList"); if(!el) return;
+  if(!RS_ROWS.length){ el.innerHTML=`<span class="ahint">${RS_BUSY?"名冊讀取中…":"沒有名冊資料，可以直接輸入代碼。"}</span>`; return; }
+  const q=$("#cpSearch").value.trim().toLowerCase(), have=new Set(cpCodes()), HID=hiddenCodes();
+  let list=RS_ROWS.filter(x=>!HID.has(x.code));
+  if(q) list=list.filter(x=>[x.name,x.nick,x.group,x.code].join(" ").toLowerCase().includes(q));
+  list.sort((a,b)=>String(a.group).localeCompare(String(b.group),"zh-Hant")||String(a.name).localeCompare(String(b.name),"zh-Hant"));
+  el.innerHTML=list.slice(0,40).map(x=>`<button type="button" class="mini-btn${have.has(x.code)?" on":""}" data-cpadd="${esc(x.code)}" title="${esc(x.code)}">${have.has(x.code)?"✓ ":""}${esc(x.name||x.code)}<span class="ahint">・${esc(x.group||"—")}</span></button>`).join("")
+    +(list.length>40?`<span class="ahint">還有 ${list.length-40} 人，請輸入關鍵字縮小範圍</span>`:"")+(list.length?"":`<span class="ahint">沒有符合的人員</span>`);
+}
+function cpSeedsUI(){
+  $("#cpSeeds").innerHTML=Object.entries(CROPS).map(([k,c])=>`<label class="cpseed"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}</b><input class="ainput" type="number" min="0" max="${COMP_MAX}" step="1" value="0" data-cps="${k}" aria-label="${esc(c.name)}種子數量"></label>`).join("")
+    +`<label class="cpseed"><span class="seedicon pickicon" aria-hidden="true">?</span><b>自選</b><input class="ainput" type="number" min="0" max="${COMP_MAX}" step="1" value="0" data-cps="__pick" aria-label="自選種子數量"></label>`;
+}
+async function openCompAdmin(){
+  if(!$("#cpSeeds").children.length) cpSeedsUI();
+  if(!$("#cpUntil").value){ const d=new Date(Date.now()+14*864e5); $("#cpUntil").value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+  cpWhoState(); renderCompAdmin();
+  try{ await getFeed(true); }catch(e){}
+  renderCompAdmin();
+  if(!RS_ROWS.length&&!RS_BUSY){ loadRoster().then(()=>{ if(cpWho()==="codes") cpPickList(); }); }
+}
+function renderCompAdmin(){
+  const list=((FEED&&FEED.comps)||[]).slice().sort((a,b)=>(+b.at||0)-(+a.at||0)||b.row-a.row);
+  Object.keys(CP_PEND).forEach(id=>{ const x=list.find(v=>v.id===id); if(x&&!!x.revoked===CP_PEND[id]) delete CP_PEND[id]; });
+  $("#cpTable").innerHTML=`<thead><tr><th>發送時間</th><th>包裹名稱</th><th>對象</th><th>內容</th><th>領取期限</th><th>狀態</th><th><span class="sr">操作</span></th></tr></thead><tbody>${
+    list.length?list.map(x=>{
+      const rv=x.id in CP_PEND?CP_PEND[x.id]:!!x.revoked, who=x.to==="all"?(x.onlyOld?"所有人（已加入者）":"所有人"):`${(x.to||[]).length} 人`;
+      const st=rv?'<span class="st st-off">已撤回</span>':compExpired(x)?'<span class="st st-off">已過期</span>':'<span class="st st-ok">可領取</span>';
+      return `<tr><td>${esc(x.at?fmtShort(new Date(+x.at)):x.ts?fmtShort(parseSheetTs(x.ts)||x.ts):"—")}${x.by?`<span class="ahint">・${esc(x.by)}</span>`:""}</td><td>${esc(x.title||"種子補償")}</td>
+        <td title="${esc(Array.isArray(x.to)?x.to.join("、"):"")}">${esc(who)}</td><td>${esc(compDesc(x))}</td><td>${esc(x.until||"不限")}</td>
+        <td>${st}${x.id in CP_PEND?' <span class="st st-wait">更新中</span>':""}</td>
+        <td><button class="${rv?"mini-btn":"del"}" type="button" data-cprev="${esc(x.id)}" data-on="${rv?0:1}">${rv?"恢復":"撤回"}</button></td></tr>`;
+    }).join(""):`<tr><td colspan="7">${sheetUrl("feed")?"還沒有發送過種子補償。":"還沒設定「後台資料」工作表。"}</td></tr>`}</tbody>`;
+}
+document.querySelectorAll('input[name="cpWho"]').forEach(r=>r.addEventListener("change",cpWhoState));
+$("#cpSearch").addEventListener("input",cpPickList);
+$("#cpCodes").addEventListener("input",()=>{ if(cpWho()==="codes") cpPickList(); });
+$("#cpPickList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-cpadd]"); if(!b) return;
+  const code=b.dataset.cpadd, have=cpCodes();
+  $("#cpCodes").value=(have.includes(code)?have.filter(c=>c!==code):have.concat(code)).join("\n");
+  Sound.sfx("cursor"); cpPickList();
+});
+$("#cpReload").addEventListener("click",async()=>{ try{ await getFeed(true); }catch(e){} renderCompAdmin(); });
+$("#cpSend").addEventListener("click",async()=>{
+  const err=$("#cpErr"); err.textContent="";
+  const seedsObj={}; let pick=0;
+  $("#cpSeeds").querySelectorAll("[data-cps]").forEach(i=>{ const n=compNum(i.value); i.value=n; if(i.dataset.cps==="__pick") pick=n; else if(n) seedsObj[i.dataset.cps]=n; });
+  if(!Object.keys(seedsObj).length&&!pick){ err.textContent="請至少填一種種子的數量"; Sound.sfx("error"); return; }
+  const who=cpWho(); let to="all";
+  if(who==="codes"){
+    const codes=cpCodes(), bad=codes.filter(c=>!/^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(c));
+    if(!codes.length){ err.textContent="請輸入至少一位新人代碼"; Sound.sfx("error"); return; }
+    if(bad.length){ err.textContent=`代碼格式不對：${bad.slice(0,3).join("、")}（應為 XXXX-XXXX）`; Sound.sfx("error"); return; }
+    to=codes;
+  }
+  const until=$("#cpUntil").value;
+  if(until&&new Date(until+"T23:59:59").getTime()<Date.now()){ err.textContent="領取期限已經過了"; Sound.sfx("error"); return; }
+  const c={title:cleanText($("#cpTitle").value,30)||"種子補償",msg:cleanText($("#cpMsg").value,120),to,onlyOld:to==="all"&&$("#cpOnlyOld").checked,seeds:seedsObj,pick,until,at:Date.now()};
+  const whoTxt=to==="all"?(c.onlyOld?"目前已加入的所有人":"所有人（包含之後才註冊的人）"):`${to.length} 位新人`;
+  if(!(await uiConfirm(`要發送「${c.title}」給${whoTxt}嗎？\n內容：${compDesc(c)}\n領取期限：${until||"不限"}`,"發送補償"))) return;
+  const id=randId("CP");
+  const ok=await adminSend("comp",id,"j:"+JSON.stringify(c),`種子補償：${c.title}`,"false");
+  if(ok){ $("#cpTitle").value=""; $("#cpMsg").value=""; $("#cpSeeds").querySelectorAll("[data-cps]").forEach(i=>i.value=0); }
+});
+$("#cpTable").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-cprev]"); if(!b) return;
+  const x=((FEED&&FEED.comps)||[]).find(v=>v.id===b.dataset.cprev); if(!x) return;
+  const on=b.dataset.on==="1";
+  if(on&&!(await uiConfirm(`要撤回「${x.title||"種子補償"}」嗎？還沒領取的人就不會再收到（已領取的不會收回）。`,"撤回"))) return;
+  const {id,row,ts,by,...data}=x; data.revoked=on;
+  b.disabled=true;
+  const ok=await adminSend("comp",id,"j:"+JSON.stringify(data),`${on?"撤回":"恢復"}補償：${x.title||id}`,String(on));
+  b.disabled=false;
+  if(ok){ CP_PEND[id]=on; renderCompAdmin(); }
 });
 
 /* ================= 管理者：帳號救援 ================= */
@@ -8806,7 +9024,7 @@ $("#spOpts").addEventListener("click",e=>{
   SEEDPICK=null; injectNpcGift();
 });
 $("#nqGo").addEventListener("click",()=>{ const c=QUIZ_CUR; $("#npcQuizDlg").close(); if(c&&c.qz.quest) setTimeout(()=>openQuest(c.qz.quest),120); });
-document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); } if(b.dataset.tab==="rps") loadConsultAdmin();if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster();}});
+document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); } if(b.dataset.tab==="rps") loadConsultAdmin();if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster(); if(b.dataset.tab==="comp") openCompAdmin();}});
 $("#viewAdmin").addEventListener("click",e=>{
   const c=e.target.closest("[data-copy]"); if(c){ copyText($("#"+c.dataset.copy).textContent); return; }
   if(e.target.closest("[data-reload]")){ loadAdminLists(true); if($("#ivTable").closest(".apanel")&&!$("#ivTable").closest(".apanel").hidden) loadIvReplies(); }
@@ -8862,6 +9080,7 @@ function renderPubs(){
 function pubDone(p,feed){
   if(p.type==="content"||p.type==="settings") return feed.batchIds.has(p.id);
   if(p.type==="ping") return feed.pings.has(p.id);
+  if(p.type==="comp"){ const x=(feed.comps||[]).find(v=>v.id===p.id); return !!x&&(p.expect==null||String(!!x.revoked)===p.expect); }
   if(p.type==="interview"){ const x=feed.interviews.find(v=>v.id===p.id); return !!x&&(p.expect==null||String(x.status||"")===p.expect); }
   if(p.type==="reply"){ const r=feed.replies[p.id]; return !!r&&(p.expect==null||r.at===p.expect); }
   return false;

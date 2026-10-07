@@ -833,6 +833,17 @@ body.tour-lock .mapframe{z-index:41}
 .linkbtn.retract:hover{color:#fff;text-decoration:underline}
 
 /* 種子商店 */
+.catblock .cattitle{flex-wrap:wrap;row-gap:2px}
+.bossbox .nqtop{align-items:center}
+.bossbox .mename{margin:0 0 4px}
+.bossbox .mename .ahint{font-family:inherit;font-size:13px}
+.shoproom{margin-top:14px}
+.shoproom>summary{cursor:pointer;font-family:var(--pixel);font-size:16px;color:var(--gold);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.shoproom>summary .ahint{font-family:inherit;font-size:13px}
+.shoproom[open]>summary{margin-bottom:10px}
+#shopPanel{margin-top:14px}
+.shoproom .vipbadge{font-size:12px}
+.shopic.avpv,.shopic.petpv{width:64px;height:64px;display:block;margin:2px auto 4px}
 .cpseeds{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin:6px 0 4px}
 .cpseed,.form label.cpseed:not(.switch){display:flex;flex-direction:column;margin:0;align-items:center;gap:4px;background:#1B2466;border:2px solid var(--line);border-radius:4px;padding:8px 6px;text-align:center}
 .cpseed b{font-family:var(--pixel);font-weight:400;font-size:14px;white-space:nowrap}
@@ -2036,7 +2047,7 @@ footer.site p{margin:4px 0}
 </dialog>
 <dialog id="seedPickDlg" aria-labelledby="spTitle">
   <div class="window dlg form nqwrap">
-    <div class="head"><div><p class="dept">第 100 份的獎勵</p><h3 id="spTitle">你送出了第 100 份蔬菜！</h3></div></div>
+    <div class="head"><div><p class="dept" id="spDept">第 100 份的獎勵</p><h3 id="spTitle">你送出了第 100 份蔬菜！</h3></div></div>
     <div class="body">
       <div class="nqtop"><span class="npcface" id="spFace" aria-hidden="true"></span><p class="dbody" id="spSay"></p></div>
       <div class="seedrow" id="spOpts" style="margin-top:12px"></div>
@@ -2045,7 +2056,7 @@ footer.site p{margin:4px 0}
 </dialog>
 <dialog id="compDlg" aria-labelledby="cpdTitle">
   <div class="window dlg form nqwrap">
-    <div class="head"><div><p class="dept">📦 補償包裹</p><h3 id="cpdTitle">種子補償</h3></div></div>
+    <div class="head"><div><p class="dept">📦 村長寄來的包裹</p><h3 id="cpdTitle">種子補償</h3></div></div>
     <div class="body">
       <div class="nqtop"><span class="npcface" id="cpdFace" aria-hidden="true"></span><p class="dbody" id="cpdSay"></p></div>
       <div class="seedchips" id="cpdList"></div>
@@ -2179,6 +2190,21 @@ const AV_BASE16=["................",".....kkkkkk.....","....kssssssk....","...ks
 const HAIR={short:{name:"短髮",rows:[".....HHHHHH.....","....HeeHHHHH....","...HHHHHHHHHH...","...HHHHHHHHHH...","...HH......HH...","...HH......HH...","...HH......HH...","................","................","................","................","................","................","................","................","................"]},slick:{name:"中分油頭",rows:[".....HHHkHH.....","....HHeekeeH....","...HHHeHkHHHH...","...HHHHHHHHHH...","...HH......HH...","...HH......HH...","...HH......HH...","................","................","................","................","................","................","................","................","................"]},long:{name:"長髮",rows:[".....HHHHHH.....","....HeeHHHHH....","...HHHHHHHHHH...","...HHHHHHHHHH...","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","................","................","................","................"]},bob:{name:"包伯頭",rows:[".....HHHHHH.....","....HeeHHHHH....","...HHHHHHHHHH...","...HHHHHHHHHH...","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","...HH......HH...","................","................","................","................","................"]},twin:{name:"雙馬尾",rows:[".....HHHHHH.....","....HHHHHHHH....","...HHHHHHHHHH...","...HHHHHHHHHH...",".HHHH......HHHH.",".eHHH......HHHe.",".HHHH......HHHH.",".HH..........HH.",".HH..........HH.","................","................","................","................","................","................","................"]},pony:{name:"馬尾",rows:[".....HHHHHH.....","....HHHHHHHH....","...HHHHHHHHHH...","...HHHHHHHHHHHH.","...HH......HHHH.","...HH......HHHH.","...HH......HHeH.",".............HH.",".............HH.",".............HH.","................","................","................","................","................","................"]},bun:{name:"包頭",rows:["......keek......",".....HHHHHH.....","....HHHHHHHH....","...HHHHHHHHHH...","...HH......HH...","...HH......HH...","...HH......HH...","................","................","................","................","................","................","................","................","................"]},curly:{name:"捲髮",rows:["...HHHHHHHHHH...","...HHHHHHHHHH...","...HHeeHHHHHH...","...HHHHHHHHHH...","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","..HHH......HHH..","................","................","................","................","................","................","................","................"]},spiky:{name:"刺蝟頭",rows:["....H.H.H.H.....","....HHeHHeHH....","...HHHHHHHHHH...","...HHHHHHHHHH...","...HH......HH...","...HH......HH...","...HH......HH...","................","................","................","................","................","................","................","................","................"]},braid:{name:"單邊辮子",rows:[".....HHHHHH.....","....HeeHHHHH....","...HHHHHHHHHH...","...HHHHHHHHHH...","..HHH......HHH..","..HHH......HHH..","..HHH......HeH..","..HHH.......HH..","..HHH.......kH..","............He..","............HH..","............Hk..","............HH..","................","................","................"]},cap:{name:"棒球帽",rows:[".....OOOOOO.....","....OppOOOOO....","...OOOOOOOOOO...","...OOOOOOOOOOOO.","...HH......HH...","...HH......HH...","...HH......HH...","................","................","................","................","................","................","................","................","................"]}};
 const OUTFIT={tee:{"name": "T 恤", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...pOOqqqqOOq...", "..OpOOOOOOOOqq..", "...pOOOOOOOOq...", "...qqqqqqqqqq...", "................"]},jacket:{"name": "皮外套", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...pOpwwwwpOq...", "..OpOOqwwqOOqq..", "...pOOqwwqOOq...", "...qqqqqqqqqq...", "................"]},suit:{"name": "襯衫領帶", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...pOpwrrwpOq...", "..OpOpwrrwpOqq..", "...pOOwrrwOOq...", "...qqqOyyOqqq...", "................"]},dress:{"name": "洋裝", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...pOOwwwwOOq...", "..OpOOOOOOOOqq..", "...pOOOyyOOOq...", "...pOpOpOpOpq...", "................"]},trench:{"name": "風衣", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...pOpwwwwpOq...", "..OpOyOOOOyOqq..", "...qqqqyyqqqq...", "...pOOOqqOOOq...", "................"]},vest:{"name": "工程背心", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...pOOwwwwOOq...", "..wyyyyyyyyyyw..", "...pOOOxxOOOq...", "...yyyyyyyyyy...", "................"], "secret": true, "theme": "工程"},labcoat:{"name": "實驗白袍", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...wwwOOOOwwM...", "..wwwwOOOOwwMM..", "...wrwwOOwwwM...", "...MwwwwwwwwM...", "................"], "secret": true, "theme": "科技"},hawaii:{"name": "夏威夷衫", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...pOwOOOOwOq...", "..OyOrOOyOOwqq..", "...pOwOOyOOrq...", "...qyqqrqqwqq...", "................"], "secret": true, "theme": "藝術"},hoodie:{"name": "連帽外套", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...pO......Oq...", "...pOOwOOwOOq...", "..OpOOwOOwOOqq..", "...pOqqqqqqOq...", "...qqqqqqqqqq...", "................"], "secret": true, "theme": "科技"},vestsuit:{"name": "西裝背心", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...wqOwnnwOqw...", "..wwqOwwwwOqww..", "...wqOOyyOOqw...", "...wqqOqqOqqw...", "................"], "secret": true, "theme": "帥氣"},raincoat:{"name": "雨衣", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...zy......yz...", "...fyyyyyyyyz...", "..yfyyOyyOyyzz..", "...fyyOyyOyyz...", "...zzzzzzzzzz...", "................"], "secret": true, "theme": "工程"},overall:{"name": "連身工作服", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...wOwwwwwwOw...", "..wwOOOqqOOOww..", "...pOOOOOOOOq...", "...pOOOqqOOOq...", "................"], "secret": true, "theme": "工程"},knit:{"name": "針織背心", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...wqqwwwwqqw...", "..wwqpqwwqpqww..", "...wpqpqqpqpw...", "...wqqqqqqqqw...", "................"], "secret": true, "theme": "科技"},track:{"name": "運動外套", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...pwOOwwOOwq...", "..wpOOOwwOOOqw..", "...pOyOwwOOOq...", "...qqqqwwqqqq...", "................"], "secret": true, "theme": "帥氣"},medjed:{"name": "梅傑德風格白袍", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...wwwwwwwwww...", "..wwwwxxxxwwww..", "..wwwxwnnwxwww..", "..wMwwxxxxwwMw..", "..wwMwwwwwwMww..", "....ss....ss...."], "secret": true, "theme": "藝術"},company:{"name": "公司藍色運動外套", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...Guuwjjwuuj...", "..wGuuuwwuuujw..", "...Guyuwwuuuj...", "...jjjjwwjjjj...", "................"], "secret": true, "theme": "帥氣"},pumpkin:{"name": "南瓜裝", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "....LL....LL....", "..kAABAAAABAAk..", ".kAAnBAAAABnAAk.", ".kAAABAAAABAAAk.", "..kAnnAnnAnnAk..", "...kBBk..kBBk..."], "secret": true, "theme": "密技"},snowman:{"name": "雪人裝", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "....rrrrrrrr....", "..kwwwwwwwrrik..", ".kwwwwnwwwrwwik.", ".kwwwwwwwwwwwik.", "..kiwwwnwwwwik..", "...kiiiiiiiik..."], "secret": true, "theme": "密技"},peanut:{"name": "花生裝", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "..kTTUTTTTUTTk..", ".kTTTTTUTTTTUTk.", "..kTUTTTTTTUTk..", ".kTTTTUTTTUTTTk.", "..kkUTTTTTTUkk.."], "secret": true, "theme": "密技"}};
 const ACC={none:{name:"無",rows:["................","................","................","................","................","................","................","................","................","................","................","................","................","................","................","................"]},glasses:{name:"眼鏡",rows:["................","................","................","................","....kkkkkkkk....","....kGnkknGk....","....kGn..nGk....","................","................","................","................","................","................","................","................","................"]},shades:{name:"太陽眼鏡",rows:["................","................","................","................","................","....nennnenn....","....nnnnnnnn....","................","................","................","................","................","................","................","................","................"]},mask:{name:"口罩",rows:["................","................","................","................","................","................","................","...MMMMMMMMMM...","....MMMMMMMM....","....MMMMMMMM....",".....MMMMMM.....","................","................","................","................","................"]},headset:{name:"耳機",rows:[".....nnnnnn.....","....n......n....","................","................","..nn........nn..","..ne........en..","..nn........nn..","..nn........nn..","................","................","................","................","................","................","................","................"]},badge:{name:"識別證",rows:["................","................","................","................","................","................","................","................","................","................","................","......w..w......",".......wy.......",".......yy.......","................","................"]},bow:{name:"蝴蝶結",rows:["................","...........ryr..","...........rrr..","................","................","................","................","................","................","................","................","................","................","................","................","................"]},earring:{name:"耳環",rows:["................","................","................","................","................","................","................","...y........y...","................","................","................","................","................","................","................","................"]},scarf:{name:"圍巾",rows:["................","................","................","................","................","................","................","................","................","................","....rrrrrrrr....",".....rrrrrr.....","......rr........","......yr........","......rr........","................"]},smirk:{name:"安妮亞招牌表情面具",secret:true,box:[4,0,24,24],img:"data:image/png;base64,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",rows:["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"]}};
+/* ---- 種子商店：主題服裝與人物配件（原創點陣，固定配色） ---- */
+Object.assign(OUTFIT,{sh_sailor:{"name": "水手服", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...jjwrrrrwjj...", "..wjjwwrrwwjjw..", "...wwwwrrwwww...", "...jjjjjjjjjj...", "....jjj..jjj...."], "secret": true, "shop": true, "theme": "商店"},sh_santa:{"name": "聖誕老人裝", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...RRRWWWWRRR...", "..RRRRRWWRRRRR..", "...KKKKooKKKK...", "...WWWWWWWWWW...", "....KKK..KKK...."], "secret": true, "shop": true, "theme": "商店"},sh_witch:{"name": "女巫斗篷", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "..PPPDDFFDDPPP..", ".PPPDDDDDDDDPPP.", ".PPPDDDDDDDDPPP.", "..PPDDDDDDDDPP..", "..P.kkk..kkk.P.."], "secret": true, "shop": true, "theme": "商店"},sh_flannel:{"name": "秋日格紋襯衫", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...FtFwwwwFtF...", "..FtFFtFFtFFtF..", "...tttFFtttFF...", "...uuuuuuuuuu...", "....uuu..uuu...."], "secret": true, "shop": true, "theme": "商店"},sh_blazer:{"name": "海軍藍西裝", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...NNNwrrwNNN...", "..NNNNwrrwNNNN..", "...NNNNrrNNNN...", "...ZZZZZZZZZZ...", "....ZZZ..ZZZ...."], "secret": true, "shop": true, "theme": "商店"},sh_ranger:{"name": "森林探險背心", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...gggTTTTggg...", "..TgglTTTTlggT..", "...gggTTTTggg...", "...tttttttttt...", "................"], "secret": true, "shop": true, "theme": "商店"},sh_astro:{"name": "太空衣", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...WWWSSSSWWW...", "..SWWWrCYWWWWS..", "..SWWWWWWWWWWS..", "...SSSSSSSSSS...", "....SSS..SSS...."], "secret": true, "shop": true, "theme": "商店"},sh_disco:{"name": "亮片舞衣", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...mmWmmmmWmm...", "..mmYmmmWmmYmm..", "...mWmmYmmmWm...", "...CCCCCCCCCC...", "...CCCC..CCCC..."], "secret": true, "shop": true, "theme": "商店"},sh_tux:{"name": "黑色燕尾服", "rows": ["................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "...DDDwnnwDDD...", "..DDDDwwwwDDDD..", "...DDDwwwwDDD...", "...DDDDDDDDDD...", "...D.kkk..kkk.D."], "secret": true, "shop": true, "theme": "商店"}});
+Object.assign(ACC,{sa_beret:{"name": "紅色貝雷帽", "rows": ["......kkkkkk.k..", "....kkRRRRRRkRk.", "...kRRRRRRRRRRk.", "...kkRRRRRRRRkk.", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"], "secret": true, "shop": true},sa_santahat:{"name": "聖誕帽", "rows": ["......kkkk..kk..", ".....kRRRRkkWWk.", "....kRRRRRRRkWk.", "..kWWWWWWWWWWk..", "..kkkkkkkkkkkk..", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"], "secret": true, "shop": true},sa_witchhat:{"name": "女巫帽", "rows": ["......kkk.......", ".....kPPPk......", "....kPPPPPk.....", "...kPFFFFFPk....", ".kPPPPPPPPPPPPk.", "..kkkkkkkkkkkk..", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"], "secret": true, "shop": true},sa_pilgrim:{"name": "朝聖者帽", "rows": ["...kkkkkkkkkk...", "...kDDDDDDDDk...", "...kDDoooDDDk...", "...kKKoKoKKKk...", ".kkDDDDDDDDDDkk.", "..kkkkkkkkkkkk..", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"], "secret": true, "shop": true},sa_pencil:{"name": "耳後鉛筆", "rows": ["................", "..............kk", ".............kXk", "............kok.", "............kok.", "............kTk.", ".............k..", "................", "................", "................", "................", "................", "................", "................", "................", "................"], "secret": true, "shop": true},sa_flowers:{"name": "花冠", "rows": ["................", "...kXkkYkkXkkYk.", "...lXllYllXllYl.", "...llllllllllll.", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"], "secret": true, "shop": true},sa_helmet:{"name": "太空頭盔", "rows": ["....SSSSSSSS....", "..SSW.......SS..", ".SW..........S..", ".S............S.", ".S............S.", ".S............S.", ".S............S.", ".S............S.", ".S............S.", ".SS..........SS.", "..SSSSSSSSSSSS..", "................", "................", "................", "................", "................"], "secret": true, "shop": true},sa_starglass:{"name": "星星眼鏡", "rows": ["................", "................", "................", "................", ".....m....m.....", "...mmmmkkmmmm...", "....mYm..mYm....", "....m.m..m.m....", "................", "................", "................", "................", "................", "................", "................", "................"], "secret": true, "shop": true},sa_fedora:{"name": "紳士帽", "rows": ["....kkkkkkkk....", "...kZZZkZZZZk...", "...kZZZZZZZZk...", "...kDDDDDDDDk...", ".kkZZZZZZZZZZkk.", "..kkkkkkkkkkkk..", "................", "................", "................", "................", "................", "................", "................", "................", "................", "................"], "secret": true, "shop": true}});
+/* ---- 種子商店：寵物配件（另一層疊上去，所有寵物包含隱藏版都能戴） ---- */
+const PET_GEAR={pg_bandana:{"name": "紅色領巾", "slot": "neck", "rows": ["KKKKKKKKKKK", "KRRRRWRRRRK", ".KRRRRRRRK.", "..KRWRRRK..", "...KRRRK...", "....KRK....", ".....K....."]},pg_antler:{"name": "麋鹿角", "slot": "head", "rows": ["K.K.K......K.K.K", "KBKBK......KBKBK", "KBBBK......KBBBK", ".KBBK......KBBK.", "..KBK......KBK..", "..KBBK....KBBK..", "...KK......KK..."]},pg_witch:{"name": "迷你女巫帽", "slot": "head", "rows": [".......KK.....", "......KVVK....", ".....KVVK.....", "....KVVVVK....", "...KVVVVVVK...", "...KOOOOOOK...", "KKKVVVVVVVVKKK", "KVVVVVVVVVVVVK", ".KKKKKKKKKKKK."]},pg_leaf:{"name": "楓葉領巾", "slot": "neck", "rows": ["KKKKKKKKKKK", "KOOOOOOOOOK", ".KOORRKOOK.", "..KORRRRK..", "...KORRK...", "....KOK....", ".....K....."]},pg_tie:{"name": "小領帶", "slot": "neck", "rows": [".KKKKK.", ".KNNNK.", "..KNK..", ".KNNNK.", ".KNYNK.", ".KNNNK.", ".KNYNK.", "..KNK..", "...K..."]},pg_mushroom:{"name": "蘑菇帽", "slot": "head", "rows": ["....KKKKKK....", "..KKRRWRRRKK..", ".KRRWWRRRWRRK.", "KRRRRRRRWWRRRK", "KRWWRRRRRRRWRK", "KKKKKKKKKKKKKK", ".KEEEEEEEEEEK."]},pg_antenna:{"name": "外星天線", "slot": "head", "rows": ["KK..........KK", "KGK........KGK", ".KK........KK.", "..K........K..", "..K........K..", "..KKKKKKKKKK..", "..KSSSSSSSSK..", "..KKKKKKKKKK.."]},pg_sparkbow:{"name": "亮片領結", "slot": "neck", "rows": ["KK.....KK", "KMMK.KMMK", "KMWMKMMMK", "KMMMKMWMK", "KMMK.KMMK", "KK.....KK"]},pg_tophat:{"name": "紳士小禮帽", "slot": "head", "rows": ["...KKKKKKK...", "...KAAAAAK...", "...KAAAAAK...", "...KAAAAAK...", "...KRRRRRK...", ".KKKAAAAAKKK.", ".KAAAAAAAAAK.", ".KKKKKKKKKKK."]}};
+const GEAR_PAL={K:"#231F20",R:"#E8453C",W:"#FFFFFF",B:"#A0522D",V:"#7A4BB5",O:"#FF9F43",N:"#27336B",Y:"#FFD23F",G:"#57C35A",S:"#C4CAD8",M:"#E94FA8",A:"#2B2B31",E:"#F4E1C1"};
+const PET_HEAD={dog:{baby:[16,6],adult:[16,2]},cat:{baby:[16,8],adult:[16,4]},guinea:{baby:[16,12],adult:[16,8]},slime:{baby:[16,10],adult:[16,6]},
+  chicken:{baby:[16,5],adult:[16,3]},sheep:{baby:[16,8],adult:[16,3]},horse:{baby:[16,6],adult:[16,2]},rabbit:{baby:[16,8],adult:[16,10]},
+  tiger:{baby:[16,8],adult:[16,4]},caterpillar:{baby:[22,12],adult:[25,9]},snowman:{baby:[16,9],adult:[16,3]},scruffy:{baby:[11,9],adult:[12,3]},grumpy:{baby:[16,10],adult:[16,5]}};
+function petGearPos(type,st,g){                          // 回傳配件左上角（32 格座標）
+  const w=g.rows[0].length, h=g.rows.length;
+  if(g.slot==="neck"){ const [cx,cy]=collarOff(type,st); return [Math.round(cx+4.5-w/2),cy+1]; }
+  const [hx,hy]=((PET_HEAD[type]||PET_HEAD.dog)[st])||PET_HEAD.dog.adult;
+  return [Math.round(hx-w/2),Math.max(0,hy+2-h)];          // 帽子往下蓋住頭頂 2 格；太高就貼齊上緣
+}
 const PETS={dog:{name:"狗狗",baby:["................................","................................","................................","................................","................................","................................",".............PPPPPP.............","...........PPPPPPPPPP...........",".......kkklPPPPPPPPPPQkkk.......","......kkkklPPPPPPPPPPQkkkk......","......QQQQPPPPPPPPPPPPQQQQ......","......QQQQPPPPPPPPPPPPQQQQ......","......QQQQPPnnPPPPnnPPQQQQ......","......QQQQPPnnPPPPnnPPQQQQ......","......QQQQPPnnPPPPnnPPQQQQ......","......QQQQPPnnnPPnnnPPQQQQ......","......QQQQccwnnnnnnwccQQQQ......","......QQQQccwwwnnwwwccQQQQ......","......kkkklPwwwwwwwwPQkkkk......",".......kkklPPwwwwwwPPQkkk.......",".......kkkQPPPPPPPPPPQkkk.......",".........kklPPPPPPPPQkk.........",".........kkQPPPPPPPPQkk.........","..........kklPPPPPPQkk..........","..........kklPPPPPPQkk..........","...........klPPPPPPQk...........","................................","................................","................................","................................","................................","................................"],adult:["................................","................................","...........kkkkkkkkkk...........",".........kkkkkkkkkkkkkk.........",".....kkkkkklllllllllQkkkkkk.....","....kkkkkllPPPPPPPPPPlQkkkkk....","....QQQQlPPPPPPPPPPPPPPlQQQQ....","....QQQQPPPPPPPPPPPPPPPPQQQQ....","....QQQQPPPPPPPPPPPPPPPPQQQQ....","....QQQQPPPPPPPPPPPPPPPPQQQQ....","....QQQQPPPPnnPPPPnnPPPPQQQQ....","....QQQQPPPPnnPPPPnnPPPPQQQQ....","....QQQQPPPPnnPPPPnnPPPPQQQQ....","....QQQQPPPPnnnPPnnnPPPPQQQQ....","....QQQQPPccwnnnnnnwccPPQQQQ....","....QQQQPPccwwwnnwwwccPPQQQQ....","....kkkkQPPPwwwwwwwwPPPQkkkk....",".....kkkkQPPPwwwwwwPPPQkkkkk....",".......kkklPPPPPPPPPPQkk..kk....","........kklPPPPPPPPPPQkk..kk....","........llPPPPPPPPPPPPllQQQQ....","........PPPPPPPPPPPPPPPPQQQQ....",".......klPPPPPPPPPPPPPPPQQQQkk..","......kklPPPPPPPPPPPPPPPQQQQkk..","......kklPPPPPPPPPPPPPPQkk......","......kklPPPPPPPPPPPPPPQkk......","......kklPPPPPPPPPPPPPPQkk......",".......klPPPPPPPPPPPPPPQk.......","........QQQPPPPPPPPPPQQQ........",".........QQQPPPPPPPPQQQ.........","................................","................................"]},cat:{name:"貓咪",baby:["................................","................................","................................","................................","........kk............kk........",".......kkkk..........kkkk.......",".......klQk..........klQk.......","......kklPQkk......kklPQkk......","......kkccQkkkkkkkkkklcckk......","......kkccPlQkkkkkkllPcckk......","......kklPPPPllllllPPPPQkk......",".....kklPPPPPPPPPPPPPPPPQkk.....",".....kklPPPPPPQQQQPPPPPPQkk.....","....kklPPPPPPPQQQQPPPPPPPQkk....","....kklPPPPPPPPPPPPPPPPPPQkk....","....kklPPPPPPPPPPPPPPPPPPQkk....","....kklPPPPPwnPPPPwnPPPPPQkk....","....kklPPPPPnnPPPPnnPPPPPQkk....","..nnkklPPPPPnnPPPPnnPPPPPQkknn..","..nnkklPPPPPnnPPPPnnPPPPPQkknn..","....kkQPPPccPPccccPPccPPPQkk....",".....kklPPccPPccccPPccPPQkk.....",".....kkQQPPPPPPPPPPPPPPQkk......",".......kklPPPPPPPPPPPPQkkk......",".......kkQPPPPPPPPPPPQkklQk.....","........kklPPPPPPPPPPQkklQkk....","........kkQPPPPPPPPPPPllPQkk....",".........kkQQQQQQQQQQQQQQkk.....",".........kkkkkkkkkkkkkkkkkk.....","...........kkkkkkkkkkkkkk.......","................................","................................"],adult:["........kk............kk........",".......kkkk..........kkkk.......",".......klQk..........klQk.......","......kklPQkk......kklPQkk......","......kkccQkkkkkkkkkklcckk......","......kkccPlQkkkkkkllPcckk......","......kklPPPPllllllPPPPQkk......",".....kklPPPPPPPPPPPPPPPPQkk.....",".....kklPPPPQQPPQQQQPPPPQkk.....","....kklPPPPPQQPPQQQQPPPPPQkk....","....kklPPPPPPQQQQPPPPPPPPQkk....","....kklPPPPPPPQQPPPPPPPPPQkk....","....kklPPPPPwnPPPPwnPPPPPQkk....","....kklPPPPPnnPPPPnnPPPPPQkk....","..nnkklPPPPPnnPPPPnnPPPPPQkknn..","..nnkklPPPPPnnPPPPnnPPPPPQkknn..","....kkQPPPccPPccccPPccPPPQkk....",".....kklPPccPPccccPPccPPQkkk....","..nn.kkQPPPPPPPPPPPPPPPPQkkkn...","..nn..kklPPPPPPPPPPPPPPQkkkknn..","......kklPPPPPPPPPPPPPPQkkklPQkk","......kklPPPPPPPPPPPPPPQkklPQkkk","......kklPPPPwwwwwwPPPPQkklPQkk.","......kklPPPwwwwwwwwPPPQkklQkk..","......kklPPPwwwwwwwwPPPPllPQkk..","......kklPPPwwwwwwwwPPPPPQQkk...","......kkQPPPwwwwwwwwPPPQQkkkk...",".......kkQPwwwwwwwwwwQQkkkk.....",".......kkkwwwwwkkwwwwwkkk.......",".........kkwwkkkkkkwwkk.........",".........kkkkkk..kkkkkk.........","...........kk......kk..........."]},guinea:{name:"天竺鼠",baby:["................................","................................","................................","................................","................................","................................","................................","................................","................................","................................","........kk............kk........",".......kkkk..........kkkk.......",".......kQQkkkkkkkkkkkkQQk.......","......kkQQkkkkkkkkkkkkQQkk......","......kkkkklllwwwwllQkkkkk......",".....kkkkllPPPwwwwPPPlQkkkk.....",".....kkllPPPPPwwwwPPPPPlQkk.....","...kkllPPPPPPPwwwwPPPPPPPlQkk...","...kklPPPPPPPPwwwwPPPPPPPPQkk...","..kklPPPPPPPPPwwwwPPPPPPPPPQkk..","..kklPPPPPnnPPccccPPnnPPPPPQkk..","..kklPPPPPnnPPccccPPnnPPPPPQkk..","..kklPPPccPPPPwwwwPPPPccPPPQkk..","..kklPPPccPPPwwwwwwPPPccPPPQkk..","..kkQPPwwwwwwwwwwwwwwwwwwPPQkk..","...kkQwwwwwwwwwwwwwwwwwwwwQkk...","...kkkwwwwwwwwwwwwwwwwwwwwkkk...",".....kkwwwwwwwwwwwwwwwwwwkk.....",".....kkkkkkkkkkkkkkkkkkkkkk.....",".......kkkkkkkkkkkkkkkkkk.......","................................","................................"],adult:["................................","................................","................................","................................","................................","................................",".......kk..............kk.......",".....kkkkkk..........kkkkkk.....",".....kQQQkkkkkkkkkkkkkkQQQk.....","....kkQQQQkkkkkkkkkkkkQQQQkk....","....kkkklPllwwwwwwwwllPQkkkk....","...kkkklPPPPwwwwwwwwPPPPQkkkk...","...kkllPPPPPwwwwwwwwPPPPPlQkk...",".kkllPPPPPPPwwwwwwwwPPPPPPPlQkk.",".kklPPPPPPPPwwwwwwwwPPPPPPPPQkk.","kklPPPPPPPPPwwwwwwwwPPPPPPPPPQkk","kklPPPPPwnPPwwwwwwwwPPwnPPPPPQkk","kklPPPPPnnPPwwwwwwwwPPnnPPPPPQkk","kklPPPPPnnPPwwwccwwwPPnnPPPPPQkk","kklPPPPPnnPPwwccccwwPPnnPPPPPQkk","kklPPPccPPPPwwddddwwPPPPccPPPQkk","kklPPPccPPPwwwwddwwwwPPPccPPPQkk","kklPPwwwwwwwwwwwwwwwwwwwwwwPPQkk","kklPwwwwwwwwwwwwwwwwwwwwwwwwPQkk","kkQPwwwwwwwwwwwwwwwwwwwwwwwwPQkk",".kklPwwwwwwwwwwwwwwwwwwwwwwPQkk.",".kkQQwwwwwwwwwwwwwwwwwwwwwwQQkk.","...kkQwwwwwwwwwwwwwwwwwwwwQkk...","...kkkQQQQkkkkkkkkkkkkQQQQkkk...",".....kQQQQkkkkkkkkkkkkQQQQk.....","................................","................................"]},slime:{name:"史萊姆",baby:["................................","................................","................................","................................","................................","................................","................................","................................","................................","................................",".............PPPPPP.............","...........PPPPPPPPPP...........",".........klPPPPPPPPPPQk.........",".......kklPPPPPPPPPPPPQkk.......",".......kklPPPwwwPPPPPPQkk.......","......kklPPPwwwwPPPPPPPQkk......","......kklPPPwnPPPPwnPPPQkk......","......kklPPPnnPPPPnnPPPQkk......","......kklPPPnnPPPPnnPPPQkk......","......kklPPPnnPPPPnnPPPQkk......","......kklPccPPPPPPPPccPQkk......","......kklPccPPPPPPPPccPQkk......","......kklPPPPPPPPPPPPPPQkk......","......kklPPPPPPPPPPPPPPQkk......","......kkQQQQQQQQQQQQQQQQkk......",".......kQQQQQQQQQQQQQQQQk.......","................................","................................","................................","................................","................................","................................"],adult:["................................","................................","................................","................................","................................","................................","...........PPPPPPPPPP...........",".........PPPPPPPPPPPPPP.........",".......klPPPPPPPPPPPPPPQk.......",".....kklPPPPPPPPPPPPPPPPQkk.....",".....kklPPwwwwPPPPPPPPPPQkk.....","....kklPPPwwwwPPPPPPPPPPPQkk....","....kklPPPPPPPPPPPPPPPPPPQkk....","....kklPPPPPPPPPPPPPPPPPPQkk....","....kklPPPPPwnPPPPwnPPPPPQkk....","....kklPPPPPnnPPPPnnPPPPPQkk....","....kklPPPPPnnPPPPnnPPPPPQkk....","....kklPPPPPnnPPPPnnPPPPPQkk....","....kklPPPccPPPPPPPPccPPPQkk....","....kklPPPccPPPPPPPPccPPPQkk....","....kklPPPPPPPddddPPPPPPPQkk....","....kklPPPPPPPddddPPPPPPPQkk....","....kklPPPPPPPPPPPPPPPPPPQkk....","....kklPPPPPPPPPPPPPPPPPPQkk....","....kkQPPPPPPPPPPPPPPPPPPQkk....","....kkkQPPPPPPPPPPPPPPPQQkkk....","....kkkkQQQQQQQQQQQQQQQQkkkk....",".....kkkQQQQQQQQQQQQQQQQkkk.....","................................","................................","................................","................................"]},chicken:{name:"雞",baby:["................................","................................","................................","................................",".............krrrrk.............","............kkrrrrkk............","............llPPPPll............","...........PPPPPPPPPP...........","...........PPPPPPPPPP...........","..........PPPPPPPPPPPP..........",".........klPPPPPPPPPPQk.........","........kklPPPPPPPPPPQkk........","........kklPwnPPPPwnPQkk........","........kklPnnPPPPnnPQkk........","........kklPnnPPPPnnPQkk........","........kklPnnPPPPnnPQkk........","........kkccwwyyyywwcckk........","........kkccwwyyyywwcckk........","........kklPwwyyyywwPQkk........","........kklPPwyyyywPPQkk........","........kkQPPPPPPPPPPQkk........",".........kklPPPPPPPPQkk.........",".........kkQPPPPPPPPQkk.........","..........kklPPPPPPQkk..........","..........kklPPPPPPQkk..........","...........klPPPPPPQk...........","............yy....yy............","............yy....yy............","................................","................................","................................","................................"],adult:["...........krrrrrrrrk...........","..........kkkrrrrrrkkk..........","..........kkkkkkkkkkkk..........",".........kkkkkkkkkkkkkk.........",".........kklllllllllQkk.........",".......kkllPPPPPPPPPPlQkk.......",".......kklPPPPPPPPPPPPQkk.......","......kklPPPPPPPPPPPPPPQkk......","......kklPPPPPPPPPPPPPPQkk......","......kklPPPPPPPPPPPPPPQkk......","......kklPPPwnPPPPwnPPPQkk......","......kklPPPnnPPPPnnPPPQkk......","......kklPPPnnPPPPnnPPPQkk......","......kklPPPnnPPPPnnPPPQkk......","......kklPccyyyyyyyyccPQkk......","......kklPccyyyyyyyyccPQkk......","......kkQPPPyyyyyyyyPPPQkk......",".......kkQPPPyyyyyyPPPQkk.......",".......kkklPPPPPPPPPPQkkk.......","........kklPPPPPPPPPPQkk........","........llPPPPPPPPPPPPll........","........PPPPPPPPPPPPPPPP........","....kkQQQPPPPPPPPPPPPPPQQQkk....","....kkQQQQPPPPPPPPPPPPQQQQkk....","......QQQQPPPPPPPPPPPPQQQQ......","......QQQQPPPPPPPPPPPPQQQQ......","......QQQQPPPPPPPPPPPPQQQQ......",".......QQQPPPPPPPPPPPPQQQ.......",".......QQQyPPPPPPPPPPyQQQ.......",".........QyyyPPPPPPyyyQ.........","..........yyyy....yyyy..........","...........yy......yy..........."]},sheep:{name:"羊",baby:["................................","................................","................................","................................","................................","................................","................................","................................",".........kk....kk....kk.........",".......kkkkk..kkkk..kkkkk.......",".......kkLLkkkkLLkkkkLLkk.......",".....kkLLLLLkkLLLLkkLLLLLkk.....",".....kkLLLllLLLLllLLLLLLLkk.....","....kkLLLLllLLLLllLLLLLLLLkk....","....kkLLLLfffffffffffLLLLLkk....","...kkLLLLffffffffffffffLLLLkk...","..kkLLLLffffwnffffwnffffLLLLkk..","..kkLLLLffffnnffffnnffffLLLLkk..","...kkLLLLfffnnffffnnfffLLLLkk...","....kkLLLLffnnffffnnffLLLLkk....","....kkLLLLccffffffffccLLLLkk....","....kkLLLLccffffffffccLLLLkk....","....kkLLLLfffffddfffffLLLLkk....","....kkLLLLLfffddddfffLLLLLkk....","....kkLLLLLLLLLLLLLLLLLLLLkk....",".....kkLLLLLLLLLLLLLLLLLLkk.....",".....kkkkkQQQQkkkkQQQQkkkkk.....",".......kkkkQQkkkkkkQQkkkk.......",".........kkkkkk..kkkkkk.........","...........kk......kk...........","................................","................................"],adult:["................................","................................",".....kk....kk....kk....kk.......","...kkkkk..kkkk..kkkk..kkkkk.....","...kkLLkkkkLLkkkkLLkkkkLLkk.....","..kkLLLLkkLLLLkkLLLLkkLLLLLkk...","..kkLLLLllllLLLLllllLLLLLLLkk...","..kkLLLLLlllLLLLllllLLLLLLLLkk..","..kkLLLLLLLLLLLLLLLLLLLLLLLLkk..",".kkLLLLLLLLLLLLLLLLLLLLLLLLLLkk.",".kkLLLLLLkffffffffffffkLLLLLLkk.","kkLLLLLLkffffffffffffffkLLLLLLkk","kkLLLLffffffffffffffffffffLLLLkk",".kkLLLffffffffffffffffffffLLLkk.",".kkLLLLLkfffwnffffwnfffkLLLLLkk.","..kkLLLLLkffnnffffnnffkLLLLLkk..","..kkLLLLLLffnnffffnnffLLLLLLkk..",".kkLLLLLLLffnnffffnnffLLLLLLLkk.","kkLLLLLLLLccffffffffccLLLLLLLLkk","kkLLLLLLLLccffffffffccLLLLLLLLkk",".kkLLLLLLLffffddddffffLLLLLLLkk.","..kkLLLLLLLfffddddfffLLLLLLLkk..","..kkLLLLLLLffffffffffLLLLLLLkk..","...kkLLLLLLLffffffffLLLLLLLkk...","...kkLLLLLLLkkLLLLkkLLLLLLLkk...",".....kkLLLLLkkkLLkkkLLLLLkk.....",".....kkkQQQQkkkkkkkkQQQQkkk.....","......kkQQQQkkkkkkkkQQQQkk......","......kkQQQQkkk..kkkQQQQkk......",".......kkQQkk......kkQQkk.......",".......kkkkkk......kkkkkk.......",".........kk..........kk........."]},horse:{name:"馬",baby:["................................","................................","................................","................................",".........klPP......PPQk.........","........kklPPP....PPPQkk........","........kklPPQQQQQQPPQkk........",".........klPQQQQQQQQPQk.........","..........PPQQQQQQQQPP..........","..........PPPQQQQQQPPP..........",".........klPPPwwwwPPPQk.........","........kklPPPwwwwPPPQkk........","........kklPwnwwwwwPPQkk........","........kklPnnwwwwnnPQkk........","........kklPnnwwwwnnPQkk........","........kklPnwnwwnwnPQkk........","........kkccwnnnnnnwcckk........","........kkccwwnnnnwwcckk........","........kklPwwwwwwwwPQkk........","........kklPPwwwwwwPPQkk........","........kkQPPPPPPPPPPQkk........",".........kklPPPPPPPPQkk.........",".........kkQPPPPPPPPQkk.........","..........kklPPPPPPQkk..........","..........kklPPPPPPQkk..........","...........klPPPPPPQk...........","................................","................................","................................","................................","................................","................................"],adult:[".......klPPPQQQQQQQQPPPQk.......","......kklPPPQQQQQQQQPPPQkk......","......kkQPPPQQQQQQQQPPPQkk......",".......kkQPQQQQQQQQQQQQkk.......","........kkQQQQQQQQQQQQkk........","........kkQQQQQQQQQQQQkk........",".......kklPPPPwwwwPPPPQkk.......","......kklPPPPPwwwwPPPPPQkk......","......kklPPPPPwwwwPPPPPQkk......","......kklPPPPPwwwwPPPPPQkk......","......kklPPPwnwwwwwPPPPQkk......","......kklPPPnnwwwwnnPPPQkk......","......kklPPPnnwwwwnnPPPQkk......","......kklPPPnwnwwnwnPPPQkk......","......kklPccwnnnnnnwccPQkk......","......kklPccwwnnnnwwccPQkk......","......kkQPPPwwwwwwwwPPPQkk......",".......kkQPPPwwwwwwPPPQkk.......",".......kkklPPPPPPPPPPQkkk.......","........kklPPPPPPPPPPQkk........","........llPPPPPPPPPPPPllQQQ.....","........PPPPPPPPPPPPPPPPQQQQQ...",".......klPPPPPPPPPPPPPPPQQQQQ...","......kklPPPPPPPPPPPPPPPQQQQQQ..","......kklPPPPPPPPPPPPPPPQQQQQQ..","......kklPPPPPPPPPPPPPPPQQQQQ...","......kklPPPPPPPPPPPPPPPQQQQQ...",".......klPPPPPPPPPPPPPPQQQQ.....","........QQQPPPPPPPPPPQQQQ.......",".........QQQPPPPPPPPQQQ.........","................................","................................"]},rabbit:{name:"兔",baby:["................................","................................","...........kk......kk...........",".........kkkkkk..kkkkkk.........",".........kklQkkkkkklQkk.........","........kklPPQkkkklPPQkk........","........kkcPPQkkkklPPckk........","........kkccPQkkkklPcckk........","........kkccPQkkkklPcckk........","........kkccPQkkkklPcckk........","........kkccPQkkkklPcckk........","........kkcPPPQkklPPPckk........","........kklPPPPllPPPPQkk........",".......kklPPPPPPPPPPPPQkk.......",".......kklPPPPPPPPPPPPQkk.......","......kklPPPPPPPPPPPPPPQkk......","......kklPPPwnPPPPwnPPPQkk......","......kklPPPnnPPPPnnPPPQkk......","......kklPPPnnPPPPnnPPPQkk......","......kklPPPnnPPPPnnPPPQkk......","......kklPccPPPccPPPccPQkk......","......kklPccPPccccPPccPQkkk.....","......kkQPPPPPwwwwPPPPPwwkk.....",".......kklPPPPPwwPPPPPwwwwkk....",".......kkQQPPPPPPPPPPPwwwwkk....",".........kkQQQQQQQQQQQwwwkk.....",".........kkkkkkkkkkkkkkkkkk.....","...........kkkkkkkkkkkkkk.......","................................","................................","................................","................................"],adult:[".......klPPQk......klPPQk.......","......kklPPQkk....kklPPQkk......","......kkcPPQkk....kklPPckk......","......kkccPQkk....kklPcckk......","......kkccPQkk....kklPcckk......","......kkccPQkk....kklPcckk......","......kkccPQkk....kklPcckk......","......kkccPQkk....kklPcckk......","......kkccPQkk....kklPcckk......","......kkcPPQkkk..kkklPPckk......","......kklPPQkkkkkkkklPPQkk......","......kklPPPQkkkkkklPPPQkk......","......kklPPPPllllllPPPPQkk......",".....kklPPPPPPPPPPPPPPPPQkk.....",".....kklPPPPPPPPPPPPPPPPQkk.....","....kklPPPPPPPPPPPPPPPPPPQkk....","....kklPPPPPwnPPPPwnPPPPPQkk....","....kklPPPPPnnPPPPnnPPPPPQkk....","....kklPPPPPnnPPPPnnPPPPPQkk....","....kklPPPPPnnPPPPnnPPPPPQkk....","....kklPPPccPPPccPPPccPPPQkk....","....kklPPPccPPccccPPccPPPQkk....","....kkQPPPPPPPwwwwPPPPPPPQkk....",".....kklPPPPPPPwwPPPPPPPPQkkk...",".....kkQQPPPPPPPPPPPPPPPPwwkk...",".......kklPPPPPPPPPPPPPQwwwwkk..",".......kkQPPPwwwwwwPPPQkwwwwkk..","........kklPwwwwwwwwPQkkkwwkk...","........kkQPwwwwwwwwPQkkkkkkk...",".........kkQwwwwwwwwQkkkkkk.....",".........kkkkkkkkkkkkkk.........","...........kkkkkkkkkk..........."]},scruffy:{name:"潦草小狗",hidden:true,baby:["................","................","................","................","................","....kkPkkP......","...kPPPPPPPP....","..kPPPzzPPk.....","..kPPPPPPPzzzP..","..PPPnPnPPk.....","..kPnPPPPPzzPP..","..kPnzzPPPk.....","...kPPPPPPPP....","....kkkkk.......","................","................"],adult:["................","................","......PP..PP....","....kkkPzzPPP...","..kkPPPPPPPPPP..",".kPPPzzPzzPk....",".PPPPPPPPPPPzzzP",".kPPnnPnnPPk....","PkPPPPPPzzPPzzP.",".PPnnPPPPPPk....",".kPnzzPPPPPPzzzP",".kPPPPPzzPPk....","..kPPPPPPPPzzP..","...kkkkPPPPP....","................","................"]},grumpy:{name:"氣噗噗",hidden:true,baby:["................","................","................",".....kkkkkk.....","...kkPPPPPPkk...","..kPPPPPPPPPPk..","..kPPnPPPPnPPk..",".kPPPPnPPnPPPPk.","..kPPPnPPnPPPk..","..kPcPPnnPPcPk..","..kPPPnPPnPPPk..","..kPPPPPPPPPPk..","...kPPPPPPPPk...","....kkkkkkkk....","................","................"],adult:["................","....kkkkkkkkk...","...kPPPPPPPPPk..","..kkwPPPPPPPPk..",".kPwPPPPPPPPPPk.",".kPPnPPPPPPnPPk.","kPPPPnPPPPnPPPPk","kPPPPnnPPnnPPPPk",".kPcPPPPPPPPcPk.",".kPPPPPnnPPPPPk.","kPPPPPnPPnPPPPPk",".kPPPPPPPPPPPPk.","..kPPPPPPPPPPk..","...kPPkkkkPPk...","...kPPk..kPPk...","....kk....kk...."]}};
 Object.assign(PETS,{tiger:{name:"老虎",hidden:true,noWear:true,baby:["................................", "................................", "................................", "................................", "................................", "................................", "..........kk........kk..........", ".........kkkk......kkkk.........", ".........klQkkkkkkkklQk.........", ".......kklPPQkkkkkklPPQkk.......", ".......kklPPPlnnnnlPPPQkk.......", "......kklPPPPPnnnPPPPPPQkk......", "......kklPPPPPnnnPPPPPPQkk......", "......kklPPPPPnnPPPPPPPQkk......", "......kklPPPPPPPPPPPPPPQkk......", "......kklPPPPPPPPPPPPPPQkk......", "......kknnPPnnPPPPnnPPnnkk......", "......kknnPPnnPPPPnnPPnnkk......", "......kklPccwwwwwwwwccPQkk......", "......kklPccwwwwwwwwccPQkk......", "......kklPPPwwnnnnwwPPPQkk......", "......kklPPPwwnnnnwwPPPPQkk.....", "......kkQPPPwwwwwwwwPPPPPQkk....", ".......kklPPwwwwwwwPPPPPPQkk....", ".......kkQPPnnPPPPPPPPPQQkk.....", "........kklPnnPPPPPPPPQkk.......", "........kkQPPPPPPPnnPQQkk.......", ".........kkQQQQQQQnnQkk.........", ".........kkkkkkkkkkkkkk.........", "...........kkkkkkkkkk...........", "................................", "................................"],adult:["................................", "................................", ".......kk..............kk.......", ".....kkkkkk..........kkkkkk.....", "....kkllckkkkkkkkkkkkkkclQkk....", "....kkQQPckkkkkkkkkkkkcPQQkk....", "......kklPllllnnnnllllPQkk......", "......kklPPPPPnnnPPPPPPQkk......", ".....kklPPnnPPnnnPPPnnPPQkk.....", "....kklPPPnnPPnnPPPPnnPPPQkk....", "....kklPPPPPPPPPPPPPPPPPPQkk....", "....kklPPPPPPPPPPPPPPPPPPQkk....", "....kknnPPPPnnPPPPnnPPPPnnkk....", "....kknnPPPPnnPPPPnnPPPPnnkk....", "....kklPPPPwwwwwwwwwwPPPPQkk....", "....kklPPPwwwwwwwwwwwwPPPQkkk...", "....kknnccwwwwnnnnwwwwccnnkkk...", "....kknnccwwwwnnnnwwwwccnnkkkkk.", "....kklPPPwwwwwwwwwwwwPPPQkknnk.", "....kklPPPwwwwwwwwwwwwPPPQkknnkk", "....kkQPPPwwwwwwwwwwwwPPPQkklQkk", ".....kklPPPwwwwwwwwwwwPPQkkkQQk.", ".....kkQPPPPPPnnPPPPnnPQkknnkkk.", "......kklPPPPPnnPPPnnnPQkknnk...", "......kklPnnPPPPPPnnnPPPlQkkk...", "......kklPnnPPPPPPnnPPPPPQk.....", "......kklPPPPPPPPPPPPPPPQkk.....", "......kklPPPPQQQQQQPPPPQkk......", "......kkQPPQQkkkkkkQQPPQkk......", ".......kkQQkkkkkkkkkkQQkk.......", ".......kkkkkk......kkkkkk.......", ".........kk..........kk........."]},caterpillar:{name:"毛毛蟲",hidden:true,noWear:true,baby:["................................", "................................", "................................", "................................", "................................", "................................", "................yyyy.....yyyy...", "................yyyy.....yyyy...", ".................kk.......kk....", ".................kk.......kk....", "..................kk.....kk.....", "..................kkkkk..kk.....", "..................kkkkkkkkk.....", "................kkkPPPPPkkk.....", "................kkPlPPPPPkk.....", "...............kkPlllPPPPPkk....", ".............kkkPPlwnPPwnPPk....", "...........kkkkkPPlnnPPnnPPkk...", ".......kkkkkkPkkPPPnnPPnnPPkk...", ".....kkkkkkPllkkPPPPPPPPPPPkk...", ".....kkQQkkQllQkQcccPPPPccck....", "....kkQllkkQllQkkQQQPnPnQQkk....", "....kkQlQkkQQQQQkkQQQQnQQkk.....", "....kkQQQkkQQQQQkkkQQQQQkkk.....", "....kkQQQkkQQQQQQQkkkkkkk.......", ".....kkQQQkkkQQQkkk.kkk.........", ".....kkkkkkkkkkkkk..............", ".......kkkk.kkkk................", ".......k..k.k..k................", "................................", "................................", "................................"],adult:["................................", "..................yyyy......yyyy", "..................yyyy......yyyy", "...................kk........kk.", "...................kkk.......kk.", "....................kk......kk..", "....................kk......kk..", ".....................kk.....kk..", ".....................kkkkkkkk...", "....................kkkPPPPkkk..", "...................kkPPPPPPPPkk.", "..................kkPPllPPPPPPkk", "..................kkPllllPPPPPkk", "................kkkPPlwnlPwnPPPk", "..............kkkkkPPPnnPPnnPPPk", "..........kkkkkkPkkPPPnnPPnnPPPk", "........kkkkkkkllkkPPPPPPPPPPPPk", "...kkkkkkQQQkkQllkkQcccPPPPcccQk", "..kkkQkkQllQkkQlllkkQQPPnPnPQQkk", ".kkQlQkkQllQkQQQQQkkQQQQQnQQQQkk", ".kQllQkQQllQkkQQQQQkkQQQQQQQQkk.", "kkQQlQkQQQQQkkQQQQQQkkkQQQQkkk..", "kkQQQQkkQQQQQkkQQQQQQkkkkkkk....", ".kQQQQkkQQQQQkkkQQQQkkk.........", ".kkQQQQkkQQQQQkkkkkkkk..........", "..kkkQkkkkkkkkk.kkkk............", "...kkkkk.kkkk...k..k............", "...k..k..k..k...................", "................................", "................................", "................................", "................................"]}});
 Object.assign(PETS,{snowman:{name:"雪人",hidden:true,noWear:true,baby:["................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "..............kkkk..............", "............kkwwwwkk............", "...........kwwwwwwwwk...........", "...........kwwwwwwwwk...........", "..........kwwwwwwwwwwk..........", "..........kwwnwwwwnwIk..........", "..........kwwwwwTTwIIk..........", "..........kwcwwwwwIcIk..........", "...........kwwnwnInIk...........", "...........kwwwwIIIIk...........", "...........kPPPPPPPPk...........", "..........kwQQQQQQQQQk..........", ".........kwwwwwwnwwPQwk.........", ".........kwwwwwwwwwPQwk.........", "........kwwwwwwwwwwwwwIk........", "........kwwwwwwwnwwwwIIk........", "........kwwwwwwwwwwwIIIk........", ".........kwwwwwwwwwIIIk.........", ".........kwwwwwwwwIIIIk.........", "..........kwwwwwwIIIIk..........", "...........kwwwwIIIIk...........", "............kwwIIIIk............", ".............kkkkkk............."],adult:["................................", "................................", "................................", "..............kkkk..............", "............kkwwwwkk............", "...........kwwwwwwwwk...........", "..........kwwwwwwwwwwk..........", "..........kwwwwwwwwwwk..........", ".........kwwwnwwwwnwwwk.........", ".........kwwwnwwwwnwwwk.........", ".........kwwwwwwTTwwwIk.........", ".........kwwcwwwwwTcIIk.........", ".........kwwwwnwnwnIIIk.........", "..........kwwwwwwwIIIk..........", "..........kwwwwwwIIIIk..........", "..........kkPPPPPPPPkk..........", ".........kQQQQQQQQQQQQk.........", "....zz..kwwwwwwwwwwPQwwk..zz....", ".....z..kwwwwwwwwwwPQwwk..z.....", "......zkwwwwwwwwwwwPQwwwkz......", ".......zwwwwwwwwnwwPQwwwz.......", ".......kzwwwwwwwwwwwwwwzk.......", "......kwwwwwwwwwwwwwwwwIIk......", "......kwwwwwwwwwnwwwwwIIIk......", ".......kwwwwwwwwwwwwwIIIk.......", ".......kwwwwwwwwwwwwIIIIk.......", ".......kwwwwwwwwnwwIIIIIk.......", "........kwwwwwwwwwIIIIIk........", "........kwwwwwwwwIIIIIIk........", ".........kwwwwwwIIIIIIk.........", "..........kkwwwIIIIIkk..........", "............kkkIIkkk............"]}});
@@ -2199,7 +2225,8 @@ function avatarParts(av){
   if(oc==="#E6E8F2"){pal.p="#C3C7DA";pal.w="#AEB6D0";pal.d="#8A90A8";}
   return {rows,pal};
 }
-const outfitOK=k=>!(OUTFIT[k]&&OUTFIT[k].secret)||!!(S.outfits&&S.outfits[k]);
+const outfitOK=k=>{ const o=OUTFIT[k]; return !(o&&o.secret)||!!(S.outfits&&S.outfits[k])||!!(o.shop&&S.shopOwned&&S.shopOwned[k]); };
+const accOK=k=>{ const o=ACC[k]; return !!o&&(!o.secret||!!(S.accs&&S.accs[k])||!!(o.shop&&S.shopOwned&&S.shopOwned[k])); };
 const AV_DEFAULT={hair:"short",hc:0,skin:1,outfit:"tee",oc:0,acc:"none"};
 function overlay(grid,rows){
   if(!Array.isArray(rows)||!Array.isArray(grid)) return;
@@ -2218,7 +2245,8 @@ function avatarParts(av){
   const hc=(HAIRC[av.hc]||HAIRC[0])[1], oc=(CLOTH[av.oc]||CLOTH[0])[1], sk=(SKIN[av.skin]||SKIN[1])[1];
   const pal={k:"#231F20",H:hc,e:tint(hc,.42),s:sk,d:tint(sk,-.2),O:oc,p:tint(oc,.28),q:tint(oc,-.25),
     w:"#F7F7FB",n:"#231F20",y:"#F2C14E",r:"#D8434B",G:"#BFE6F5",M:"#EDF0FA",c:"#F4929A",
-    b:"#A0522D",d2:"#6B4423",i:"#C9CEE4",A:"#F08A24",B:"#B8560F",L:"#4FA35A",T:"#D9A566",U:"#A8743A",v:"#9B6BD6",e2:"#8A8FA8",u:"#2E62C8",j:"#1D3F8F",x:"#5A5A6E",z:"#C99A2B",f:"#FFF3B0"};
+    b:"#A0522D",d2:"#6B4423",i:"#C9CEE4",A:"#F08A24",B:"#B8560F",L:"#4FA35A",T:"#D9A566",U:"#A8743A",v:"#9B6BD6",e2:"#8A8FA8",u:"#2E62C8",j:"#1D3F8F",x:"#5A5A6E",z:"#C99A2B",f:"#FFF3B0",
+    R:"#C8282E",g:"#2F6B3A",l:"#7CC85E",P:"#7A4BB5",N:"#27336B",S:"#C4CAD8",m:"#E94FA8",C:"#3FD0E0",o:"#F7B23B",t:"#5B3A22",D:"#34343F",E:"#FFF1C9",F:"#E8742A",W:"#FFFFFF",K:"#17171C",X:"#FF9EC4",Y:"#FFE15A",Z:"#8A8FA3",I:"#CFF3FF",V:"#B48BE8"};
   if(oc==="#E6E8F2"){pal.p="#C9CEE4";pal.q="#AEB6D0";pal.w="#AEB6D0";}
   return {rows,pal};
 }
@@ -2358,28 +2386,30 @@ function petParts(pet,stage){
       let row=grid[gy]; for(let x=0;x<r.length;x++){ const gx=ox+x; if(r[x]!=="."&&gx>=0&&gx<32) row=row.slice(0,gx)+r[x]+row.slice(gx+1); } grid[gy]=row; });
   }
   if(pet.collar&&!petIsImg(pet.type)&&grid.length===32) collarOverlay(grid,pet.type,st);   // 友誼項圈
+  const gd=pet.gear&&PET_GEAR[pet.gear], gear=gd?{rows:gd.rows,pos:petGearPos(pet.type,st,gd)}:null;   // 種子商店的寵物配件
   const rb=+pet.color===RAINBOW;
   const main=(PETC[pet.color]||PETC[0])[1], oc=(CLOTH[pet.wc]||CLOTH[1])[1];
-  if(petIsImg(pet.type)) return {rows:grid,img:PET_IMG[pet.type],type:pet.type,stage:st,color:pet.color,acc:!!acc,collar:!!pet.collar,pal:{}};
+  if(petIsImg(pet.type)) return {rows:grid,img:PET_IMG[pet.type],type:pet.type,stage:st,color:pet.color,acc:!!acc,collar:!!pet.collar,gear,pal:{}};
   const pal=Object.assign({k:"#231F20",P:main,Q:tint(main,-.28),d:tint(main,-.4),z:"#8A6A4A",L:tint(main,.62),l:tint(main,.4),f:"#F3D3B8",w:"#F7F7FB",n:"#231F20",y:"#F2C14E",r:"#D8434B",c:"#F4929A",O:oc,p:tint(oc,.3)},ACC_PAL);
   if(rb) Object.assign(pal,{P:"url(#petRbw)",Q:"url(#petRbwD)",d:"url(#petRbwD)",l:"url(#petRbwL)",L:"url(#petRbwL)"});
-  return {rows:grid,pal};
+  return {rows:grid,pal,gear};
 }
 function petSVG(pet,stage){
   const q=petParts(pet,stage);
   if(q.img){
     const acc=q.acc&&PET_ACC[q.type];
     const co=q.collar?collarOff(q.type,q.stage):null;
-    return `<svg viewBox="0 0 16 16" width="100%" height="100%" aria-hidden="true">${petImgTag(q.type,16,q.stage,0,0,q.color)}${acc?spriteRects(acc.rows,.5,acc.off[0]/2,acc.off[1]/2,ACC_PAL):""}${co?spriteRects(COLLAR_ROWS,.5,co[0]/2,co[1]/2,ACC_PAL):""}</svg>`;
+    return `<svg viewBox="0 0 16 16" width="100%" height="100%" aria-hidden="true">${petImgTag(q.type,16,q.stage,0,0,q.color)}${acc?spriteRects(acc.rows,.5,acc.off[0]/2,acc.off[1]/2,ACC_PAL):""}${co?spriteRects(COLLAR_ROWS,.5,co[0]/2,co[1]/2,ACC_PAL):""}${q.gear?spriteRects(q.gear.rows,.5,q.gear.pos[0]/2,q.gear.pos[1]/2,GEAR_PAL):""}</svg>`;
   }
   const n=q.rows.length||16;
-  return `<svg viewBox="0 0 ${n} ${n}" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(q.rows,1,0,0,q.pal)}</svg>`;
+  return `<svg viewBox="0 0 ${n} ${n}" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(q.rows,1,0,0,q.pal)}${q.gear&&n===32?spriteRects(q.gear.rows,1,q.gear.pos[0],q.gear.pos[1],GEAR_PAL):""}</svg>`;
 }
 const PET_WEAR=Object.fromEntries(Object.entries(PET_WEAR_NAMES).map(([k,n])=>[k,{name:n}]));
 /* 粗點陣風格建築／家具／裝飾（原創繪製，16×16；裝飾 8×8） */
 Object.assign(PAL,{"K": "#231F20", "R": "#E8453C", "Y": "#FFD23F", "O": "#FF9F43", "S": "#7FD1F7", "G": "#57C35A", "H": "#9BE38E", "D": "#2E8B57", "B": "#A0522D", "E": "#F4E1C1", "P": "#FF8FB1", "V": "#9B6BD6", "U": "#4A7BF7", "A": "#BFC5D2", "W": "#FFFFFF", "L": "#D9A066", "N": "#2B3F8F", "X": "#F2726A", "I": "#8A93AE", "Z": "#565E78", "J": "#6B4423", "F": "#FFF3B0", "T": "#C98A2B", "C": "#BFF6FF", "Q": "#2F6FD0"});
 Object.assign(SPR,{lounge:[".....yy.....","....RRRR....","...RRRRRR...","..RRRRRRRR..",".RRRRRRRRRR.",".kkkkkkkkkk.",".kEEYYYYEEk.",".kEEYYYYEEk.",".kEEEEEEEEk.",".kEEBBBBEEk.",".kEEBBBBEEk.",".kkkkkkkkkk."],village:["..........KK....", ".......KKKBBK...", "......KRRKBBK...", ".....KPRRRBBK...", "....KPRRRRBBK...", "...KRRRRRRRRK...", "..KRRRRRRRRRRK..", ".KRRRRRRRRRRRRK.", "..KEEEEEEEEEEK..", "..KWWWWWWSWSWK..", "..KWWWBBBWWWWK..", "..KWWWBBBSWSWK..", "..KWWWBYBWWWWK..", "..KWWWBBBWWWWK..", "..PWWWBBBWWWWP..", ".GGGGGGGGGGGGGG."],tavern:["....KKKKKKKK....", "...KLLLLLLLLK...", "...KLLBBBBLLK...", "..KKLLLLLLLLKK..", ".KBBBBBBBBBBBBK.", ".KBBBBBBBBBBBBK.", "KBBBBBBBBBBBBBBK", ".KEEEEEEEEEEEEK.", ".KEEEEEEEEERREK.", ".KESSVVVVVVYYEK.", ".KESSVVWWVVRREK.", ".KESSBBBBBBRREK.", ".KEEEBBBBBBEEEK.", ".KEEEBBBBBBEEEK.", ".KEEEBBBBBBEEEK.", "..KKKKKKKKKKKK.."],tower:[".......KUUUK....", ".......KUUUK....", "....KKKKKKKK....", "...KWWWWWWWWK...", "...KAAAAAAAAK...", "...KASSAASSAK...", "...KASSAASSAK...", "...KAAAAAAAAK...", "...KASSAASSAK...", "...KASSAASSAK...", "...KAAAAAAAAK...", "...KASSAASSAK...", "...KASSBBSSAK...", "...KAAABBAAAK...", "...KAAABBAAAK...", "....KKKKKKKK...."],chest:["..Y.............", "..............Y.", ".Y..............", "...KKKKKKKKKKY..", "..KLLLLLLLLLLK..", "..KBBBBBBBBBBK..", ".KBBBBBBBBBBBBK.", ".KBBBBBYYBBBBBK.", ".KYYYYYYYYYYYYK.", ".KYYYYYYYYYYYYK.", ".KBBBBBKKBBBBBK.", ".KBBLBBYYBBLBBK.", ".KBBBBBBBBBBBBK.", ".KBBBBBBBBBBBBK.", "..KKKKKKKKKKKK..", "................"],temple:["................", ".......KK.......", "......KEEK......", ".....KEEEEK.....", "....KEEYYEEK....", "..KKEEEEEEEEKK..", ".KEEEEEEEEEEEEK.", ".KEEEEEEEEEEEEK.", "..KWVVWVVWVVWK..", "..KWVVWVVWVVWK..", "..KWVVWVVWVVWK..", "..KWVVWVVWVVWK..", "..KWVVWVVWVVWK..", ".KEEEEEEEEEEEEK.", ".KEEEEEEEEEEEEK.", "..KKKKKKKKKKKK.."],chiefhome:[".......KK.......", "......KVVK......", ".....KVVVVK.....", "....KVVVVVVK....", "...KVVVYYVVVK...", "..KVVVYYYYVVVK..", ".KVVVVVYYVVVVVK.", "KVVVVVVVVVVVVVVK", ".KEEEEEEEEEEEEK.", ".KWSSWWWWWWSSWK.", ".KWSSWBBBBWSSWK.", ".KWSSWBBBBWSSWR.", ".KWWWWBBYBWWWWR.", ".KWWWWBBBBWWWWK.", ".KWWWWBBBBWWWWK.", "..KKKKKKKKKKKK.."],digital:[".......RR.......", ".....Y.KK.Y.....", "....Y..KK..Y....", "..KKKKKKKKKKKK..", ".KUUUUUUUUUUUUK.", ".KUSSSSSSSSSSUK.", ".KUSSSSSWSSSSUK.", ".KUSSWSWSSWSSUK.", ".KUSWSSWSSSWSUK.", ".KUSSWSSWSWSSUK.", ".KUSSSSSSSSSSUK.", ".KUUUUUUUUUUUUK.", ".KUUUUAAAAUUUUK.", ".KUUUUAAAAUUUUK.", ".KUUUUAAAAUUUUK.", "..KKKKKKKKKKKK.."],myhouse:["...........KAA..", "..........KBBK..", ".......KK.KBBK..", "......KOOKKBBK..", ".....KOOOOKBBK..", "....KOPOOPOBBK..", "...KOOPPPPOOK...", "..KOOOOPPOOOOK..", ".KOOOOOOOOOOOOK.", "..KEEEEEEEEEEK..", "..KEEEEEEEEEEK..", "..KEEYYEEBBBEK..", "..KEEYYEEBBBEK..", "..KEEEEEEBBBEK..", "..PEPEEEEBBBEP..", ".GGGGGGGGGGGGGG."],medal:["....KRRKKUUK....", "....KRRKKUUK....", "....KRRKKUUK....", "....KRRKKUUK....", "....KRRKKUUK....", "....KRRKKUUK....", "....KYYYYYYK....", "...KYYWYYYYYK...", "...KYYYWWYYYK...", "...KYYWWWWYYK...", "...KYYWWWWYYK...", "...KYYYWWYYYK...", "...KYYYYYYYYK...", "....KYYYYYYK....", ".....KKKKKK.....", "................"],notebook:["................", "....KKKKKKKKK...", "...KNUUUUUUUUK..", "...KNUUUUUUUUK..", "..KANUWWWWWWUK..", "...KNUWWWWWWUK..", "...KNUWWWWWWUK..", "..KANUUUUUUUUK..", "...KNUUUUUUUUK..", "...KNUUUUUUUUK..", "..KANUUUUUUUUK..", "...KNUUUUUUUUK..", "...KNUUUUUUUUK..", "..KANUUUUUUUUK..", "...KNUUUUUUUUK..", "....KKKKKKKKK..."],trophy:["................", "....KKKKKKKK....", "..KKYYYYYYYYKK..", ".KYYYWYYYYYYYYK.", ".K.YYWYYYYYYY.K.", ".KYYYYYYYYYYYYK.", "..KKYYYYYYYYKK..", "...KYYYYYYYYK...", "....KYYYYYYK....", ".....KYYYYK.....", "......KYYK......", ".....KKYYKK.....", "....KBBBBBBK....", "....KBBBBBBK....", "....KBBBBBBK....", ".....KKKKKK....."],wardrobe:["...KKKKKKKKKK...", "..KLLLLLLLLLLK..", "..KLLLLKKLLLLK..", "..KLLLLKKLLLLK..", "..KLLLLKKLLLLK..", "..KLLLLKKLLLLK..", "..KLLLLKKLLLLK..", "..KLLLYKKYLLLK..", "..KLLLLKKLLLLK..", "..KLLLLKKLLLLK..", "..KLLLLKKLLLLK..", "..KLLLLKKLLLLK..", "..KLLLLKKLLLLK..", "..KLLLLKKLLLLK..", "..KLLLLLLLLLLK..", "...KKKKKKKKKK..."],petbed:["................", "................", "................", "................", "................", "................", "...KKKKKKKKKK...", "..KRRRRRRRRRRK..", ".KRRRRRRRRRRRRK.", ".KRRWWWWWWWWRRK.", ".KRRWWWPPWWWRRK.", ".KRRWWPWWPWWRRK.", ".KRRWWWWWWWWRRK.", ".KRRRRRRRRRRRRK.", "..KKKKKKKKKKKK..", "................"],certwall:[".......KK.......", "..KKKKKKKKKKKK..", ".KYYYYYYYYYYYYK.", ".KYYYYYYYYYYYYK.", ".KYYWWWWWWWWYYK.", ".KYYWRRRRRRWYYK.", ".KYYWWWWWWWWYYK.", ".KYYWAAAAAAWYYK.", ".KYYWWWWWWWWYYK.", ".KYYWAAAAAWWYYK.", ".KYYWWWWWWWWYYK.", ".KYYWWWWWWWWYYK.", ".KYYYYYYYYYYYYK.", ".KYYYYYYYYYYYYK.", "..KKKKKKKKKKKK..", "................"],tree:["..KKKK..", ".KGGGGK.", "KGHHGGGK", "KGGGGGGK", "KGGGGGGK", ".KGGGGK.", "..KBBK..", "...KK..."],pine:["...KK...", "..KGGK..", ".KGHGGK.", ".KGGGGK.", "KGGGGGGK", "KGGGGGGK", ".KKBBKK.", "...KK..."],flower:["........", "........", "...P....", "..PYP...", "...P....", "...D....", "...DD...", "...D...."],rock:["........", "........", "..KKKK..", ".KAAAAK.", "KAWWAAAK", "KAAAAAAK", "KAAAAAAK", ".KKKKKK."]});
 Object.assign(SPR,{village:["...........KK...", "..........KAAK..", "..........KBBK..", "...KKKKKKKKBBK..", "..KRRRRRRRRBBK..", ".KXRRXRRXRRXRRK.", ".KRXRRXRRXRRXRK.", "KRRRRRRRRRRRRRRK", ".KAAAAAAAAAAAAK.", ".KWWWWWWWWWWWWK.", ".KWSSWBBBBWSSWK.", ".KWWWWBBBBWWWWK.", ".KWSSWBBBYWSSWK.", ".KWWWWBBBBWWWWK.", ".HWWWWBBBBWWWWH.", "GGGGGGGGGGGGGGGG"],tavern:["....KKKKKKKK....", "...KLDDLDDDLK...", ".KKKLLLLLLLLKKK.", "KBBBBBBBBBBBBBBK", "KBBBBBBBBBBBBBBK", "DDDDDDDDDDDDDDDD", "KLLLLLLLLLLLDDLK", "KEEEEEEEEEEERREK", "KESSEEEEEEEEYYEK", "KEWSEVVVVVVERREK", "KESWEVVWWVVERREK", "KESSEBBBBBBEEEEK", "KEEEEBBBBBBEEEEK", "KEEEEBBBBBBEEEEK", "KEEEEBBBBBBEEEEK", ".KKKKKKKKKKKKKK."],tower:[".......KUUUK....", "...KKKKKKKKKK...", "..KWWWWWWWWWWK..", ".KAAAAAAAAAAAAK.", "..KAAAAAAAAAAK..", "..KAWSAWSAWSAK..", "..KASSASSASSAK..", "..KAAAAAAAAAAK..", "..KAWSAWSAWSAK..", "..KASSASSASSAK..", "..KAAAAAAAAAAK..", "..KAWSAWSAWSAK..", "..KASSABBASSAK..", "..KAAAABYAAAAK..", "..KAAAABBAAAAK..", "...KKKKKKKKKK..."],chest:["..............Y.", ".Y..KKKKKKKK....", "...KLLLLLLLLK...", "..KBLLLLLLLLBK.Y", "Y.KBYBBBBBBYBK..", ".KBBBBBBBBBBBBK.", ".KBBYBBBBBBYBBK.", ".KBBBBBYYBBBBBK.", ".KYYYYYYYYYYYYK.", ".KYYYYYYYYYYYYK.", ".KBBBBBKKBBBBBK.", ".KBBBBBYYBBBBBK.", ".KBBBBBYYBBBBBK.", ".KBDDDDDDDDDDBK.", ".KBBBBBBBBBBBBK.", "..KKKKKKKKKKKK.."],temple:["................", ".......K........", "......KEK.......", ".....KEYYK......", "....KEEYYEK.....", ".KKKEEEEEEEKKKK.", "KWWWWWWWWWWWWWWK", "KEEEEEEEEEEEEEEK", ".KWAKWAKWAKWAKK.", ".KWWKWWKWWKWWK..", ".KWWKWWKWWKWWK..", ".KWWKWWKWWKWWK..", ".KWAKWAKWAKWAKK.", "KAAAAAAAAAAAAAAK", "KEEEEEEEEEEEEEEK", ".KKKKKKKKKKKKKK."],chiefhome:["................", "................", "...KKKKKKKKKK...", "..KVVVVVVVVVVK..", ".KPVVPVYYVVPVVK.", ".KVPVVYYYYVVPVK.", "KVVVVVVYYVVVVVVK", ".KAAAAAAAAAAAAK.", ".KWWWWWWWWWWWWK.", ".KWSSWWWWWWSSWKK", ".KWWSWBBBBWWSWRR", ".KWSSWBBBBWSSWRR", ".KWWWWBBBYWWWWRR", ".KWWWWBBBBWWWWKK", ".KWWWWBBBBWWWWK.", "GGGGGGGGGGGGGGGG"],digital:["....K.KRRK.K....", "...KYK.KK.KYK...", "..KYKKKKKKKKYK..", ".KUUUUUUUUUUUUK.", ".KUKKKKKKKKKKUK.", ".KUKSSSSSSSSKUK.", ".KUKSWSSWSWSKUK.", ".KUKWSSWSSSWKUK.", ".KUKSWSWSSWSKUK.", ".KUKSSSSWSSSKUK.", ".KUKKKKKKKKKKUK.", ".KUUUUUUUUUUUUK.", ".KUUUAAKKAAUUUK.", ".KUUUAAKKAAUUUK.", ".KUUUAAKKAAUUUK.", "..KKKKK..KKKKK.."],myhouse:["...........KKAA.", "..........KAAK..", "..........KBBK..", "...KKKKKKKKBBK..", "..KOOOOOOOOBBK..", ".KYOOYPPPPOYOOK.", ".KOYOOYPPYOOYOK.", "KOOOOOOOOOOOOOOK", ".KLLLLLLLLLLLLK.", ".KEEEEEEEEEEEEK.", ".KEYLYYEEBBBBEK.", ".KELYYLEEBBBBEK.", ".KEYLYYEEBYBBEK.", ".KEEEEEEEBBBBEK.", ".PEEEPEEEBBBBEP.", "GGGGGGGGGGGGGGGG"],lounge:["..KRRK....KRRK..", ".KKKK......KKKK.", "KAKAAK....KAAKAK", "KWWWWK....KWWWWK", "KAAAAK.K.KKAAAAK", "KWAAAAKAKAKAWAAK", "KAYSAWWWWWWAYSAK", "KASSAAAAAAAASSWK", "KAAAAWABBWAAAAAK", "KWAAAAAKKAAAWAAK", "KAYSAABBBBAAYSAK", "KASSAALBBLAASSWK", "KAAAAABBYBAAAAAK", "KAAAAABBBBAAAAAK", "HAAAAABBBBAAAAAH", "GGGGGGGGGGGGGGGG"],crown:["................", "................", ".......KK.......", "..K...KYYK...K..", ".KYK..KYYK..KYK.", ".KYYKKKYYKKKYYK.", ".KYYYYYYYYYYYYK.", ".KYYYYYYYYYYYYK.", ".KYYRYYRRYYRYYK.", ".KYYYYYYYYYYYYK.", ".KYYYYYYYYYYYYK.", ".KLLLLLLLLLLLLK.", ".KLLLLLLLLLLLLK.", "..KKKKKKKKKKKK..", "................", "................"]});
+Object.assign(SPR,{seedshop:["...KKK....KKK...", "..KHHHKKKKHHHK..", "...KHHHDDHHHK...", "..KKKKKDDKKKKK..", ".KRRWWRRWWRRWWK.", "KRRWWRRWWRRWWRRK", "KRRWWRRWWRRWWRRK", ".KRKKWKKRKKWKKK.", ".KEEEEEEEEEEEEK.", ".KESSEKBBBKSSEK.", ".KESWEKBBBKWSEK.", ".KEEEEKBBYKEEEK.", ".KJJJJKBBBKJJJK.", ".KXGOKKBBBKKYXK.", ".KJJJJKBBBKJJJK.", "GGGGGGGGGGGGGGGG"]});   // 種子商店：條紋遮雨棚＋發芽招牌
 function spriteSVG(name){
   const r=SPR[name]||[], n=r.length||12;
   return `<svg viewBox="0 0 ${n} ${n}" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(r,1,0,0)}</svg>`;
@@ -2829,7 +2859,8 @@ const PLACES=[
   {id:"myhome",name:"溫暖的家",real:"筆記本・成就・角色",sprite:"myhouse",tile:[5,10],from:0,heroDx:-24},
   {id:"lounge",name:"交誼廳",real:"大家的角色・按讚",sprite:"lounge",tile:[19,11],from:2},
   {id:"home",name:"村長的家",real:"面談通知",sprite:"chiefhome",tile:[30,18],from:4},
-  {id:"digital",name:"數位總合辦公室",real:"技術諮詢",sprite:"digital",tile:[22,20],from:2}
+  {id:"digital",name:"數位總合辦公室",real:"技術諮詢",sprite:"digital",tile:[22,20],from:2},
+  {id:"seedshop",name:"種子商店",real:"服裝家具・每日問答",sprite:"seedshop",tile:[15,18],from:0}
 ];
 const CS_CATEGORIES=["程式與自動化","GIS 與圖資","BIM 與 3D","AI 工具","其他"];
 let CFG=clone(DEFAULT_CONFIG);
@@ -3003,6 +3034,13 @@ const Sound=(()=>{
         bass:P(`E2 . E3 . E2 . E3 . E2 . E3 . E2 . E3 .  D2 . D3 . D2 . D3 . D2 . D3 . D2 . D3 .
                 C2 . C3 . C2 . C3 . C2 . C3 . C2 . C3 .  B1 . B2 . B1 . B2 . B1 . B2 . B1 . B2 .`),
         drum:P(`k - h k s - h -`)
+      }},
+    seedshop:{bpm:126, title:"種子商店的叮咚小曲",
+      lead:{type:"pulse",vol:.24}, harm:{type:"triangle",vol:.28}, bass:{type:"triangle",vol:.45},
+      parts:{
+        lead:P(`C5 . E5 G5 . E5 C5 .  D5 . F5 A5 . F5 D5 .  E5 . G5 C6 . G5 E5 .  D5 . B4 . G4 . . .`),
+        harm:P(`E4 . . . G4 . . .  F4 . . . A4 . . .  G4 . . . C5 . . .  F4 . . . D4 . . .`),
+        bass:P(`C3 . G2 . C3 . G2 .  D3 . A2 . D3 . A2 .  C3 . G2 . E3 . G2 .  G2 . D3 . G2 . . .`)
       }},
     fanfare:{bpm:150, next:"victory", title:"結業凱旋",
       lead:{type:"pulse",vol:.35}, bass:{type:"triangle",vol:.55},
@@ -3373,7 +3411,7 @@ const NPC_LINES={
   director:{科技:["「欸，正好。數位辦公室清出幾件衣服，寫程式穿這個最舒服。」","「這幾件是研發用的，挑一件吧。」"],
             藝術:["「最近在研究古文明的圖騰，做了幾件有點特別的衣服。」","「來點藝術感吧！挑一件看看。」"]}
 };
-function secretPool(){ return Object.keys(OUTFIT).filter(k=>OUTFIT[k].secret&&!outfitOK(k)); }
+function secretPool(){ return Object.keys(OUTFIT).filter(k=>OUTFIT[k].secret&&!OUTFIT[k].shop&&!outfitOK(k)); }
 function openNpcGift(){
   const pool=secretPool(); if(!pool.length) return false;
   const NPC_THEMES={chief:["工程","帥氣"],director:["科技","藝術"]};
@@ -3551,6 +3589,9 @@ function buildMap(){
         s+=`<g class="mapnpc" aria-hidden="true"><title>${esc(n.name)}（${esc(n.title)}・${esc(npcSupplyText(n))}）</title><g transform="translate(${x},${y})">${spriteRects(a.rows,.36,0,0,a.pal)}${avMaskSVG(n.av,.36)}</g></g>`; });
     });
   }catch(e){}
+  // 種子商店老闆站在店門口左邊
+  try{ const sp=PLACES.find(p=>p.id==="seedshop"); if(sp){ const a=avatarParts32(SHOPKEEPER.av), x=sp.tile[0]*T+5-31, y=sp.tile[1]*T-7;
+    s+=`<g class="mapnpc" aria-hidden="true"><title>${esc(SHOPKEEPER.name)}（${esc(SHOPKEEPER.title)}）</title><g transform="translate(${x},${y})">${spriteRects(a.rows,.36,0,0,a.pal)}${avMaskSVG(SHOPKEEPER.av,.36)}</g></g>`; } }catch(e){}
   // START flag
   const [sx,sy]=pts[0];
   s+=`<g aria-hidden="true"><rect x="${(sx-3)*T+4}" y="${(sy+1)*T-8}" width="2" height="18" fill="#1E2345"/><rect x="${(sx-3)*T+6}" y="${(sy+1)*T-8}" width="12" height="7" fill="#D8434B"/></g>`;
@@ -3898,7 +3939,7 @@ function checkAch(){
     collector:()=>findCount()>=8,
     guests:()=>guestCount()>=10,
     armory_full:()=>weaponOwnedCount()>=WEAPONS.filter(w=>!w.hidden).length,
-    closet_full:()=>outfitOwnedCount()>=Object.keys(OUTFIT).length,
+    closet_full:()=>Object.keys(OUTFIT).filter(k=>!OUTFIT[k].shop).every(outfitOK),      // 商店服裝不算在 19 套裡
     finds_full:()=>findCount()>=FINDS.length,
     breeder:()=>rareCount()>=Object.keys(RARE).length,
     petpals:()=>friendCount()>=FRIEND_ACH,
@@ -4118,8 +4159,14 @@ async function renderCert(canvas,opt){
       try{ ctx.filter=petImgFilter(q.color); }catch(e){}
       ctx.drawImage(im,ax+16*apx+18,ay+16*apx-16*ppx-6,16*ppx+8,16*ppx+8);
       try{ ctx.filter="none"; }catch(e){}
+      const gd=S.pet.gear&&PET_GEAR[S.pet.gear];
+      if(gd){ const pos=petGearPos(S.pet.type,"adult",gd), sc=(16*ppx+8)/32; px(ctx,gd.rows,GEAR_PAL,ax+16*apx+18+pos[0]*sc,ay+16*apx-16*ppx-6+pos[1]*sc,sc); }
       ctx.imageSmoothingEnabled=true;
-    }else px(ctx,q.rows,q.pal,ax+16*apx+22,ay+16*apx-16*ppx,ppx*16/(q.rows.length||16));
+    }else{
+      const sc=ppx*16/(q.rows.length||16);
+      px(ctx,q.rows,q.pal,ax+16*apx+22,ay+16*apx-16*ppx,sc);
+      if(q.gear&&q.rows.length===32) px(ctx,q.gear.rows,GEAR_PAL,ax+16*apx+22+q.gear.pos[0]*sc,ay+16*apx-16*ppx+q.gear.pos[1]*sc,sc);
+    }
   }
   if(S.weapon&&SPR["w_"+S.weapon]){
     px(ctx,SPR["w_"+S.weapon],PAL,bx+bw-50,by+12,Math.max(2,Math.round(40/(SPR["w_"+S.weapon].length||12))));
@@ -4322,7 +4369,7 @@ function avRows(){ return [
  {key:"skin",label:"膚色",type:"sw",list:SKIN.map((c,i)=>[i,c[0],c[1]])},
  {key:"outfit",label:"服裝",type:"thumb",list:Object.entries(OUTFIT).filter(([v,o])=>!o.secret||outfitOK(v)).map(([v,o])=>[v,o.name,!!o.secret])},
  {key:"oc",label:"衣服顏色",type:"sw",list:CLOTH.map((c,i)=>[i,c[0],c[1]])},
- {key:"acc",label:"配件",type:"txt",list:Object.entries(ACC).filter(([v,o])=>!o.secret||(S.accs&&S.accs[v])).map(([v,o])=>[v,o.name])}
+ {key:"acc",label:"配件",type:"txt",list:Object.entries(ACC).filter(([v])=>accOK(v)).map(([v,o])=>[v,o.name])}
 ];}
 let AV_ROWS=avRows();
 function buildAvOpts(){
@@ -5532,6 +5579,7 @@ function placeBadge(id){
   if(id==="myhome"){const n=unseenAch();return n?`${n} 個新成就`:"";}
   if(id==="home"){ if(!ivOn()) return ""; const n=INBOX.interviews.filter(x=>x.status==="待回覆"||ivUnseen(x)).length;return n?`${n} 則通知`:"";}
   if(id==="digital"){const n=INBOX.consults.filter(csUnseen).length;return n?`${n} 則回覆`:"";}
+  if(id==="seedshop"){ try{ const st=bossState(); return st==="new"?"今日問答":st==="pick"?"種子待領":""; }catch(e){ return ""; } }
   return "";
 }
 const WEEK="日一二三四五六";
@@ -5746,9 +5794,9 @@ function runCheat(msg){
     setTimeout(()=>{ pushFarm(true); },300);
   }else if(c.kind==="deco"){
     shopState(); shopBuysCount(); S.decoCheat=true; let n=0;
-    Object.entries(SHOP).forEach(([cat,cc])=>{ if(cat==="snack") return; cc.items.forEach(([id])=>{ if(!S.shopOwned[id]){ S.shopOwned[id]=true; n++; } }); });
-    const tot=Object.entries(SHOP).filter(([cat])=>cat!=="snack").reduce((a,[,cc])=>a+cc.items.length,0);
-    gift=`<span class="pv">${decoSVG("d_xmastree")}</span><div><p class="dbody"><b>全部家具解鎖</b>（${tot} 件，這次新增 ${n} 件）</p><p class="ahint">牆紙、地毯、掛飾、地面擺設都可以在「溫暖的家 → 種子商店」直接換上；寵物零食還是要用種子買。</p></div>`;
+    Object.entries(SHOP).forEach(([cat,cc])=>{ if(cat==="snack"||WEAR_CATS.has(cat)) return; cc.items.forEach(([id])=>{ if(!S.shopOwned[id]){ S.shopOwned[id]=true; n++; } }); });
+    const tot=Object.entries(SHOP).filter(([cat])=>cat!=="snack"&&!WEAR_CATS.has(cat)).reduce((a,[,cc])=>a+cc.items.length,0);
+    gift=`<span class="pv">${decoSVG("d_xmastree")}</span><div><p class="dbody"><b>全部家具解鎖</b>（${tot} 件，這次新增 ${n} 件）</p><p class="ahint">牆紙、地毯、掛飾、地面擺設都可以在「地圖上的「種子商店」」直接換上；寵物零食還是要用種子買。</p></div>`;
     setTimeout(()=>{ if(curPlace&&curPlace.id==="myhome") renderPlace(); },50);
   }else{
     S.ach=S.ach||{}; ACH.forEach(a=>{ S.ach[a.id]=S.ach[a.id]||new Date().toISOString(); });
@@ -5788,7 +5836,8 @@ const HELP={
   armory:"走進海裡撈寶，或拜訪村長的家、數位總合辦公室時有機會拿到武器，分成普通、稀有、史詩、傳說四個等級。暗色剪影是還沒拿到的，點武器可以裝備或卸下。",
   closet:"基本款一開始就有；秘密服裝要在地圖上散步時遇到村長或總長才拿得到。可以在這裡換衣服、換顏色，點衣服能先預覽穿上的樣子。",
   album:"同一種小物收集到 30 個，就能兌換一張隱藏畫框；另外 4 幅要送蔬菜給村長或總長、1 幅要集滿稀有作物圖鑑，在交誼廳留言板留言 1 次也能拿到「吶喊兔」。畫框可以掛在展示區的牆上，別人拜訪時也看得到。",
-  shop:"用種子買展示空間的牆紙、地毯、掛飾、擺設，以及寵物零食。地板樣式和地面擺設都可以換；累積買 30 個商品成為 VIP，可以先預覽家具擺在家裡的樣子。地面擺設可以同時擺兩件（左邊和右邊）。上方可以依主題（經典、聖誕節、萬聖節、感恩節、辦公室、森林、太空、迪斯可、spy）篩選，旁邊的數字是已收集／全部。價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具可以隨時換上或收起，訪客也看得到；零食能讓目前的寵物親密度提升。",
+  boss:"種子商店老闆每天出一題，題目從五大項目的任務內容隨機挑選。答對了可以自己挑一種種子，拿 30 顆；答錯會拿到 3 顆隨機種子當安慰獎。每天一次，晚上 12 點換新題目；題目當天固定，關掉視窗再打開還是同一題。",
+  shop:"種子商店在地圖上（新手村旁邊），也可以從溫暖的家的「種子商店」按鈕過去。可以用種子買展示空間的牆紙、地毯、掛飾、擺設，以及寵物零食。地板樣式和地面擺設都可以換；累積買 30 個商品成為 VIP，可以先預覽家具擺在家裡的樣子。地面擺設可以同時擺兩件（左邊和右邊）。上方可以依主題（經典、聖誕節、萬聖節、感恩節、辦公室、森林、太空、迪斯可、spy）篩選，旁邊的數字是已收集／全部。價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具可以隨時換上或收起，訪客也看得到；零食能讓目前的寵物親密度提升。",
   farm:"先選種子，再點空地播種；種錯了可以按「⛏ 挖掉」退還種子重種。相鄰（左右或上下）的兩塊田種了合適的不同作物，收成時有機率長出稀有品種，記錄在下方的稀有作物圖鑑（集滿 6 種送隱藏寵物「雪人」）。作物依真實時間長大，成熟後點一下收成，蔬菜會放進展示區下方的倉庫。種子用完可以到任務地點撿；按「立即同步」讓別人馬上看到你的田。",
   barn:"收成的、偷來的、別人送的蔬菜都在這裡。可以餵寵物（餵完 5 分鐘寵物會看守農場）、帶去別人家送禮或砸過去，也可以送給村長、總長換回禮。",
   showroom:"這就是別人拜訪你家時看到的樣子：牆上的畫框、展示的服裝／小物／武器，還有你和寵物。點角色或寵物會有反應；牆上的蔬菜漬可以清理並回收。",
@@ -5938,7 +5987,7 @@ function startHomePlay(){
   homePlayTimer=setTimeout(play,5000+Math.random()*3000);
 }
 Object.assign(SPR,{f_splat:[".....X......", ".....R....X.", ".X.......R..", "..R.........", "....RFRR....", "...RXRRRRR..", "..RRRRXRR...", "....RRRR....", ".R........R.", "X..........X", "......R.....", ".......X...."]});
-const TOSS_KEY="sino22-toss", PET_FAV={dog:"carrot",cat:"bokchoy",guinea:"carrot",slime:"strawberry",chicken:"corn",sheep:"bokchoy",horse:"carrot",rabbit:"carrot",scruffy:"pumpkin",grumpy:"strawberry",tiger:"pumpkin",caterpillar:"bokchoy",snowman:"carrot"};
+const TOSS_KEY="sino22-toss", PET_FAV={rabbit:"carrot",horse:"carrot",snowman:"carrot",guinea:"bokchoy",sheep:"bokchoy",chicken:"corn",scruffy:"corn",dog:"pumpkin",tiger:"pumpkin",cat:"tomato",grumpy:"tomato",slime:"strawberry",caterpillar:"strawberry"};   // 每種蔬菜都有寵物愛吃（一般寵物 8 種就涵蓋全部 6 種蔬菜）
 function claimGifts(){
   if(!S.group||!loungeReady()||!LOUNGE.at) return;
   const mine=(loungeData().gifts||{})[myCode().toUpperCase()]||[];
@@ -6073,7 +6122,7 @@ function checkNpcMilestones(){                         // 依試算表順序，�
 }
 let SEEDPICK=null;
 function openSeedPick(id,nth,key){
-  const g=NPC_GIFT[id]; SEEDPICK={id,key};
+  const g=NPC_GIFT[id]; SEEDPICK={id,key}; $("#spDept").textContent=`第 ${NPC_MILESTONE} 份的獎勵`;
   $("#spTitle").textContent=`你送出了第 ${nth} 份蔬菜！`;
   $("#spSay").textContent=`${g.who}：「恭喜你剛好是第 ${nth} 份！挑一種你最想要的種子，我送你 ${NPC_MILESTONE_SEEDS} 顆！」`;
   $("#spFace").innerHTML=avatarSVG(id==="home"?CHIEF_AV:DIRECTOR_AV);
@@ -6391,6 +6440,19 @@ function renderPlaceInner(greet){
       await loungePresence(); await loadLounge(true);
       if(curPlace&&curPlace.id==="lounge") renderLounge($("#placeBody"));
     },60000);
+    return;
+  }
+  if(pl.id==="seedshop"){
+    $("#plHostFace").innerHTML=avatarSVG(SHOPKEEPER.av);
+    $("#plHostName").textContent=`${SHOPKEEPER.title}　${SHOPKEEPER.name}`;
+    if(greet){
+      const st=bossState(), name=dispName();
+      typeInto($("#plSay"),st==="new"?`歡迎光臨，${name}！今天的每日問答還沒挑戰喔，答對了自己挑一種種子，我送你 ${BOSS_SEEDS} 顆！`
+        :st==="pick"?`${name}，你今天答對了，還沒挑種子喔！想要哪一種？`
+        :`歡迎光臨，${name}！服裝、配件、家具、寵物零食都在這裡，慢慢挑。`);
+    }
+    if(greet) SHOP_ROOM_OPEN=true;                      // 每次走進商店都先展開「看看我家」（在店裡收起後，買東西時維持收起）
+    renderSeedShop($("#placeBody"));
     return;
   }
   const home=pl.id==="home";
@@ -7123,6 +7185,7 @@ function openNpcQuiz(id){
 }
 function answerNpcQuiz(i){
   const c=QUIZ_CUR; if(!c||c.done) return;
+  if(c.boss){ answerBossQuiz(i); return; }
   c.done=true;
   const ok=i===c.qz.ans, mult=ok?QUIZ_MULT:1;
   document.querySelectorAll("#nqOpts .nqopt").forEach((b,j)=>{ b.disabled=true; if(j===c.qz.ans) b.classList.add("right"); else if(j===i) b.classList.add("wrong"); });
@@ -7788,6 +7851,9 @@ const SHOP={
   rug:{name:"地毯",items:[["rug_red","紅金長毯",30],["rug_blue","藍白條紋毯",30],["rug_rainbow","彩虹地毯",80],["rug_snow","雪地地毯",50],["rug_ginger","薑餅地毯",60],["rug_wreath","聖誕花圈地毯",70],["rug_pumpkin","南瓜地毯",60],["rug_web","蜘蛛網地毯",50],["rug_leaf","落葉地毯",50],["rug_plaid","秋日格紋毯",40],["rug_vinyl","黑膠唱片地毯",60],["rug_spy","紅色波斯地毯",60],["rug_folder","文件夾地毯",40],["rug_grass","草皮地墊",35],["rug_flower","花瓣地毯",50],["rug_planet","星球地毯",70]]},
   wall:{name:"牆面掛飾",items:[["d_window","小窗戶",60],["d_wreath","槲寄生花圈",60],["d_stocking","聖誕襪",40],["d_bats","蝙蝠吊飾",50],["d_lanterns","南瓜燈串",60],["d_moonwin","滿月窗",80],["d_harvest","豐收花圈",60],["d_cornhang","玉米吊飾",40],["d_thanksboard","感恩留言板",50],["d_discoball","迪斯可球",90],["d_neon","霓虹燈招牌",70],["d_vinylwall","黑膠唱片牆",60],["d_spymap","機密地圖",80],["d_famphoto","全家福相框",50],["d_hiddensafe","畫後保險箱",90],["d_clock","圓時鐘",50],["d_softclock","達利的軟鐘",90],["d_banner","部門錦旗",60],["d_shelf","壁掛書架",70],["d_calendar","月曆掛板",40],["d_antler","鹿角掛飾",80],["d_planetwin","行星窗景",90],["d_ufo","UFO 掛飾",80]]},
   floor:{name:"地面擺設",items:[["d_lamp","落地燈",60],["d_beanbag","懶骨頭",70],["d_fishtank","魚缸",100],["d_xmastree","聖誕樹",120],["d_jackolantern","傑克南瓜燈",90],["d_cauldron","女巫大鍋",100],["d_ghost","小幽靈公仔",70],["d_turkey","火雞公仔",80],["d_cornucopia","豐收角",90],["d_haybale","稻草堆",70],["d_feast","感恩大餐桌",140],["d_jukebox","點唱機",120],["d_speaker","大音箱",70],["d_djbooth","DJ 台",140],["d_lavalamp","熔岩燈",50],["d_spysofa","綠絨沙發",90],["d_chess","西洋棋桌",80],["d_peanutjar","花生罐",40],["d_rotaryphone","轉盤電話桌",60],["d_bookcase","書櫃",90],["d_desk","辦公桌",100],["d_plant","盆栽",60],["d_mushlamp","蘑菇燈",70],["d_rocket","火箭模型",80],["d_astronaut","宇航員公仔",90],["d_planetlamp","星球燈",80],["d_console","控制台",150]]},
+  wear:{name:"人物服裝",items:[["sh_sailor","水手服",80],["sh_santa","聖誕老人裝",120],["sh_witch","女巫斗篷",100],["sh_flannel","秋日格紋襯衫",90],["sh_blazer","海軍藍西裝",100],["sh_ranger","森林探險背心",90],["sh_astro","太空衣",130],["sh_disco","亮片舞衣",120],["sh_tux","黑色燕尾服",120]]},
+  avacc:{name:"人物配件",items:[["sa_beret","紅色貝雷帽",50],["sa_santahat","聖誕帽",70],["sa_witchhat","女巫帽",70],["sa_pilgrim","朝聖者帽",60],["sa_pencil","耳後鉛筆",30],["sa_flowers","花冠",50],["sa_helmet","太空頭盔",90],["sa_starglass","星星眼鏡",60],["sa_fedora","紳士帽",70]]},
+  petgear:{name:"寵物配件",items:[["pg_bandana","紅色領巾",40],["pg_antler","麋鹿角",60],["pg_witch","迷你女巫帽",60],["pg_leaf","楓葉領巾",45],["pg_tie","小領帶",40],["pg_mushroom","蘑菇帽",55],["pg_antenna","外星天線",60],["pg_sparkbow","亮片領結",50],["pg_tophat","紳士小禮帽",60]]},
   snack:{name:"寵物零食",items:[["s_biscuit","小骨頭餅乾",15,2],["s_can","高級罐頭",40,5],["s_cake","寵物蛋糕",90,12]]}
 };
 const SHOP_THEMES=[["classic","經典"],["xmas","聖誕節"],["halloween","萬聖節"],["thanks","感恩節"],["office","辦公室"],["forest","森林"],["space","太空"],["disco","迪斯可"],["spy","spy"]];
@@ -7800,7 +7866,9 @@ const SHOP_THEME={wp_spy:"spy",fl_spy:"spy",rug_spy:"spy",d_spymap:"spy",d_famph
   wp_autumn:"thanks",rug_leaf:"thanks",rug_plaid:"thanks",d_harvest:"thanks",d_cornhang:"thanks",d_thanksboard:"thanks",d_turkey:"thanks",d_cornucopia:"thanks",d_haybale:"thanks",d_feast:"thanks",
   wp_stripe:"office",rug_folder:"office",d_clock:"office",d_banner:"office",d_shelf:"office",d_calendar:"office",d_bookcase:"office",d_desk:"office",
   wp_forest:"forest",rug_grass:"forest",rug_flower:"forest",d_antler:"forest",d_plant:"forest",d_mushlamp:"forest",
-  wp_star:"space",rug_planet:"space",d_planetwin:"space",d_ufo:"space",d_rocket:"space",d_astronaut:"space",d_planetlamp:"space",d_console:"space"};
+  wp_star:"space",rug_planet:"space",d_planetwin:"space",d_ufo:"space",d_rocket:"space",d_astronaut:"space",d_planetlamp:"space",d_console:"space",
+  sh_sailor:"classic",sh_santa:"xmas",sh_witch:"halloween",sh_flannel:"thanks",sh_blazer:"office",sh_ranger:"forest",sh_astro:"space",sh_disco:"disco",sh_tux:"spy",sa_beret:"classic",sa_santahat:"xmas",sa_witchhat:"halloween",sa_pilgrim:"thanks",sa_pencil:"office",sa_flowers:"forest",sa_helmet:"space",sa_starglass:"disco",sa_fedora:"spy",pg_bandana:"classic",pg_antler:"xmas",pg_witch:"halloween",pg_leaf:"thanks",pg_tie:"office",pg_mushroom:"forest",pg_antenna:"space",pg_sparkbow:"disco",pg_tophat:"spy"};
+const WEAR_CATS=new Set(["wear","avacc","petgear"]);       // 服裝與配件：買了直接穿戴，不擺進展示空間
 let shopTheme="all";
 const FREE_DECO=new Set(["wp_default","fl_wood"]);
 const shopItem=id=>{ for(const [cat,c] of Object.entries(SHOP)){ const it=c.items.find(x=>x[0]===id); if(it) return {cat,id,name:it[1],price:it[2],aff:it[3]||0}; } return null; };
@@ -7817,6 +7885,8 @@ function shopPreview(cat,id){
   if(cat==="paper") return `<span class="shopsw showroom ${id}" aria-hidden="true"></span>`;
   if(cat==="ground") return `<span class="shopsw flsw" aria-hidden="true"><i class="sr-floor ${id}"></i></span>`;
   if(cat==="rug") return `<span class="shopsw rugsw" aria-hidden="true">${decoSVG(id)}</span>`;
+  if(cat==="wear"||cat==="avacc") return `<span class="shopic avpv" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,cat==="wear"?{outfit:id}:{acc:id}))}</span>`;
+  if(cat==="petgear") return `<span class="shopic petpv" aria-hidden="true">${petSVG(Object.assign({},S.pet||{type:"dog",color:0,name:""},{gear:id}),S.pet?undefined:"adult")}</span>`;
   return `<span class="shopic" aria-hidden="true">${decoSVG(id)}</span>`;
 }
 function renderShop(panel){
@@ -7825,16 +7895,22 @@ function renderShop(panel){
   panel.innerHTML=`<section class="window pbox">
     <div class="abar"><h3>種子商店 ${helpBtn("shop")} ${isVip()?'<span class="vipbadge">👑 VIP</span>':""}</h3><span class="ahint">你有 <b>${total}</b> 顆種子</span></div>
     <p class="ahint vipline">${isVip()?`👑 你是 VIP（已購買 ${shopBuysCount()} 個商品）：每件家具右上角的「👁 預覽」可以先看擺進家裡的樣子。`:`👑 累積購買 ${VIP_BUYS} 個商品成為 VIP，就能先預覽家具擺放（目前 ${shopBuysCount()} / ${VIP_BUYS}）。`}</p>
-    <p class="ahint">價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具會擺在上方的展示空間，訪客也看得到。</p>
+    <p class="ahint">價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具會擺在上方的展示空間；服裝和配件買了會直接換上，訪客也看得到。寵物配件每一種寵物（包含隱藏版）都能戴。</p>
     <div class="seedchips">${Object.entries(CROPS).map(([k,c])=>`<span class="seedchip"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span>${esc(c.name)} ${seeds()[k]||0}</span>`).join("")}</div>
-    <div class="themechips" role="group" aria-label="家具主題">${[["all","全部"]].concat(SHOP_THEMES).map(([k,n])=>{
+    <div class="themechips" role="group" aria-label="商品主題">${[["all","全部"]].concat(SHOP_THEMES).map(([k,n])=>{
       const L=Object.keys(SHOP_THEME).filter(id=>k==="all"||SHOP_THEME[id]===k), own=L.filter(id=>FREE_DECO.has(id)||S.shopOwned[id]).length;
       return `<button type="button" class="themechip${shopTheme===k?" on":""}" data-shoptheme="${k}" aria-pressed="${shopTheme===k}">${esc(n)}<small>${own}/${L.length}</small></button>`; }).join("")}</div>
-    ${Object.entries(SHOP).filter(([cat,c])=>shopTheme==="all"||(cat!=="snack"&&c.items.some(([id])=>SHOP_THEME[id]===shopTheme))).map(([cat,c])=>`<div class="catblock"><p class="cattitle">${esc(c.name)}${cat==="snack"?`<span class="ahint">任何寵物都能吃，可以提升親密度</span>`:""}</p>
+    ${Object.entries(SHOP).filter(([cat,c])=>shopTheme==="all"||(cat!=="snack"&&c.items.some(([id])=>SHOP_THEME[id]===shopTheme))).map(([cat,c])=>`<div class="catblock"><p class="cattitle">${esc(c.name)}${cat==="snack"?`<span class="ahint">任何寵物都能吃，可以提升親密度</span>`:cat==="wear"?`<span class="ahint">固定配色，買了也會收進衣櫃</span>`:cat==="avacc"?`<span class="ahint">也可以在「角色設定」的配件換</span>`:cat==="petgear"?`<span class="ahint">所有寵物都能戴，也可以在「寵物窩」換</span>`:""}</p>
       <div class="shopgrid">${c.items.filter(([id])=>shopTheme==="all"||SHOP_THEME[id]===shopTheme).map(([id,name,price,aff])=>{
-        const owned=cat!=="snack"&&(FREE_DECO.has(id)||!!S.shopOwned[id]), using=cat!=="snack"&&(d[cat]===id||(cat==="floor"&&d.floor2===id)), n=S.snacks[id]||0;
+        const owned=cat!=="snack"&&(FREE_DECO.has(id)||!!S.shopOwned[id]), n=S.snacks[id]||0;
+        const using=cat==="wear"?(S.av||AV_DEFAULT).outfit===id:cat==="avacc"?(S.av||AV_DEFAULT).acc===id:cat==="petgear"?!!(S.pet&&S.pet.gear===id):cat!=="snack"&&(d[cat]===id||(cat==="floor"&&d.floor2===id));
         const can=total>=price;
         let btn;
+        if(WEAR_CATS.has(cat)&&owned){
+          if(cat==="wear") btn=using?`<span class="st st-gold">穿著中</span>`:`<button class="act" type="button" data-shopuse="wear|${id}">換上</button>`;
+          else if(cat==="avacc") btn=using?`<button class="act ghost" type="button" data-shopuse="avacc|">配戴中・拿下</button>`:`<button class="act" type="button" data-shopuse="avacc|${id}">戴上</button>`;
+          else btn=!pn?`<span class="ahint">有寵物之後就能戴</span>`:using?`<button class="act ghost" type="button" data-shopuse="petgear|">配戴中・拿下</button>`:`<button class="act" type="button" data-shopuse="petgear|${id}">幫${esc(pn)}戴上</button>`;
+        }else
         if(cat==="snack") btn=`<button class="act ghost" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>買 1 個（${price}）</button>${n?`<button class="act" type="button" data-snackfeed="${id}" ${pn?"":"disabled"}>餵${pn?esc(pn):""}</button>`:""}`;
         else if(!owned) btn=`<button class="act" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>購買（${price} 顆）</button>`;
         else if(cat==="floor") btn=d.floor===id?`<button class="act ghost" type="button" data-shopuse="floor|">左邊・收起</button>`
@@ -7843,7 +7919,7 @@ function renderShop(panel){
         else if(using) btn=cat==="paper"||cat==="ground"?`<span class="st st-gold">使用中</span>`:`<button class="act ghost" type="button" data-shopuse="${cat}|">使用中・收起</button>`;
         else btn=`<button class="act" type="button" data-shopuse="${cat}|${id}">${cat==="paper"||cat==="ground"?"換上":"擺上"}</button>`;
         const th=SHOP_THEMES.find(([k])=>k===SHOP_THEME[id]);
-        return `<article class="shopcard${using?" on":""}">${th&&shopTheme==="all"?`<span class="themetag t-${th[0]}">${esc(th[1])}</span>`:""}${cat!=="snack"?`<button class="pvbtn${isVip()?"":" locked"}" type="button" data-shoppv="${id}" title="${isVip()?"預覽擺進家裡的樣子":`VIP 才能預覽（再買 ${VIP_BUYS-shopBuysCount()} 個）`}">${isVip()?"👁 預覽":"🔒 預覽"}</button>`:""}${shopPreview(cat,id)}
+        return `<article class="shopcard${using?" on":""}">${th&&shopTheme==="all"?`<span class="themetag t-${th[0]}">${esc(th[1])}</span>`:""}${cat!=="snack"&&!WEAR_CATS.has(cat)?`<button class="pvbtn${isVip()?"":" locked"}" type="button" data-shoppv="${id}" title="${isVip()?"預覽擺進家裡的樣子":`VIP 才能預覽（再買 ${VIP_BUYS-shopBuysCount()} 個）`}">${isVip()?"👁 預覽":"🔒 預覽"}</button>`:""}${shopPreview(cat,id)}
           <b>${esc(name)}</b>
           <span class="ahint">${cat==="snack"?`親密度 +${aff}・擁有 ${n}`:owned?"已擁有":`${price} 顆種子`}${!owned&&cat!=="snack"&&!can?`・還差 ${price-total}`:""}</span>
           <span class="shopbtns">${btn}</span></article>`;
@@ -7860,6 +7936,100 @@ function petEatFx(line,big){
   const el=$("#roomPet");
   if(el){ sayAt(el,line); heartAt(el); if(big) setTimeout(()=>heartAt(el),400); }
 }
+/* ---- 種子商店（地圖上的獨立地點）＋老闆的每日問答 ---- */
+const SHOPKEEPER={name:"豆豆老闆",title:"種子商店老闆",av:{hair:"curly",hc:1,skin:2,outfit:"overall",oc:2,acc:"sa_pencil"}};
+const BOSS_SEEDS=30, BOSS_CONSOLE=3;
+let SHOP_ROOM_OPEN=true;                                 // 進商店時「看看我家」預設展開（所有人）
+function bossState(){ const b=S.bossQuiz; if(!b||b.day!==dayKey()||b.ok==null) return "new"; if(b.ok) return CROPS[b.pick]?"done":"pick"; return "fail"; }
+function bossQuizGet(){                                   // 當天固定一題（關掉再開還是同一題）
+  const day=dayKey(), b=S.bossQuiz;
+  if(b&&b.day===day&&b.q) return b.q;
+  const r=seededRand("boss|"+day+"|"+myCode());
+  const zs=ZONES.filter(z=>ALLQ.some(q=>q.zone&&q.zone.id===z.id));
+  for(let t=0;t<8&&zs.length;t++){
+    const z=zs[Math.floor(r()*zs.length)], q=makeNpcQuiz({id:"boss"+t+"|"+day+"|"+myCode(),zone:z.id});
+    if(q&&quizOK(q)&&q.ans>=0){ S.bossQuiz={day,q:{kind:q.kind,text:q.text,opts:q.opts,ans:q.ans,quest:q.quest||"",explain:q.explain||"",zone:z.name}}; save(); return S.bossQuiz.q; }
+  }
+  return null;
+}
+function bossBoxHTML(){
+  const st=bossState(), b=S.bossQuiz||{};
+  const tag=st==="new"?'<span class="st st-wait">今日還沒挑戰</span>':st==="pick"?'<span class="st st-gold">種子待領</span>':st==="done"?'<span class="st st-ok">今天已領</span>':'<span class="st st-off">明天再來</span>';
+  const say=st==="new"?`「每天一題，題目從五大項目隨機出。答對了，自己挑一種種子，我送你 <b>${BOSS_SEEDS} 顆</b>！答錯也有小小安慰獎。」`
+    :st==="pick"?`「答對了！還沒挑種子喔，想要哪一種？」`
+    :st==="done"?`「今天已經送你<b>${esc(CROPS[b.pick].name)}種子 ×${BOSS_SEEDS}</b> 了，明天再來挑戰吧！」`
+    :`「今天的題目答錯了${CROPS[b.cons]?`，先拿 ${BOSS_CONSOLE} 顆${esc(CROPS[b.cons].name)}種子回去種`:""}。明天再來挑戰！」`;
+  const act=st==="new"?`<button class="act" type="button" data-bossquiz>❓ 接受挑戰</button>`:st==="pick"?`<button class="act" type="button" data-bosspick>🌱 挑選 ${BOSS_SEEDS} 顆種子</button>`:"";
+  return `<section class="window pbox bossbox">
+    <div class="abar"><h3>老闆的每日問答 ${helpBtn("boss")}</h3>${tag}</div>
+    <div class="nqtop"><span class="npcface" aria-hidden="true">${avatarSVG(SHOPKEEPER.av)}</span><div><p class="mename">${esc(SHOPKEEPER.name)}<span class="ahint">・${esc(SHOPKEEPER.title)}</span></p><p class="dbody">${say}</p></div></div>
+    ${act?`<div class="formfoot"><span class="ahint">每天一次，晚上 12 點換新題目</span><span class="afilters">${act}</span></div>`:""}
+  </section>`;
+}
+function renderSeedShop(body){
+  body.dataset.kind="seedshop";
+  stopWalkers("shop:");
+  const snap=myHomeSnapshot();
+  body.innerHTML=bossBoxHTML()+`<details class="window pbox shoproom"${SHOP_ROOM_OPEN?" open":""}><summary>🏠 看看我家的展示空間<span class="ahint">買了家具、換了衣服，可以馬上看到效果</span></summary>
+      ${roomHTML(Object.assign({},snap,{pet:S.pet,petStage:petStage(),av:S.av,splats:[]}),{host:dispName(),hostId:"shopHost",petId:"shopPet",label:"我家"})}</details>
+    <div id="shopPanel"></div>`;
+  renderShop($("#shopPanel"));
+  const dt=body.querySelector("details.shoproom"); if(!dt) return;
+  const walk=()=>{ const h=$("#shopHost"), pt=$("#shopPet"); if(h) startWalker(h,"shop:host",{start:.5,speed:55,rest:.45,delay:700}); if(pt) startWalker(pt,"shop:pet"); };
+  dt.addEventListener("toggle",()=>{ SHOP_ROOM_OPEN=dt.open; if(dt.open) walk(); else stopWalkers("shop:"); });
+  if(dt.open) walk();
+}
+function openBossQuiz(){
+  const st=bossState(); if(st==="pick"){ openBossPick(); return; } if(st!=="new") return;
+  const q=bossQuizGet(); if(!q){ toast(`${SHOPKEEPER.name}今天想不出題目，明天再來吧`); return; }
+  QUIZ_CUR={boss:true,qz:q,done:false};
+  $("#nqFace").innerHTML=avatarSVG(SHOPKEEPER.av);
+  $("#nqTitle").textContent=`${SHOPKEEPER.name}的每日問答`;
+  $("#nqDept").textContent=`種子商店・${q.zone}・${q.kind}`;
+  $("#nqSay").textContent=`「答對了，自己挑一種種子，我送你 ${BOSS_SEEDS} 顆！」`;
+  $("#nqQ").textContent=q.text;
+  $("#nqOpts").innerHTML=q.opts.map((o,i)=>`<button type="button" class="nqopt" data-nq="${i}">${String.fromCharCode(65+i)}．${esc(o)}</button>`).join("");
+  $("#nqResult").innerHTML=""; $("#nqSkip").hidden=true; $("#nqGo").hidden=true; $("#nqOk").hidden=true;
+  const d=$("#npcQuizDlg"); if(!d.open) d.showModal();
+  Sound.sfx("open");
+}
+function answerBossQuiz(i){
+  const c=QUIZ_CUR; if(!c||c.done) return;
+  if(bossState()!=="new"){ $("#npcQuizDlg").close(); return; }
+  c.done=true;
+  const ok=i===c.qz.ans;
+  document.querySelectorAll("#nqOpts .nqopt").forEach((b,j)=>{ b.disabled=true; if(j===c.qz.ans) b.classList.add("right"); else if(j===i) b.classList.add("wrong"); });
+  S.bossQuiz=Object.assign({},S.bossQuiz,{day:dayKey(),ok,at:Date.now()});
+  if(!ok){ const ks=Object.keys(CROPS), k=ks[Math.floor(Math.random()*ks.length)]; seeds()[k]=(seeds()[k]||0)+BOSS_CONSOLE; S.bossQuiz.cons=k; }
+  save(); queueSync(true);
+  Sound.sfx(ok?"achieve":"error");
+  $("#nqResult").innerHTML=ok?`<p class="nqok">⭕ 答對了！${esc(SHOPKEEPER.name)}：「厲害！挑一種你最想要的種子，我送你 <b>${BOSS_SEEDS} 顆</b>！」</p><div class="formfoot"><span></span><button class="act" type="button" data-bosspick>🌱 挑選種子</button></div>`
+    :`<p class="nqng">❌ 可惜答錯了。正確答案是「${esc(c.qz.opts[c.qz.ans])}」。${esc(SHOPKEEPER.name)}塞給你 <b>${esc(CROPS[S.bossQuiz.cons].name)}種子 ×${BOSS_CONSOLE}</b> 當安慰獎，明天再來挑戰！</p><p class="ahint">${esc(c.qz.explain)}</p>`;
+  $("#nqGo").hidden=!c.qz.quest; $("#nqOk").hidden=ok;
+  renderMenu(); if(!$("#viewMap").hidden) buildMap();
+  if(curPlace&&curPlace.id==="seedshop") renderPlace();
+}
+function openBossPick(){
+  if(bossState()!=="pick") return;
+  SEEDPICK={boss:true};
+  $("#spDept").textContent="種子商店・每日問答";
+  $("#spTitle").textContent="答對了！挑一種種子";
+  $("#spSay").textContent=`${SHOPKEEPER.name}：「挑一種你最想要的種子，我送你 ${BOSS_SEEDS} 顆！」`;
+  $("#spFace").innerHTML=avatarSVG(SHOPKEEPER.av);
+  $("#spOpts").innerHTML=Object.entries(CROPS).map(([k,c])=>`<button type="button" class="seed" data-sp="${k}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}</b><small>×${BOSS_SEEDS}</small></button>`).join("");
+  const d=$("#seedPickDlg"); if(!d.open) d.showModal();
+  Sound.sfx("levelup");
+}
+function giveBossPick(k){
+  SEEDPICK=null;
+  if(!CROPS[k]||bossState()!=="pick"){ $("#seedPickDlg").close(); return; }
+  seeds()[k]=(seeds()[k]||0)+BOSS_SEEDS; S.bossQuiz.pick=k; save(); queueSync(true);
+  $("#seedPickDlg").close(); Sound.sfx("achieve");
+  toast(`🌱 ${SHOPKEEPER.name}送你 ${CROPS[k].name}種子 ×${BOSS_SEEDS}！`);
+  renderMenu(); if(!$("#viewMap").hidden) buildMap();
+  if(curPlace&&curPlace.id==="seedshop") renderPlace();
+}
+
 /* ---- 種子商店 VIP：累積買 30 個商品，可以先預覽家具擺在家裡的樣子 ---- */
 const VIP_BUYS=30;
 function shopBuysCount(){ if(S.shopBuys==null){ S.shopBuys=S.decoCheat?0:Object.keys(S.shopOwned||{}).length; } return S.shopBuys; }
@@ -7917,12 +8087,23 @@ async function shopBuy(id){
   const wasVip=isVip(); S.shopBuys=shopBuysCount()+1;
   if(!wasVip&&isVip()) setTimeout(vipCongrats,900);
   if(it.cat==="snack") S.snacks[id]=(S.snacks[id]||0)+1;
+  else if(WEAR_CATS.has(it.cat)){ S.shopOwned[id]=true; wearShopItem(it.cat,id); }
   else{ S.shopOwned[id]=true; if(it.cat==='floor'&&S.deco.floor&&!S.deco.floor2) S.deco.floor2=id; else S.deco[it.cat]=id; }
   save(); queueSync(); pushFarm(true); Sound.sfx("achieve");
-  toast(it.cat==="snack"?`買了 1 個${it.name}`:`買下「${it.name}」，已經擺進展示空間！`);
+  toast(it.cat==="snack"?`買了 1 個${it.name}`:it.cat==="petgear"&&!S.pet?`買下「${it.name}」，有寵物之後就能戴上`:WEAR_CATS.has(it.cat)?`買下「${it.name}」，已經${it.cat==="wear"?"換上":"戴上"}了！`:`買下「${it.name}」，已經擺進展示空間！`);
+  if(WEAR_CATS.has(it.cat)){ renderHUD(); buildMap(); }
   renderPlace();
 }
+function wearShopItem(cat,id){                            // 換上／拿下商店服裝與配件
+  if(cat==="wear"&&OUTFIT[id]) S.av=Object.assign({},S.av||AV_DEFAULT,{outfit:id});
+  else if(cat==="avacc") S.av=Object.assign({},S.av||AV_DEFAULT,{acc:ACC[id]?id:"none"});
+  else if(cat==="petgear"&&S.pet) S.pet.gear=PET_GEAR[id]?id:"";
+}
 function shopUse(cat,id){
+  if(WEAR_CATS.has(cat)){
+    wearShopItem(cat,id); save(); queueSync(); pushFarm(true); Sound.sfx(id?"get":"undo");
+    renderHUD(); buildMap(); renderPlace(); return;
+  }
   shopState(); S.deco[cat]=id||(cat==="paper"?"wp_default":cat==="ground"?"fl_wood":"");
   if(id&&cat==="floor"&&S.deco.floor2===id) S.deco.floor2="";       // 同一件家具只能擺一邊
   if(id&&cat==="floor2"&&S.deco.floor===id) S.deco.floor="";
@@ -7935,7 +8116,7 @@ function feedSnack(id){
   Sound.sfx("achieve"); petEatFx(`${it.name}！好吃～`,it.aff>=5);
   toast(`💗 ${pn}吃了${it.name}，親密度 +${it.aff}（${affOf(S.pet.type)}/${AFF_MAX}）`);
   if(reached) setTimeout(()=>affinityMax(S.pet.type),900);
-  setTimeout(()=>{ if(curPlace&&curPlace.id==="myhome"&&homeTab==="shop") renderShop($("#homePanel")); },60);
+  setTimeout(()=>{ if(curPlace&&curPlace.id==="seedshop"&&$("#shopPanel")) renderShop($("#shopPanel")); },60);
 }
 
 /* ---- 品種改良：相鄰（左右、上下）種了指定作物，收成時有機率長出稀有品種 ---- */
@@ -8328,7 +8509,7 @@ function renderMyHome(body){
     ["closet","衣櫃","wardrobe",`${outfitOwnedCount()}/${Object.keys(OUTFIT).length} 套`],
     ["album","相簿","album",`${albumOwned().length}/${ALBUM.length} 張`],
     ["farm","開心農場","f_farm",(()=>{ const n=ripeCount(); return n?`${n} 塊可收成`:`倉庫 ${Object.values(S.barn||{}).reduce((a,b)=>a+(+b||0),0)} 份`; })()],
-    ["shop","種子商店","d_plant",`種子 ${seedTotal()} 顆`],
+    ["shop","種子商店","d_plant",`地圖上・種子 ${seedTotal()} 顆`],
     ["friends","交友錄","friendbook",(()=>{ const n=friendCount(); return n?`朋友 ${n} 位`:S.pet?"帶寵物去串門子":"LV 3 領養寵物後開放"; })()],
     ["guest","訪客簿","guestbook",(()=>{ const n=newVisitCount(), t=myVisits().length; return n?`${n} 位新訪客`:t?`${t} 筆紀錄`:"還沒有訪客"; })()],
     ["wardrobe","角色設定","mirror","造型・雲端存檔"]];
@@ -8340,11 +8521,11 @@ function renderMyHome(body){
   }
   const wall=$("#homeWall"); if(wall){ wall.innerHTML=showroomHTML(); startRoomPet(); startHomePlay(); } const hb=$("#homeBarn"); if(hb) hb.innerHTML=barnHTML();
   const panel=$("#homePanel");
+  if(homeTab==="shop") homeTab="notebook";                // 種子商店已經搬到地圖上
   if(homeTab==="notebook") renderNotebook(panel);
   else if(homeTab==="album") renderAlbum(panel);
   else if(homeTab==="guest") renderGuestbook(panel);
   else if(homeTab==="farm") renderFarm(panel);
-  else if(homeTab==="shop") renderShop(panel);
   else if(homeTab==="friends") renderFriends(panel);
   else if(homeTab==="pet") renderPetPanel(panel);
   else if(homeTab==="collect") renderCollection(panel);
@@ -8616,7 +8797,7 @@ function renderPetPanel(panel){
     </section>
     <section class="window pbox form">
       <h3>衣服與配件 ${wearLocked&&!petNoWear(pet.type)?`<span class="st st-off">LV 5 解鎖</span>`:""}</h3>
-      ${petNoWear(pet.type)?`<p class="empty-note">隱藏版寵物的外型是固定的，不能穿衣服或戴配件。</p>`:wearLocked?`<p class="empty-note">升到 <b>LV 5</b> 就能幫牠換衣服和配件，還差 ${tasksToLevel(5)} 個任務。</p>
+      ${petNoWear(pet.type)?`<p class="empty-note">隱藏版寵物不能換基本款衣服，但可以戴下方「種子商店配件」。</p>`:wearLocked?`<p class="empty-note">升到 <b>LV 5</b> 就能幫牠換衣服和配件，還差 ${tasksToLevel(5)} 個任務。</p>
         <p class="ahint">可以換的有：項圈鈴鐺、圍巾、小帽子、蝴蝶結、小披風、太陽眼鏡，顏色也能自己選。</p>`
       :`<div class="orow" role="radiogroup" aria-label="衣服與配件"><span class="olab" aria-hidden="true">款式</span><div class="ochoices">
           ${Object.entries(PET_WEAR).map(([k,o])=>`<label class="opt"><input type="radio" name="pet-wear" value="${k}" ${pet.wear===k?"checked":""}><span class="th">${petSVG(Object.assign({},pet,{wear:k}))}</span>${o.name}</label>`).join("")}
@@ -8624,8 +8805,16 @@ function renderPetPanel(panel){
         <div class="orow" role="radiogroup" aria-label="顏色"><span class="olab" aria-hidden="true">顏色</span><div class="ochoices">
           ${CLOTH.map((c,i)=>`<label class="opt sw" title="${c[0]}"><input type="radio" name="pet-wc" value="${i}" ${+pet.wc===i?"checked":""}><i style="background:${c[1]}"></i></label>`).join("")}
         </div></div>`}
+      ${petGearHTML(pet)}
     </section>
   </div>`;
+}
+function petGearHTML(pet){
+  const own=Object.keys(PET_GEAR).filter(k=>S.shopOwned&&S.shopOwned[k]);
+  return `<p class="dsec">種子商店配件</p>${own.length?`<div class="orow" role="radiogroup" aria-label="種子商店配件"><span class="olab" aria-hidden="true">配件</span><div class="ochoices">
+      ${["none"].concat(own).map(k=>`<label class="opt"><input type="radio" name="pet-gear" value="${k}" ${(pet.gear||"none")===k||(k==="none"&&!PET_GEAR[pet.gear])?"checked":""}><span class="th">${petSVG(Object.assign({},pet,{gear:k==="none"?"":k}))}</span>${k==="none"?"不戴":esc(PET_GEAR[k].name)}</label>`).join("")}
+    </div></div><p class="ahint">每一種寵物（包含隱藏版）都能戴${petNoWear(pet.type)?"":"，可以和上面的衣服一起搭配"}。</p>`
+    :`<p class="ahint">在「種子商店 → 寵物配件」買的配件會出現在這裡，每一種寵物（包含隱藏版）都能戴。</p>`}`;
 }
 function dropTableHTML(){
   const gold=S.weapon==="shovel_gold";
@@ -8689,7 +8878,8 @@ const CLOSET_GROUPS=[
   {id:"帥氣", name:"帥氣",   who:"村長", test:k=>OUTFIT[k].theme==="帥氣"},
   {id:"科技", name:"科技",   who:"總長", test:k=>OUTFIT[k].theme==="科技"},
   {id:"藝術", name:"藝術",   who:"總長", test:k=>OUTFIT[k].theme==="藝術"},
-  {id:"密技", name:"留言板密技", who:"留言板", test:k=>OUTFIT[k].theme==="密技"}
+  {id:"密技", name:"留言板密技", who:"留言板", test:k=>OUTFIT[k].theme==="密技"},
+  {id:"商店", name:"種子商店", who:"", test:k=>!!OUTFIT[k].shop}
 ];
 const outfitOwnedCount=()=>Object.keys(OUTFIT).filter(outfitOK).length;
 function outfitSilhouetteSVG(k){
@@ -8714,7 +8904,7 @@ function renderCloset(panel){
       const list=Object.keys(OUTFIT).filter(g.test); if(!list.length) return "";
       const mine=list.filter(outfitOK).length;
       return `<div class="catblock">
-        <p class="cattitle">${esc(g.name)}${g.who?`<span class="ahint">秘密服裝</span>`:""}<span class="ahint">${mine}/${list.length}</span></p>
+        <p class="cattitle">${esc(g.name)}${g.who?`<span class="ahint">秘密服裝</span>`:g.id==="商店"?`<span class="ahint">用種子購買</span>`:""}<span class="ahint">${mine}/${list.length}</span></p>
         <div class="armgrid">${list.map(k=>{
           const own=outfitOK(k), on=wear===k;
           return `<button type="button" class="armcard closetcard${own?"":" alock"}${on?" on":""}" data-outfit="${esc(k)}" title="${esc(own?OUTFIT[k].name:"還沒取得")}">
@@ -8738,6 +8928,11 @@ function openOutfit(k){
   $("#wpWhere").innerHTML=!g.who?"一開始就有，不用蒐集。"
     :own?`在地圖上散步時遇到了<b>${g.who}</b>，從他手上拿到的。`
     :`在地圖上散步時，說不定會遇到<b>${g.who}</b>……聽說他最近在整理${g.name}風格的衣服。`;
+  if(g.id==="商店"){
+    $("#wpTitle").textContent=own?o.name:`還沒買的服裝：${o.name}`;
+    $("#wpDesc").textContent=own?"在種子商店買的主題服裝，固定配色。左邊是你穿上的樣子。":"在種子商店可以用種子買到這套主題服裝。";
+    $("#wpWhere").innerHTML="地圖上的「種子商店 → 人物服裝」。";
+  }
   if(g.id==="密技"){
     if(own) $("#wpDesc").textContent="在交誼廳留言板說了一句秘密的話拿到的特別服裝。左邊是你穿上的樣子（固定配色）。";
     $("#wpWhere").innerHTML=own?"在<b>交誼廳留言板</b>輸入秘密的一句話拿到的。":"聽說在<b>交誼廳留言板</b>說出某句節日祝福，或說出自己愛吃什麼，就會拿到……";
@@ -8847,6 +9042,11 @@ $("#placeBody").addEventListener("change",e=>{
     renderHUD(); buildMap(); renderPlace();
     return;
   }
+  if(n==="pet-gear"&&S.pet){
+    S.pet.gear=e.target.value==="none"?"":e.target.value;
+    save(); queueSync(); pushFarm(true); Sound.sfx("cursor"); renderHUD(); buildMap(); renderPlace();
+    return;
+  }
   if((n==="pet-wear"||n==="pet-wc")&&S.pet){
     S.pet[n==="pet-wear"?"wear":"wc"]=n==="pet-wc"?+e.target.value:e.target.value;
     save(); Sound.sfx("cursor"); renderPlace();
@@ -8873,8 +9073,10 @@ $("#placeBody").addEventListener("click",async e=>{
     if(name){ S.pet.name=name; save(); Sound.sfx("select"); toast(`名字改成 ${name}`); renderPlace(); }
     return;
   }
+  if(t.closest("[data-bossquiz]")){ openBossQuiz(); return; }
+  if(t.closest("[data-bosspick]")){ openBossPick(); return; }
   const ht=t.closest("[data-htab]");
-  if(ht){ homeTab=ht.dataset.htab; Sound.sfx("open"); renderPlace(); return; }
+  if(ht){ if(ht.dataset.htab==="shop"){ openPlace("seedshop"); return; } homeTab=ht.dataset.htab; Sound.sfx("open"); renderPlace(); return; }
   const of=t.closest("[data-openfav]");
   if(of){ const list=favList(); openQuest(of.dataset.openfav,list); return; }
   const uf=t.closest("[data-unfav]");
@@ -8918,7 +9120,7 @@ $("#placeBody").addEventListener("click",async e=>{
   if(fd2){ feedPet(fd2.dataset.feed); return; }
   if(t.closest("[data-syncnow]")){ syncNow(); return; }
   const spv=t.closest("[data-shoppv]"); if(spv){ openPreview(spv.dataset.shoppv); return; }
-  const sth=t.closest("[data-shoptheme]"); if(sth){ shopTheme=sth.dataset.shoptheme; Sound.sfx("select"); renderShop($("#homePanel")); return; }
+  const sth=t.closest("[data-shoptheme]"); if(sth){ shopTheme=sth.dataset.shoptheme; Sound.sfx("select"); renderShop($("#shopPanel")); return; }
   const sb=t.closest("[data-shopbuy]"); if(sb){ shopBuy(sb.dataset.shopbuy); return; }
   const su=t.closest("[data-shopuse]"); if(su){ const [c,i]=su.dataset.shopuse.split("|"); shopUse(c,i); return; }
   const sf=t.closest("[data-snackfeed]"); if(sf){ feedSnack(sf.dataset.snackfeed); return; }
@@ -9014,9 +9216,11 @@ document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closes
 $("#nqOpts").addEventListener("click",e=>{ const b=e.target.closest("[data-nq]"); if(b) answerNpcQuiz(+b.dataset.nq); });
 $("#nqSkip").addEventListener("click",()=>{ const c=QUIZ_CUR; if(!c||c.done) return; c.done=true; const g=giveNpcSeeds(c.n,1); Sound.sfx("get"); toast(`🌱 ${c.n.name}給了你 ${g} 種子！`); $("#npcQuizDlg").close(); renderZoneNpc(curZone&&curZone.id); });
 $("#nqOk").addEventListener("click",()=>$("#npcQuizDlg").close());
+$("#nqResult").addEventListener("click",e=>{ if(e.target.closest("[data-bosspick]")){ $("#npcQuizDlg").close(); setTimeout(openBossPick,150); } });
 $("#seedPickDlg").addEventListener("cancel",e=>e.preventDefault());       // 一定要選一種
 $("#spOpts").addEventListener("click",e=>{
   const b=e.target.closest("[data-sp]"); if(!b||!SEEDPICK) return;
+  if(SEEDPICK.boss){ giveBossPick(b.dataset.sp); return; }
   const k=b.dataset.sp; seeds()[k]=(seeds()[k]||0)+NPC_MILESTONE_SEEDS;
   S.npcMile[SEEDPICK.key]=k; save(); queueSync(true);
   $("#seedPickDlg").close(); Sound.sfx("achieve");

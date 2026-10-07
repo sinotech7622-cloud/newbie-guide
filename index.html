@@ -375,8 +375,6 @@ dialog.msgbox::backdrop{background:rgba(8,10,30,.45)}
 .page .plink{color:#1E2F7A}
 .pmeta{font-size:12px;color:#6A6D86}
 .page .snip{font-size:13px;color:#555;margin:4px 0 6px;line-height:1.6}
-.memo{width:100%;font-family:var(--body);font-size:14px;line-height:1.6;background:rgba(255,255,255,.6);border:1px dashed #9AA6C8;border-radius:3px;padding:4px 8px;color:#2B2A3A;resize:vertical}
-.memo:focus{outline:2px solid var(--gold);background:#fff}
 .page .pfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
 .page .pfoot .ahint{color:#6A6D86}
 .page .mini-btn{background:#fff;color:#2B2A3A;border-color:#9AA6C8}
@@ -2938,6 +2936,7 @@ const ACH=[
 const KEY="sino22-quest-v1";
 let S={name:"",emp:"",av:null,pet:null,group:"",fav:{},achSeen:{},consults:[],ivReplies:{},done:{},visited:{},points:0,ach:{},loc:"village"};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw)||{});}catch(e){}
+{ let cut=false; Object.values(S.fav||{}).forEach(f=>{ if(f&&"memo" in f){ delete f.memo; cut=true; } }); if(cut) try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }   // 已移除個人筆記功能：清掉舊的筆記文字
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); localStorage.setItem("sino22-local-at",new Date().toISOString());}catch(e){}}
 
 const $=s=>document.querySelector(s);
@@ -5068,12 +5067,12 @@ async function sendSave(acc,data,note){
   return sendForm("save",Object.assign({acc,note},f));
 }
 let saveWarnAt=0, SAVE_FULL=0;
-function saveSizeCheck(len){                           // 快滿時提醒整理筆記本（10 分鐘最多提醒一次）
+function saveSizeCheck(len){                           // 快滿時提醒（10 分鐘最多提醒一次）
   const cap=saveCap(), r=len/cap;
   SAVE_FULL=r>1?2:r>=.8?1:0;
   if(SAVE_FULL&&Date.now()-saveWarnAt>10*60e3){
     saveWarnAt=Date.now();
-    toast(SAVE_FULL===2?"⚠ 雲端存檔太大，這次沒有上傳。請刪減筆記本裡較長的筆記":"⚠ 雲端存檔快滿了，建議刪減筆記本裡較長的筆記");
+    toast(SAVE_FULL===2?"⚠ 雲端存檔太大，這次沒有上傳，請聯絡管理者":"⚠ 雲端存檔快滿了，請聯絡管理者");
   }
 }
 async function cloudFetch(code){
@@ -5152,7 +5151,7 @@ function mergeFav(aFav,aDel,bFav,bDel){
   ids.forEach(id=>{
     const fa=aFav[id], fb=bFav[id], d=[aDel[id],bDel[id]].filter(Boolean).sort().pop()||"";
     const f=!fa?fb:!fb?fa:(favTime(fb)>favTime(fa)?fb:fa);
-    if(f&&favTime(f)>=d) fav[id]=f; else if(d) del[id]=d;
+    if(f&&favTime(f)>=d){ const c=Object.assign({},f); delete c.memo; fav[id]=c; } else if(d) del[id]=d;   // 舊存檔的筆記文字不再保留
   });
   return {fav,del};
 }
@@ -5506,7 +5505,7 @@ $("#cloudForm").addEventListener("submit",async e=>{
       m==="exists"?"這個帳號目前還有雲端存檔。如果是管理者剛幫你重置，Google 試算表約需 1–5 分鐘同步，網站會自動幫你每 30 秒再試一次；不是重置的話，請改按「我已經有帳號了」登入。":
       m==="badpw"?"密碼錯誤，或這個帳號的存檔無法解開":
       m==="oldpw"?"目前密碼不正確":
-      m==="toobig"?"雲端存檔太大，請先到筆記本刪減較長的筆記再試一次":
+      m==="toobig"?"雲端存檔太大，請聯絡管理者":
       m==="badrc"?"救援碼不正確，請確認有沒有輸入錯誤":
       m==="offline"&&LOGIN_GATE?((()=>{ $("#cloudOffline").hidden=false; return "連不上部門試算表。可以稍後再試，或先離線使用這台電腦的進度。"; })()):
       m==="norc"?"這個帳號是舊版存檔，沒有救援碼。請用密碼登入後重新產生，或用同一個帳號重新建立（舊進度會被覆蓋）":m==="offline"?"連不上部門試算表，請稍後再試":"處理失敗，請稍後再試";
@@ -5991,7 +5990,7 @@ const HELP={
   map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
   zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
   places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。",
-  notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題、內容，也能寫自己的小筆記。",
+  notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題和內容。",
   pet:"LV 3 可以領養寵物，LV 4 會長大，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件。",
   trophy:"完成特定目標就會解鎖成就，標示 NEW 的是剛解鎖的。成就數量會顯示在結業證書和你的名片上。",
   cert:"完成全部任務並集滿智慧存摺點數後，村長會頒發結業證書。之後有新任務時，把新內容看完還能領 Bonus 進修證書。證書都可以下載成圖片。",
@@ -7209,7 +7208,7 @@ function flashLoc(id){
 
 /* ================= new hire's home (成就・筆記本・角色設定) ================= */
 let homeTab="notebook";
-const MEMO_MAX=300;
+
 function favList(){
   return Object.keys(S.fav||{}).map(id=>ALLQ.find(q=>q.id===id)).filter(Boolean)
     .sort((a,b)=>String(S.fav[b.id].at).localeCompare(String(S.fav[a.id].at)));
@@ -7220,7 +7219,7 @@ function toggleFav(){
   S.fav=S.fav||{};
   S.favDel=S.favDel||{};
   if(S.fav[curQ.id]){ delete S.fav[curQ.id]; S.favDel[curQ.id]=new Date().toISOString(); toast("已從筆記本移除"); Sound.sfx("undo"); }
-  else{ const now=new Date().toISOString(); S.fav[curQ.id]={at:now,mt:now,memo:""}; delete S.favDel[curQ.id]; toast("♥ 已加入最愛，回到溫暖的家打開筆記本就能查到"); Sound.sfx("stamp");
+  else{ const now=new Date().toISOString(); S.fav[curQ.id]={at:now,mt:now}; delete S.favDel[curQ.id]; toast("♥ 已加入最愛，回到溫暖的家打開筆記本就能查到"); Sound.sfx("stamp");
     setTimeout(()=>tryFind((curQ.zone&&curQ.zone.id)||"",.3,"收藏"),900); }
   save(); queueCloud(); syncFavBtn(); renderZone(); refreshSearch(); checkAch();
   if(curPlace&&curPlace.id==="myhome") renderPlace();
@@ -8880,7 +8879,7 @@ function renderGuestbook(panel){
   S.guestSeen=new Date().toISOString(); save();
   setTimeout(checkAch,300);
 }
-const FURN_TIP={"friends": "寵物朋友、合照與友誼項圈", "notebook": "收藏的任務與自己的筆記", "pet": "領養、照顧寵物", "trophy": "已解鎖的成就", "cert": "結業證書與 Bonus 進修證書", "collect": "撿到的小物", "armory": "所有武器，可以裝備或卸下", "closet": "換衣服、換顏色", "album": "用小物兌換畫框", "farm": "種菜、收成、稀有作物圖鑑", "shop": "用種子買家具、牆紙和寵物零食", "guest": "誰來拜訪過你家", "wardrobe": "角色外觀與雲端存檔"};
+const FURN_TIP={"friends": "寵物朋友、合照與友誼項圈", "notebook": "收藏的任務", "pet": "領養、照顧寵物", "trophy": "已解鎖的成就", "cert": "結業證書與 Bonus 進修證書", "collect": "撿到的小物", "armory": "所有武器，可以裝備或卸下", "closet": "換衣服、換顏色", "album": "用小物兌換畫框", "farm": "種菜、收成、稀有作物圖鑑", "shop": "用種子買家具、牆紙和寵物零食", "guest": "誰來拜訪過你家", "wardrobe": "角色外觀與雲端存檔"};
 function renderMyHome(body){
   const tabs=[["notebook","筆記本","notebook",`${favList().length} 筆`],
     ["pet","寵物窩",S.pet?null:"petbed",S.pet?`${S.pet.name||PETS[S.pet.type].name}・${petStage()==="adult"?"成年":"寶寶"}`:petUnlocked()?"可以領養了":`LV 3 解鎖・還差 ${tasksToLevel(3)} 個任務`],
@@ -8924,37 +8923,27 @@ function renderMyHome(body){
   });
 }
 
-let memoCloudTimer=null;
-function memoSync(){                                   // 停止打字 3 秒後立刻同步到雲端
-  if(!CLOUD||!cloudReady()) return;
-  cloudDirty=true;
-  if(!cloudSynced) return;
-  clearTimeout(memoCloudTimer); clearTimeout(cloudTimer);
-  memoCloudTimer=setTimeout(()=>cloudPush(true),3000);
-}
 function renderNotebook(panel){
   if(panel.dataset.kind!=="notebook"){
     panel.dataset.kind="notebook";
     panel.innerHTML=`<section class="window pbox notebook">
       <h3>我的筆記本 ${helpBtn("notebook")}</h3>
-      <p class="ahint">執行任務時按「♡ 加入最愛」，資料就會收進這裡。每筆都可以寫自己的小筆記。</p>
+      <p class="ahint">執行任務時按「♡ 加入最愛」，資料就會收進這裡。</p>
       <p class="ahint nbcloud" id="nbCloud"></p>
       <label class="sr" for="nbSearch">搜尋筆記本</label>
-      <input id="nbSearch" class="ainput wide" type="search" placeholder="搜尋標題、內容或我的筆記，例如：分機、便當、出差">
+      <input id="nbSearch" class="ainput wide" type="search" placeholder="搜尋標題或內容，例如：分機、便當、出差">
       <div class="pages" id="nbList"></div>
     </section>`;
   }
   const nc=$("#nbCloud");
-  if(nc) nc.innerHTML=!cloudReady()?"":CLOUD?"☁ 已登入雲端存檔：筆記會自動同步，換電腦或瀏覽器登入同一個帳號就看得到。"
-    :`⚠ 筆記目前只存在這台電腦的瀏覽器。<button class="linkbtn" type="button" data-cloud="login">登入雲端存檔</button>後，換電腦或瀏覽器也看得到。`;
+  if(nc) nc.innerHTML=!cloudReady()?"":CLOUD?"☁ 已登入雲端存檔：筆記本會自動同步，換電腦或瀏覽器登入同一個帳號就看得到。"
+    :`⚠ 筆記本目前只存在這台電腦的瀏覽器。<button class="linkbtn" type="button" data-cloud="login">登入雲端存檔</button>後，換電腦或瀏覽器也看得到。`;
   const q=$("#nbSearch").value.trim().toLowerCase();
   const all=favList();
-  const list=all.filter(x=>!q||(x.title+" "+x.zone.name+" "+plain(x.body)+" "+((S.fav[x.id]||{}).memo||"")).toLowerCase().includes(q));
+  const list=all.filter(x=>!q||(x.title+" "+x.zone.name+" "+plain(x.body)).toLowerCase().includes(q));
   const box=$("#nbList");
   if(!all.length){ box.innerHTML=`<p class="empty-note">筆記本還是空的。到各地點打開任務，按「♡ 加入最愛」就會收進來。</p>`; return; }
-  if(!list.length){ box.innerHTML=`<p class="empty-note">找不到符合「${esc(q)}」的筆記。</p>`; return; }
-  const focused=document.activeElement&&document.activeElement.closest&&document.activeElement.closest("[data-memo]");
-  const keep=focused?focused.dataset.memo:null;
+  if(!list.length){ box.innerHTML=`<p class="empty-note">找不到符合「${esc(q)}」的收藏。</p>`; return; }
   box.innerHTML=list.map(x=>{
     const f=S.fav[x.id]||{};
     return `<article class="page" data-fav="${esc(x.id)}">
@@ -8963,12 +8952,9 @@ function renderNotebook(panel){
         <span class="pmeta">${esc(x.zone.name)}・${esc(x.chapter)}${S.done[x.id]?"・★ 已完成":""}</span>
       </div>
       <p class="snip">${esc(plain(x.body).replace(/\s+/g," ").trim().slice(0,70))}…</p>
-      <label class="sr" for="memo-${esc(x.id)}">我的筆記</label>
-      <textarea id="memo-${esc(x.id)}" class="memo" data-memo="${esc(x.id)}" rows="2" maxlength="${MEMO_MAX}" placeholder="寫下自己的筆記">${esc(f.memo||"")}</textarea>
       <div class="pfoot"><span class="ahint" style="margin:0">收藏於 ${fmtDate(f.at)}</span><button class="mini-btn" type="button" data-unfav="${esc(x.id)}">移出筆記本</button></div>
     </article>`;
   }).join("");
-  if(keep){ const t=box.querySelector(`[data-memo="${CSS.escape(keep)}"]`); if(t){t.focus();t.selectionStart=t.selectionEnd=t.value.length;} }
 }
 
 function renderTrophy(panel){
@@ -9378,7 +9364,7 @@ function renderCloudBox(){
   box.innerHTML=`<h3>雲端存檔 ${helpBtn("cloud")} <span class="st st-ok">已登入</span></h3>
     <dl class="cloudfacts"><dt>姓名</dt><dd>${esc(S.name||"—")}${S.nick?`（暱稱 ${esc(S.nick)}）`:""}</dd><dt>員工編號</dt><dd>${esc(S.emp||"—")}</dd><dt>組別</dt><dd>${esc(S.group||"—")}</dd><dt>新人代碼</dt><dd>${esc(myCode())}</dd></dl>
     <p class="ahint">${[`帳號 <b>${esc(CLOUD.acc)}</b>`,at?`最後同步 ${fmtDate(at)}`:"",cloudDirty?"有尚未同步的進度":""].filter(Boolean).join("・")}</p>
-    ${SAVE_FULL?`<p class="warnbox">${SAVE_FULL===2?"⚠ 雲端存檔太大，最近的進度沒有上傳（線上保留的是上一份完好的存檔）。":"⚠ 雲端存檔快滿了。"}請到筆記本刪減較長的筆記，存檔就會變小。</p>`:""}
+    ${SAVE_FULL?`<p class="warnbox">${SAVE_FULL===2?"⚠ 雲端存檔太大，最近的進度沒有上傳（線上保留的是上一份完好的存檔）。":"⚠ 雲端存檔快滿了。"}請聯絡管理者協助處理。</p>`:""}
     <p class="ahint">進度會自動同步，換電腦時用同一組帳密登入就能接著玩。密碼忘記將無法還原存檔。</p>
     <p class="ahint autosync" data-autosync>${esc(autoSyncText())}</p>
     <div class="formfoot"><span></span><span class="afilters">
@@ -9387,14 +9373,8 @@ function renderCloudBox(){
       <button class="act ghost" type="button" data-cloud="logout">登出這台電腦</button>
       <button class="act" type="button" data-cloud="push">立即同步</button></span></div>`;
 }
-let memoTimer=null;
 $("#placeBody").addEventListener("input",e=>{
   if(e.target.id==="nbSearch"){ renderNotebook($("#homePanel")); return; }
-  const m=e.target.closest("[data-memo]");
-  if(m&&S.fav[m.dataset.memo]){
-    S.fav[m.dataset.memo].memo=m.value.slice(0,MEMO_MAX); S.fav[m.dataset.memo].mt=new Date().toISOString();
-    clearTimeout(memoTimer); memoTimer=setTimeout(()=>{ save(); memoSync(); },400);
-  }
 });
 $("#placeBody").addEventListener("change",e=>{
   const n=e.target.name;
@@ -9778,7 +9758,7 @@ async function capacityCheck(){
       :`<tr><td>${esc(it.name)}${it.note?`<span class="ahint">・${esc(it.note)}</span>`:""}</td><td>${it.cur.toLocaleString()} ${it.unit}</td><td>${it.max.toLocaleString()} ${it.unit}</td><td>${Math.round(it.cur/it.max*100)}%</td><td>${tag(lvl(it))}</td></tr>`).join("")}</tbody></table></div>`
       :`<p class="empty-note">還沒有可以檢查的資料（需要先設定交誼廳、後台資料或存檔資料工作表）。</p>`)
     +(exact?"":`<p class="ahint" style="margin-top:8px">「進度存檔」「進度回報」等表單的回應不公開，這裡看不到筆數；設定「筆數統計」工作表後才能檢查全部表單。</p>`)
-    +(worst>=2?`<p class="warnbox" style="margin-top:10px">⚠ 有項目接近上限。表單筆數：先把回應下載備份，到該表單的「回覆」分頁刪除所有回應（試算表裡的資料不會被刪），計數就會歸零。雲端存檔太大：請該帳號的新人刪減筆記本裡很長的筆記。詳見 README「容量檢查」。</p>`:"");
+    +(worst>=2?`<p class="warnbox" style="margin-top:10px">⚠ 有項目接近上限。表單筆數：先把回應下載備份，到該表單的「回覆」分頁刪除所有回應（試算表裡的資料不會被刪），計數就會歸零。雲端存檔太大：請確認「進度存檔」表單已加上「存檔資料2～4」，或聯絡網站維護者。詳見 README「容量檢查」。</p>`:"");
   const tab=document.querySelector('.atabs [data-tab="status"]');
   if(tab){ tab.textContent=worst>=2?"連線狀態 ⚠":"連線狀態"; }
 }

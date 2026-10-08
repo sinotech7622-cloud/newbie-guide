@@ -722,6 +722,8 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .tossfly{position:absolute;left:50%;top:92%;width:34px;height:34px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.6,.4,1),top .6s cubic-bezier(.2,-0.4,.5,1),transform .6s linear;z-index:6;pointer-events:none}
 .vsactrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .rpsrow .act{min-width:86px}
+.cdlist{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px;font-size:14px}
+.cdlist li{padding:6px 10px;border:2px solid var(--line);border-radius:4px;background:rgba(0,0,0,.12)}
 .lcard.nocard{opacity:.8}.lcard.nocard .lav svg{filter:grayscale(1) brightness(.75)}
 .nocardvisit{margin:0;padding:8px 12px;border:2px dashed var(--line);border-radius:4px;color:var(--muted);font-size:14px;flex-basis:100%}
 .nocardnote{font-style:normal;color:var(--muted)}
@@ -1498,6 +1500,12 @@ footer.site p{margin:4px 0}
         <div class="abar"><h3>容量檢查</h3><button class="act ghost" type="button" id="capCheck">重新檢查</button></div>
         <p class="ahint">Google 表單超過 <b>10 萬筆</b>回應後就不再寫入試算表；試算表單一儲存格最多 <b>5 萬字元</b>。超過七成會顯示「注意」，超過九成顯示「危險」。設定「筆數統計」工作表（公式在下方「試算表公式」）可以看到每張表單的確切筆數。</p>
         <div id="capBody"></div>
+      </section>
+      <section class="window abox" id="cardDiag">
+        <h3>交誼廳名片檢查</h3>
+        <p class="ahint">某位新人在交誼廳看不到名片時，輸入他的新人代碼，網站會用跟新人一樣的方式讀取交誼廳資料，列出找到什麼、哪一步出了問題。</p>
+        <div class="lrow"><label class="sr" for="cdCode">新人代碼</label><input id="cdCode" class="ainput" maxlength="9" placeholder="例如 2MKX-WXS3"><button class="act" type="button" id="cdGo">檢查</button></div>
+        <div id="cdOut"></div>
       </section>
       <div class="agrid">
         <section class="window abox">
@@ -10100,6 +10108,48 @@ async function capacityCheck(){
   if(tab){ tab.textContent=worst>=2?"連線狀態 ⚠":"連線狀態"; }
 }
 $("#capCheck").addEventListener("click",capacityCheck);
+$("#cdGo").addEventListener("click",async()=>{
+  const out=$("#cdOut"), code=String($("#cdCode").value||"").trim().toUpperCase();
+  if(!/^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code)){ out.innerHTML=`<p class="cerr">請輸入「XXXX-XXXX」格式的新人代碼。</p>`; return; }
+  out.innerHTML=`<p class="ahint">讀取中…</p>`;
+  const L=[], ok=t=>L.push(`<li>✅ ${t}</li>`), bad=t=>L.push(`<li>❌ ${t}</li>`), info=t=>L.push(`<li>ℹ️ ${t}</li>`);
+  if(!loungeReady()){ out.innerHTML=`<p class="cerr">交誼廳還沒設定（需要交誼廳表單，以及「交誼廳資料」或「交誼廳精簡」工作表）。</p>`; return; }
+  const src=loungeSheet(); info(`讀取的工作表：<b>${src==="loungeLite"?"交誼廳精簡":"交誼廳資料"}</b>${src==="loungeLite"&&sheetUrl("lounge")?"（讀不到時改讀交誼廳資料）":""}`);
+  let rows=null;
+  try{ rows=await fetchSheet(src,true); ok(`讀到 ${rows.length} 列資料`); }
+  catch(e){ bad(`讀不到「${src==="loungeLite"?"交誼廳精簡":"交誼廳資料"}」：${esc(e.message||"")}`); }
+  if(rows){
+    const mine=rows.filter(r=>String(r[2]||"").trim().toUpperCase()===code);
+    const types={}; mine.forEach(r=>{ const t=String(r[1]||"").trim()||"(空白)"; types[t]=(types[t]||0)+1; });
+    if(!mine.length) bad(`資料裡完全沒有 ${esc(code)} 的紀錄。可能是代碼打錯，或是這個人的瀏覽器從來沒有送出成功（請他打開網站約 20 秒，網站會自動補送名片）。`);
+    else info(`${esc(code)} 共有 ${mine.length} 列：${Object.entries(types).map(([t,n])=>`${esc(t)} ×${n}`).join("、")}`);
+    const cards=mine.filter(r=>String(r[1]||"").trim()==="presence");
+    if(mine.length&&!cards.length) bad("沒有 presence（名片）紀錄。他有在玩，但名片沒有送進試算表；請他打開網站約 20 秒，網站會自動補送。");
+    if(cards.length){
+      const last=cards[cards.length-1], at=parseSheetTs(last[0]), av=parseJSONish(last[6]);
+      ok(`最新一張名片：${esc(String(last[0]))}${at?"":"（⚠ 時間讀不懂，請把 A 欄格式改成日期時間）"}・名字「${esc(String(last[3]||""))}」・組別「${esc(String(last[4]||""))}」`);
+      if(av) ok(`造型資料可以解開（${String(last[6]).length} 個字元）`); else bad(`造型資料解不開（${String(last[6]||"").length} 個字元）：可能被截斷或欄位錯位，請確認試算表欄位順序是 時間戳記、類型、新人代碼、名字、組別、等級、造型、寵物、一句話、對象代碼。`);
+      if(String(last[7]||"")&&!parseJSONish(last[7])) bad("寵物資料解不開。");
+    }
+  }
+  if(src==="loungeLite"&&sheetUrl("lounge")){
+    try{
+      const raw=((await fetchSheet("lounge",true))||[]).filter(r=>String(r[2]||"").trim().toUpperCase()===code&&String(r[1]||"").trim()==="presence");
+      info(raw.length?`原始「交誼廳資料」裡他一共有 ${raw.length} 張名片，最早 ${esc(String(raw[0][0]))}、最新 ${esc(String(raw[raw.length-1][0]))}`:"原始「交誼廳資料」裡也沒有他的名片。");
+    }catch(e){ info("讀不到原始「交誼廳資料」，略過比對。"); }
+  }
+  if(isHiddenCode(code)) bad("這個人在「使用者名冊」被設為<b>隱藏</b>，所以交誼廳不會顯示。到名冊勾選「顯示已隱藏」後可以恢復。");
+  else ok("沒有被隱藏");
+  try{ await loadLounge(true); }catch(e){}
+  const p=loungeData().people[code];
+  if(!p) bad("整理後的交誼廳名單裡沒有他。");
+  else if(p.nocard) info(`交誼廳會顯示成${p.friendOnly?"交友錄裡的朋友":"灰色的「名片準備中」"}（名冊上有，但沒有讀到名片）。`);
+  else{
+    let html=""; try{ html=loungeCardInner(Object.assign({likes:0},p),""); }catch(e){ bad(`名片畫不出來：${esc(e.message||"")}`); }
+    if(html) ok(`交誼廳會顯示他的名片（名字「${esc(p.name||"")}」）。如果新人那邊還是看不到，請他按交誼廳的「重新整理」，或等 5 分鐘讓試算表發布更新。`);
+  }
+  out.innerHTML=`<ul class="cdlist">${L.join("")}</ul>`;
+});
 $("#stTable").addEventListener("click",async e=>{
   if(e.target.closest("[data-ping]")){
     if(!(await uiConfirm("要送出一筆測試資料到「後台更新」嗎？網站會自動確認是否寫入成功（約 1–5 分鐘）。這筆資料不會影響網站內容。","送出測試"))) return;

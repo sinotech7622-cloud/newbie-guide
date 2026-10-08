@@ -415,6 +415,16 @@ pre.code,textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:13p
 .ztabs .zsub{display:block;font-size:12px;opacity:.75}
 .mini-sel{font-family:var(--body);font-size:13px;background:#0B1030;color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:3px;padding:2px 4px;max-width:9em}
 .stepl{margin:0 0 6px;padding-left:1.5em;display:grid;gap:4px;font-size:15px}
+.touristbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin:0 auto 14px;max-width:1160px;padding:10px 16px;border-color:#F2C14E!important;font-size:14px;line-height:1.6}
+.touristbar b{color:#F2C14E}
+@media (max-width:600px){.touristbar{font-size:13px;padding:8px 12px;gap:8px}.touristbar .act{width:100%}}
+.touristclosed{position:fixed;inset:0;z-index:90;background:rgba(8,10,30,.88);display:flex;align-items:center;justify-content:center;padding:16px}
+.touristclosed[hidden]{display:none}
+.touristclosed .window{max-width:440px;padding:22px 24px;text-align:center}
+.touristclosed h2{margin:0 0 10px;font-size:22px}
+.touristclosed p{margin:0 0 16px;line-height:1.7}
+.touristlounge{margin:6px 0 10px;padding:10px 12px;border:2px dashed #F2C14E;border-radius:4px;font-size:14px;line-height:1.6}
+body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::before,body.tourist [data-like]::before,body.tourist #vsGift::before,body.tourist #vsToss::before,body.tourist #vsSend::before,body.tourist [data-steal]::before,body.tourist #csSend::before,body.tourist [data-ivok]::before,body.tourist [data-ivsend]::before{content:"🔒 "}
 .previewbar{position:fixed;left:16px;bottom:16px;z-index:40;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 14px;max-width:min(560px,calc(100vw - 32px));font-family:var(--pixel);font-size:15px;border-color:var(--gold)}
 .previewbar b{color:var(--gold);font-weight:400}
 #ssBar{position:sticky;top:104px;z-index:15}
@@ -1373,6 +1383,17 @@ footer.site p{margin:4px 0}
     <span>預覽模式：這台電腦正在顯示尚未發布的<b id="previewWhat"></b>，其他人看不到。</span>
     <button class="act ghost" type="button" id="previewEnd">結束預覽</button>
   </div>
+  <div class="touristbar window" id="touristBar" hidden role="status">
+    <span>🧳 <b>觀光客模式</b>：進度只存在這台裝置，30 天沒回來會自動清空；交誼廳只能參觀，留言、按讚、送禮等互動不開放。</span>
+    <button class="act ghost" type="button" data-touristjoin>我是新人，正式加入</button>
+  </div>
+  <div class="touristclosed" id="touristClosed" hidden>
+    <div class="window" role="alertdialog" aria-labelledby="tcT" aria-describedby="tcB">
+      <h2 id="tcT">🧳 觀光客通道暫停開放</h2>
+      <p id="tcB">觀光客通道目前已關閉，謝謝你來參觀！如果你是園區及城鄉發展部的新人，請按下方按鈕正式加入。</p>
+      <button class="act" type="button" data-touristjoin>我是新人，正式加入</button>
+    </div>
+  </div>
 
   <!-- ============ MAP VIEW ============ -->
   <section id="viewMap" aria-labelledby="gameTitle">
@@ -1506,6 +1527,7 @@ footer.site p{margin:4px 0}
       <section class="window abox" id="touristBox">
         <h3>觀光客通道</h3>
         <p class="ahint">想讓部門以外的人（例如來參觀的同仁、其他部門）也能逛逛時，把這個網址給他。從這個網址進來建立角色的人，組別會直接設定為「觀光客」，不用選組別；名冊和交誼廳都會顯示「觀光客」，方便和新人分開。已經是一般組別的新人點這個網址不會被改掉。</p>
+        <p class="ahint">觀光客的限制：進度只存在自己的裝置、30 天沒回來自動清空；交誼廳只能參觀（名片不上線，不能留言、按讚、送禮、偷菜）；不回報進度、不能申請諮詢；登錄紀錄只記「觀光客進站」，可在「新人登錄紀錄」試算表用組別篩選。要暫停通道，請到「網站設定」取消勾選「開放觀光客通道」並發布。</p>
         <pre class="code" id="touristUrl"></pre>
         <button class="mini-btn" type="button" data-copy="touristUrl">複製網址</button>
       </section>
@@ -1611,6 +1633,8 @@ footer.site p{margin:4px 0}
           <input id="sDirector" class="ainput wide" maxlength="12" data-ss="director" placeholder="總長">
           <label for="sGoal">智慧存摺年度目標點數</label>
           <input id="sGoal" class="ainput" type="number" min="1" max="200" data-ss="goal">
+          <label class="chk" style="margin-top:14px"><input type="checkbox" id="sTourOn" data-ss="touristOn"> 開放觀光客通道</label>
+          <p class="ahint" style="margin:4px 0 0">取消勾選並發布後，觀光客網址就不能再進站；已經是觀光客的人會看到「暫停開放」的畫面。</p>
           <label class="chk" style="margin-top:14px"><input type="checkbox" id="sIvOn" data-ss="interviewOn"> 啟用村長的面談通知功能</label>
           <p class="ahint" style="margin:4px 0 0">目前預設關閉：新人端看不到面談通知，管理者專區也會收起「面談通知」分頁。需要時勾選並發布到網站即可恢復。</p>
         </section>
@@ -2968,6 +2992,7 @@ const DEFAULT_CONFIG={
   ],
   goal:50,
   interviewOn:false,
+  touristOn:true,
   escrowKey:"",
   director:"總長",
   notice:{on:false,title:"",body:"",updatedAt:""}
@@ -3021,6 +3046,21 @@ const ACH=[
 
 /* ================= state ================= */
 const KEY="sino22-quest-v1";
+/* 觀光客：30 天沒回來就清空這台裝置上的進度（在讀取進度之前處理） */
+const TOURIST_SEEN="sino22-tourist-seen", TOURIST_DAYS=30;
+let TOURIST_EXPIRED=false;
+try{
+  if(/(^|[?&])tourist(=|&|$)/.test(location.search.slice(1))) localStorage.setItem("sino22-tourist","1");
+  if(localStorage.getItem("sino22-tourist")==="1"){
+    let g=""; try{ g=(JSON.parse(localStorage.getItem(KEY)||"{}")||{}).group||""; }catch(e){}
+    const seen=+localStorage.getItem(TOURIST_SEEN)||0;
+    if(g==="觀光客"&&seen&&Date.now()-seen>TOURIST_DAYS*864e5){
+      Object.keys(localStorage).filter(k=>/^sino22-/.test(k)&&k!=="sino22-tourist").forEach(k=>localStorage.removeItem(k));
+      TOURIST_EXPIRED=true; g="";
+    }
+    if(!g||g==="觀光客") localStorage.setItem(TOURIST_SEEN,String(Date.now()));
+  }
+}catch(e){}
 let S={name:"",emp:"",av:null,pet:null,group:"",fav:{},achSeen:{},consults:[],ivReplies:{},done:{},visited:{},points:0,ach:{},loc:"village"};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw)||{});}catch(e){}
 { let cut=false; Object.values(S.fav||{}).forEach(f=>{ if(f&&"memo" in f){ delete f.memo; cut=true; } }); if(cut) try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }   // 已移除個人筆記功能：清掉舊的筆記文字
@@ -3609,13 +3649,24 @@ const CHAT_TIPS=[
   ["any","「地圖上的建築亮起『！』，就代表那裡有新消息，記得過去看看。」"],
   ["any","「種錯菜不用緊張，還沒成熟的田可以按『⛏ 挖掉』，種子會退還。」"]
 ];
+const CHAT_TOURIST={                                    // 觀光客：村長、總長先打招呼
+  chief:["「咦，你是來參觀的吧？歡迎來園城部！慢慢逛，看到有興趣的地方就點進去看看。」",
+    "「參觀得還開心嗎？新人要認識的公司制度，都整理在地圖上的五個任務地點裡。」",
+    "「難得來一趟，到我家坐坐喝杯茶吧！角落說不定藏著小禮物。」"],
+  director:["「你好，歡迎參觀！這個網站是我們幫部門新人做的報到指南。」",
+    "「來參觀的朋友你好～覺得好玩的話，也可以介紹給你們部門的同事。」",
+    "「逛累了就回溫暖的家看看你的寵物吧，牠會在家裡等你。」"]
+};
+const TOURIST_SKIP_TIP=/留言板|按讚|救援碼|偷菜|串門子/;
 let lastChat=0, CHAT=null;
 const CHAT_RECENT=[];
 function chatPick(who){
+  if(touristLocked()&&CHAT&&CHAT.n===0){ const L=CHAT_TOURIST[who]; return {tip:L[Math.floor(Math.random()*L.length)],hello:true}; }
   const fresh=CHAT_CHEATS.filter(c=>c.who===who&&!c.has()&&!CHAT_RECENT.includes(c.code));
   if(fresh.length&&Math.random()<.4){ const c=fresh[Math.floor(Math.random()*fresh.length)]; CHAT_RECENT.push(c.code); return {cheat:c}; }
-  let tips=CHAT_TIPS.map((t,i)=>[t,i]).filter(([t,i])=>(t[0]==="any"||t[0]===who)&&!CHAT_RECENT.includes("t"+i));
-  if(!tips.length){ CHAT_RECENT.length=0; tips=CHAT_TIPS.map((t,i)=>[t,i]).filter(([t])=>t[0]==="any"||t[0]===who); }
+  const okTip=t=>(t[0]==="any"||t[0]===who)&&!(touristLocked()&&TOURIST_SKIP_TIP.test(t[1]));
+  let tips=CHAT_TIPS.map((t,i)=>[t,i]).filter(([t,i])=>okTip(t)&&!CHAT_RECENT.includes("t"+i));
+  if(!tips.length){ CHAT_RECENT.length=0; tips=CHAT_TIPS.map((t,i)=>[t,i]).filter(([t])=>okTip(t)); }
   const [t,i]=tips[Math.floor(Math.random()*tips.length)]; CHAT_RECENT.push("t"+i);
   while(CHAT_RECENT.length>12) CHAT_RECENT.shift();
   return {tip:t[1]};
@@ -3629,7 +3680,7 @@ function showChatLine(){
       <p class="cheatcode">${esc(line.cheat.code)}</p><p class="ahint">${esc(line.cheat.note)}</p></div>`;
   }else{
     $("#ctSay").textContent=line.tip;
-    $("#ctCard").innerHTML=`<p class="ahint chattip">💡 小提示・${c.who==="chief"?"村長":"總長"}的經驗談</p>`;
+    $("#ctCard").innerHTML=line.hello?`<p class="ahint chattip">🧳 ${c.who==="chief"?"村長":"總長"}跟來參觀的你打招呼</p>`:`<p class="ahint chattip">💡 小提示・${c.who==="chief"?"村長":"總長"}的經驗談</p>`;
   }
   $("#ctMore").hidden=c.n>=3;
 }
@@ -4575,7 +4626,35 @@ $("#search").addEventListener("input",refreshSearch);
 const TOURIST="觀光客", TOURIST_KEY="sino22-tourist";
 try{ if(/(^|[?&])tourist(=|&|$)/.test(location.search.slice(1))) localStorage.setItem(TOURIST_KEY,"1"); }catch(e){}
 const touristLink=()=>{ try{ return localStorage.getItem(TOURIST_KEY)==="1"; }catch(e){ return false; } };
-const touristLocked=()=>touristLink()&&(!S.group||S.group===TOURIST);   // 已經是一般組別的新人不受影響
+const touristOpen=()=>touristLink()&&!(CFG&&CFG.touristOn===false);           // 通道被管理者關閉時，新來的人走一般流程
+const touristLocked=()=>S.group===TOURIST||(touristOpen()&&!S.group);        // 觀光客身分：功能受限（一般組別的新人不受影響）
+function touristBlock(what){                           // 觀光客不開放的互動：回傳 true 代表已擋下
+  if(!touristLocked()) return false;
+  Sound.sfx("error"); toast(`🔒 觀光客模式不開放「${what}」，正式加入後就能使用`);
+  return true;
+}
+function touristVisitLog(){                            // 觀光客進站人次：每天記一筆
+  if(!touristLocked()||!S.group) return;
+  let d=""; try{ d=localStorage.getItem("sino22-tourist-day")||""; }catch(e){}
+  const today=new Date().toISOString().slice(0,10); if(d===today) return;
+  try{ localStorage.setItem("sino22-tourist-day",today); }catch(e){}
+  logSignup("觀光客進站");
+}
+function renderTouristBar(){
+  const on=touristLocked();
+  document.body.classList.toggle("tourist",on);
+  const bar=$("#touristBar"); if(bar) bar.hidden=!on;
+  const ov=$("#touristClosed"); if(ov) ov.hidden=!(S.group===TOURIST&&CFG&&CFG.touristOn===false);
+}
+async function touristJoin(){
+  if(!(await uiConfirm("要以園區及城鄉發展部新人的身分正式加入嗎？\n接下來請選擇你的組別並註冊雲端帳號；目前的角色、寵物、任務完成和收藏都會保留。","正式加入"))) return;
+  try{ localStorage.removeItem(TOURIST_KEY); localStorage.removeItem(TOURIST_SEEN); localStorage.removeItem("sino22-tourist-day"); }catch(e){}
+  try{ if(/(^|[?&])tourist/.test(location.search.slice(1))) history.replaceState(null,"",location.pathname+location.hash); }catch(e){}
+  S.group=""; save();
+  renderGroups(); renderTouristBar(); try{ renderLoginHint(); updateLoginBtn(); }catch(e){}
+  openChar();
+}
+document.addEventListener("click",e=>{ if(e.target.closest&&e.target.closest("[data-touristjoin]")){ e.preventDefault(); touristJoin(); } });
 function renderGroups(){
   if(touristLocked()){
     $("#groupGrid").innerHTML=`<label class="gbtn tourist"><input type="radio" name="group" value="${TOURIST}" checked><span>🧳 ${TOURIST}</span></label>
@@ -4667,7 +4746,8 @@ $("#cForm").addEventListener("submit",async e=>{
   const profileChanged=!isNew&&(S.name!==name||S.emp!==emp||S.group!==grp);
   if(isNew&&!S.since) S.since=Date.now();             // 加入時間（種子補償「只給目前已加入的人」用）
   S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; S.av=Object.assign({},draft); S.group=grp; save();
-  if(isNew) logSignup("首次登錄"); else if(profileChanged) logSignup("修改資料");
+  if(touristLocked()) touristVisitLog(); else if(isNew) logSignup("首次登錄"); else if(profileChanged) logSignup("修改資料");
+  renderTouristBar();
   queueSync(true);
   $("#cDlg").close();
   renderPortals(); buildMap(); renderHUD(); syncSoundBtns(); checkAch();
@@ -4753,7 +4833,9 @@ async function fetchSheet(k,force){
   const hasHead=first.some(c=>c===hint||c==="時間戳記"||c==="項目");
   return hasHead?rows.slice(1):rows;   // 公式產生的工作表可能沒有標題列
 }
+const TOURIST_NO_FORM=new Set(["lounge","progress","consult","ivReply","save"]);
 function sendForm(k,values){
+  if(TOURIST_NO_FORM.has(k)&&touristLocked()) return Promise.reject(new Error("觀光客模式不開放"));
   const f=formCfg(k);
   if(!f) return Promise.reject(new Error("尚未設定「"+FORM_KEYS[k].label+"」表單"));
   const body=new URLSearchParams();
@@ -4928,6 +5010,7 @@ function configFromRows(rows){
   const title=get("公告標題"), body=get("公告內容");
   return {chief:get("村長名稱"),director:get("總長稱呼"),goal:get("年度目標點數"),groups:groups.length?groups:null,portals,
     interviewOn:/^(true|是|開|開啟|on|1|y|yes|v|✓)$/i.test(get("面談功能").trim()),
+    touristOn:!/^(false|否|關|關閉|off|0|n|no|x|✗)$/i.test(get("觀光客通道").trim()),
     escrowKey:get("救援公開金鑰").trim(),
     notice:{on:/^(true|是|開|開啟|on|1|y|yes|v|✓)$/i.test(get("公告開啟").trim()),title,body,updatedAt:hashStr(title+"\n"+body)}};
 }
@@ -5062,6 +5145,7 @@ function applyConfig(data){
     goal:Math.max(1,Math.min(200,parseInt(d.goal,10)||DEFAULT_CONFIG.goal)),
     director:cleanText(d.director,12)||DEFAULT_CONFIG.director,
     interviewOn:d.interviewOn===true,
+    touristOn:d.touristOn!==false,
     escrowKey:/^[A-Za-z0-9+/=]{200,1200}$/.test(String(d.escrowKey||""))?String(d.escrowKey):"",
     npcs:cleanNpcs(d.npcs),
     notice:Object.assign({on:false,title:"",body:"",updatedAt:""},d.notice||{})
@@ -5069,6 +5153,7 @@ function applyConfig(data){
   document.querySelectorAll(".chiefLabel").forEach(el=>el.textContent=`部門村長　${CFG.chief}`);
   renderPortals(); renderNotice(); renderGroups();
   applyInterviewSwitch();
+  renderTouristBar();
   if(curPlace) renderPlace();
   if(curZone&&curZone.passbook) renderZone();
 }
@@ -5544,7 +5629,7 @@ function cloudPushSafe(){ return Date.now()-lastRemoteCheck>5*60e3?cloudReconcil
 const LOGIN_HINT_KEY="sino22-loginhint";
 function updateLoginBtn(){
   const b=$("#btnLogin"); if(!b) return;
-  if(!cloudReady()){ b.hidden=true; return; }
+  if(!cloudReady()||touristLocked()){ b.hidden=true; return; }
   b.hidden=false;
   const on=!!CLOUD;
   const who=on?CLOUD.acc:"登入";
@@ -5604,6 +5689,7 @@ $("#cloudForm").addEventListener("click",e=>{
 });
 let cloudMode="login";
 function openCloud(mode){
+  if(touristLocked()){ touristBlock("雲端存檔"); return; }
   if(!cloudReady()){ uiAlert("網站還沒設定雲端存檔（需要「進度存檔」表單與「存檔資料」工作表）。"); return; }
   if(mode==="change"&&!CLOUD){ mode="login"; }
   cloudMode=mode||"login";
@@ -5859,7 +5945,7 @@ function loungeData(){
   return {list,posts,replies,visits,steals,tosses,gifts,npcgifts,playdates,rpss,people,champion,online:list.filter(p=>p.online).length};
 }
 async function loungeSend(payload){
-  if(!loungeReady()) return false;
+  if(!loungeReady()||touristLocked()) return false;     // 觀光客：交誼廳只看不寫
   try{ await sendForm("lounge",payload); return true; }catch(e){ return false; }
 }
 /* 交誼廳名片：內容有變才送完整名片；沒變時只在需要顯示「上線中」時送一筆很小的 here 紀錄 */
@@ -5871,7 +5957,7 @@ function cardPayload(){
 }
 async function loungePresence(force,opt){
   opt=opt||{};
-  if(!loungeReady()||!S.group) return;
+  if(!loungeReady()||!S.group||touristLocked()) return;   // 觀光客的名片不上線
   if(!force&&Date.now()-lastPresence<90000) return;
   lastPresence=Date.now();
   const pl=cardPayload(), k=hashStr([pl.code,pl.name,pl.group,pl.level,pl.av,pl.pet,pl.msg].join("|"));
@@ -5922,7 +6008,7 @@ function progressPayload(){
 }
 function queueSync(now){
   queueCloud(now);
-  if(!formCfg("progress")||!S.group) return;
+  if(!formCfg("progress")||!S.group||touristLocked()) return;   // 觀光客不回報進度（不混進新人統計）
   syncDirty=true; clearTimeout(syncTimer);
   syncTimer=setTimeout(pushProgress,now?0:Math.max(4000,30000-(Date.now()-lastSent)));
 }
@@ -6149,6 +6235,7 @@ function startStar(){
 function cheatKey(msg){ return String(msg||"").replace(/[\s　！!。，,～~〜ー\-－［］\[\]【】「」]/g,""); }
 function runCheat(msg){
   const c=CHEATS[cheatKey(msg)]; if(!c) return false;
+  if(touristLocked()&&(c.kind==="deco"||c.kind==="all")) return false;   // 觀光客不開放全解鎖類密技（當成一般留言處理）
   let gift="";
   if(c.kind==="pet"){
     S.petKinds=S.petKinds||{}; S.petKinds[c.pet]=true;
@@ -6733,6 +6820,7 @@ function claimRps(){                                   // 主人這邊：寵物�
   if(maxed) setTimeout(()=>affinityMax(maxed),900);
 }
 async function tossVeg(p,h){
+  if(touristBlock("砸蔬菜")) return;
   const host=String(p.code).toUpperCase(), barn=S.barn||{}, k=($("#vsGiftSel")||{}).value;
   if(!CROPS[k]||!(barn[k]>0)){ toast("倉庫裡沒有這種蔬菜了"); return; }
   let log={}; try{ log=JSON.parse(localStorage.getItem(TOSS_KEY)||"{}"); }catch(e){}
@@ -6761,6 +6849,7 @@ async function tossVeg(p,h){
 }
 
 async function giftVeg(p){
+  if(touristBlock("送禮")) return;
   const k=($("#vsGiftSel")||{}).value, host=String(p.code).toUpperCase();
   if(!CROPS[k]||!((S.barn||{})[k]>0)) return;
   const btn=$("#vsGift"); if(btn) btn.disabled=true;
@@ -6792,6 +6881,7 @@ function renderVisitFarm(p,h){
     }).join("")}</div>`;
   box.onclick=async e=>{
     const b=e.target.closest("[data-steal]"); if(!b) return;
+    if(touristBlock("偷菜")) return;
     const i=+b.dataset.steal, pl=farm[i], st=plotState(pl); if(st.stage!=="ripe") return;
     const key=`${host}|${i}|${pl.t}`, L=stoleLog(); if(L[key]) return;
     b.disabled=true;
@@ -6860,6 +6950,7 @@ async function openVisit(code){
   }
 }
 $("#vsSend").addEventListener("click",async()=>{
+  if(touristBlock("訪客簿留言")) return;
   const msg=cleanText($("#vsMsg").value,40); if(!msg){ toast("請先寫一句話"); return; }
   const btn=$("#vsSend"); btn.disabled=true;
   const payload={type:"visit",code:myCode(),name:dispName(),target:visitHost,msg};
@@ -6907,11 +6998,11 @@ function renderLoungeInner(box){
       <div class="abar"><h3>大家的冒險者名片 ${helpBtn("lounge")}</h3><span class="afilters">
         <span class="ahint">上線中 ${d.online} 人・共 ${d.list.length} 位</span>
         <button class="act ghost" type="button" data-lounge="refresh">重新整理</button></span></div>
-      <div class="lrow">
+      ${touristLocked()?`<p class="touristlounge">🧳 你正在以<b>觀光客</b>身分參觀，同事看不到你。可以看名片、留言板，也可以去同事家參觀；按讚、留言、送禮、偷菜等互動不開放。</p>`:`<div class="lrow">
         <label class="sr" for="lgMsg">我的一句話</label>
         <input id="lgMsg" class="ainput wide" maxlength="30" placeholder="寫一句話讓大家看到，例如：今天也要加油！" value="${esc(S.loungeMsg||"")}">
         <button class="act" type="button" data-lounge="me">更新我的名片</button>
-      </div>
+      </div>`}
       ${LOUNGE.err?`<p class="cerr">讀不到交誼廳資料，請稍後再試。</p>`:""}
       <div class="lgrid">${d.list.map(p=>loungeCard(p,d.champion)).join("")}</div>
     </section>
@@ -6991,7 +7082,10 @@ function renderPlaceInner(greet){
   if(greet){
     const name=dispName();
     const pending=INBOX.interviews.filter(x=>x.status==="待回覆").length;
-    typeInto($("#plSay"),home
+    typeInto($("#plSay"),touristLocked()
+      ?(home?`${name}，歡迎來園城部參觀！我是部門村長${CFG.chief}。泡杯茶坐坐，順便看看角落有沒有藏什麼好東西。`
+            :`${name}，歡迎參觀！我是數位總合辦公室的${CFG.director}。技術諮詢目前只開放給部門同仁；重複的武器倒是可以拿來給我分解成種子。`)
+      :home
       ?(!ivOn()?`${name}，歡迎來我家坐坐！泡杯茶休息一下，順便看看角落有沒有藏什麼好東西。`
         :pending?`${name}，來得正好！我這裡有 ${pending} 則面談通知，看完記得回覆我。`
                :`${name}，歡迎來我家坐坐。需要找你面談時，我會把通知放在這裡，地圖上的房子也會亮起「！」。`)
@@ -7103,6 +7197,7 @@ $("#placeBody").addEventListener("click",async e=>{
   if(lk){
     const code=lk.dataset.like;
     if(code===myCode().toUpperCase()) return;
+    if(touristBlock("按讚")) return;
     S.likes=S.likes||{};
     if(S.likes[code]) return;
     lk.disabled=true;
@@ -7118,6 +7213,7 @@ $("#placeBody").addEventListener("click",async e=>{
     const act=lg.dataset.lounge;
     if(act==="refresh"){ lg.disabled=true; await loadLounge(true); lg.disabled=false; renderLounge($("#placeBody"),true); Sound.sfx("select"); return; }
     if(act==="me"){
+      if(touristBlock("交誼廳名片")) return;
       S.loungeMsg=cleanText($("#lgMsg").value,30); save();
       lg.disabled=true; lastPresence=0; await loungePresence(true,{card:true}); await loadLounge(true); lg.disabled=false;
       addPending({type:"presence",code:myCode(),name:dispName(),group:S.group||"",level:String(myLv()),
@@ -7128,6 +7224,7 @@ $("#placeBody").addEventListener("click",async e=>{
       const msg=cleanText($("#lgPost").value,80);
       if(!msg){ toast("請先寫點什麼"); return; }
       if(runCheat(msg)){ $("#lgPost").value=""; renderLounge($("#placeBody"),true); return; }
+      if(touristBlock("留言板張貼")) return;
       lg.disabled=true;
       const id="P-"+randChars(6);
       const payload={type:"post",code:myCode(),name:dispName(),msg,target:id};
@@ -7147,6 +7244,7 @@ $("#placeBody").addEventListener("click",async e=>{
       const id=lg.dataset.id, inp=document.querySelector(`[data-replyfor="${id}"]`);
       const msg=cleanText(inp&&inp.value,60);
       if(!msg){ toast("請先輸入回應內容"); return; }
+      if(touristBlock("回應留言")) return;
       lg.disabled=true;
       const payload={type:"reply",code:myCode(),name:dispName(),msg,target:id};
       const ok=await loungeSend(payload);
@@ -7180,6 +7278,7 @@ $("#placeBody").addEventListener("click",async e=>{
     if(t.closest("[data-ivhide]")){ box.hidden=true; box.querySelector("textarea").value=""; Sound.sfx("back"); return; }
     const ok=t.closest("[data-ivok]"), send=t.closest("[data-ivsend]");
     if(!ok&&!send) return;
+    if(touristBlock("面談回覆")) return;
     const reply=send?box.querySelector("textarea").value.trim():"";
     if(send&&!reply){ toast("請寫下方便的時段"); Sound.sfx("error"); box.querySelector("textarea").focus(); return; }
     const status=send?"申請改期":"已確認";
@@ -7197,6 +7296,7 @@ $("#placeBody").addEventListener("click",async e=>{
     return;
   }
   if(t.closest("#csSend")){
+    if(touristBlock("技術諮詢申請")) return;
     const btn=$("#csSend"), errEl=$("#csErr");
     const f={category:$("#csCat").value,topic:$("#csTopic").value.trim(),detail:$("#csDetail").value.trim(),preferred:$("#csPref").value.trim(),contact:$("#csContact").value.trim()};
     errEl.textContent="";
@@ -7246,6 +7346,10 @@ function nextZoneHint(){
   return z?z:null;
 }
 function welcomePagesIntro(){
+  if(touristLocked()) return [
+    {text:`歡迎來園區及城鄉發展部參觀！我是部門村長${CFG.chief}。這是我們幫新人做的報到指南，你也可以像新人一樣四處冒險。`},
+    {text:`先來建立你的角色吧！組別已經幫你設定成「${TOURIST}」，不用註冊帳號。`,btn:"建立角色",action:"char"}
+  ];
   return [
     {text:`歡迎來到園區及城鄉發展部！我是部門村長${CFG.chief}，接下來由我帶你認識這裡。`},
     {text:"在出發之前，先來建立你的角色、選好你的組別吧。",btn:"建立角色",action:"char"}
@@ -7253,6 +7357,10 @@ function welcomePagesIntro(){
 }
 function welcomePagesAfterChar(){
   const name=dispName();
+  if(touristLocked()) return [
+    {text:`${name}，歡迎來參觀！地圖上的新手村、情報酒館、行政塔、寶物庫和存摺神殿，是新人要認識的公司制度，你也可以完成任務升等。`},
+    {text:"交誼廳可以看看我們部門同事的名片和留言板，也能去同事家參觀；觀光客只能看，不能留言或送禮喔。",btn:"出發！",action:"go",goto:"village"}
+  ];
   return [
     {text:`${name}，歡迎加入${S.group}！地圖上的新手村、情報酒館、行政塔、寶物庫和存摺神殿，都有等你完成的任務。`},
     {text:()=>ivOn()?`需要找你面談時，我會把通知放在「村長的家」；部門平台或技術應用遇到問題，可以到「數位總合辦公室」找${CFG.director}幫忙。`:`有空可以來「村長的家」坐坐；部門平台或技術應用遇到問題，可以到「數位總合辦公室」找${CFG.director}幫忙。`},
@@ -7261,6 +7369,10 @@ function welcomePagesAfterChar(){
 }
 function welcomePagesReturning(){
   const name=dispName(), done=xp()/XP_PER, nz=nextZoneHint();
+  if(touristLocked()) return [
+    {text:`${name}，歡迎再來參觀！目前完成 ${done}／${TOTAL} 個任務${nz&&done<TOTAL?`，可以到「${nz.name}」看看`:""}。`},
+    {text:`提醒你：觀光客的進度只存在這台裝置，${TOURIST_DAYS} 天沒回來會自動清空。如果你是部門新人，可以按畫面上方的「正式加入」。`,btn:"出發！",action:"go",goto:done<TOTAL&&nz?nz.id:null}
+  ];
   const first=done>=TOTAL
     ?`${name}，歡迎回來！所有任務都完成了，辛苦了。有空也可以回來翻翻筆記本。`
     :`${name}，歡迎回來！目前完成 ${done}／${TOTAL} 個任務${nz?`，下一站建議到「${nz.name}」看看`:""}。`;
@@ -7311,17 +7423,18 @@ $("#replayWelcome").addEventListener("click",()=>{ if(S.group) startTour(false);
 let TOUR=null;
 function tourSteps(){
   const name=dispName(), zn=id=>{ const z=ZONES.find(x=>x.id===id); return z?`${z.name}（${z.real}）`:id; };
+  const tr=touristLocked();
   return [
-    {text:`${name}，歡迎加入${S.group||"園城部"}！我是村長${CFG.chief}。我帶你繞地圖一圈，看看每個地方可以做什麼。`},
+    {text:tr?`${name}，歡迎來園城部參觀！我是村長${CFG.chief}。我帶你繞地圖一圈，看看我們的新人在這裡可以做什麼。`:`${name}，歡迎加入${S.group||"園城部"}！我是村長${CFG.chief}。我帶你繞地圖一圈，看看每個地方可以做什麼。`},
     {zone:"village",text:`這裡是${zn("village")}。剛報到要做的事都在這裡，建議從這裡開始！每看完一則任務按「完成」，就能拿到經驗值升級。`},
     {zone:"tavern",text:`${zn("tavern")}：前輩們整理的常見問題，上下班時間、請假、午餐、分機……找不到答案時來這裡翻翻。`},
     {zone:"tower",text:`${zn("tower")}：出差、加班、請款等各種申請流程，都有一步一步的說明。`},
     {zone:"chest",text:`${zn("chest")}：員工福利都在這裡，旅遊補助、健康檢查，記得把福利用好用滿！`},
     {zone:"temple",text:`${zn("temple")}：智慧存摺集點。點數達到 ${CFG.goal} 點、加上完成全部任務，我就會頒結業證書給你。`},
     {place:"myhome",text:"溫暖的家是你的基地：筆記本、寵物、收藏、武器庫、衣櫃、開心農場都在這裡。任務裡常用的資料記得按「♥ 加入最愛」，筆記本就查得到。"},
-    {place:"lounge",text:"交誼廳可以看大家的名片、按讚、留言；點別人的人像，還能去他家拜訪、送菜，或是……偷菜。"},
-    {place:"home",text:ivOn()?"這是我家！需要找你面談時，通知會放在這裡。送我蔬菜也會有回禮喔。":"這是我家！有空來坐坐，送我蔬菜會有回禮，角落也可能藏著好東西。"},
-    {place:"digital",text:`數位總合辦公室：平台或技術問題可以找${CFG.director}申請技術諮詢，${CFG.director}回覆時，這裡會出現「!」。`},
+    {place:"lounge",text:tr?"交誼廳可以看部門同事的名片和留言板，點人像還能去他家參觀。觀光客只能看，同事看不到你，也不能留言、按讚或送禮喔。":"交誼廳可以看大家的名片、按讚、留言；點別人的人像，還能去他家拜訪、送菜，或是……偷菜。"},
+    {place:"home",text:tr?"這是我家！有空來坐坐，送我蔬菜會有回禮，角落也可能藏著好東西。":ivOn()?"這是我家！需要找你面談時，通知會放在這裡。送我蔬菜也會有回禮喔。":"這是我家！有空來坐坐，送我蔬菜會有回禮，角落也可能藏著好東西。"},
+    {place:"digital",text:tr?`數位總合辦公室：部門同仁在這裡找${CFG.director}申請技術諮詢（觀光客暫不開放），重複的武器也可以拿來分解成種子。`:`數位總合辦公室：平台或技術問題可以找${CFG.director}申請技術諮詢，${CFG.director}回覆時，這裡會出現「!」。`},
     {sea:[18,42],text:"在地圖上可以自由走動，走進海裡能撈到武器，還可能遇到章魚海怪！任務地點旁邊的 NPC，每天也會出題送種子給你。"},
     {zone:"village",text:"導覽結束！建築上出現「!」就代表有新內容。不知道怎麼玩時，各區塊標題旁的「?」都有說明。先從新手村出發吧！",last:true}
   ];
@@ -10582,7 +10695,7 @@ const zoneDirty=id=>!same(canonContent(cDraft.filter(x=>x.id===id))[0],liveConte
 const pendingOf=type=>PUBS.some(p=>p.type===type&&p.state!=="done");
 const fmtStamp=iso=>{ const d=new Date(iso); return isNaN(d)?"":d.toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}); };
 function currentContent(){ return clone(ZONES.map(z=>({id:z.id,intro:z.intro,chapters:z.chapters.map(ch=>({title:ch.title,sub:ch.sub,quests:ch.quests.map(q=>({id:q.id,title:q.title,body:q.body}))}))}))); }
-function currentSettings(){ return {chief:CFG.chief,director:CFG.director,goal:CFG.goal,interviewOn:!!CFG.interviewOn,escrowKey:CFG.escrowKey||"",npcs:clone(npcList()),groups:CFG.groups.slice(),portals:clone(CFG.portals),notice:{on:!!CFG.notice.on,title:CFG.notice.title||"",body:CFG.notice.body||""}}; }
+function currentSettings(){ return {chief:CFG.chief,director:CFG.director,goal:CFG.goal,interviewOn:!!CFG.interviewOn,touristOn:CFG.touristOn!==false,escrowKey:CFG.escrowKey||"",npcs:clone(npcList()),groups:CFG.groups.slice(),portals:clone(CFG.portals),notice:{on:!!CFG.notice.on,title:CFG.notice.title||"",body:CFG.notice.body||""}}; }
 
 function refreshLive(){
   if(!adminOpen||!cDraft) return;
@@ -10845,6 +10958,7 @@ function renderSiteSettings(){
   $("#nOn").checked=!!SS.notice.on; $("#nTitle").value=SS.notice.title; $("#nBody").value=SS.notice.body;
   $("#sChief").value=SS.chief; $("#sDirector").value=SS.director; $("#sGoal").value=SS.goal;
   $("#sIvOn").checked=!!SS.interviewOn;
+  $("#sTourOn").checked=SS.touristOn!==false;
   renderSettingRows(); ssState();
 }
 function renderSettingRows(){
@@ -10896,6 +11010,7 @@ function cleanSettings(){
     chief:cleanText(SS.chief,12), director:cleanText(SS.director,12)||"總長",
     goal:parseInt(SS.goal,10),
     interviewOn:!!SS.interviewOn,
+    touristOn:SS.touristOn!==false,
     escrowKey:String(SS.escrowKey||""),
     npcs:cleanNpcs(SS.npcs),
     groups:[...new Set(SS.groups.map(g=>cleanText(g,20)).filter(Boolean))],
@@ -10948,7 +11063,7 @@ $("#previewEnd").addEventListener("click",()=>{
 function settingsRows(c){
   const n=c.notice||{};
   return [SHEET_KEYS.settings.headers,
-    ["村長名稱",c.chief],["總長稱呼",c.director],["年度目標點數",c.goal],["面談功能",c.interviewOn?"TRUE":"FALSE"],["救援公開金鑰",c.escrowKey||""],
+    ["村長名稱",c.chief],["總長稱呼",c.director],["年度目標點數",c.goal],["面談功能",c.interviewOn?"TRUE":"FALSE"],["觀光客通道",c.touristOn!==false?"TRUE":"FALSE"],["救援公開金鑰",c.escrowKey||""],
     ["組別",c.groups.join("\n")],
     ["傳送門",c.portals.map(p=>`${p.label}|${p.url}`).join("\n")],
     ["公告開啟",n.on?"TRUE":"FALSE"],["公告標題",n.title||""],["公告內容",n.body||""]];
@@ -10978,8 +11093,11 @@ applyInterviewSwitch();
 try{ pruneClaims(); }catch(e){}
 if(starActive()) startStar();
 cloudRestoreSession().then(()=>{ renderCloudBox(); setTimeout(()=>cloudSyncOnStart(),1200); startAfterLogin(); });
+renderTouristBar();
+if(TOURIST_EXPIRED) setTimeout(()=>toast("🧳 觀光客進度超過 30 天沒有使用，已自動清空，歡迎重新開始冒險！"),2500);
 bootstrap().then(()=>{
   hideBoot();
+  renderTouristBar(); touristVisitLog();
   try{ const M={chief:`村長 ${CFG.chief}`,director:CFG.director}; npcList().forEach(n=>{ M[n.id]=`${n.title} ${n.name}`; }); localStorage.setItem("sino22-bootnames",JSON.stringify(M)); }catch(e){}
   if(S.group) setTimeout(()=>{ loungePresence(true,{here:true}).catch(()=>{}); },3000);
   if(S.group) setTimeout(()=>{                         // 每天檢查一次：試算表裡沒有自己的名片就補送（例如以前送出時剛好失敗）

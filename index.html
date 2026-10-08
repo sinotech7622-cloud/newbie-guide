@@ -4579,7 +4579,7 @@ const touristLocked=()=>touristLink()&&(!S.group||S.group===TOURIST);   // 已�
 function renderGroups(){
   if(touristLocked()){
     $("#groupGrid").innerHTML=`<label class="gbtn tourist"><input type="radio" name="group" value="${TOURIST}" checked><span>🧳 ${TOURIST}</span></label>
-      <p class="ahint touristnote">你是從<b>觀光客通道</b>進來的，組別已經設定為「${TOURIST}」。</p>`;
+      <p class="ahint touristnote">你是從<b>觀光客通道</b>進來的，組別已經設定為「${TOURIST}」，不用註冊帳號，進度存在這台電腦的瀏覽器。</p>`;
     return;
   }
   const list=CFG.groups.slice();
@@ -4674,7 +4674,7 @@ $("#cForm").addEventListener("submit",async e=>{
   toast(isNew?`${dispName()} 加入了${grp}！`:"角色資料已更新");
   if(isNew) setTimeout(()=>loadInbox(false),2500);
   loungePresence(true,{here:true}).catch(()=>{});      // 建立角色就出現在交誼廳（修改造型也會更新名片）
-  if(isNew&&cloudReady()&&!CLOUD&&S.tourDone) setTimeout(()=>{ if(!CLOUD&&!$("#cDlg").open&&!$("#wDlg").open&&!TOUR) openCloud("create"); },1800);
+  if(isNew&&cloudReady()&&!CLOUD&&S.tourDone&&!touristLocked()) setTimeout(()=>{ if(!CLOUD&&!$("#cDlg").open&&!$("#wDlg").open&&!TOUR) openCloud("create"); },1800);
   if(curPlace) renderPlace();
   if(isNew&&wAfterChar){ wAfterChar=false; }
   if(isNew&&!S.tourDone) setTimeout(()=>startTour(true),500);
@@ -5557,7 +5557,7 @@ function updateLoginBtn(){
 function renderLoginHint(){
   const el=$("#loginHint"); if(!el) return;
   let hide=""; try{ hide=localStorage.getItem(LOGIN_HINT_KEY)||""; }catch(e){}
-  el.hidden=!(cloudReady()&&!CLOUD&&S.group&&hide!=="1");
+  el.hidden=!(cloudReady()&&!CLOUD&&S.group&&hide!=="1"&&!touristLocked());
 }
 $("#btnLogin").addEventListener("click",()=>{
   Sound.sfx("select");
@@ -5657,7 +5657,7 @@ function gateFinish(){
 function startAfterLogin(){
   setTimeout(()=>{ try{ if(!document.querySelector('dialog[open]')) checkSnowman(); else setTimeout(checkSnowman,8000); }catch(e){} },6000);
   if(adminOpen) return;
-  if(cloudReady()&&!CLOUD){ LOGIN_GATE=true; const open=()=>{ if(bootShowing()){ BOOT_WAIT.push(open); return; } openCloud("login"); }; open(); return; }
+  if(cloudReady()&&!CLOUD&&!touristLocked()){ LOGIN_GATE=true;     /* 觀光客通道不用註冊 */ const open=()=>{ if(bootShowing()){ BOOT_WAIT.push(open); return; } openCloud("login"); }; open(); return; }
   gateFinish();
 }
 $("#cloudDlg").addEventListener("cancel",e=>{ if(LOGIN_GATE) e.preventDefault(); });   // 登入前不能按 Esc 跳過
@@ -7417,7 +7417,7 @@ function endTour(skipped){
   S.tourDone=true; save();
   flashLoc("village");
   if(!skipped) Sound.sfx("achieve");
-  if(first&&cloudReady()&&!CLOUD) setTimeout(()=>{ if(!CLOUD&&!document.querySelector("dialog[open]")) openCloud("create"); },900);
+  if(first&&cloudReady()&&!CLOUD&&!touristLocked()) setTimeout(()=>{ if(!CLOUD&&!document.querySelector("dialog[open]")) openCloud("create"); },900);
 }
 document.addEventListener("keydown",e=>{
   if(!TOUR||document.querySelector("dialog[open]")) return;

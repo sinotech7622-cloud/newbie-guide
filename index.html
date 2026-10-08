@@ -2452,7 +2452,7 @@ function avatarParts32(av){
 function avMaskSVG(av,sc,ox,oy){ const m=ACC[(av||{}).acc]; if(!m||!m.img) return ""; sc=sc||1; const [x,y,w,h]=m.box; return `<image href="${m.img}" x="${(ox||0)+x*sc}" y="${(oy||0)+y*sc}" width="${w*sc}" height="${h*sc}" style="image-rendering:pixelated"/>`; }
 function avatarSVG(av){const {rows,pal}=avatarParts32(av);return `<svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(rows,1,0,0,pal)}${avMaskSVG(av)}</svg>`;}
 
-/* ---- 寵物（LV3 領養寶寶／LV4 長大／LV5 換衣服） ---- */
+/* ---- 寵物（LV3 領養／LV5 換衣服；已取消寶寶型態，一律是成年的樣子） ---- */
 Object.assign(SPR,{octopus:["................", "....KKKKKKKK....", "...KVVVVVVVVK...", "...KVVVVVVVVK...", "..KVVVVVVVVVVK..", "..KVVWWVVWWVVK..", "..KVVWKVVKWVVK..", "..KVPVVVVVVPVK..", "..KVVVVKKVVVVK..", "...KVVVVVVVVK...", "..KKVVVVVVVVK...", ".KVVVVVVVVVVVK..", ".KVVKVVKVVKVVK..", ".KVKKVKKVKKVK...", ".KPVKPVKPVKPVK..", "..KK.KK.KK.KK..."]});
 const PETC=[["棕","#A9713F"],["奶油","#F0E0C0"],["白","#F2F2F7"],["灰","#A9ADC6"],["黑","#3A3A45"],["金","#E0B24A"],["粉","#E58FB0"],["綠","#5FA35A"],["藍","#6FA8DE"],
   ["銀色","#DCE3F0"],["黃金","#F6C744"]];
@@ -2489,7 +2489,7 @@ function myLv(){
   if(now>best){ S.lvMax=now; best=now; } else if(best&&!S.lvMax) S.lvMax=best;
   return Math.max(now,best,1);
 }
-const petStage=()=>myLv()>=4?"adult":"baby";
+const petStage=()=>"adult";                            // 取消寶寶型態
 const dispName=()=>(S.nick||S.name||"新人冒險者");      // 遊戲中顯示暱稱；回報給部門與證書用真實姓名
 const petUnlocked=()=>myLv()>=3;
 const petWearUnlocked=()=>myLv()>=5;
@@ -2507,13 +2507,13 @@ const PET_IMG_FILTER=["brightness(.7) sepia(1) saturate(1.8) hue-rotate(-10deg)"
   "brightness(.95) sepia(1) saturate(4) hue-rotate(-5deg)"];
 const petImgFilter=c=>+c===11?"saturate(3) brightness(1.05)":(PET_IMG_FILTER[+c]||"none");
 function petImgTag(type,size,stage,x,y,color){
-  const sc=stage==="baby"?0.78:1, w=size*sc, ox=(x||0)+(size-w)/2, oy=(y||0)+(size-w);
+  const sc=1, w=size*sc, ox=(x||0)+(size-w)/2, oy=(y||0)+(size-w);
   return `<image href="${PET_IMG[type]}" x="${ox}" y="${oy}" width="${w}" height="${w}" preserveAspectRatio="xMidYMid meet" style="image-rendering:pixelated;filter:${petImgFilter(color)}${+color===11?";animation:rbwHue 3s linear infinite":""}"/>`;
 }
 function petParts(pet,stage){
   pet=Object.assign({},PET_DEFAULT,pet||{});
   if(!PETS[pet.type]) pet.type="dog";
-  const st=stage==="adult"||stage==="baby"?stage:petStage();
+  const st="adult";                                     // 取消寶寶型態：不論傳入什麼都畫成年的樣子
   const def=PETS[pet.type];
   const grid=(def[st]||def.baby||def.adult).slice();
   if(!petNoWear(pet.type)&&pet.wear&&pet.wear!=="none"&&petWearUnlocked()){
@@ -3662,7 +3662,7 @@ let lastChat=0, CHAT=null;
 const CHAT_RECENT=[];
 function chatPick(who){
   if(touristLocked()&&CHAT&&CHAT.n===0){ const L=CHAT_TOURIST[who]; return {tip:L[Math.floor(Math.random()*L.length)],hello:true}; }
-  const fresh=CHAT_CHEATS.filter(c=>c.who===who&&!c.has()&&!CHAT_RECENT.includes(c.code));
+  const fresh=touristLocked()?[]:CHAT_CHEATS.filter(c=>c.who===who&&!c.has()&&!CHAT_RECENT.includes(c.code));
   if(fresh.length&&Math.random()<.4){ const c=fresh[Math.floor(Math.random()*fresh.length)]; CHAT_RECENT.push(c.code); return {cheat:c}; }
   const okTip=t=>(t[0]==="any"||t[0]===who)&&!(touristLocked()&&TOURIST_SKIP_TIP.test(t[1]));
   let tips=CHAT_TIPS.map((t,i)=>[t,i]).filter(([t,i])=>okTip(t)&&!CHAT_RECENT.includes("t"+i));
@@ -4185,8 +4185,7 @@ function toast(msg){
 let luTimer;
 function levelUp(lv){
   setTimeout(()=>Sound.sfx("levelup"),350);
-  if(lv===3) setTimeout(()=>toast("🐾 解鎖：可以到「溫暖的家 → 寵物窩」領養寵物寶寶了！"),2600);
-  if(lv===4) setTimeout(()=>toast(S.pet?`🎉 ${S.pet.name||PETS[S.pet.type].name} 長大了！回寵物窩看看牠的新樣子`:"🐾 現在領養的寵物會直接是成年的樣子"),2600);
+  if(lv===3) setTimeout(()=>toast("🐾 解鎖：可以到「溫暖的家 → 寵物窩」領養寵物了！"),2600);
   if(lv===5) setTimeout(()=>toast("🧣 解鎖：可以幫寵物換衣服和配件了！"),2600);
   topHost();
   $("#luLv").textContent=`LEVEL ${lv}!`;
@@ -6235,7 +6234,7 @@ function startStar(){
 function cheatKey(msg){ return String(msg||"").replace(/[\s　！!。，,～~〜ー\-－［］\[\]【】「」]/g,""); }
 function runCheat(msg){
   const c=CHEATS[cheatKey(msg)]; if(!c) return false;
-  if(touristLocked()&&(c.kind==="deco"||c.kind==="all")) return false;   // 觀光客不開放全解鎖類密技（當成一般留言處理）
+  if(touristLocked()) return false;                    // 觀光客不適用任何密技（當成一般留言處理）
   let gift="";
   if(c.kind==="pet"){
     S.petKinds=S.petKinds||{}; S.petKinds[c.pet]=true;
@@ -6298,7 +6297,7 @@ const HELP={
   zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
   places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。",
   notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題和內容。",
-  pet:"LV 3 可以領養寵物，LV 4 會長大，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件。",
+  pet:"LV 3 可以領養寵物，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件。",
   trophy:"完成特定目標就會解鎖成就，標示 NEW 的是剛解鎖的。成就數量會顯示在結業證書和你的名片上。",
   cert:"完成全部任務並集滿智慧存摺點數後，村長會頒發結業證書。之後有新任務時，把新內容看完還能領 Bonus 進修證書。證書都可以下載成圖片。",
   collect:"查看任務文件、加入最愛時有機會撿到小物；拜訪村長的家、數位總合辦公室可能找到隱藏小物。點小物可以看說明和容易出現的地點。",
@@ -8612,6 +8611,7 @@ const SHOP={
   fert:{name:"肥料",items:[["fz_basic","一般肥料",20],["fz_super","高級肥料",60]]}
 };
 const CONSUME=new Set(["snack","fert"]);
+const TOURIST_NO_SHOP=new Set(["pets","petgear","snack","bed","wear","avacc"]);   // 觀光客不能買：人物與寵物相關商品
 const SHOP_GROUPS=[["paper","🧱 牆紙"],["ground","🟫 地板"],["rug","🧶 地毯"],["wall","🖼 掛飾"],["floor","🛋 擺設"],["bed","🛏 寵物窩"],["pets","🐶 寵物"],["petgear","🎀 寵物配件"],["snack","🍖 零食"],["wear","👕 服裝"],["avacc","🎩 人物配件"],["fert","🌱 肥料"]].map(([k,n])=>({id:k,name:n,cats:[k]}));               // 消耗品：可以重複買，不擺進家裡
 const FERT={fz_basic:{desc:"剩下的時間少 30 分鐘",use:left=>Math.min(left,30*60e3)},fz_super:{desc:"剩下的時間減半",use:left=>Math.ceil(left/2)}};
 const FERT_MAX=2;                                      // 每塊田每一輪最多施肥 2 次
@@ -8667,7 +8667,8 @@ function renderShop(panel){
         const using=cat==="wear"?(S.av||AV_DEFAULT).outfit===id:cat==="avacc"?(S.av||AV_DEFAULT).acc===id:cat==="petgear"?!!(S.pet&&S.pet.gear===id):!CONSUME.has(cat)&&(d[cat]===id||(cat==="floor"&&d.floor2===id));
         const can=total>=price;
         let btn;
-        if(cat==="pets"&&owned){
+        if(touristLocked()&&TOURIST_NO_SHOP.has(cat)&&!(owned&&!CONSUME.has(cat))) btn=`<button class="act ghost" type="button" data-shoplock>🔒 觀光客不開放</button>`;
+        else if(cat==="pets"&&owned){
           const t=shopPetType(id);
           btn=S.pet&&S.pet.type===t?`<span class="st st-gold">目前的夥伴</span>`:!petUnlocked()?`<span class="ahint">LV 3 領養寵物後就能換</span>`:`<button class="act" type="button" data-shopuse="pets|${id}">${S.pet?"換成牠":"領養牠"}</button>`;
         }else if(WEAR_CATS.has(cat)&&owned){
@@ -8908,6 +8909,7 @@ function vipCongrats(){
 }
 async function shopBuy(id){
   const it=shopItem(id); if(!it) return;
+  if(TOURIST_NO_SHOP.has(it.cat)&&touristBlock("購買人物與寵物相關商品")) return;
   const used=planPay(it.price);
   if(!used){ toast(`種子不夠，還差 ${it.price-seedTotal()} 顆`); Sound.sfx("error"); return; }
   if(it.price>=40&&!(await uiConfirm(`要用 ${it.price} 顆種子買「${it.name}」嗎？\n會用掉：${usedText(used)}`,"購買"))) return;
@@ -9354,7 +9356,7 @@ function renderGuestbook(panel){
 const FURN_TIP={"friends": "寵物朋友、合照與友誼項圈", "notebook": "收藏的任務", "pet": "領養、照顧寵物", "trophy": "已解鎖的成就", "cert": "結業證書與 Bonus 進修證書", "collect": "撿到的小物", "armory": "所有武器，可以裝備或卸下", "closet": "換衣服、換顏色", "album": "用小物兌換畫框", "farm": "種菜、收成、稀有作物圖鑑", "shop": "用種子買家具、牆紙和寵物零食", "guest": "誰來拜訪過你家", "wardrobe": "角色外觀與雲端存檔"};
 function renderMyHome(body){
   const tabs=[["notebook","筆記本","notebook",`${favList().length} 筆`],
-    ["pet","寵物窩",S.pet?null:"petbed",S.pet?`${S.pet.name||PETS[S.pet.type].name}・${petStage()==="adult"?"成年":"寶寶"}`:petUnlocked()?"可以領養了":`LV 3 解鎖・還差 ${tasksToLevel(3)} 個任務`],
+    ["pet","寵物窩",S.pet?null:"petbed",S.pet?`${S.pet.name||PETS[S.pet.type].name}`:petUnlocked()?"可以領養了":`LV 3 解鎖・還差 ${tasksToLevel(3)} 個任務`],
     ["trophy","獎盃櫃","trophy",`${ACH.filter(a=>S.ach[a.id]).length}/${ACH.length}`],
     ["cert","證書牆","certwall",S.awarded?esc(S.awarded):`完成全部 ${TOTAL} 項任務後掛上`],
     ["collect","蒐藏箱","chest",`${findCount()}/${FINDS.length} 種`],
@@ -9362,7 +9364,6 @@ function renderMyHome(body){
     ["closet","衣櫃","wardrobe",`${outfitOwnedCount()}/${Object.keys(OUTFIT).length} 套`],
     ["album","相簿","album",`${albumOwned().length}/${ALBUM.length} 張`],
     ["farm","開心農場","f_farm",(()=>{ const n=ripeCount(); return n?`${n} 塊可收成`:`倉庫 ${Object.values(S.barn||{}).reduce((a,b)=>a+(+b||0),0)} 份`; })()],
-    ["shop","種子商店","d_plant",`地圖上・種子 ${seedTotal()} 顆`],
     ["friends","交友錄","friendbook",(()=>{ const n=friendCount(); return n?`朋友 ${n} 位`:S.pet?"帶寵物去串門子":"LV 3 領養寵物後開放"; })()],
     ["guest","訪客簿","guestbook",(()=>{ const n=newVisitCount(), t=myVisits().length; return n?`${n} 位新訪客`:t?`${t} 筆紀錄`:"還沒有訪客"; })()],
     ["wardrobe","角色設定","mirror","造型・雲端存檔"]];
@@ -9587,15 +9588,15 @@ function renderPetPanel(panel){
       <h3>寵物窩 ${helpBtn("pet")}</h3>
       <div class="petlock"><span class="petbig dim" aria-hidden="true">${petSVG({type:"dog",color:3},"baby")}</span>
       <div><p class="empty-note">寵物在 <b>LV 3</b> 解鎖。目前 LV ${lv}，還差 ${tasksToLevel(3)} 個任務。</p>
-      <p class="ahint">完成任務就能升級。<b>LV 3</b> 可以領養寵物寶寶，<b>LV 4</b> 寵物會長大，<b>LV 5</b> 可以幫牠換衣服和配件。</p></div></div>
+      <p class="ahint">完成任務就能升級。<b>LV 3</b> 可以領養寵物，<b>LV 5</b> 可以幫牠換衣服和配件。</p></div></div>
     </section>`;
     return;
   }
   if(!S.pet||petAdopting){
     petDraft=petView(petDraft||Object.assign({},PET_DEFAULT,S.pet||{}));
     panel.innerHTML=`<section class="window pbox form">
-      <h3>${S.pet?"換一隻夥伴":"領養夥伴"} <span class="st ${stage==="adult"?"st-info":"st-wait"}">${stage==="adult"?"成年":"寶寶"}模式</span></h3>
-      <p class="ahint">${stage==="adult"?"你已經 LV 4，領養後就是成年的樣子。":"現在領養的是寵物寶寶，等你升到 LV 4 牠就會長大。"}選好種類、顏色，再幫牠取個名字。</p>
+      <h3>${S.pet?"換一隻夥伴":"領養夥伴"}</h3>
+      <p class="ahint">選好種類、顏色，再幫牠取個名字。</p>
       <div class="editor">
         <div class="preview"><div class="pv" id="petPv">${petSVG(petDraft)}</div></div>
         <div>
@@ -9619,13 +9620,13 @@ function renderPetPanel(panel){
   }
   const pet=S.pet, wearLocked=!petWearUnlocked();
   panel.innerHTML=`${tabsHTML("pet",[{id:"me",label:"🐾 我的夥伴",html:`<section class="window pbox">
-      <h3>我的夥伴 ${helpBtn("pet")} <span class="st ${stage==="adult"?"st-ok":"st-wait"}">${stage==="adult"?"成年":"寶寶"}</span></h3>
+      <h3>我的夥伴 ${helpBtn("pet")}</h3>
       <div class="me">
         <span class="petbig" aria-hidden="true">${petSVG(pet)}</span>
         <div>
           <p class="mename">${esc(pet.name||PETS[pet.type].name)}</p>
           <p class="ahint" style="margin:0">${esc(PETS[pet.type].name)}${petIsImg(pet.type)?"・隱藏版":""}・${esc((PETC[pet.color]||PETC[0])[0])}色${!wearLocked&&pet.wear&&pet.wear!=="none"?`・${esc(PET_WEAR[pet.wear].name)}`:""}</p>
-          <p class="ahint" style="margin:6px 0 0">${stage==="adult"?"牠已經長大了，會跟著你在地圖上散步，也會出現在結業證書上。":`還是寶寶，再完成 ${tasksToLevel(4)} 個任務（LV 4）就會長大。`}</p>
+          <p class="ahint" style="margin:6px 0 0">牠會跟著你在地圖上散步，也會出現在結業證書上。</p>
         </div>
       </div>
       <div class="formfoot"><span></span><span class="afilters">
@@ -9899,7 +9900,7 @@ $("#placeBody").addEventListener("click",async e=>{
     const isNew=!S.pet;
     S.pet=petView(Object.assign({},PET_DEFAULT,S.pet||{},petDraft||{},{name,wear:S.pet?S.pet.wear:"none",wc:S.pet?S.pet.wc:1}));
     petAdopting=false; petDraft=null; save();
-    Sound.sfx("achieve"); toast(isNew?`🐾 ${name} 加入了你的冒險！${petStage()==="baby"?"（寶寶模式）":""}`:`夥伴換成了 ${name}`);
+    Sound.sfx("achieve"); toast(isNew?`🐾 ${name} 加入了你的冒險！`:`夥伴換成了 ${name}`);
     checkAch(); renderHUD(); renderPlace();
     return;
   }
@@ -9960,6 +9961,7 @@ $("#placeBody").addEventListener("click",async e=>{
   const spv=t.closest("[data-shoppv]"); if(spv){ openPreview(spv.dataset.shoppv); return; }
   const sth=t.closest("[data-shoptheme]"); if(sth){ shopTheme=sth.dataset.shoptheme; Sound.sfx("select"); renderShop($("#shopPanel")); return; }
   const sb=t.closest("[data-shopbuy]"); if(sb){ shopBuy(sb.dataset.shopbuy); return; }
+  if(t.closest("[data-shoplock]")){ touristBlock("購買人物與寵物相關商品"); return; }
   const su=t.closest("[data-shopuse]"); if(su){ const [c,i]=su.dataset.shopuse.split("|"); shopUse(c,i); return; }
   const sf=t.closest("[data-snackfeed]"); if(sf){ feedSnack(sf.dataset.snackfeed); return; }
   const rf=t.closest("[data-rarefeed]"); if(rf){ feedRare(rf.dataset.rarefeed); return; }

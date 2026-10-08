@@ -1767,6 +1767,9 @@ footer.site p{margin:4px 0}
           <button class="act ghost" type="button" id="rsReload">重新讀取</button></span></div>
         <p class="ahint" id="rsSource"></p>
         <div class="tscroll"><table class="atable" id="rsTable"></table></div>
+        <h3 style="margin-top:22px">🧳 觀光客紀錄</h3>
+        <p class="ahint" id="rsTourInfo"></p>
+        <div class="tscroll"><table class="atable" id="rsTourTable"></table></div>
         <p class="ahint" style="margin-top:10px">「隱藏」適用於離職或不再使用的人員：他們不會出現在交誼廳的名片、上線人數、人氣排行和留言板，名冊預設也不列出。資料不會刪除，隨時可以恢復。約 5 分鐘後生效。</p>
       </section>
     </div>
@@ -4836,7 +4839,7 @@ async function fetchSheet(k,force){
   const hasHead=first.some(c=>c===hint||c==="時間戳記"||c==="項目");
   return hasHead?rows.slice(1):rows;   // 公式產生的工作表可能沒有標題列
 }
-const TOURIST_NO_FORM=new Set(["lounge","progress","consult","ivReply","save"]);
+const TOURIST_NO_FORM=new Set(["lounge","consult","ivReply","save"]);   // 進度回報照送（組別「觀光客」，後台名冊另外列出）
 function sendForm(k,values){
   if(TOURIST_NO_FORM.has(k)&&touristLocked()) return Promise.reject(new Error("觀光客模式不開放"));
   const f=formCfg(k);
@@ -5850,6 +5853,7 @@ async function loadLounge(force){
       try{
         const rr=(await fetchSheet("roster",force))||[], m={};
         rr.forEach(r=>{ const code=String(r[1]||"").trim().toUpperCase(); if(!/^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code)) return;
+          if(String(r[3]||"").trim()===TOURIST) return;                          // 觀光客不出現在交誼廳
           const lv=(/LV\s*(\d+)/i.exec(String(r[4]||""))||[])[1];
           m[code]={name:String(r[2]||""),group:String(r[3]||""),level:lv||"1",at:parseSheetTs(r[0])}; });
         LOUNGE.roster=m; LOUNGE.rosterAt=Date.now();
@@ -5890,6 +5894,7 @@ function loungeData(){
     return true;
   }).forEach(r=>{
     if(r.type==="presence"){
+      if(r.group===TOURIST&&r.code!==myCode().toUpperCase()) return;            // 觀光客的舊名片不顯示
       const p=people[r.code];
       if(!p||!r.at||!p.at||r.at>=p.at) people[r.code]={code:r.code,name:r.name,group:r.group,level:r.level,av:r.av,pet:r.pet,msg:r.msg,at:r.at};
     }else if(r.type==="here"){                           // 名片沒變時只送的小筆上線紀錄
@@ -6011,7 +6016,7 @@ function progressPayload(){
 }
 function queueSync(now){
   queueCloud(now);
-  if(!formCfg("progress")||!S.group||touristLocked()) return;   // 觀光客不回報進度（不混進新人統計）
+  if(!formCfg("progress")||!S.group) return;           // 觀光客也回報（組別是「觀光客」，後台名冊另外列）
   syncDirty=true; clearTimeout(syncTimer);
   syncTimer=setTimeout(pushProgress,now?0:Math.max(4000,30000-(Date.now()-lastSent)));
 }
@@ -7915,27 +7920,45 @@ async function loadRoster(force){
   RS_BUSY=false;
   renderRoster();
 }
+const lvLabel=v=>{ v=String(v||"").trim(); return /^LV/i.test(v)?v:"LV "+v; };   // 名冊資料的等級本來就有「LV」，交誼廳的只有數字
+const isTouristRow=x=>String(x.group||"").trim()===TOURIST;
 function renderRoster(){
   const HID=hiddenCodes(), showHid=$("#rsShowHidden").checked, q=$("#rsSearch").value.trim().toLowerCase();
   const pend=adminPendingRoster();
   const isHid=c=>c in pend?pend[c]:HID.has(c);
-  let list=RS_ROWS.filter(x=>showHid||!isHid(x.code));
+  renderTouristRoster(q);
+  const ROWS=RS_ROWS.filter(x=>!isTouristRow(x));
+  let list=ROWS.filter(x=>showHid||!isHid(x.code));
   if(q) list=list.filter(x=>[x.name,x.group,x.code].join(" ").toLowerCase().includes(q));
   list.sort((a,b)=>isHid(a.code)-isHid(b.code)||String(a.group).localeCompare(String(b.group),"zh-Hant")||String(a.name).localeCompare(String(b.name),"zh-Hant"));
-  const total=RS_ROWS.length, hidN=RS_ROWS.filter(x=>isHid(x.code)).length;
+  const total=ROWS.length, hidN=ROWS.filter(x=>isHid(x.code)).length, tourN=RS_ROWS.length-ROWS.length;
   $("#rsSource").innerHTML=(RS_SRC==="roster"?"資料來源：「名冊資料」工作表（進度回報的每人最新一筆）＋交誼廳上線紀錄。"
     :RS_SRC==="roster-error"?`<span class="cerr" style="display:inline">讀不到「名冊資料」工作表</span>，先用交誼廳名片資料顯示。`
     :RS_SRC==="lounge"?"目前使用交誼廳的名片資料。建議設定「名冊資料」工作表，才會包含沒進過交誼廳的人（見「設定小幫手 → 試算表公式」）。"
-    :"還沒有可用的名冊資料。請設定「名冊資料」或「交誼廳資料」工作表。")+` 共 ${total} 人，其中 ${hidN} 人已隱藏。`;
+    :"還沒有可用的名冊資料。請設定「名冊資料」或「交誼廳資料」工作表。")+` 共 ${total} 人，其中 ${hidN} 人已隱藏。${tourN?`觀光客 ${tourN} 位另外列在下方。`:""}`;
   $("#rsTable").innerHTML=`<thead><tr><th>名字</th><th>組別</th><th>新人代碼</th><th>等級／進度</th><th>最後回報</th><th>最後上線</th><th>狀態</th><th><span class="sr">操作</span></th></tr></thead><tbody>${
     list.length?list.map(x=>{ const h=isHid(x.code), waiting=x.code in pend;
       return `<tr class="${h?"rs-hid":""}">
         <td>${esc(x.name||"—")}${x.nick?`<span class="ahint">（${esc(x.nick)}）</span>`:""}</td><td>${esc(x.group||"—")}</td><td><code>${esc(x.code)}</code></td>
-        <td>${x.level?`LV ${esc(x.level)}`:"—"}${x.progress?`<span class="ahint">・${esc(x.progress)}</span>`:""}${x.awarded?' <span class="st st-gold">已結業</span>':""}</td>
+        <td>${x.level?esc(lvLabel(x.level)):"—"}${x.progress?`<span class="ahint">・${esc(x.progress)}</span>`:""}${x.awarded?' <span class="st st-gold">已結業</span>':""}</td>
         <td>${x.reported?esc(fmtShort(x.reported)):"—"}</td><td>${x.seen?esc(fmtShort(x.seen)):"—"}</td>
         <td>${h?'<span class="st st-off">已隱藏</span>':'<span class="st st-ok">顯示中</span>'}${waiting?' <span class="st st-wait">更新中</span>':""}</td>
         <td><button class="${h?"mini-btn":"del"}" type="button" data-rshide="${esc(x.code)}" data-on="${h?0:1}">${h?"恢復顯示":"隱藏"}</button></td></tr>`;}).join("")
-    :`<tr><td colspan="8">${RS_ROWS.length?"沒有符合的人員。":"目前沒有名冊資料。"}</td></tr>`}</tbody>`;
+    :`<tr><td colspan="8">${ROWS.length?"沒有符合的人員。":"目前沒有名冊資料。"}</td></tr>`}</tbody>`;
+}
+function renderTouristRoster(q){                       // 觀光客另外列：不算進新人名冊
+  if(!$("#rsTourTable")) return;
+  let list=RS_ROWS.filter(isTouristRow);
+  const total=list.length;
+  if(q) list=list.filter(x=>[x.name,x.code].join(" ").toLowerCase().includes(q));
+  list.sort((a,b)=>(b.reported||b.seen||0)-(a.reported||a.seen||0));
+  const last=x=>Math.max(x.reported||0,x.seen||0);
+  const week=RS_ROWS.filter(isTouristRow).filter(x=>Date.now()-last(x)<7*864e5).length;
+  $("#rsTourInfo").textContent=total?`共 ${total} 位觀光客，最近 7 天有 ${week} 位來過。觀光客不算進上方的新人名冊與統計；超過 30 天沒回來，他那台裝置上的進度會自動清空，但這裡的紀錄會保留。`:"目前還沒有觀光客的紀錄。";
+  $("#rsTourTable").innerHTML=`<thead><tr><th>名字</th><th>代碼</th><th>等級／進度</th><th>最後來訪</th></tr></thead><tbody>${
+    list.length?list.map(x=>`<tr><td>${esc(x.name||"—")}${x.nick?`<span class="ahint">（${esc(x.nick)}）</span>`:""}</td><td><code>${esc(x.code)}</code></td>
+      <td>${x.level?esc(lvLabel(x.level)):"—"}${x.progress?`<span class="ahint">・${esc(x.progress)}</span>`:""}</td><td>${last(x)?esc(fmtShort(new Date(last(x)))):"—"}</td></tr>`).join("")
+    :`<tr><td colspan="4">${total?"沒有符合的觀光客。":"目前沒有觀光客紀錄。"}</td></tr>`}</tbody>`;
 }
 let RS_PENDING={};
 const adminPendingRoster=()=>{ const r=(FEED&&FEED.roster)||{}; Object.keys(RS_PENDING).forEach(c=>{ const cur=!!(r[c]&&r[c].hidden); if(cur===RS_PENDING[c]) delete RS_PENDING[c]; }); return RS_PENDING; };

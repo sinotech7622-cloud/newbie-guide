@@ -722,6 +722,9 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .tossfly{position:absolute;left:50%;top:92%;width:34px;height:34px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.6,.4,1),top .6s cubic-bezier(.2,-0.4,.5,1),transform .6s linear;z-index:6;pointer-events:none}
 .vsactrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .rpsrow .act{min-width:86px}
+.lcard.nocard{opacity:.8}.lcard.nocard .lav svg{filter:grayscale(1) brightness(.75)}
+.nocardvisit{margin:0;padding:8px 12px;border:2px dashed var(--line);border-radius:4px;color:var(--muted);font-size:14px;flex-basis:100%}
+.nocardnote{font-style:normal;color:var(--muted)}
 .stabbar{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 10px;padding-bottom:8px;border-bottom:2px solid var(--line)}
 .stab{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:15px;padding:6px 12px;border:2px solid var(--line);border-radius:4px;background:#1B2466;color:var(--text);cursor:pointer;white-space:nowrap}
 .stab small{font-size:12px;color:var(--muted);background:rgba(0,0,0,.25);border-radius:8px;padding:0 6px}
@@ -5727,6 +5730,15 @@ async function loadLounge(force){
     let rows;
     try{ rows=await fetchSheet(loungeSheet(),force); }
     catch(e){ if(loungeSheet()==="loungeLite"&&sheetUrl("lounge")) rows=await fetchSheet("lounge",force); else throw e; }
+    if(sheetUrl("roster")&&(force||Date.now()-(LOUNGE.rosterAt||0)>10*60e3)){   // 名冊資料：有登錄、但還沒有名片的人也列出來
+      try{
+        const rr=(await fetchSheet("roster",force))||[], m={};
+        rr.forEach(r=>{ const code=String(r[1]||"").trim().toUpperCase(); if(!/^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code)) return;
+          const lv=(/LV\s*(\d+)/i.exec(String(r[4]||""))||[])[1];
+          m[code]={name:String(r[2]||""),group:String(r[3]||""),level:lv||"1",at:parseSheetTs(r[0])}; });
+        LOUNGE.roster=m; LOUNGE.rosterAt=Date.now();
+      }catch(e){}
+    }
     LOUNGE.rows=(rows||[]).map(r=>({
       at:parseSheetTs(r[0]), type:String(r[1]||"").trim(), code:String(r[2]||"").trim().toUpperCase(),
       name:String(r[3]||""), group:String(r[4]||""), level:String(r[5]||""),
@@ -5763,7 +5775,7 @@ function loungeData(){
   }).forEach(r=>{
     if(r.type==="presence"){
       const p=people[r.code];
-      if(!p||(r.at&&p.at&&r.at>p.at)||!p.at) people[r.code]={code:r.code,name:r.name,group:r.group,level:r.level,av:r.av,pet:r.pet,msg:r.msg,at:r.at};
+      if(!p||!r.at||!p.at||r.at>=p.at) people[r.code]={code:r.code,name:r.name,group:r.group,level:r.level,av:r.av,pet:r.pet,msg:r.msg,at:r.at};
     }else if(r.type==="here"){                           // 名片沒變時只送的小筆上線紀錄
       if(r.at&&(!seenAt[r.code]||r.at>seenAt[r.code])) seenAt[r.code]=r.at;
     }else if(r.type==="like"&&r.target){
@@ -5789,6 +5801,15 @@ function loungeData(){
     }
   });
   Object.keys(seenAt).forEach(c=>{ const p=people[c]; if(p&&(!p.at||seenAt[c]>p.at)) people[c]=Object.assign({},p,{at:seenAt[c]}); });
+  Object.entries(LOUNGE.roster||{}).forEach(([c,r])=>{                   // 名冊上有、但交誼廳還沒有名片的人
+    if(people[c]||HID.has(c)) return;
+    people[c]={code:c,name:r.name,group:r.group,level:r.level,av:null,pet:null,msg:"",at:null,nocard:true};
+  });
+  Object.entries(friends()).forEach(([c,f])=>{                         // 寵物朋友：名片暫時讀不到時，仍然可以去串門子
+    const C=String(c).toUpperCase(); if(!f||!(f.n>=1)||HID.has(C)) return;
+    if(people[C]){ if(people[C].nocard&&!people[C].pet&&f.pet) people[C]=Object.assign({},people[C],{pet:f.pet}); return; }
+    people[C]={code:C,name:f.owner||"冒險者",group:"",level:"1",av:null,pet:f.pet||null,msg:"",at:null,nocard:true,friendOnly:true};
+  });
   const me=myCode().toUpperCase();
   if(S.group){
     people[me]=Object.assign({},people[me]||{},{code:me,name:dispName(),group:S.group,
@@ -5797,13 +5818,13 @@ function loungeData(){
   }
   const mine=people[me];
   if(!mine&&S.group) people[me]={code:me,name:dispName(),group:S.group,level:String(myLv()),av:S.av,pet:S.pet,msg:S.loungeMsg||"",at:new Date()};
-  const list=Object.values(people).map(p=>Object.assign({},p,{
+  const list=Object.values(people).filter(p=>!p.friendOnly).map(p=>Object.assign({},p,{
     likes:(likes[p.code]||new Set()).size,
     online:!!(p.at&&Date.now()-p.at.getTime()<LOUNGE_ONLINE_MS)
   }));
   const top=list.slice().sort((a,b)=>b.likes-a.likes)[0];
   const champion=top&&top.likes>0?top.code:"";
-  list.sort((a,b)=>(b.code===champion)-(a.code===champion)||b.online-a.online||b.likes-a.likes||String(a.name).localeCompare(String(b.name),"zh-Hant"));
+  list.sort((a,b)=>(b.code===champion)-(a.code===champion)||b.online-a.online||(a.nocard?1:0)-(b.nocard?1:0)||b.likes-a.likes||String(a.name).localeCompare(String(b.name),"zh-Hant"));
   Object.keys(replies).forEach(id=>{ if(!posts.some(x=>x.id===id)) delete replies[id]; });
   posts.sort((a,b)=>(b.at?b.at.getTime():0)-(a.at?a.at.getTime():0));
   Object.values(replies).forEach(l=>l.sort((a,b)=>(a.at?a.at.getTime():0)-(b.at?b.at.getTime():0)));
@@ -6046,6 +6067,13 @@ function loungeCardInner(p,champion){
   const crown=p.code===champion;
   const liked=!!(S.likes&&S.likes[p.code]);
   const me=p.code===myCode().toUpperCase();
+  if(p.nocard) return `<article class="lcard nocard">
+    <div class="lface" role="button" tabindex="0" data-visit="${esc(p.code)}" title="拜訪${esc(p.name||"")}的家（還沒佈置）"><span class="lav" aria-hidden="true">${avatarSVG(AV_DEFAULT)}</span></div>
+    <p class="lname">${esc(p.name||"新人冒險者")}</p>
+    <p class="ahint" style="margin:0">${esc(p.group||"—")}・LV ${esc(p.level||"1")}</p>
+    <p class="lmsg nocardnote">還沒逛過交誼廳，名片準備中</p>
+    <button class="act ghost like${liked?" liked":""}" type="button" data-like="${esc(p.code)}" ${liked?"disabled":""}>♥ ${p.likes}${liked?"　已按讚":""}</button>
+  </article>`;
   return `<article class="lcard${crown?" champ":""}${p.online?" on":""}">
     ${crown?`<span class="crown" aria-label="人氣王">${spriteSVG("crown")}</span>`:""}
     <div class="lface" role="button" tabindex="0" data-visit="${esc(p.code)}" title="${me?"回到自己的家":"拜訪"+esc(p.name||"")+"的家"}">
@@ -6227,7 +6255,7 @@ function renderVisit(){
   $("#vsDept").textContent=`拜訪 ${p.group||""}`;
   $("#vsTitle").textContent=`${p.name||"冒險者"} 的溫暖的家`;
   stabGo("visit",["farm","act","book"].includes(STAB.visit)?STAB.visit:"farm");
-  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.name||"屋主",hostId:"visitHost",label:`${p.name}的溫暖的家`});
+  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.nocard?"":(p.name||"屋主"),hostId:"visitHost",label:`${p.name}的溫暖的家`});
   startRoomPet("#visitPet",true);
   startPlaydate();
   const hostEl=$("#visitHost");
@@ -6237,6 +6265,7 @@ function renderVisit(){
     setTimeout(()=>{ if(document.body.contains(hostEl)&&!hostEl.dataset.greeted) hostGreet(hostEl,p,h,true); },900);   // 一進門先打招呼
   }
   $("#vsStats").innerHTML=`<span>LV ${esc(p.level||"1")}</span>`+(h.ach!=null?`<span>🏆 成就 ${h.ach}/${ACH.length}</span>`:"")+(h.finds!=null?`<span>🧳 收藏 ${h.finds}/${FINDS.length}</span>`:"")+(h.album!=null?`<span>🖼 相簿 ${h.album}/${ALBUM.length}</span>`:"")+(p.msg?`<span>「${esc(p.msg)}」</span>`:"");
+  if(p.nocard) $("#vsStats").innerHTML=`<p class="nocardvisit">🏠 ${esc(p.name||"屋主")}${p.friendOnly?"的名片暫時讀不到，家裡的佈置看不到":"還沒逛過交誼廳，家裡還沒佈置"}${p.pet?"":"，也還沒有寵物"}。${p.pet?"寵物們照樣可以一起玩；":""}可以在「訪客簿」留言或送他蔬菜，他下次打開網站就會收到。</p>`;
   renderVisitPlayTag(p);
   renderVisitFarm(p,h);
   renderVisitActions(p);
@@ -9120,7 +9149,7 @@ function renderFriends(panel){
           <p><b>${esc(petNameOf(f.pet)||"寵物")}</b> <span class="ahint">${esc(f.owner||"冒險者")}家的${esc(f.pet&&PETS[f.pet.type]?PETS[f.pet.type].name:"寵物")}</span> ${lvBadge(f.n)}</p>
           <div class="fbar" role="progressbar" aria-valuenow="${f.n}" aria-valuemax="${nx?nx[0]:f.n}" aria-label="友誼"><i style="width:${pct}%"></i></div>
           <p class="ahint">友誼 ${f.n}${nx?`・再 ${nx[0]-f.n} 次變成「${nx[1]}」`:"・已經是最佳拍檔"}${f.at?`・上次一起玩 ${esc(fmtShort(new Date(f.at)))}`:""}</p>
-          <div class="fbtns">${people[code]?`<button class="mini-btn" type="button" data-fvisit="${esc(code)}">🏠 去串門子</button>`:""}
+          <div class="fbtns">${loungeReady()?`<button class="mini-btn" type="button" data-fvisit="${esc(code)}">🏠 去串門子</button>`:""}
             ${ph?`<button class="mini-btn" type="button" data-fphoto="${hung?"":esc(code)}">${hung?"🖼 從牆上取下合照":"🖼 掛上合照"}</button>`:""}</div>
         </div>
         ${ph?`<span class="fphoto">${photoHTML(ph)}</span>`:""}
@@ -9131,9 +9160,13 @@ function renderFriends(panel){
 document.addEventListener("click",e=>{
   const t=e.target.closest&&e.target.closest("[data-fvisit],[data-fphoto]"); if(!t) return;
   if(t.dataset.fvisit!=null){
-    const code=t.dataset.fvisit;
-    if(!loungeData().people[code]){ toast("對方最近不在交誼廳名單裡"); return; }
-    openVisit(code); return;
+    const code=String(t.dataset.fvisit).toUpperCase();
+    (async()=>{
+      if(!LOUNGE.at){ t.disabled=true; try{ await loadLounge(false); }catch(e){} t.disabled=false; }
+      if(!loungeData().people[code]){ toast("讀不到對方的資料，請稍後再試"); return; }
+      openVisit(code);
+    })();
+    return;
   }
   S.photoWall=t.dataset.fphoto||""; save(); queueSync(); pushFarm(true);
   Sound.sfx(S.photoWall?"get":"undo"); toast(S.photoWall?"合照掛到展示區的牆上了":"已從牆上取下合照");
@@ -9861,7 +9894,7 @@ function openAdminView(){
   $("#fxSaveIndex").textContent=`=LET(s,SORTN(SORT(FILTER('進度存檔'!A2:C,'進度存檔'!B2:B<>""),1,FALSE),9^9,2,2,TRUE),{INDEX(s,0,2),RIGHT(INDEX(s,0,3),16)})`;
   $("#fxSaves").textContent=`=SORTN(SORT('進度存檔'!A2:G, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxStats").textContent=`={"表單","筆數";"進度存檔",IFERROR(COUNTA('進度存檔'!A2:A),"");"進度回報",IFERROR(COUNTA('進度回報'!A2:A),"");"交誼廳",IFERROR(COUNTA('交誼廳'!A2:A),"");"登錄紀錄",IFERROR(COUNTA('登錄紀錄'!A2:A),"");"技術諮詢",IFERROR(COUNTA('技術諮詢'!A2:A),"");"面談回覆",IFERROR(COUNTA('面談回覆'!A2:A),"");"後台更新",IFERROR(COUNTA('後台更新'!A2:A),"")}`;
-  $("#fxLoungeLite").textContent=`=LET(s,FILTER('交誼廳'!A2:J,'交誼廳'!B2:B<>""),t,INDEX(s,0,2),d,INDEX(s,0,1),c,IFERROR(SORTN(SORT(FILTER(s,t="presence"),1,FALSE),9^9,2,3,TRUE)),h,IFERROR(SORTN(SORT(FILTER(s,t="here"),1,FALSE),9^9,2,3,TRUE)),e,IFERROR(FILTER(s,(t<>"presence")*(t<>"here")*((REGEXMATCH(t,"^(gift|steal|toss|playdate|rps)$")=FALSE)+(d>=TODAY()-60)))),a,VSTACK(c,h,e),FILTER(a,IFERROR(INDEX(a,0,2),"")<>""))`;
+  $("#fxLoungeLite").textContent=`=LET(s,FILTER('交誼廳'!A2:J,'交誼廳'!B2:B<>""),t,INDEX(s,0,2),d,INDEX(s,0,1),c,IFERROR(SORTN(SORT(FILTER(s,t="presence"),1,FALSE),9^9,2,3,TRUE)),h,IFERROR(SORTN(SORT(FILTER(s,t="here"),1,FALSE),9^9,2,3,TRUE)),e,IFERROR(FILTER(s,(t<>"presence")*(t<>"here")*((REGEXMATCH(t,"^(gift|steal|toss|playdate|rps)$")=FALSE)+(d>=TODAY()-60)))),a,VSTACK(c,h,e),r,FILTER(a,IFERROR(INDEX(a,0,2),"")<>""),HSTACK(TEXT(INDEX(r,0,1),"yyyy/m/d HH:mm:ss"),CHOOSECOLS(r,2,3,4,5,6,7,8,9,10)))`;
   $("#fxIvReplies").textContent=`=QUERY('面談回覆'!A:F, "select A, B, C, E, F where B is not null", 1)`;
   $("#fxRoster").textContent=`=SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxGroups").textContent=`=QUERY('新人名冊'!A2:I, "select D, count(B) where B is not null group by D label D '組別', count(B) '人數'", 0)`;
@@ -10126,7 +10159,7 @@ function parseSheetTs(t){
   const sv=String(t||"").trim();
   if(/^\d{5}(\.\d+)?$/.test(sv)){ const ms=Math.round((+sv-25569)*864e5); const u=new Date(ms); return new Date(u.getUTCFullYear(),u.getUTCMonth(),u.getUTCDate(),u.getUTCHours(),u.getUTCMinutes(),u.getUTCSeconds()); }   // 公式工作表沒套日期格式時是序號
   const m=/(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})\s*(上午|下午|AM|PM)?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i.exec(String(t||""));
-  if(!m) return null;
+  if(!m){ const d=/^\s*(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})\s*$/.exec(String(t||"")); return d?new Date(+d[1],+d[2]-1,+d[3]):null; }   // 只有日期（工作表欄位格式沒有時間）
   let h=+m[5]; const ap=(m[4]||m[8]||"").toUpperCase();
   if((ap==="下午"||ap==="PM")&&h<12) h+=12;
   if((ap==="上午"||ap==="AM")&&h===12) h=0;
@@ -10878,7 +10911,13 @@ cloudRestoreSession().then(()=>{ renderCloudBox(); setTimeout(()=>cloudSyncOnSta
 bootstrap().then(()=>{
   hideBoot();
   try{ const M={chief:`村長 ${CFG.chief}`,director:CFG.director}; npcList().forEach(n=>{ M[n.id]=`${n.title} ${n.name}`; }); localStorage.setItem("sino22-bootnames",JSON.stringify(M)); }catch(e){}
-  if(S.group) setTimeout(()=>{ loungePresence(true,{here:true}).catch(()=>{}); },3000);   // 每次開站都讓大家看到自己在線上
+  if(S.group) setTimeout(()=>{ loungePresence(true,{here:true}).catch(()=>{}); },3000);
+  if(S.group) setTimeout(()=>{                         // 每天檢查一次：試算表裡沒有自己的名片就補送（例如以前送出時剛好失敗）
+    let d=""; try{ d=localStorage.getItem("sino22-card-check")||""; }catch(e){}
+    if(d===dayKey()||!loungeReady()) return;
+    try{ localStorage.setItem("sino22-card-check",dayKey()); }catch(e){}
+    if(!LOUNGE.at) loadLounge(false).catch(()=>{});
+  },20000);   // 每次開站都讓大家看到自己在線上
   try{ if(!S.seenContent||!Object.keys(S.seenContent).length) markContentUpdates(); else refreshBonus(); }catch(e){}
   if(S.group){
     setTimeout(()=>loadInbox(),1500);

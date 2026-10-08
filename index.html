@@ -722,6 +722,8 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .tossfly{position:absolute;left:50%;top:92%;width:34px;height:34px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.6,.4,1),top .6s cubic-bezier(.2,-0.4,.5,1),transform .6s linear;z-index:6;pointer-events:none}
 .vsactrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .rpsrow .act{min-width:86px}
+.gbtn.tourist{border-color:var(--gold)}
+.touristnote{flex-basis:100%;grid-column:1/-1;margin:6px 0 0}
 .cdlist{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px;font-size:14px}
 .cdlist li{padding:6px 10px;border:2px solid var(--line);border-radius:4px;background:rgba(0,0,0,.12)}
 .lcard.nocard{opacity:.8}.lcard.nocard .lav svg{filter:grayscale(1) brightness(.75)}
@@ -1500,6 +1502,12 @@ footer.site p{margin:4px 0}
         <div class="abar"><h3>容量檢查</h3><button class="act ghost" type="button" id="capCheck">重新檢查</button></div>
         <p class="ahint">Google 表單超過 <b>10 萬筆</b>回應後就不再寫入試算表；試算表單一儲存格最多 <b>5 萬字元</b>。超過七成會顯示「注意」，超過九成顯示「危險」。設定「筆數統計」工作表（公式在下方「試算表公式」）可以看到每張表單的確切筆數。</p>
         <div id="capBody"></div>
+      </section>
+      <section class="window abox" id="touristBox">
+        <h3>觀光客通道</h3>
+        <p class="ahint">想讓部門以外的人（例如來參觀的同仁、其他部門）也能逛逛時，把這個網址給他。從這個網址進來建立角色的人，組別會直接設定為「觀光客」，不用選組別；名冊和交誼廳都會顯示「觀光客」，方便和新人分開。已經是一般組別的新人點這個網址不會被改掉。</p>
+        <pre class="code" id="touristUrl"></pre>
+        <button class="mini-btn" type="button" data-copy="touristUrl">複製網址</button>
       </section>
       <section class="window abox" id="cardDiag">
         <h3>交誼廳名片檢查</h3>
@@ -4563,7 +4571,17 @@ $("#btnMap").addEventListener("click",()=>adminOpen?exitAdmin():showMap());
 $("#btnHome").addEventListener("click",()=>{ if(adminOpen) closeAdminView(); openHome(); });
 $("#search").addEventListener("input",refreshSearch);
 /* ================= character ================= */
+/* ---- 觀光客通道：網址加上 ?tourist=1 進來的人，組別直接設定為「觀光客」 ---- */
+const TOURIST="觀光客", TOURIST_KEY="sino22-tourist";
+try{ if(/(^|[?&])tourist(=|&|$)/.test(location.search.slice(1))) localStorage.setItem(TOURIST_KEY,"1"); }catch(e){}
+const touristLink=()=>{ try{ return localStorage.getItem(TOURIST_KEY)==="1"; }catch(e){ return false; } };
+const touristLocked=()=>touristLink()&&(!S.group||S.group===TOURIST);   // 已經是一般組別的新人不受影響
 function renderGroups(){
+  if(touristLocked()){
+    $("#groupGrid").innerHTML=`<label class="gbtn tourist"><input type="radio" name="group" value="${TOURIST}" checked><span>🧳 ${TOURIST}</span></label>
+      <p class="ahint touristnote">你是從<b>觀光客通道</b>進來的，組別已經設定為「${TOURIST}」。</p>`;
+    return;
+  }
   const list=CFG.groups.slice();
   if(S.group&&!list.includes(S.group)) list.push(S.group);
   $("#groupGrid").innerHTML=list.map(g=>`<label class="gbtn"><input type="radio" name="group" value="${esc(g)}"><span>${esc(g)}</span></label>`).join("");
@@ -4614,7 +4632,8 @@ function openChar(){
   buildAvOpts();
   draft=Object.assign({},AV_DEFAULT,S.av||{});
   drawEditor();
-  f.querySelectorAll('input[name="group"]').forEach(r=>r.checked=r.value===S.group);
+  renderGroups();
+  f.querySelectorAll('input[name="group"]').forEach(r=>r.checked=r.value===S.group||(touristLocked()&&r.value===TOURIST));
   $("#cErr").textContent="";
   const x=$("#cDlg .x[data-close]"); if(x) x.hidden=!S.group;     // 第一次一定要建立角色
   $("#cDlg").showModal();
@@ -9905,6 +9924,7 @@ function openAdminView(){
   $("#fxLoungeLite").textContent=`=LET(s,FILTER('交誼廳'!A2:J,'交誼廳'!B2:B<>""),t,INDEX(s,0,2),d,INDEX(s,0,1),c,IFERROR(SORTN(SORT(FILTER(s,t="presence"),1,FALSE),9^9,2,3,TRUE)),h,IFERROR(SORTN(SORT(FILTER(s,t="here"),1,FALSE),9^9,2,3,TRUE)),e,IFERROR(FILTER(s,(t<>"presence")*(t<>"here")*((REGEXMATCH(t,"^(gift|steal|toss|playdate|rps)$")=FALSE)+(d>=TODAY()-60)))),a,VSTACK(c,h,e),r,FILTER(a,IFERROR(INDEX(a,0,2),"")<>""),HSTACK(TEXT(INDEX(r,0,1),"yyyy/m/d HH:mm:ss"),CHOOSECOLS(r,2,3,4,5,6,7,8,9,10)))`;
   $("#fxIvReplies").textContent=`=QUERY('面談回覆'!A:F, "select A, B, C, E, F where B is not null", 1)`;
   $("#fxRoster").textContent=`=SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE)`;
+  { const tu=$("#touristUrl"); if(tu) tu.textContent=location.origin+location.pathname+"?tourist=1"; }
   $("#fxGroups").textContent=`=QUERY('新人名冊'!A2:I, "select D, count(B) where B is not null group by D label D '組別', count(B) '人數'", 0)`;
   try{ $("#opName").value=localStorage.getItem(OP_KEY)||""; }catch(e){}
   syncPassState();

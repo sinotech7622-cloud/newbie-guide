@@ -417,6 +417,9 @@ pre.code,textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:13p
 .stepl{margin:0 0 6px;padding-left:1.5em;display:grid;gap:4px;font-size:15px}
 .touristbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin:0 auto 14px;max-width:1160px;padding:10px 16px;border-color:#F2C14E!important;font-size:14px;line-height:1.6}
 .touristbar b{color:#F2C14E}
+.profbar{border-color:#8FD27A!important}
+.profadmin{margin:0 0 20px;padding:14px 16px;border:2px dashed rgba(143,210,122,.6);border-radius:6px}
+.profadmin h3{margin:0 0 6px}
 .touristbar .tbbtns{display:flex;gap:8px;flex-wrap:wrap}
 @media (max-width:600px){.touristbar{font-size:13px;padding:8px 12px;gap:8px}.touristbar .act{width:100%}}
 .touristclosed{position:fixed;inset:0;z-index:90;background:rgba(8,10,30,.88);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -1394,6 +1397,10 @@ footer.site p{margin:4px 0}
     <button class="act ghost" type="button" data-approvecheck hidden>重新檢查審核狀態</button>
     <button class="act ghost" type="button" data-reapply hidden>重新送出申請</button></span>
   </div>
+  <div class="touristbar window profbar" id="profBar" hidden role="status">
+    <span id="pbText"></span>
+    <button class="act" type="button" data-profopen>立即更新</button>
+  </div>
   <div class="touristclosed" id="touristClosed" hidden>
     <div class="window" role="alertdialog" aria-labelledby="tcT" aria-describedby="tcB">
       <h2 id="tcT">🧳 觀光客通道暫停開放</h2>
@@ -1777,6 +1784,15 @@ footer.site p{margin:4px 0}
     </div>
     <div class="apanel" data-panel="roster" role="tabpanel" hidden>
       <section class="window abox">
+        <div class="profadmin" id="prAdmin">
+          <h3>📣 資料更新通知</h3>
+          <p class="ahint" id="prState">讀取中…</p>
+          <label class="elabel" for="prMsg">通知附註（選填，會顯示在通知視窗最上面）</label>
+          <input id="prMsg" class="ainput wide" maxlength="80" placeholder="例如：配合人事系統整理名冊，請確認姓名與員工編號">
+          <div class="formfoot"><span></span><span class="afilters">
+            <button class="act ghost" type="button" id="prEnd" hidden>提前結束通知</button>
+            <button class="act" type="button" id="prSend">發布通知（30 天）</button></span></div>
+        </div>
         <div class="abar"><h3>使用者名冊</h3><span class="afilters">
           <input id="rsSearch" class="ainput" type="search" placeholder="搜尋名字、組別或代碼" style="max-width:220px">
           <label class="chk"><input type="checkbox" id="rsShowHidden"> 顯示已隱藏</label>
@@ -2269,6 +2285,21 @@ footer.site p{margin:4px 0}
 </dialog>
 
 <!-- generic in-page dialog -->
+<dialog id="profDlg" aria-labelledby="pfTitle">
+  <form class="window dlg" id="pfForm">
+    <div class="head"><div><p class="dept">村長的通知</p><h3 id="pfTitle">📝 請更新真實姓名與員工編號</h3></div></div>
+    <div class="body">
+      <p class="ahint" id="pfMsg" style="white-space:pre-line"></p>
+      <label class="elabel" for="pfName">真實姓名<b class="req">＊必填</b></label>
+      <input id="pfName" class="cinput wide" maxlength="12" placeholder="請填本名" autocomplete="off">
+      <label class="elabel" for="pfEmp" style="margin-top:10px">員工編號<b class="req">＊必填</b></label>
+      <input id="pfEmp" class="cinput wide" maxlength="12" placeholder="例如：01234" autocomplete="off" inputmode="latin">
+      <p class="ahint" style="margin-top:8px">真實姓名會回報給部門、印在結業證書上；交誼廳仍顯示你的暱稱（如果有填）。員工編號只回報給管理者，不會公開。</p>
+      <p class="cerr" id="pfErr" role="alert"></p>
+    </div>
+    <footer><span></span><span class="btns" style="display:flex;gap:8px"><button class="act ghost" type="button" id="pfLater">稍後再說</button><button class="act" type="submit">確認更新</button></span></footer>
+  </form>
+</dialog>
 <dialog id="uDlg" aria-labelledby="uMsg">
   <form class="window dlg" id="uForm">
     <div class="body"><p id="uMsg" class="umsg"></p><label class="sr" for="uInput">輸入</label><input id="uInput" class="ainput wide" hidden></div>
@@ -4651,6 +4682,53 @@ try{ if(/(^|[?&])tourist(=|&|$)/.test(location.search.slice(1))) localStorage.se
 const touristLink=()=>{ try{ return localStorage.getItem(TOURIST_KEY)==="1"; }catch(e){ return false; } };
 const touristOpen=()=>touristLink()&&!(CFG&&CFG.touristOn===false);           // 通道被管理者關閉時，新來的人走一般流程
 const touristLocked=()=>S.group===TOURIST||(touristOpen()&&!S.group);        // 觀光客身分：功能受限（一般組別的新人不受影響）
+/* ---- 資料更新通知：管理者請已註冊的人更新真實姓名與員工編號（限時 30 天） ---- */
+const PROF_DAYS=30;
+function activeProfReq(){
+  const r=FEED&&FEED.profreq; if(!r||r.ended) return null;
+  const now=Date.now(); if(!(now>=(+r.at||0)&&now<(+r.until||0))) return null;
+  return r;
+}
+const profNeeds=()=>{ const r=activeProfReq(); return !!(r&&S.group&&!restricted()&&!((S.profAck||{})[r.id])); };
+const daysLeft=r=>Math.max(1,Math.ceil(((+r.until||0)-Date.now())/864e5));
+const fmtYMD=t=>{ const d=new Date(t); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
+function renderProfBar(){
+  const bar=$("#profBar"); if(!bar) return;
+  const r=activeProfReq(), on=profNeeds();
+  bar.hidden=!on; if(!on) return;
+  $("#pbText").innerHTML=`📝 <b>請更新真實姓名與員工編號</b>：管理者正在整理名冊，請在 <b>${esc(fmtYMD(+r.until-1))}</b> 前確認（剩 ${daysLeft(r)} 天）。`;
+}
+function openProfDlg(){
+  const r=activeProfReq(); if(!r) return;
+  $("#pfMsg").textContent=(r.msg?r.msg+"\n":"")+`請確認下面的資料是不是你的真實姓名與員工編號，期限到 ${fmtYMD(+r.until-1)}（剩 ${daysLeft(r)} 天）。資料沒變的話，直接按「確認更新」就好。`;
+  $("#pfName").value=S.name||""; $("#pfEmp").value=S.emp||""; $("#pfErr").textContent="";
+  const d=$("#profDlg"); if(!d.open) d.showModal(); Sound.sfx("open");
+}
+async function checkProfReq(){
+  try{ await getFeed(false); }catch(e){}
+  renderProfBar();
+  if(!profNeeds()) return;
+  let shown=""; try{ shown=sessionStorage.getItem("sino22-profshown")||""; }catch(e){}
+  if(shown===String(activeProfReq().id)) return;
+  const go=()=>{ if(document.querySelector("dialog[open]")||TOUR||LOGIN_GATE){ setTimeout(go,1500); return; }
+    try{ sessionStorage.setItem("sino22-profshown",String(activeProfReq().id)); }catch(e){} openProfDlg(); };
+  setTimeout(go,1200);
+}
+$("#pfLater").addEventListener("click",()=>{ $("#profDlg").close(); toast("可以隨時按畫面上方的「立即更新」"); });
+$("#pfForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const r=activeProfReq(); if(!r){ $("#profDlg").close(); return; }
+  const name=$("#pfName").value.trim().slice(0,12), emp=$("#pfEmp").value.trim().toUpperCase().replace(/\s/g,"").slice(0,12);
+  const err=!name?"請輸入真實姓名":!emp?"請輸入員工編號":!/^[A-Z0-9-]{3,12}$/.test(emp)?"員工編號只能用英文字母、數字或連字號（3–12 碼）":"";
+  if(err){ $("#pfErr").textContent=err; Sound.sfx("error"); return; }
+  S.name=name; S.emp=emp; S.profAck=Object.assign({},S.profAck||{},{[r.id]:Date.now()}); save();
+  logSignup("資料更新");
+  sendForm("lounge",{type:"profileok",code:myCode(),name:"",group:S.group||"",level:"",av:"",pet:"",msg:String(r.id),target:""}).catch(()=>{});
+  lastPresence=0; loungePresence(true,{card:true}).catch(()=>{}); queueSync(true);
+  $("#profDlg").close(); renderHUD(); renderProfBar(); Sound.sfx("achieve"); toast("資料已更新，謝謝你！");
+});
+document.addEventListener("click",e=>{ if(e.target.closest&&e.target.closest("[data-profopen]")){ e.preventDefault(); openProfDlg(); } });
+
 /* ---- 新人審核：新註冊的人先送出申請，後台審核通過前和觀光客一樣只能看不能互動 ---- */
 const approvalNeeded=()=>!(CFG&&CFG.approvalOn===false)&&!!formCfg("lounge")&&!!sheetUrl("feed");
 const pendingApproval=()=>!!S.group&&S.group!==TOURIST&&(S.approval==="pending"||S.approval==="rejected");
@@ -5030,7 +5108,7 @@ async function unpackPayload(str){
   return JSON.parse(t.startsWith("j:")?t.slice(2):t);
 }
 async function parseFeed(rows){
-  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map(),approve:new Map()};
+  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map(),approve:new Map(),profreq:new Map()};
   rows.forEach((r,i)=>{
     const ts=String(r[0]||""), type=String(r[1]||"").trim(), id=String(r[2]||"").trim(), part=String(r[3]||"").trim(), data=String(r[4]||""), by=String(r[5]||"");
     if(!type||!id) return;
@@ -5056,6 +5134,9 @@ async function parseFeed(rows){
   out.comps=[];
   for(const [id,rec] of recs.comp){ try{ out.comps.push(Object.assign({},await unpackPayload(rec.data),{id,row:rec.row,ts:rec.ts,by:rec.by})); }catch(e){} }
   out.comps.sort((a,b)=>a.row-b.row);
+  out.profreq=null;                                     // 資料更新通知：取最後一筆
+  { let best=null; for(const [id,rec] of recs.profreq){ if(!best||rec.row>best.rec.row) best={id,rec}; }
+    if(best){ try{ out.profreq=Object.assign({},await unpackPayload(best.rec.data),{id:best.id,ts:best.rec.ts,by:best.rec.by}); }catch(e){} } }
   out.approve={};
   for(const [id,rec] of recs.approve){ try{ out.approve[id.toUpperCase()]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
   out.roster={};
@@ -5233,7 +5314,7 @@ function applyConfig(data){
   document.querySelectorAll(".chiefLabel").forEach(el=>el.textContent=`部門村長　${CFG.chief}`);
   renderPortals(); renderNotice(); renderGroups();
   applyInterviewSwitch();
-  renderTouristBar(); if(pendingApproval()) checkApproval(false);
+  renderTouristBar(); if(pendingApproval()) checkApproval(false); try{ renderProfBar(); }catch(e){}
   if(curPlace) renderPlace();
   if(curZone&&curZone.passbook) renderZone();
 }
@@ -5350,14 +5431,14 @@ async function cloudRestoreSession(){
   try{
     const key=await crypto.subtle.importKey("raw",unb64buf(d.key),{name:"AES-GCM"},true,["encrypt","decrypt"]);
     const imp=async v=>v?crypto.subtle.importKey("raw",unb64buf(v),{name:"AES-GCM"},true,["encrypt","decrypt"]):null;
-    CLOUD={acc:d.acc,code:d.code,key,dek:await imp(d.dek),rcKey:await imp(d.rcKey),rcHint:d.rcHint};
+    CLOUD={acc:d.acc,code:d.code,key,dek:await imp(d.dek),rcKey:await imp(d.rcKey),rcHint:d.rcHint,rc:d.rc||""};
   }catch(e){}
 }
 function cloudLogout(){
   CLOUD=null; try{ localStorage.removeItem(CLOUD_KEY); }catch(e){}
   renderCloudBox(); renderHUD();
 }
-function snapshot(){ return {v:1,S,code:myCode(),at:new Date().toISOString(),dev:deviceText()}; }
+function snapshot(){ return Object.assign({v:1,S,code:myCode(),at:new Date().toISOString(),dev:deviceText()},CLOUD&&CLOUD.rc?{rc:CLOUD.rc}:{}); }   // 救援碼放在加密存檔裡，換裝置登入也查得到
 function progressCount(st){ return Object.keys((st&&st.done)||{}).filter(k=>QIDS.has(k)&&st.done[k]).length; }
 function makeRecoveryCode(){
   const raw=randChars(16);
@@ -5365,6 +5446,7 @@ function makeRecoveryCode(){
 }
 const normRecovery=c=>String(c||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 const recoveryPhrase=c=>"rc:"+normRecovery(c);
+const fmtRecovery=c=>{ const r=normRecovery(c); return r.length===16?r.slice(0,4)+"-"+r.slice(4,8)+"-"+r.slice(8,12)+"-"+r.slice(12):""; };
 async function newDek(){ return crypto.subtle.generateKey({name:"AES-GCM",length:256},true,["encrypt","decrypt"]); }
 async function wrapDek(kek,dek){
   const raw=await crypto.subtle.exportKey("raw",dek);
@@ -5555,7 +5637,7 @@ async function cloudSignIn(acc,pw,mode){
     dek=await newDek(); freshCode=makeRecoveryCode();
     rcKey=await deriveKey(acc,recoveryPhrase(freshCode));
   }
-  await cloudRemember(acc,code,key,{dek,rcKey}); cloudSynced=true;
+  await cloudRemember(acc,code,key,{dek,rcKey,rc:freshCode||(loaded&&fmtRecovery(loaded.rc))||""}); cloudSynced=true;
   if(loaded){
     const mine=progressCount(S), theirs=progressCount(loaded.S);
     let useCloud=true;
@@ -5579,23 +5661,15 @@ async function cloudRecover(acc,rc,newPw){
   let opened;
   try{ opened=await openSave(remote.data,rcKey,"rc"); }catch(e){ throw new Error(e&&e.message==="norc"?"norc":"badrc"); }
   const key=await deriveKey(acc,newPw);
-  const fresh=makeRecoveryCode();
-  const newRcKey=await deriveKey(acc,recoveryPhrase(fresh));
-  await cloudRemember(acc,code,key,{dek:opened.dek,rcKey:newRcKey}); cloudSynced=true;
+  await cloudRemember(acc,code,key,{dek:opened.dek,rcKey,rc:fmtRecovery(rc)}); cloudSynced=true;   // 救援碼固定：沿用原本那組
   applySave(opened.payload);
   await cloudPush(true);
-  toast("已用救援碼還原存檔，密碼也換成新的了");
-  showRecovery(fresh,"密碼已重設，救援碼也換成新的一組，請重新抄下來。");
+  toast("已用救援碼還原存檔，密碼也換成新的了；救援碼還是原本那組，請繼續保存");
   return true;
 }
-async function cloudRegenerateRecovery(){
-  if(!CLOUD||!CLOUD.dek) throw new Error("noacc");
-  const fresh=makeRecoveryCode();
-  const rcKey=await deriveKey(CLOUD.acc,recoveryPhrase(fresh));
-  await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek:CLOUD.dek,rcKey});
-  await cloudPush(true);
-  showRecovery(fresh,"已產生新的救援碼，舊的那組立刻失效。");
-  return true;
+function cloudShowRecovery(){                         // 一個帳號固定一組救援碼：只能查看，不能重新產生
+  if(CLOUD&&CLOUD.rc){ showRecovery(CLOUD.rc,"這是你帳號的救援碼，一個帳號固定一組，不會改變。請抄下來或存成檔案。"); return; }
+  uiAlert("這台電腦沒有這個帳號的救援碼紀錄。\n救援碼一個帳號固定一組，就是建立帳號時顯示的那一組；如果找不到了，請洽管理者協助（帳號救援）。");
 }
 async function cloudChangePassword(oldPw,newPw){
   if(!CLOUD) throw new Error("noacc");
@@ -5610,7 +5684,7 @@ async function cloudChangePassword(oldPw,newPw){
   saveSizeCheck(data.length);
   if(data.length>saveCap()) throw new Error("toobig");
   await sendSave(CLOUD.code,data,myCode()); rememberTag(data);
-  await cloudRemember(CLOUD.acc,CLOUD.code,newKey,{dek,rcKey});
+  await cloudRemember(CLOUD.acc,CLOUD.code,newKey,{dek,rcKey,rc:fresh||CLOUD.rc||""});
   if(fresh) setTimeout(()=>showRecovery(fresh,"順便幫你產生了救援碼，忘記密碼時可以用它還原。"),400);
   cloudDirty=false; cloudLastAt=new Date().toISOString();
   try{ localStorage.setItem("sino22-cloud-at",cloudLastAt); }catch(e){}
@@ -5680,8 +5754,9 @@ async function cloudReconcile(){
       catch(e){ cloudSynced=true; cloudLogout(); toast("雲端存檔的密碼已被重設，請用新的密碼重新登入"); return; }
       const loaded=opened.payload;
       if(opened.body&&!opened.body.esc&&CFG.escrowKey) setTimeout(()=>queueCloud(true),3000);
-      if(opened.dek&&!CLOUD.dek) await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek:opened.dek,rcKey:CLOUD.rcKey});
+      if(opened.dek&&!CLOUD.dek) await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek:opened.dek,rcKey:CLOUD.rcKey,rc:CLOUD.rc||fmtRecovery(loaded.rc)});
       else if(opened.dek) CLOUD.dek=opened.dek;
+      if(!CLOUD.rc&&fmtRecovery(loaded.rc)) await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek:CLOUD.dek,rcKey:CLOUD.rcKey,rc:fmtRecovery(loaded.rc)});
       cloudSynced=true;
       const rAt=String(loaded.at||""), lAt=cloudAt(), localChanged=localChangedSinceSync();
       if(rAt<=lAt){                                    // 線上沒有別的裝置的新存檔：這台有新進度就上傳
@@ -8017,7 +8092,7 @@ async function loadRoster(force){
   if(RS_BUSY) return; RS_BUSY=true;
   $("#rsSource").textContent="讀取中…";
   const map={};
-  APPLIED.clear();
+  APPLIED.clear(); PROF_OK.clear();
   try{ await getFeed(true); }catch(e){}
   // ① 名冊資料（進度回報的每人最新一筆）
   if(sheetUrl("roster")){
@@ -8037,6 +8112,7 @@ async function loadRoster(force){
       (rows||[]).forEach(r=>{
         const ty=String(r[1]||"").trim();
         if(ty==="apply"){ const c=String(r[2]||"").trim().toUpperCase(); if(c) APPLIED.add(c); return; }
+        if(ty==="profileok"){ const k=String(r[8]||"").trim(), c=String(r[2]||"").trim().toUpperCase(); if(k&&c){ if(!PROF_OK.has(k)) PROF_OK.set(k,new Set()); PROF_OK.get(k).add(c); } return; }
         if(ty!=="presence"&&ty!=="here") return;
         const code=String(r[2]||"").trim().toUpperCase(); if(!code) return;
         const at=parseSheetTs(r[0]);
@@ -8056,7 +8132,34 @@ async function loadRoster(force){
 }
 const lvLabel=v=>{ v=String(v||"").trim(); return /^LV/i.test(v)?v:"LV "+v; };   // 名冊資料的等級本來就有「LV」，交誼廳的只有數字
 const isTouristRow=x=>String(x.group||"").trim()===TOURIST;
+function renderProfAdmin(){
+  const el=$("#prState"); if(!el) return;
+  const r=FEED&&FEED.profreq, now=Date.now();
+  const act=r&&!r.ended&&now<(+r.until||0);
+  const base=RS_ROWS.filter(x=>!isTouristRow(x)&&!isHiddenCode(x.code)).length;
+  const done=r?PROF_OK.get(String(r.id))||new Set():new Set();
+  el.innerHTML=!r?"目前沒有發布過資料更新通知。發布後，已註冊的人（觀光客、審核中的人除外）開網站時會看到通知視窗，請他確認或更新真實姓名與員工編號，期限 30 天。"
+    :act?`<span class="st st-ok">通知中</span> ${esc(fmtYMD(+r.at))} 發布，期限到 <b>${esc(fmtYMD(+r.until-1))}</b>（剩 ${daysLeft(r)} 天）。已確認 <b>${done.size}</b> 人／名冊 ${base} 人。更新後的姓名會出現在名冊，員工編號在「新人進度回報」與「新人登錄紀錄」試算表（事件「資料更新」）。`
+    :`<span class="st st-off">已結束</span> 上一次通知 ${esc(fmtYMD(+r.at))} 發布，${r.ended?"已提前結束":`已於 ${esc(fmtYMD(+r.until-1))} 到期`}；共 ${done.size} 人確認。`;
+  $("#prEnd").hidden=!act;
+  $("#prSend").textContent=act?"重新發布（重新計算 30 天）":"發布通知（30 天）";
+}
+const PROF_OK=new Map();
+$("#prSend").addEventListener("click",async()=>{
+  const r=FEED&&FEED.profreq, act=r&&!r.ended&&Date.now()<(+r.until||0);
+  if(!(await uiConfirm(act?"要重新發布資料更新通知嗎？所有人（包含已確認的人）都要再確認一次，期限重新算 30 天。":"要發布資料更新通知嗎？已註冊的人開網站時會看到通知，請他在 30 天內確認真實姓名與員工編號。","發布"))) return;
+  const at=Date.now(), id=randId("PR");
+  const ok=await adminSend("profreq",id,"j:"+JSON.stringify({at,until:at+PROF_DAYS*864e5,msg:cleanText($("#prMsg").value,80),ended:false}),"資料更新通知（30 天）","false");
+  if(ok){ FEED&&(FEED.profreq={id,at,until:at+PROF_DAYS*864e5,msg:cleanText($("#prMsg").value,80),ended:false}); renderProfAdmin(); }
+});
+$("#prEnd").addEventListener("click",async()=>{
+  const r=FEED&&FEED.profreq; if(!r) return;
+  if(!(await uiConfirm("要提前結束資料更新通知嗎？還沒確認的人就不會再看到通知。","結束"))) return;
+  const ok=await adminSend("profreq",r.id,"j:"+JSON.stringify(Object.assign({},r,{ended:true,id:undefined,ts:undefined,by:undefined})),"結束資料更新通知","true");
+  if(ok){ FEED.profreq=Object.assign({},r,{ended:true}); renderProfAdmin(); }
+});
 function renderRoster(){
+  renderProfAdmin();
   const HID=hiddenCodes(), showHid=$("#rsShowHidden").checked, q=$("#rsSearch").value.trim().toLowerCase();
   const pend=adminPendingRoster();
   const isHid=c=>c in pend?pend[c]:HID.has(c);
@@ -10010,7 +10113,7 @@ function renderCloudBox(){
     <p class="ahint">進度會自動同步，換電腦時用同一組帳密登入就能接著玩。密碼忘記將無法還原存檔。</p>
     <p class="ahint autosync" data-autosync>${esc(autoSyncText())}</p>
     <div class="formfoot"><span></span><span class="afilters">
-      <button class="act ghost" type="button" data-cloud="recovery">重新產生救援碼</button>
+      <button class="act ghost" type="button" data-cloud="recovery">查看救援碼</button>
       <button class="act ghost" type="button" data-cloud="password">變更密碼</button>
       <button class="act ghost" type="button" data-cloud="logout">登出這台電腦</button>
       <button class="act" type="button" data-cloud="push">立即同步</button></span></div>`;
@@ -10156,12 +10259,7 @@ $("#placeBody").addEventListener("click",async e=>{
     const act=cb.dataset.cloud;
     if(act==="login"||act==="create") openCloud(act);
     else if(act==="password") openCloud("change");
-    else if(act==="recovery"){
-      if(!(await uiConfirm("要產生一組新的救援碼嗎？舊的救援碼會立刻失效。","產生"))) return;
-      cb.disabled=true;
-      try{ await cloudRegenerateRecovery(); }catch(e){ toast("產生失敗，請稍後再試"); }
-      cb.disabled=false;
-    }
+    else if(act==="recovery") cloudShowRecovery();
     else if(act==="logout"){
       if(!(await uiConfirm("登出後，這台電腦的進度仍在，但不會再自動同步。確定登出嗎？","登出"))) return;
       cloudLogout(); toast("已登出雲端存檔");
@@ -10297,6 +10395,7 @@ function renderPubs(){
 function pubDone(p,feed){
   if(p.type==="content"||p.type==="settings") return feed.batchIds.has(p.id);
   if(p.type==="ping") return feed.pings.has(p.id);
+  if(p.type==="profreq"){ const x=feed.profreq; return !!x&&x.id===p.id&&(p.expect==null||String(!!x.ended)===p.expect); }
   if(p.type==="approve"){ const x=(feed.approve||{})[String(p.id).toUpperCase()]; return !!x&&(p.expect==null||String(!!x.ok)===p.expect); }
   if(p.type==="comp"){ const x=(feed.comps||[]).find(v=>v.id===p.id); return !!x&&(p.expect==null||String(!!x.revoked)===p.expect); }
   if(p.type==="interview"){ const x=feed.interviews.find(v=>v.id===p.id); return !!x&&(p.expect==null||String(x.status||"")===p.expect); }
@@ -11270,6 +11369,7 @@ if(TOURIST_EXPIRED) setTimeout(()=>toast("🧳 觀光客進度超過 30 天沒�
 bootstrap().then(()=>{
   hideBoot();
   renderTouristBar(); touristVisitLog(); if(pendingApproval()) checkApproval(true);
+  setTimeout(checkProfReq,2500);
   try{ const M={chief:`村長 ${CFG.chief}`,director:CFG.director}; npcList().forEach(n=>{ M[n.id]=`${n.title} ${n.name}`; }); localStorage.setItem("sino22-bootnames",JSON.stringify(M)); }catch(e){}
   if(S.group) setTimeout(()=>{ loungePresence(true,{here:true}).catch(()=>{}); },3000);
   if(S.group) setTimeout(()=>{                         // 每天檢查一次：試算表裡沒有自己的名片就補送（例如以前送出時剛好失敗）

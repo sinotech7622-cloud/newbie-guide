@@ -417,6 +417,7 @@ pre.code,textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:13p
 .stepl{margin:0 0 6px;padding-left:1.5em;display:grid;gap:4px;font-size:15px}
 .touristbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin:0 auto 14px;max-width:1160px;padding:10px 16px;border-color:#F2C14E!important;font-size:14px;line-height:1.6}
 .touristbar b{color:#F2C14E}
+.touristbar .tbbtns{display:flex;gap:8px;flex-wrap:wrap}
 @media (max-width:600px){.touristbar{font-size:13px;padding:8px 12px;gap:8px}.touristbar .act{width:100%}}
 .touristclosed{position:fixed;inset:0;z-index:90;background:rgba(8,10,30,.88);display:flex;align-items:center;justify-content:center;padding:16px}
 .touristclosed[hidden]{display:none}
@@ -1388,8 +1389,10 @@ footer.site p{margin:4px 0}
     <button class="act ghost" type="button" id="previewEnd">結束預覽</button>
   </div>
   <div class="touristbar window" id="touristBar" hidden role="status">
-    <span>🧳 <b>觀光客模式</b>：進度只存在這台裝置，30 天沒回來會自動清空；交誼廳只能參觀，留言、按讚、送禮等互動不開放。</span>
-    <button class="act ghost" type="button" data-touristjoin>我是新人，正式加入</button>
+    <span id="tbText">🧳 <b>觀光客模式</b>：進度只存在這台裝置，30 天沒回來會自動清空；交誼廳只能參觀，留言、按讚、送禮等互動不開放。</span>
+    <span class="tbbtns"><button class="act ghost" type="button" data-touristjoin>我是新人，正式加入</button>
+    <button class="act ghost" type="button" data-approvecheck hidden>重新檢查審核狀態</button>
+    <button class="act ghost" type="button" data-reapply hidden>重新送出申請</button></span>
   </div>
   <div class="touristclosed" id="touristClosed" hidden>
     <div class="window" role="alertdialog" aria-labelledby="tcT" aria-describedby="tcB">
@@ -1511,6 +1514,7 @@ footer.site p{margin:4px 0}
       <button role="tab" type="button" data-tab="rps" aria-selected="false">諮詢回覆</button>
       <button role="tab" type="button" data-tab="npcs" aria-selected="false">NPC 設定</button>
       <button role="tab" type="button" data-tab="comp" aria-selected="false">種子補償</button>
+      <button role="tab" type="button" data-tab="approve" aria-selected="false">新人審核<span class="tabcount" id="apTabCount" hidden></span></button>
       <button role="tab" type="button" data-tab="roster" aria-selected="false">使用者名冊</button>
       <button role="tab" type="button" data-tab="rescue" aria-selected="false">帳號救援</button>
       <button role="tab" type="button" data-tab="setup" aria-selected="false">設定小幫手</button>
@@ -1637,6 +1641,8 @@ footer.site p{margin:4px 0}
           <input id="sDirector" class="ainput wide" maxlength="12" data-ss="director" placeholder="總長">
           <label for="sGoal">智慧存摺年度目標點數</label>
           <input id="sGoal" class="ainput" type="number" min="1" max="200" data-ss="goal">
+          <label class="chk" style="margin-top:14px"><input type="checkbox" id="sApprOn" data-ss="approvalOn"> 啟用新人審核</label>
+          <p class="ahint" style="margin:4px 0 0">新建立角色的人要等管理者在「新人審核」通過，才會解鎖交誼廳、留言等功能；審核前和觀光客一樣只能看。取消勾選並發布後，新人不用審核，審核中的人也會自動通過。</p>
           <label class="chk" style="margin-top:14px"><input type="checkbox" id="sTourOn" data-ss="touristOn"> 開放觀光客通道</label>
           <p class="ahint" style="margin:4px 0 0">取消勾選並發布後，觀光客網址就不能再進站；已經是觀光客的人會看到「暫停開放」的畫面。</p>
           <label class="chk" style="margin-top:14px"><input type="checkbox" id="sIvOn" data-ss="interviewOn"> 啟用村長的面談通知功能</label>
@@ -1757,6 +1763,16 @@ footer.site p{margin:4px 0}
         <div class="abar"><h3>已發送的補償</h3><button class="act ghost" type="button" id="cpReload">重新讀取</button></div>
         <div class="tscroll"><table class="atable" id="cpTable"></table></div>
         <p class="ahint" style="margin-top:10px">撤回後，還沒領取的人就不會再收到；已經領取的種子不會被收回。</p>
+      </section>
+    </div>
+    <div class="apanel" data-panel="approve" role="tabpanel" hidden>
+      <section class="window abox">
+        <div class="abar"><h3>新人審核</h3><span class="afilters">
+          <label class="chk"><input type="checkbox" id="apShowAll"> 顯示已審核</label>
+          <button class="act ghost" type="button" id="apReload">重新讀取</button></span></div>
+        <p class="ahint" id="apInfo"></p>
+        <div class="tscroll"><table class="atable" id="apTable"></table></div>
+        <p class="ahint" style="margin-top:10px">新人建立角色後會送出申請（名字、組別、新人代碼、員工編號末 3 碼）。審核通過前，他和觀光客一樣只能看任務、玩自己的農場和寵物，交誼廳不會出現他的名片，也不能留言、按讚、送禮。按「通過」後約 1–5 分鐘，新人那邊會自動解鎖並跳出通知；按「不通過」，新人會看到申請沒有通過，可以重新申請。已審核的可以勾「顯示已審核」再改。完整員工編號請到「新人登錄紀錄」試算表核對。</p>
       </section>
     </div>
     <div class="apanel" data-panel="roster" role="tabpanel" hidden>
@@ -3000,6 +3016,7 @@ const DEFAULT_CONFIG={
   goal:50,
   interviewOn:false,
   touristOn:true,
+  approvalOn:true,
   escrowKey:"",
   director:"總長",
   notice:{on:false,title:"",body:"",updatedAt:""}
@@ -3669,7 +3686,7 @@ let lastChat=0, CHAT=null;
 const CHAT_RECENT=[];
 function chatPick(who){
   if(touristLocked()&&CHAT&&CHAT.n===0){ const L=CHAT_TOURIST[who]; return {tip:L[Math.floor(Math.random()*L.length)],hello:true}; }
-  const fresh=touristLocked()?[]:CHAT_CHEATS.filter(c=>c.who===who&&!c.has()&&!CHAT_RECENT.includes(c.code));
+  const fresh=restricted()?[]:CHAT_CHEATS.filter(c=>c.who===who&&!c.has()&&!CHAT_RECENT.includes(c.code));
   if(fresh.length&&Math.random()<.4){ const c=fresh[Math.floor(Math.random()*fresh.length)]; CHAT_RECENT.push(c.code); return {cheat:c}; }
   const okTip=t=>(t[0]==="any"||t[0]===who)&&!(touristLocked()&&TOURIST_SKIP_TIP.test(t[1]));
   let tips=CHAT_TIPS.map((t,i)=>[t,i]).filter(([t,i])=>okTip(t)&&!CHAT_RECENT.includes("t"+i));
@@ -4634,11 +4651,49 @@ try{ if(/(^|[?&])tourist(=|&|$)/.test(location.search.slice(1))) localStorage.se
 const touristLink=()=>{ try{ return localStorage.getItem(TOURIST_KEY)==="1"; }catch(e){ return false; } };
 const touristOpen=()=>touristLink()&&!(CFG&&CFG.touristOn===false);           // 通道被管理者關閉時，新來的人走一般流程
 const touristLocked=()=>S.group===TOURIST||(touristOpen()&&!S.group);        // 觀光客身分：功能受限（一般組別的新人不受影響）
-function touristBlock(what){                           // 觀光客不開放的互動：回傳 true 代表已擋下
-  if(!touristLocked()) return false;
-  Sound.sfx("error"); toast(`🔒 觀光客模式不開放「${what}」，正式加入後就能使用`);
+/* ---- 新人審核：新註冊的人先送出申請，後台審核通過前和觀光客一樣只能看不能互動 ---- */
+const approvalNeeded=()=>!(CFG&&CFG.approvalOn===false)&&!!formCfg("lounge")&&!!sheetUrl("feed");
+const pendingApproval=()=>!!S.group&&S.group!==TOURIST&&(S.approval==="pending"||S.approval==="rejected");
+const restricted=()=>touristLocked()||pendingApproval();   // 觀光客或審核中：共用同一套限制
+function touristBlock(what){                           // 受限的互動：回傳 true 代表已擋下
+  if(!restricted()) return false;
+  Sound.sfx("error"); toast(touristLocked()?`🔒 觀光客模式不開放「${what}」，正式加入後就能使用`:`🔒 審核通過前暫不開放「${what}」`);
   return true;
 }
+function sendApply(){                                  // 送出加入申請（寫在交誼廳表單，type=apply；員工編號只送末 3 碼）
+  const emp=String(S.emp||"").replace(/\s/g,"");
+  return sendForm("lounge",{type:"apply",code:myCode(),name:S.name||"",group:S.group||"",level:"",av:"",pet:"",msg:emp?emp.slice(-3):"",target:""}).catch(()=>{});
+}
+let apTimer=null;
+async function checkApproval(force){                   // 讀後台的審核結果
+  if(!pendingApproval()){ clearInterval(apTimer); apTimer=null; return; }
+  if(!approvalNeeded()){ approvedNow(true); return; }   // 管理者關掉審核：直接通過
+  try{ await getFeed(!!force); }catch(e){}
+  const d=FEED&&FEED.approve&&FEED.approve[myCode().toUpperCase()];
+  if(d&&d.ok){ approvedNow(); return; }
+  if(d&&!d.ok&&(+d.at||0)>=(+S.applyAt||0)&&S.approval!=="rejected"){ S.approval="rejected"; save(); renderTouristBar(); if(curPlace) renderPlace(); }
+  if(!apTimer) apTimer=setInterval(()=>checkApproval(true),90000);
+}
+function approvedNow(quiet){
+  clearInterval(apTimer); apTimer=null;
+  S.approval="approved"; S.approvedAt=Date.now(); save();
+  renderTouristBar(); try{ updateLoginBtn(); renderLoginHint(); }catch(e){}
+  logSignup("審核通過");
+  lastPresence=0; loungePresence(true,{here:true}).catch(()=>{}); queueSync(true);
+  if(curPlace) renderPlace();
+  if(!quiet){ Sound.sfx("achieve"); uiAlert(`🎉 ${dispName()}，你的加入申請已經審核通過！\n交誼廳、留言、商店的人物與寵物商品等功能都解鎖了，原本的進度也都保留。`); }
+}
+async function reapply(){
+  if(!(await uiConfirm("要重新送出加入申請嗎？管理者審核通過後就會解鎖所有功能。","重新申請"))) return;
+  S.approval="pending"; S.applyAt=Date.now(); save(); sendApply(); logSignup("重新申請");
+  renderTouristBar(); toast("已重新送出申請，請等待管理者審核"); checkApproval(false);
+}
+document.addEventListener("click",e=>{
+  if(!e.target.closest) return;
+  if(e.target.closest("[data-approvecheck]")){ e.preventDefault(); const b=e.target.closest("[data-approvecheck]"); b.disabled=true;
+    checkApproval(true).then(()=>{ b.disabled=false; if(pendingApproval()) toast(S.approval==="rejected"?"申請沒有通過，如有疑問請洽管理者":"還在審核中，管理者審核後就會自動解鎖"); }); }
+  if(e.target.closest("[data-reapply]")){ e.preventDefault(); reapply(); }
+});
 function touristVisitLog(){                            // 觀光客進站人次：每天記一筆
   if(!touristLocked()||!S.group) return;
   let d=""; try{ d=localStorage.getItem("sino22-tourist-day")||""; }catch(e){}
@@ -4647,9 +4702,17 @@ function touristVisitLog(){                            // 觀光客進站人次�
   logSignup("觀光客進站");
 }
 function renderTouristBar(){
-  const on=touristLocked();
+  const on=restricted(), tr=touristLocked(), rej=!tr&&S.approval==="rejected";
   document.body.classList.toggle("tourist",on);
   const bar=$("#touristBar"); if(bar) bar.hidden=!on;
+  if(bar&&on){
+    $("#tbText").innerHTML=tr?"🧳 <b>觀光客模式</b>：進度只存在這台裝置，30 天沒回來會自動清空；交誼廳只能參觀，留言、按讚、送禮等互動不開放。"
+      :rej?"❌ <b>加入申請沒有通過</b>：目前和觀光客一樣只能看、不能互動。如有疑問請洽管理者，也可以重新送出申請。"
+      :"⏳ <b>註冊審核中</b>：管理者審核通過後，交誼廳、留言、商店的人物與寵物商品等功能就會解鎖；現在的進度都會保留。";
+    bar.querySelector("[data-touristjoin]").hidden=!tr;
+    bar.querySelector("[data-approvecheck]").hidden=tr||rej;
+    bar.querySelector("[data-reapply]").hidden=!rej;
+  }
   const ov=$("#touristClosed"); if(ov) ov.hidden=!(S.group===TOURIST&&CFG&&CFG.touristOn===false);
 }
 async function touristJoin(){
@@ -4752,7 +4815,13 @@ $("#cForm").addEventListener("submit",async e=>{
   const profileChanged=!isNew&&(S.name!==name||S.emp!==emp||S.group!==grp);
   if(isNew&&!S.since) S.since=Date.now();             // 加入時間（種子補償「只給目前已加入的人」用）
   S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; S.av=Object.assign({},draft); S.group=grp; save();
-  if(touristLocked()) touristVisitLog(); else if(isNew) logSignup("首次登錄"); else if(profileChanged) logSignup("修改資料");
+  if(isNew&&!touristLocked()){                          // 新人審核：新建立的角色先送出申請
+    if(approvalNeeded()){ S.approval="pending"; S.applyAt=Date.now(); save(); sendApply(); }
+    else { S.approval="approved"; save(); }
+  }
+  if(touristLocked()) touristVisitLog(); else if(isNew) logSignup(pendingApproval()?"申請加入":"首次登錄"); else if(profileChanged) logSignup("修改資料");
+  if(isNew&&pendingApproval()) setTimeout(()=>uiAlert("📨 已送出加入申請！\n管理者審核通過前，你可以先看任務、照顧寵物和農場；交誼廳互動、留言等功能會在審核通過後自動解鎖，進度都會保留。"),900);
+  if(pendingApproval()) checkApproval(false);
   renderTouristBar();
   queueSync(true);
   $("#cDlg").close();
@@ -4842,6 +4911,7 @@ async function fetchSheet(k,force){
 const TOURIST_NO_FORM=new Set(["lounge","consult","ivReply","save"]);   // 進度回報照送（組別「觀光客」，後台名冊另外列出）
 function sendForm(k,values){
   if(TOURIST_NO_FORM.has(k)&&touristLocked()) return Promise.reject(new Error("觀光客模式不開放"));
+  if(pendingApproval()&&(k==="consult"||k==="ivReply"||(k==="lounge"&&values&&values.type!=="apply"))) return Promise.reject(new Error("審核通過前不開放"));
   const f=formCfg(k);
   if(!f) return Promise.reject(new Error("尚未設定「"+FORM_KEYS[k].label+"」表單"));
   const body=new URLSearchParams();
@@ -4960,7 +5030,7 @@ async function unpackPayload(str){
   return JSON.parse(t.startsWith("j:")?t.slice(2):t);
 }
 async function parseFeed(rows){
-  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map()};
+  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map(),approve:new Map()};
   rows.forEach((r,i)=>{
     const ts=String(r[0]||""), type=String(r[1]||"").trim(), id=String(r[2]||"").trim(), part=String(r[3]||"").trim(), data=String(r[4]||""), by=String(r[5]||"");
     if(!type||!id) return;
@@ -4986,6 +5056,8 @@ async function parseFeed(rows){
   out.comps=[];
   for(const [id,rec] of recs.comp){ try{ out.comps.push(Object.assign({},await unpackPayload(rec.data),{id,row:rec.row,ts:rec.ts,by:rec.by})); }catch(e){} }
   out.comps.sort((a,b)=>a.row-b.row);
+  out.approve={};
+  for(const [id,rec] of recs.approve){ try{ out.approve[id.toUpperCase()]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
   out.roster={};
   for(const [id,rec] of recs.roster){ try{ out.roster[id]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
   return out;
@@ -5017,6 +5089,7 @@ function configFromRows(rows){
   return {chief:get("村長名稱"),director:get("總長稱呼"),goal:get("年度目標點數"),groups:groups.length?groups:null,portals,
     interviewOn:/^(true|是|開|開啟|on|1|y|yes|v|✓)$/i.test(get("面談功能").trim()),
     touristOn:!/^(false|否|關|關閉|off|0|n|no|x|✗)$/i.test(get("觀光客通道").trim()),
+    approvalOn:!/^(false|否|關|關閉|off|0|n|no|x|✗)$/i.test(get("新人審核").trim()),
     escrowKey:get("救援公開金鑰").trim(),
     notice:{on:/^(true|是|開|開啟|on|1|y|yes|v|✓)$/i.test(get("公告開啟").trim()),title,body,updatedAt:hashStr(title+"\n"+body)}};
 }
@@ -5152,6 +5225,7 @@ function applyConfig(data){
     director:cleanText(d.director,12)||DEFAULT_CONFIG.director,
     interviewOn:d.interviewOn===true,
     touristOn:d.touristOn!==false,
+    approvalOn:d.approvalOn!==false,
     escrowKey:/^[A-Za-z0-9+/=]{200,1200}$/.test(String(d.escrowKey||""))?String(d.escrowKey):"",
     npcs:cleanNpcs(d.npcs),
     notice:Object.assign({on:false,title:"",body:"",updatedAt:""},d.notice||{})
@@ -5159,7 +5233,7 @@ function applyConfig(data){
   document.querySelectorAll(".chiefLabel").forEach(el=>el.textContent=`部門村長　${CFG.chief}`);
   renderPortals(); renderNotice(); renderGroups();
   applyInterviewSwitch();
-  renderTouristBar();
+  renderTouristBar(); if(pendingApproval()) checkApproval(false);
   if(curPlace) renderPlace();
   if(curZone&&curZone.passbook) renderZone();
 }
@@ -5732,7 +5806,7 @@ function openCloud(mode){
   $("#cloudLater").hidden=LOGIN_GATE; $("#cloudOffline").hidden=true;
   if(LOGIN_GATE&&!change&&!recover){
     $("#cloudTitle").textContent=create?"註冊新帳號":"歡迎！請先登入";
-    $("#cloudIntro").textContent=create?"第一次來嗎？先註冊一個帳號，進度會自動存到部門試算表，換電腦也能接著玩。註冊完就會開始建立角色。":"有帳號的話請直接登入，進度會接回這台電腦；第一次來請按左下角的「我還沒有帳號」註冊。";
+    $("#cloudIntro").textContent=create?"第一次來嗎？先註冊一個帳號，進度會自動存到部門試算表，換電腦也能接著玩。註冊完就會開始建立角色。"+(approvalNeeded()?"建立角色後會送出加入申請，管理者審核通過就能使用全部功能。":""):"有帳號的話請直接登入，進度會接回這台電腦；第一次來請按左下角的「我還沒有帳號」註冊。";
     $("#cloudSwitch").textContent=create?"我已經有帳號了，改用登入":"我還沒有帳號，註冊新帳號";
   }
   const d=$("#cloudDlg"); if(!d.open) d.showModal();
@@ -5879,6 +5953,11 @@ async function loadLounge(force){
   }catch(e){ LOUNGE.err="load"; }
   finally{ LOUNGE.busy=false; }
 }
+function pendingCodes(rows){                           // 送過加入申請、但後台還沒通過的人（讀不到審核結果時不排除）
+  const out=new Set(); if(!FEED||!FEED.approve) return out;
+  (rows||[]).forEach(r=>{ if(r.type==="apply"&&r.code){ const d=FEED.approve[r.code]; if(!(d&&d.ok)) out.add(r.code); } });
+  return out;
+}
 function loungeData(){
   const people={}, seenAt={}, likes={}, posts=[], replies={}, visits={}, steals={}, tosses={}, gifts={}, npcgifts={}, playdates={}, rpss={};
   const seen=new Set(LOUNGE.rows.map(r=>r.type+"|"+r.code+"|"+r.target+"|"+r.msg));
@@ -5922,8 +6001,9 @@ function loungeData(){
     }
   });
   Object.keys(seenAt).forEach(c=>{ const p=people[c]; if(p&&(!p.at||seenAt[c]>p.at)) people[c]=Object.assign({},p,{at:seenAt[c]}); });
+  const APW=pendingCodes(LOUNGE.rows);
   Object.entries(LOUNGE.roster||{}).forEach(([c,r])=>{                   // 名冊上有、但交誼廳還沒有名片的人
-    if(people[c]||HID.has(c)) return;
+    if(people[c]||HID.has(c)||APW.has(c)) return;                          // 審核中的人不列
     people[c]={code:c,name:r.name,group:r.group,level:r.level,av:null,pet:null,msg:"",at:null,nocard:true};
   });
   Object.entries(friends()).forEach(([c,f])=>{                         // 寵物朋友：名片暫時讀不到時，仍然可以去串門子
@@ -5953,7 +6033,7 @@ function loungeData(){
   return {list,posts,replies,visits,steals,tosses,gifts,npcgifts,playdates,rpss,people,champion,online:list.filter(p=>p.online).length};
 }
 async function loungeSend(payload){
-  if(!loungeReady()||touristLocked()) return false;     // 觀光客：交誼廳只看不寫
+  if(!loungeReady()||restricted()) return false;       // 觀光客／審核中：交誼廳只看不寫
   try{ await sendForm("lounge",payload); return true; }catch(e){ return false; }
 }
 /* 交誼廳名片：內容有變才送完整名片；沒變時只在需要顯示「上線中」時送一筆很小的 here 紀錄 */
@@ -5965,7 +6045,7 @@ function cardPayload(){
 }
 async function loungePresence(force,opt){
   opt=opt||{};
-  if(!loungeReady()||!S.group||touristLocked()) return;   // 觀光客的名片不上線
+  if(!loungeReady()||!S.group||restricted()) return;   // 觀光客／審核中的名片不上線
   if(!force&&Date.now()-lastPresence<90000) return;
   lastPresence=Date.now();
   const pl=cardPayload(), k=hashStr([pl.code,pl.name,pl.group,pl.level,pl.av,pl.pet,pl.msg].join("|"));
@@ -6243,7 +6323,7 @@ function startStar(){
 function cheatKey(msg){ return String(msg||"").replace(/[\s　！!。，,～~〜ー\-－［］\[\]【】「」]/g,""); }
 function runCheat(msg){
   const c=CHEATS[cheatKey(msg)]; if(!c) return false;
-  if(touristLocked()) return false;                    // 觀光客不適用任何密技（當成一般留言處理）
+  if(restricted()) return false;                       // 觀光客／審核中不適用任何密技（當成一般留言處理）
   let gift="";
   if(c.kind==="pet"){
     S.petKinds=S.petKinds||{}; S.petKinds[c.pet]=true;
@@ -7006,7 +7086,7 @@ function renderLoungeInner(box){
       <div class="abar"><h3>大家的冒險者名片 ${helpBtn("lounge")}</h3><span class="afilters">
         <span class="ahint">上線中 ${d.online} 人・共 ${d.list.length} 位</span>
         <button class="act ghost" type="button" data-lounge="refresh">重新整理</button></span></div>
-      ${touristLocked()?`<p class="touristlounge">🧳 你正在以<b>觀光客</b>身分參觀，同事看不到你。可以看名片、留言板，也可以去同事家參觀；按讚、留言、送禮、偷菜等互動不開放。</p>`:`<div class="lrow">
+      ${pendingApproval()?`<p class="touristlounge">⏳ 註冊審核中：可以看名片、留言板，也可以去同事家參觀；按讚、留言、送禮、偷菜等互動，以及你的名片上線，會在審核通過後開放。</p>`:touristLocked()?`<p class="touristlounge">🧳 你正在以<b>觀光客</b>身分參觀，同事看不到你。可以看名片、留言板，也可以去同事家參觀；按讚、留言、送禮、偷菜等互動不開放。</p>`:`<div class="lrow">
         <label class="sr" for="lgMsg">我的一句話</label>
         <input id="lgMsg" class="ainput wide" maxlength="30" placeholder="寫一句話讓大家看到，例如：今天也要加油！" value="${esc(S.loungeMsg||"")}">
         <button class="act" type="button" data-lounge="me">更新我的名片</button>
@@ -7880,12 +7960,64 @@ function renderNpcAdmin(){
   </article>`).join("");
 }
 
+/* ================= 管理者：新人審核 ================= */
+let AP_ROWS=[], AP_BUSY=false, AP_LOCAL={};
+async function loadApprovals(force){
+  if(AP_BUSY) return; AP_BUSY=true;
+  $("#apInfo").textContent="讀取中…";
+  let rows=[], err="";
+  try{ await getFeed(true); }catch(e){}
+  try{ rows=(await fetchSheet(sheetUrl("lounge")?"lounge":loungeSheet(),true))||[]; }catch(e){ err="讀不到交誼廳資料，請稍後再試。"; }
+  const m={};
+  rows.forEach(r=>{ if(String(r[1]||"").trim()!=="apply") return; const code=String(r[2]||"").trim().toUpperCase(); if(!code) return;
+    const at=parseSheetTs(r[0]), o=m[code];
+    if(!o||(at&&(!o.at||at>=o.at))) m[code]={code,name:String(r[3]||""),group:String(r[4]||""),emp3:String(r[8]||""),at,first:o?o.first:at};
+  });
+  AP_ROWS=Object.values(m); AP_BUSY=false; AP_ERR=err;
+  renderApprovals();
+}
+let AP_ERR="";
+function apStatus(x){
+  const loc=AP_LOCAL[x.code]; const d=(FEED&&FEED.approve||{})[x.code];
+  if(loc&&(!d||d.at!==loc.at)) return loc.ok?"ok-wait":"no-wait";
+  if(d&&d.ok) return "ok";
+  if(d&&!d.ok&&(+d.at||0)>=(x.at?+x.at:0)) return "no";
+  return "pending";
+}
+function renderApprovals(){
+  const all=$("#apShowAll").checked;
+  const list=AP_ROWS.map(x=>Object.assign({},x,{st:apStatus(x)})).sort((a,b)=>(a.st==="pending"?0:1)-(b.st==="pending"?0:1)||((b.at||0)-(a.at||0)));
+  const pend=list.filter(x=>x.st==="pending").length, shown=all?list:list.filter(x=>x.st==="pending"||/wait/.test(x.st));
+  const c=$("#apTabCount"); if(c){ c.hidden=!pend; c.textContent=pend; }
+  $("#apInfo").innerHTML=AP_ERR?`<span class="cerr" style="display:inline">${esc(AP_ERR)}</span>`:`待審核 <b>${pend}</b> 人・共 ${list.length} 筆申請。${approvalNeeded()?"":"<b>目前「新人審核」已關閉</b>（網站設定），新建立的角色不用審核。"}`;
+  const ST={pending:'<span class="st st-wait">待審核</span>',ok:'<span class="st st-ok">已通過</span>',no:'<span class="st st-off">未通過</span>',"ok-wait":'<span class="st st-wait">通過・生效中</span>',"no-wait":'<span class="st st-wait">不通過・生效中</span>'};
+  $("#apTable").innerHTML=`<thead><tr><th>申請時間</th><th>名字</th><th>組別</th><th>員工編號</th><th>新人代碼</th><th>狀態</th><th><span class="sr">操作</span></th></tr></thead><tbody>${
+    shown.length?shown.map(x=>`<tr><td>${x.at?esc(fmtShort(new Date(x.at))):"—"}</td><td>${esc(x.name||"—")}</td><td>${esc(x.group||"—")}</td><td>${x.emp3?`末 3 碼 <code>${esc(x.emp3)}</code>`:"—"}</td><td><code>${esc(x.code)}</code></td><td>${ST[x.st]||""}</td>
+      <td style="white-space:nowrap">${x.st==="ok"||x.st==="ok-wait"?"":`<button class="mini-btn" type="button" data-apok="${esc(x.code)}">通過</button> `}${x.st==="no"||x.st==="no-wait"?"":`<button class="del" type="button" data-apno="${esc(x.code)}">不通過</button>`}</td></tr>`).join("")
+    :`<tr><td colspan="7">${list.length?"目前沒有待審核的申請。":"目前還沒有人送出申請。"}</td></tr>`}</tbody>`;
+}
+$("#apReload").addEventListener("click",()=>loadApprovals(true));
+$("#apShowAll").addEventListener("change",renderApprovals);
+$("#apTable").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-apok],[data-apno]"); if(!b) return;
+  const ok=b.hasAttribute("data-apok"), code=ok?b.dataset.apok:b.dataset.apno, x=AP_ROWS.find(r=>r.code===code)||{code};
+  if(!(await uiConfirm(ok?`確定讓「${x.name||code}」（${x.group||""}）通過審核嗎？`:`確定不讓「${x.name||code}」通過嗎？他會看到申請沒有通過，可以重新申請。`,ok?"通過":"不通過"))) return;
+  b.disabled=true;
+  const at=Date.now();
+  const sent=await adminSend("approve",code,"j:"+JSON.stringify({ok,at,name:x.name||"",group:x.group||""}),`${ok?"審核通過":"審核不通過"}：${x.name||code}`,String(ok));
+  b.disabled=false;
+  if(sent){ AP_LOCAL[code]={ok,at}; renderApprovals(); }
+});
+
 /* ================= 管理者：使用者名冊 ================= */
 let RS_ROWS=[], RS_BUSY=false, RS_SRC="";
+const APPLIED=new Set();
+const rsPending=c=>APPLIED.has(c)&&!(((FEED&&FEED.approve)||{})[c]||{}).ok;
 async function loadRoster(force){
   if(RS_BUSY) return; RS_BUSY=true;
   $("#rsSource").textContent="讀取中…";
   const map={};
+  APPLIED.clear();
   try{ await getFeed(true); }catch(e){}
   // ① 名冊資料（進度回報的每人最新一筆）
   if(sheetUrl("roster")){
@@ -7903,7 +8035,9 @@ async function loadRoster(force){
     try{
       const rows=await fetchSheet(loungeSheet(),true);
       (rows||[]).forEach(r=>{
-        const ty=String(r[1]||"").trim(); if(ty!=="presence"&&ty!=="here") return;
+        const ty=String(r[1]||"").trim();
+        if(ty==="apply"){ const c=String(r[2]||"").trim().toUpperCase(); if(c) APPLIED.add(c); return; }
+        if(ty!=="presence"&&ty!=="here") return;
         const code=String(r[2]||"").trim().toUpperCase(); if(!code) return;
         const at=parseSheetTs(r[0]);
         const o=map[code]||(map[code]={code,name:String(r[3]||""),group:String(r[4]||""),level:String(r[5]||""),progress:"",awarded:""});
@@ -7942,7 +8076,7 @@ function renderRoster(){
         <td>${esc(x.name||"—")}${x.nick?`<span class="ahint">（${esc(x.nick)}）</span>`:""}</td><td>${esc(x.group||"—")}</td><td><code>${esc(x.code)}</code></td>
         <td>${x.level?esc(lvLabel(x.level)):"—"}${x.progress?`<span class="ahint">・${esc(x.progress)}</span>`:""}${x.awarded?' <span class="st st-gold">已結業</span>':""}</td>
         <td>${x.reported?esc(fmtShort(x.reported)):"—"}</td><td>${x.seen?esc(fmtShort(x.seen)):"—"}</td>
-        <td>${h?'<span class="st st-off">已隱藏</span>':'<span class="st st-ok">顯示中</span>'}${waiting?' <span class="st st-wait">更新中</span>':""}</td>
+        <td>${rsPending(x.code)?'<span class="st st-wait">審核中</span> ':""}${h?'<span class="st st-off">已隱藏</span>':'<span class="st st-ok">顯示中</span>'}${waiting?' <span class="st st-wait">更新中</span>':""}</td>
         <td><button class="${h?"mini-btn":"del"}" type="button" data-rshide="${esc(x.code)}" data-on="${h?0:1}">${h?"恢復顯示":"隱藏"}</button></td></tr>`;}).join("")
     :`<tr><td colspan="8">${ROWS.length?"沒有符合的人員。":"目前沒有名冊資料。"}</td></tr>`}</tbody>`;
 }
@@ -8641,7 +8775,7 @@ const SHOP={
 };
 const CONSUME=new Set(["snack","fert"]);
 const TOURIST_NO_SHOP=new Set(["pets","petgear","snack","bed","wear","avacc"]);   // 觀光客不能買：人物與寵物相關商品
-const touristShopBan=(cat,id)=>!touristLocked()?"":TOURIST_NO_SHOP.has(cat)?"購買人物與寵物相關商品":(!CONSUME.has(cat)&&SHOP_THEME[id]!=="classic")?"購買經典款以外的家具":"";
+const touristShopBan=(cat,id)=>!restricted()?"":TOURIST_NO_SHOP.has(cat)?"購買人物與寵物相關商品":(!CONSUME.has(cat)&&SHOP_THEME[id]!=="classic")?"購買經典款以外的家具":"";
 const SHOP_GROUPS=[["paper","🧱 牆紙"],["ground","🟫 地板"],["rug","🧶 地毯"],["wall","🖼 掛飾"],["floor","🛋 擺設"],["bed","🛏 寵物窩"],["pets","🐶 寵物"],["petgear","🎀 寵物配件"],["snack","🍖 零食"],["wear","👕 服裝"],["avacc","🎩 人物配件"],["fert","🌱 肥料"]].map(([k,n])=>({id:k,name:n,cats:[k]}));               // 消耗品：可以重複買，不擺進家裡
 const FERT={fz_basic:{desc:"剩下的時間少 30 分鐘",use:left=>Math.min(left,30*60e3)},fz_super:{desc:"剩下的時間減半",use:left=>Math.ceil(left/2)}};
 const FERT_MAX=2;                                      // 每塊田每一輪最多施肥 2 次
@@ -8688,7 +8822,7 @@ function renderShop(panel){
     <div class="abar"><h3>種子商店 ${helpBtn("shop")} ${isVip()?'<span class="vipbadge">👑 VIP</span>':""}</h3><span class="ahint">你有 <b>${total}</b> 顆種子</span></div>
     <p class="ahint vipline">${isVip()?`👑 你是 VIP（已購買 ${shopBuysCount()} 個商品）：每件家具右上角的「👁 預覽」可以先看擺進家裡的樣子。`:`👑 累積購買 ${VIP_BUYS} 個商品成為 VIP，就能先預覽家具擺放（目前 ${shopBuysCount()} / ${VIP_BUYS}）。`}</p>
     <p class="ahint">價格以種子總數計算，會自動從數量最多的種子開始扣。買下的家具會擺在上方的展示空間；服裝和配件買了會直接換上，訪客也看得到。寵物配件每一種寵物（包含隱藏版）都能戴。</p>
-    ${touristLocked()?`<p class="touristlounge">🧳 觀光客只能買「經典」主題的家具（牆紙、地板、地毯、掛飾、擺設）和肥料；點下方的「經典」就只會看到買得到的家具。</p>`:""}
+    ${pendingApproval()?`<p class="touristlounge">⏳ 審核通過前，只能買「經典」主題的家具（牆紙、地板、地毯、掛飾、擺設）和肥料；人物與寵物商品會在審核通過後開放。</p>`:touristLocked()?`<p class="touristlounge">🧳 觀光客只能買「經典」主題的家具（牆紙、地板、地毯、掛飾、擺設）和肥料；點下方的「經典」就只會看到買得到的家具。</p>`:""}
     <div class="seedchips">${Object.entries(CROPS).map(([k,c])=>`<span class="seedchip"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span>${esc(c.name)} ${seeds()[k]||0}</span>`).join("")}</div>
     <div class="themechips" role="group" aria-label="商品主題">${[["all","全部"]].concat(SHOP_THEMES).map(([k,n])=>{
       const L=Object.keys(SHOP_THEME).filter(id=>k==="all"||SHOP_THEME[id]===k), own=L.filter(id=>FREE_DECO.has(id)||S.shopOwned[id]).length;
@@ -8700,7 +8834,7 @@ function renderShop(panel){
         const can=total>=price;
         let btn;
         const ban=owned&&!CONSUME.has(cat)?"":touristShopBan(cat,id);
-        if(ban) btn=`<button class="act ghost" type="button" data-shoplock="${esc(ban)}">🔒 ${TOURIST_NO_SHOP.has(cat)?"觀光客不開放":"觀光客限經典款"}</button>`;
+        if(ban) btn=`<button class="act ghost" type="button" data-shoplock="${esc(ban)}">🔒 ${touristLocked()?(TOURIST_NO_SHOP.has(cat)?"觀光客不開放":"觀光客限經典款"):(TOURIST_NO_SHOP.has(cat)?"審核通過後開放":"審核中限經典款")}</button>`;
         else if(cat==="pets"&&owned){
           const t=shopPetType(id);
           btn=S.pet&&S.pet.type===t?`<span class="st st-gold">目前的夥伴</span>`:!petUnlocked()?`<span class="ahint">LV 3 領養寵物後就能換</span>`:`<button class="act" type="button" data-shopuse="pets|${id}">${S.pet?"換成牠":"領養牠"}</button>`;
@@ -10107,7 +10241,7 @@ $("#spOpts").addEventListener("click",e=>{
   SEEDPICK=null; injectNpcGift();
 });
 $("#nqGo").addEventListener("click",()=>{ const c=QUIZ_CUR; $("#npcQuizDlg").close(); if(c&&c.qz.quest) setTimeout(()=>openQuest(c.qz.quest),120); });
-document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); } if(b.dataset.tab==="rps") loadConsultAdmin();if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster(); if(b.dataset.tab==="comp") openCompAdmin();}});
+document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); } if(b.dataset.tab==="rps") loadConsultAdmin();if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster(); if(b.dataset.tab==="approve") loadApprovals(true); if(b.dataset.tab==="comp") openCompAdmin();}});
 $("#viewAdmin").addEventListener("click",e=>{
   const c=e.target.closest("[data-copy]"); if(c){ copyText($("#"+c.dataset.copy).textContent); return; }
   if(e.target.closest("[data-reload]")){ loadAdminLists(true); if($("#ivTable").closest(".apanel")&&!$("#ivTable").closest(".apanel").hidden) loadIvReplies(); }
@@ -10163,6 +10297,7 @@ function renderPubs(){
 function pubDone(p,feed){
   if(p.type==="content"||p.type==="settings") return feed.batchIds.has(p.id);
   if(p.type==="ping") return feed.pings.has(p.id);
+  if(p.type==="approve"){ const x=(feed.approve||{})[String(p.id).toUpperCase()]; return !!x&&(p.expect==null||String(!!x.ok)===p.expect); }
   if(p.type==="comp"){ const x=(feed.comps||[]).find(v=>v.id===p.id); return !!x&&(p.expect==null||String(!!x.revoked)===p.expect); }
   if(p.type==="interview"){ const x=feed.interviews.find(v=>v.id===p.id); return !!x&&(p.expect==null||String(x.status||"")===p.expect); }
   if(p.type==="reply"){ const r=feed.replies[p.id]; return !!r&&(p.expect==null||r.at===p.expect); }
@@ -10730,7 +10865,7 @@ const zoneDirty=id=>!same(canonContent(cDraft.filter(x=>x.id===id))[0],liveConte
 const pendingOf=type=>PUBS.some(p=>p.type===type&&p.state!=="done");
 const fmtStamp=iso=>{ const d=new Date(iso); return isNaN(d)?"":d.toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}); };
 function currentContent(){ return clone(ZONES.map(z=>({id:z.id,intro:z.intro,chapters:z.chapters.map(ch=>({title:ch.title,sub:ch.sub,quests:ch.quests.map(q=>({id:q.id,title:q.title,body:q.body}))}))}))); }
-function currentSettings(){ return {chief:CFG.chief,director:CFG.director,goal:CFG.goal,interviewOn:!!CFG.interviewOn,touristOn:CFG.touristOn!==false,escrowKey:CFG.escrowKey||"",npcs:clone(npcList()),groups:CFG.groups.slice(),portals:clone(CFG.portals),notice:{on:!!CFG.notice.on,title:CFG.notice.title||"",body:CFG.notice.body||""}}; }
+function currentSettings(){ return {chief:CFG.chief,director:CFG.director,goal:CFG.goal,interviewOn:!!CFG.interviewOn,touristOn:CFG.touristOn!==false,approvalOn:CFG.approvalOn!==false,escrowKey:CFG.escrowKey||"",npcs:clone(npcList()),groups:CFG.groups.slice(),portals:clone(CFG.portals),notice:{on:!!CFG.notice.on,title:CFG.notice.title||"",body:CFG.notice.body||""}}; }
 
 function refreshLive(){
   if(!adminOpen||!cDraft) return;
@@ -10994,6 +11129,7 @@ function renderSiteSettings(){
   $("#sChief").value=SS.chief; $("#sDirector").value=SS.director; $("#sGoal").value=SS.goal;
   $("#sIvOn").checked=!!SS.interviewOn;
   $("#sTourOn").checked=SS.touristOn!==false;
+  $("#sApprOn").checked=SS.approvalOn!==false;
   renderSettingRows(); ssState();
 }
 function renderSettingRows(){
@@ -11046,6 +11182,7 @@ function cleanSettings(){
     goal:parseInt(SS.goal,10),
     interviewOn:!!SS.interviewOn,
     touristOn:SS.touristOn!==false,
+    approvalOn:SS.approvalOn!==false,
     escrowKey:String(SS.escrowKey||""),
     npcs:cleanNpcs(SS.npcs),
     groups:[...new Set(SS.groups.map(g=>cleanText(g,20)).filter(Boolean))],
@@ -11098,7 +11235,7 @@ $("#previewEnd").addEventListener("click",()=>{
 function settingsRows(c){
   const n=c.notice||{};
   return [SHEET_KEYS.settings.headers,
-    ["村長名稱",c.chief],["總長稱呼",c.director],["年度目標點數",c.goal],["面談功能",c.interviewOn?"TRUE":"FALSE"],["觀光客通道",c.touristOn!==false?"TRUE":"FALSE"],["救援公開金鑰",c.escrowKey||""],
+    ["村長名稱",c.chief],["總長稱呼",c.director],["年度目標點數",c.goal],["面談功能",c.interviewOn?"TRUE":"FALSE"],["觀光客通道",c.touristOn!==false?"TRUE":"FALSE"],["新人審核",c.approvalOn!==false?"TRUE":"FALSE"],["救援公開金鑰",c.escrowKey||""],
     ["組別",c.groups.join("\n")],
     ["傳送門",c.portals.map(p=>`${p.label}|${p.url}`).join("\n")],
     ["公告開啟",n.on?"TRUE":"FALSE"],["公告標題",n.title||""],["公告內容",n.body||""]];
@@ -11132,7 +11269,7 @@ renderTouristBar();
 if(TOURIST_EXPIRED) setTimeout(()=>toast("🧳 觀光客進度超過 30 天沒有使用，已自動清空，歡迎重新開始冒險！"),2500);
 bootstrap().then(()=>{
   hideBoot();
-  renderTouristBar(); touristVisitLog();
+  renderTouristBar(); touristVisitLog(); if(pendingApproval()) checkApproval(true);
   try{ const M={chief:`村長 ${CFG.chief}`,director:CFG.director}; npcList().forEach(n=>{ M[n.id]=`${n.title} ${n.name}`; }); localStorage.setItem("sino22-bootnames",JSON.stringify(M)); }catch(e){}
   if(S.group) setTimeout(()=>{ loungePresence(true,{here:true}).catch(()=>{}); },3000);
   if(S.group) setTimeout(()=>{                         // 每天檢查一次：試算表裡沒有自己的名片就補送（例如以前送出時剛好失敗）

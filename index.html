@@ -259,6 +259,120 @@ main{max-width:1180px;margin:0 auto;padding:6px 16px 40px}
 .stamps span{aspect-ratio:1;border:2px solid rgba(255,255,255,.35);border-radius:3px}
 .stamps span.on{background:var(--gold);border-color:#fff;box-shadow:inset -3px -3px 0 #C98F1F}
 
+
+/* ---------- 第一次進站：新人報到設定 ---------- */
+#obDlg{max-width:min(900px,calc(100vw - 20px))}
+.obwrap{padding:0}
+.obwrap .obpane{display:flex;flex-direction:column;gap:14px;padding:20px 26px 22px;overflow:auto;line-height:1.75}
+.obwrap .obpane[hidden]{display:none}
+.obsteps{list-style:none;margin:0;padding:14px 20px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:2px solid rgba(255,255,255,.22)}
+.obsteps[hidden]{display:none}
+.obsteps .obt{font-family:var(--pixel);font-size:16px;color:var(--gold);margin-right:6px}
+.obsteps .obs{flex:1 1 0;min-width:96px;display:flex;align-items:center;gap:8px;padding:7px 12px;border:2px solid #4A5596;border-radius:4px;color:var(--win-muted);font-size:14px;white-space:nowrap}
+.obsteps .obs b{font-family:var(--pixel);font-weight:400}
+.obsteps .obs.done{border-color:#8FD27A;color:#8FD27A}
+.obsteps .obs.skip{border-color:#4A5596;color:var(--win-muted);opacity:.75}
+.obsteps .obs.cur{background:var(--gold);color:#2B1D16;border-color:#fff;font-weight:700}
+.obhero{display:flex;gap:18px;align-items:center}
+.obface{flex:none;width:72px;height:72px;background:#0B1030;border:3px solid #fff;border-radius:4px;padding:4px;box-sizing:border-box}
+.obface.av{width:96px;height:96px;background:#8FD3F0}
+.obface.sm{width:52px;height:52px;border-width:2px}
+.obhero h2{font-family:var(--pixel);font-weight:400;font-size:clamp(22px,4vw,34px);line-height:1.3;margin:0}
+.obhero .dept{margin:0;font-family:var(--pixel);font-size:14px;color:var(--gold)}
+.obhero .sub{margin:4px 0 0;color:#DCE0FA;font-size:15px}
+.obpane h3{font-family:var(--pixel);font-weight:400;font-size:clamp(20px,3vw,26px);margin:0;line-height:1.4}
+.obpane .lead{margin:0;color:#DCE0FA}
+.obsay{margin:0;padding:14px 16px;background:#0B1030;border:2px solid #fff;border-radius:4px;font-size:16px}
+.obplan{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.obplan li{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border:2px solid rgba(255,255,255,.35);border-radius:4px;background:rgba(255,255,255,.05)}
+.obplan li b{font-family:var(--pixel);font-weight:400;font-size:18px}
+.obplan li b i{font-style:normal;display:inline-grid;place-items:center;width:24px;height:24px;margin-right:8px;background:var(--gold);color:#19225E;font-family:var(--digits);font-size:10px;border-radius:3px}
+.obplan li span{font-size:13px;color:var(--win-muted)}
+.obbtns{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
+.obbtns .sp{flex:1}
+.obbtns.left{justify-content:flex-start}
+.obbtns .act{min-height:44px}
+.obfine{margin:0!important;font-size:13px;text-align:center}
+.obgrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px;align-items:start}
+.obfields{display:grid;gap:12px}
+.obfields label{font-family:var(--pixel);font-size:15px;display:block;margin-bottom:4px}
+.obfields label small{font-family:var(--body);font-size:13px;color:var(--win-muted);margin-left:6px}
+.obchk{margin:4px 0 0!important;font-size:13px;color:var(--win-muted)}
+.obchk.ok{color:#8FD27A}
+.obchk.ng{color:#FFB3AD}
+.obside{display:flex;flex-direction:column;gap:10px;padding:14px 16px;background:rgba(11,16,48,.7);border:2px solid rgba(255,255,255,.45);border-radius:5px}
+.obside .who{display:flex;gap:12px;align-items:center;font-size:15px}
+.obside h4{margin:4px 0 0!important;font-family:var(--pixel);font-weight:400;font-size:16px;color:var(--gold)}
+.obok{margin:0;color:#8FD27A;font-family:var(--pixel);font-size:16px}
+.obcheck{display:flex;gap:10px;align-items:center;font-size:16px;padding:10px 14px;background:rgba(143,210,122,.12);border:2px solid #8FD27A;border-radius:4px;cursor:pointer}
+.obcheck input{width:20px;height:20px;accent-color:#8FD27A}
+.obpill{margin:0 0 0 auto;flex:none;padding:8px 14px;background:var(--gold);color:#2B1D16;border:2px solid #fff;border-radius:4px;font-weight:700;white-space:nowrap}
+.obpill.ok{background:#8FD27A}
+.obcols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.obcols>div{padding:14px 18px;border-radius:6px;display:flex;flex-direction:column;gap:6px}
+.obcols h4{margin:0!important;font-family:var(--pixel);font-weight:400;font-size:19px}
+.obcols ul{margin:0;padding-left:20px;font-size:15px;line-height:1.7}
+.obnow{background:rgba(143,210,122,.12);border:2px solid #8FD27A}
+.obnow h4{color:#8FD27A}
+.oblater{background:rgba(242,193,78,.10);border:2px solid var(--gold)}
+.oblater h4{color:var(--gold)}
+.obtalk{display:flex;gap:14px;align-items:center;padding:12px 14px;background:#0B1030;border:2px solid #fff;border-radius:4px}
+.obtalk p{margin:0;font-size:15px}
+#cDlg.ob{max-width:min(860px,calc(100vw - 20px))}
+#cDlg .obsteps{padding:12px 18px 10px}
+#cDlg.ob .cstep .n{display:none}
+#cDlg.ob.p1 .cs-av{display:none}
+#cDlg.ob.p2 .cs-basic,#cDlg.ob.p2 .cs-grp,#cDlg.ob.p2 #cObWhy{display:none}
+#cObWhy{margin:0 0 16px;padding:12px 16px;background:rgba(11,16,48,.6);border:2px solid rgba(255,255,255,.4);border-radius:5px;font-size:14px;line-height:1.8}
+#cObWhy h4{margin:0 0 4px!important}
+#cObWhy dl{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;margin:0}
+#cObWhy dt{color:var(--gold);white-space:nowrap}
+#cObWhy dd{margin:0}
+#cObWhy .apnote{margin:8px 0 0!important;color:#DCE0FA}
+#cDlg footer .btns{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:700px){
+  .obgrid,.obcols{grid-template-columns:1fr}
+  .obsteps .obt{flex-basis:100%}
+  .obsteps{gap:6px;padding:10px 12px}
+  .obsteps .obs{min-width:0;padding:6px 6px;font-size:13px;justify-content:center}
+  .obsteps .obs.cur{flex:3 1 0}
+  .obsteps .obs:not(.cur) .l{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .obhero{flex-wrap:wrap}
+  .obpill{margin-left:0}
+  .obwrap .obpane{padding:16px}
+  .obbtns .act{flex:1 1 auto}
+}
+/* 第一週任務清單（地圖旁的選單上方） */
+.oblist{margin:0 0 14px;padding:12px 12px 10px;border:2px solid var(--gold);border-radius:5px;background:rgba(11,16,48,.55)}
+.oblist[hidden]{display:none}
+.oblist .olh{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.oblist .olh h3{margin:0;font-family:var(--pixel);font-weight:400;font-size:18px}
+.oblist .oln{font-family:var(--digits);font-size:10px;color:var(--gold)}
+.oblist .olbar{height:10px;margin:8px 0 10px;border:2px solid #fff;border-radius:2px;background:#0B1030}
+.oblist .olbar i{display:block;height:100%;background:#8FD27A}
+.oblist ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.menu .oblist button{display:flex;grid-template-columns:none;gap:8px;align-items:center;width:100%;padding:6px 8px;border-radius:4px;border:2px solid transparent;font-size:14px;line-height:1.45;color:#fff;background:none;text-align:left}
+.menu .oblist button::before{content:none}
+.menu .oblist button:hover{background:rgba(255,255,255,.08)}
+.menu .oblist li.ol-ok button{color:#8FD27A;cursor:default}
+.oblist .ol-ok .t{text-decoration:line-through}
+.oblist .mk{flex:none;width:18px;font-family:var(--pixel);color:#7D8BD6}
+.oblist .ol-ok .mk{color:#8FD27A}
+.oblist .t{flex:1}
+.oblist .rw{flex:none;font-size:12px;color:var(--gold);white-space:nowrap}
+.oblist .ol-ok .rw{color:#8FD27A}
+.menu .oblist li.ol-nx button{background:#0B1030;border-color:var(--gold)}
+.oblist li.ol-nx .mk{color:var(--gold)}
+.menu .oblist li.ol-lock button{color:var(--win-muted);cursor:default}
+.oblist li.ol-lock .rw{color:var(--win-muted)}
+.oblist .olsay{display:flex;gap:10px;align-items:center;margin:10px 0 8px!important;padding:8px 10px;background:#0B1030;border:2px solid #fff;border-radius:4px;font-size:13px;line-height:1.6}
+.oblist .olsay .obface{width:38px;height:38px;padding:2px;border:0;background:none}
+.oblist .olbtns{display:flex;gap:8px}
+.menu .oblist .olbtns button{justify-content:center;border:2px solid #fff;background:#0B1030;font-family:var(--pixel);font-size:14px;min-height:38px}
+.oblist.min .olbar,.oblist.min ul,.oblist.min .olsay,.oblist.min .olbtns{display:none}
+.menu .oblist .olopen{padding:0;border:0;background:none;width:100%}
+.menu .oblist .olopen:hover{background:none}
+.tour-glow{position:relative;z-index:42;outline:4px solid var(--gold)!important;outline-offset:3px;box-shadow:0 0 0 9px rgba(242,193,78,.35)!important}
 /* ---------- dialogs ---------- */
 dialog{padding:0;border:0;background:none;max-width:min(760px,calc(100vw - 28px));width:100%;color:var(--win-text)}
 dialog::backdrop{background:rgba(8,10,30,.72)}
@@ -1443,6 +1557,7 @@ footer.site p{margin:4px 0}
         <p class="maptip">點選地圖上的建築，或從區域選單前往。角色會跟著滑鼠走動，走進海裡說不定會撈到寶物。<button type="button" class="help" data-help="點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。" aria-label="說明" title="說明">?</button></p>
       </div>
       <nav class="menu window" aria-label="區域選單">
+        <section class="oblist" id="obList" aria-label="第一週任務清單" hidden></section>
         <h2>前往哪裡？ <button type="button" class="help" data-help="每個區域有不同主題的任務。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。" aria-label="說明" title="說明">?</button></h2>
         <ol id="zoneMenu"></ol>
         <h2 class="sub2">特別地點 <button type="button" class="help" data-help="溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。" aria-label="說明" title="說明">?</button></h2>
@@ -1891,15 +2006,114 @@ footer.site p{margin:4px 0}
   </div>
 </dialog>
 
+
+<!-- 第一次進站：新人報到設定 -->
+<dialog id="obDlg" aria-labelledby="obTitle">
+  <div class="window dlg obwrap">
+    <ol class="obsteps" id="obSteps" aria-label="設定進度" hidden></ol>
+    <section class="obpane" data-ob="welcome">
+      <div class="obhero">
+        <span class="obface" id="obChief" aria-hidden="true"></span>
+        <div><p class="dept">園區及城鄉發展部・新人報到</p><h2 id="obTitle">園城人冒險指南</h2><p class="sub" id="obChiefName"></p></div>
+      </div>
+      <p class="obsay" id="obSay">歡迎來到園城部！接下來大約 3 分鐘，我陪你完成報到設定，再帶你把地圖逛一圈。</p>
+      <ol class="obplan" id="obPlan"></ol>
+      <div class="obbtns">
+        <button class="act ghost" type="button" id="obHave">我已經有帳號，直接登入</button>
+        <button class="act" type="button" id="obStart">我是新人，開始設定</button>
+      </div>
+      <p class="ahint obfine" id="obFine">電腦、手機都能用・隨時可以按「聽村長說明」再看一次</p>
+    </section>
+    <form class="obpane" data-ob="account" id="obAccForm" novalidate autocomplete="off" hidden>
+      <div><h3>建立你的帳號</h3><p class="lead">只要帳號和密碼。之後換電腦、換手機，用同一組登入就能接著玩。</p></div>
+      <div class="obgrid">
+        <div class="obfields">
+          <div>
+            <label for="obAcc">帳號<small>建議用員工編號，比較好記</small></label>
+            <input id="obAcc" class="ainput wide" maxlength="20" autocomplete="username" placeholder="例如 01234">
+            <p class="obchk" id="obChkAcc">3–20 個英文字母、數字、_ 或 -</p>
+          </div>
+          <div>
+            <label for="obPw">密碼</label>
+            <span class="pwwrap"><input id="obPw" class="ainput wide pwfield" type="text" maxlength="40" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore placeholder="至少 6 個字"><button class="pweye" type="button" data-obeye="obPw" aria-label="顯示密碼">👁</button></span>
+            <p class="obchk" id="obChk1">・至少 6 個字</p>
+          </div>
+          <div>
+            <label for="obPw2">再輸入一次密碼</label>
+            <span class="pwwrap"><input id="obPw2" class="ainput wide pwfield" type="text" maxlength="40" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore placeholder="再次輸入相同密碼"><button class="pweye" type="button" data-obeye="obPw2" aria-label="顯示密碼">👁</button></span>
+            <p class="obchk" id="obChk2">・兩次一致</p>
+          </div>
+          <p class="warnbox"><b>請不要用公司帳號或其他網站的密碼。</b>這組密碼只用來解開你在這個網站的存檔。</p>
+        </div>
+        <aside class="obside">
+          <div class="who"><span class="obface sm" id="obChief3" aria-hidden="true"></span><span>先幫你開個帳號，冒險的進度才不會不見喔！</span></div>
+          <h4>為什麼要註冊？</h4>
+          <ul class="benefits">
+            <li><span aria-hidden="true">💻</span>換電腦、清除瀏覽器資料，進度都還在</li>
+            <li><span aria-hidden="true">🔒</span>進度先在你的電腦加密，才存到部門雲端</li>
+            <li><span aria-hidden="true">🔑</span>下一步會給你一組救援碼，忘記密碼時用</li>
+          </ul>
+        </aside>
+      </div>
+      <p class="cerr" id="obAccErr" role="alert"></p>
+      <div class="obbtns">
+        <button class="linkbtn" type="button" id="obToLogin">已經有帳號了？改用登入</button>
+        <span class="sp"></span>
+        <button class="act ghost" type="button" id="obAccBack">上一步</button>
+        <button class="act ghost" type="button" id="obOffline" hidden>先離線使用</button>
+        <button class="act" type="submit" id="obAccGo">建立帳號，下一步</button>
+      </div>
+    </form>
+    <section class="obpane" data-ob="rescue" hidden>
+      <div><p class="obok">✓ 帳號建立完成</p><h3>這是你的救援碼，請先存好</h3>
+        <p class="lead">忘記密碼時，輸入帳號＋救援碼就能把進度救回來。一個帳號固定這一組，不會再變。</p></div>
+      <p class="ahint" id="obRcFor" style="margin:0"></p>
+      <p class="rccode" id="obRc"></p>
+      <div class="obbtns left">
+        <button class="act ghost" type="button" id="obRcCopy">複製</button>
+        <button class="act ghost" type="button" id="obRcSave">存成文字檔</button>
+      </div>
+      <ul class="benefits">
+        <li><span aria-hidden="true">📝</span>抄在筆記本，或把文字檔存到自己的雲端硬碟</li>
+        <li><span aria-hidden="true">🏠</span>之後在「溫暖的家 → 角色設定 → 雲端存檔」可以再查看</li>
+        <li><span aria-hidden="true">⚠️</span>密碼和救援碼都遺失的話，要請管理者協助救援</li>
+      </ul>
+      <label class="obcheck"><input type="checkbox" id="obRcOk"> 我已經抄下或存好救援碼</label>
+      <div class="obbtns"><button class="act" type="button" id="obRcNext" disabled>下一步：基本資料</button></div>
+    </section>
+    <section class="obpane" data-ob="apply" hidden>
+      <div class="obhero">
+        <span class="obface av" id="obAv" role="img" aria-label="你的角色"></span>
+        <div><h2 id="obDoneTitle"></h2><p class="sub" id="obDoneSub"></p></div>
+        <p class="obpill" id="obPill"></p>
+      </div>
+      <div class="obcols">
+        <div class="obnow"><h4>現在就可以</h4><ul id="obNowList"></ul></div>
+        <div class="oblater" id="obLaterBox"><h4>審核通過後解鎖</h4><ul>
+          <li>交誼廳出現你的名片，可以留言、按讚、串門子</li>
+          <li>商店的服裝、寵物與配件</li>
+          <li>數位總合辦公室的技術諮詢</li>
+          <li>通過時會自動通知你，進度都會保留</li>
+        </ul></div>
+      </div>
+      <div class="obtalk"><span class="obface sm" id="obChief2" aria-hidden="true"></span><p>最後一步！給我 3 分鐘，帶你認識地圖、任務、收藏和搜尋，之後就能自己找答案了。</p></div>
+      <div class="obbtns">
+        <button class="act ghost" type="button" id="obExplore">先自己逛逛</button>
+        <button class="act" type="button" id="obTour">開始三分鐘上手</button>
+      </div>
+    </section>
+  </div>
+</dialog>
 <!-- character creation dialog -->
 <dialog id="cDlg" aria-labelledby="cTitle">
   <form class="window dlg" id="cForm" novalidate>
+    <ol class="obsteps" id="cObSteps" aria-label="設定進度" hidden></ol>
     <header>
       <h2 id="cTitle"><span class="from">園區及城鄉發展部</span>建立你的角色</h2>
       <button class="x" type="button" data-close>稍後再說</button>
     </header>
     <div class="body">
-      <div class="cstep">
+      <div class="cstep cs-basic">
         <h4><span class="n">1</span>基本資料</h4>
         <div class="two">
           <div>
@@ -1911,13 +2125,13 @@ footer.site p{margin:4px 0}
             <input id="cNick" class="cinput wide" maxlength="12" placeholder="遊戲中顯示的名字" autocomplete="off">
           </div>
           <div>
-            <label class="elabel" for="cEmp">員工編號<b class="optl">選填</b></label>
+            <label class="elabel" for="cEmp">員工編號<b class="optl" id="cEmpTag">選填</b></label>
             <input id="cEmp" class="cinput wide" maxlength="12" placeholder="例如：01234" autocomplete="off" inputmode="latin">
           </div>
         </div>
-        <p class="ahint">真實姓名會回報給部門、也會印在結業證書上；填了暱稱的話，交誼廳和遊戲中都會顯示暱稱。員工編號可以不填，填了方便村長確認你是誰。</p>
+        <p class="ahint">真實姓名會回報給部門、也會印在結業證書上；填了暱稱的話，交誼廳和遊戲中都會顯示暱稱。<span id="cEmpHint">員工編號可以不填，填了方便村長確認你是誰。</span></p>
       </div>
-      <fieldset class="cstep">
+      <fieldset class="cstep cs-av">
         <legend><h4><span class="n">2</span>設計你的角色</h4></legend>
         <div class="editor">
           <div class="preview">
@@ -1927,14 +2141,28 @@ footer.site p{margin:4px 0}
           <div id="avOpts"></div>
         </div>
       </fieldset>
-      <fieldset class="cstep">
+      <fieldset class="cstep cs-grp">
         <legend><h4><span class="n">3</span>選擇組別</h4></legend>
         <div class="groups" id="groupGrid"></div>
       </fieldset>
+      <div id="cObWhy" hidden>
+        <h4>這些資料會用在哪？</h4>
+        <dl>
+          <dt>真實姓名</dt><dd>回報給部門、印在結業證書上</dd>
+          <dt>暱稱</dt><dd>交誼廳和遊戲中顯示的名字；不填就顯示真實姓名</dd>
+          <dt>員工編號</dt><dd>只給管理者審核用，不會公開</dd>
+          <dt>組別</dt><dd>名片上的所屬單位</dd>
+        </dl>
+        <p class="apnote" id="cObApNote">⏳ 完成設定後會送出加入申請，管理者核對姓名與員工編號後就會通過。</p>
+      </div>
     </div>
     <footer>
       <span class="cerr" id="cErr" role="alert"></span>
-      <button class="act" type="submit">開始冒險</button>
+      <span class="btns">
+        <button class="act ghost" type="button" id="cPrev" hidden>上一步</button>
+        <button class="act" type="button" id="cNext" hidden>下一步：設計角色</button>
+        <button class="act" type="submit" id="cGo">開始冒險</button>
+      </span>
     </footer>
   </form>
 </dialog>
@@ -3452,6 +3680,7 @@ $("#btnSfx").addEventListener("click",()=>{Sound.setSfx(!Sound.pref.sfx);syncSou
 /* ================= HUD ================= */
 function renderHUD(){
   try{ petSanitize(); }catch(e){}
+  try{ obCheck(); renderObList(); }catch(e){}
   const v=xp(), lv=myLv(), maxed=lv>=TITLES.length;
   updateLoginBtn(); renderLoginHint();
   $("#pName").innerHTML=(IS_CHAMP?`<span class="hudcrown" aria-label="人氣王">${spriteSVG("crown")}</span>`:"")+esc(dispName());
@@ -4209,6 +4438,7 @@ function toggleDone(){
   if(S.done[curQ.id]) return;
   const before=myLv();
   S.done[curQ.id]=true; toast("獲得 10 EXP！"); Sound.sfx("get");
+  setTimeout(obCheck,1800);
   setTimeout(()=>bonusTouch(curQ.id),1500);
   save(); syncDoneBtn(); renderHUD(); renderZone(); refreshSearch(); queueSync();
   const after=myLv();
@@ -4608,6 +4838,7 @@ function refreshSearch(){
     ? `<div class="window"><ul class="qlist">${hits.map(h=>qRow(h,true)).join("")}</ul></div>`
     : `<p class="empty">沒有找到「${q.replace(/[<>&"]/g,"")}」相關任務。換個關鍵字，或直接詢問部門同仁。</p>`;
   box._hits=hits;
+  if(hits.length&&document.activeElement===$("#search")) obMark("search");
 }
 
 /* ================= NPC typewriter ================= */
@@ -4732,7 +4963,8 @@ document.addEventListener("click",e=>{ if(e.target.closest&&e.target.closest("[d
 /* ---- 新人審核：新註冊的人先送出申請，後台審核通過前和觀光客一樣只能看不能互動 ---- */
 const approvalNeeded=()=>!(CFG&&CFG.approvalOn===false)&&!!formCfg("lounge")&&!!sheetUrl("feed");
 const pendingApproval=()=>!!S.group&&S.group!==TOURIST&&(S.approval==="pending"||S.approval==="rejected");
-const restricted=()=>touristLocked()||pendingApproval();   // 觀光客或審核中：共用同一套限制
+const restricted=()=>touristLocked()||pendingApproval();
+const empRequired=()=>approvalNeeded()&&!touristLocked()&&(!S.group||pendingApproval());   // 新人審核：申請中或第一次建立角色時員工編號必填   // 觀光客或審核中：共用同一套限制
 function touristBlock(what){                           // 受限的互動：回傳 true 代表已擋下
   if(!restricted()) return false;
   Sound.sfx("error"); toast(touristLocked()?`🔒 觀光客模式不開放「${what}」，正式加入後就能使用`:`🔒 審核通過前暫不開放「${what}」`);
@@ -4799,7 +5031,7 @@ async function touristJoin(){
   try{ if(/(^|[?&])tourist/.test(location.search.slice(1))) history.replaceState(null,"",location.pathname+location.hash); }catch(e){}
   S.group=""; save();
   renderGroups(); renderTouristBar(); try{ renderLoginHint(); updateLoginBtn(); }catch(e){}
-  openChar();
+  obOpen(cloudReady()&&!CLOUD?"account":"profile");
 }
 document.addEventListener("click",e=>{ if(e.target.closest&&e.target.closest("[data-touristjoin]")){ e.preventDefault(); touristJoin(); } });
 function renderGroups(){
@@ -4851,9 +5083,56 @@ $("#avRandom").addEventListener("click",()=>{
     outfit:pick(Object.keys(OUTFIT).filter(outfitOK)),oc:Math.floor(Math.random()*CLOTH.length),acc:Math.random()<.3?"glasses":"none"};
   drawEditor();
 });
-function openChar(){
+let CHAR_OB=false, cPage=1;
+function charObPage(p){
+  cPage=p; const d=$("#cDlg");
+  d.classList.toggle("p1",p===1); d.classList.toggle("p2",p===2);
+  $("#cTitle").innerHTML=`<span class="from">園區及城鄉發展部</span>${p===1?"告訴我們你是誰":"設計你的角色"}`;
+  $("#cObSteps").innerHTML=obStepsHTML(p===1?"profile":"avatar",true);
+  $("#cPrev").hidden=false; $("#cNext").hidden=p!==1; $("#cGo").hidden=p!==2;
+  $("#cErr").textContent="";
+  const body=d.querySelector(".body"); if(body) body.scrollTop=0;
+  if(p===1) setTimeout(()=>$("#cName").focus(),30);
+}
+function charMiss(){
+  const f=$("#cForm"), grp=(f.querySelector('input[name="group"]:checked')||{}).value;
+  const name=$("#cName").value.trim(), emp=$("#cEmp").value.trim().toUpperCase().replace(/\s/g,"");
+  const miss=[];
+  if(!name) miss.push({el:$("#cName"),msg:"請輸入真實姓名"});
+  if(!emp&&empRequired()) miss.push({el:$("#cEmp"),msg:"請輸入員工編號（審核時核對身分用）"});
+  if(emp&&!/^[A-Z0-9-]{3,12}$/.test(emp.slice(0,12))) miss.push({el:$("#cEmp"),msg:"員工編號只能用英文字母、數字或連字號（3–12 碼）"});
+  if(!grp) miss.push({el:$("#groupGrid"),msg:"請選擇所屬組別"});
+  return miss;
+}
+function showCharMiss(miss){
+  $("#cErr").textContent=miss.map(m=>m.msg).join("；");
+  Sound.sfx("error");
+  miss.forEach(m=>{ m.el.classList.remove("missing"); void m.el.offsetWidth; m.el.classList.add("missing"); });
+  const first=miss[0].el;
+  first.scrollIntoView({block:"center",behavior:"smooth"});
+  if(first.focus) first.focus({preventScroll:true});
+}
+$("#cNext").addEventListener("click",()=>{
+  const miss=charMiss(); if(miss.length){ showCharMiss(miss); return; }
+  Sound.sfx("select"); charObPage(2);
+});
+$("#cPrev").addEventListener("click",()=>{
+  Sound.sfx("back");
+  if(cPage===2){ charObPage(1); return; }
+  CHAR_OB=false; $("#cDlg").close(); obOpen(CLOUD&&OB.rc?"rescue":"welcome");
+});
+function openChar(opt){
   const f=$("#cForm");
+  CHAR_OB=!!(opt&&opt.ob===true)&&!touristLocked();
+  { const d=$("#cDlg"); d.classList.toggle("ob",CHAR_OB); d.classList.remove("p1","p2");
+    $("#cObSteps").hidden=!CHAR_OB; $("#cObWhy").hidden=!CHAR_OB; $("#cObApNote").hidden=!approvalNeeded();
+    $("#cPrev").hidden=$("#cNext").hidden=true; $("#cGo").hidden=false;
+    $("#cGo").textContent=CHAR_OB?"完成角色":"開始冒險";
+    if(!CHAR_OB) $("#cTitle").innerHTML=`<span class="from">園區及城鄉發展部</span>建立你的角色`; }
   $("#cName").value=S.name; $("#cNick").value=S.nick||""; $("#cEmp").value=S.emp||"";
+  { const req=empRequired(), tag=$("#cEmpTag");             // 新人審核開啟時，員工編號必填（管理者用來核對身分）
+    tag.textContent=req?"＊必填":"選填"; tag.className=req?"req":"optl";
+    $("#cEmpHint").textContent=req?"員工編號必填：管理者審核時用來核對你的身分，不會公開。":"員工編號可以不填，填了方便村長確認你是誰。"; }
   document.querySelectorAll("#cDlg .missing").forEach(el=>el.classList.remove("missing"));
   buildAvOpts();
   draft=Object.assign({},AV_DEFAULT,S.av||{});
@@ -4862,21 +5141,25 @@ function openChar(){
   f.querySelectorAll('input[name="group"]').forEach(r=>r.checked=r.value===S.group||(touristLocked()&&r.value===TOURIST));
   $("#cErr").textContent="";
   const x=$("#cDlg .x[data-close]"); if(x) x.hidden=!S.group;     // 第一次一定要建立角色
-  $("#cDlg").showModal();
-  $("#cName").focus();
+  if(CHAR_OB&&!S.name&&!$("#cEmp").value&&OB.acc&&/^[A-Za-z0-9-]{3,12}$/.test(OB.acc)&&/\d{3}/.test(OB.acc)) $("#cEmp").value=OB.acc.toUpperCase();   // 帳號用員工編號的話先幫忙帶入
+  if(!$("#cDlg").open) $("#cDlg").showModal();
+  if(CHAR_OB) charObPage(1); else $("#cName").focus();
 }
 $("#cDlg").addEventListener("cancel",e=>{ if(!S.group) e.preventDefault(); });
 $("#wDlg").addEventListener("cancel",e=>{ if(!S.group) e.preventDefault(); });
 $("#cForm").addEventListener("submit",async e=>{
   e.preventDefault();
+  if(CHAR_OB&&cPage===1){ $("#cNext").click(); return; }      // 報到設定第 1 頁按 Enter：下一步
   const f=e.target;
   const grp=(f.querySelector('input[name="group"]:checked')||{}).value;
   const name=$("#cName").value.trim().slice(0,12);
   const emp=$("#cEmp").value.trim().toUpperCase().replace(/\s/g,"").slice(0,12);
   const miss=[];
   if(!name) miss.push({el:$("#cName"),msg:"請輸入真實姓名"});
+  if(!emp&&empRequired()) miss.push({el:$("#cEmp"),msg:"請輸入員工編號（審核時核對身分用）"});
   if(emp&&!/^[A-Z0-9-]{3,12}$/.test(emp)) miss.push({el:$("#cEmp"),msg:"員工編號只能用英文字母、數字或連字號（3–12 碼）"});
   if(!grp) miss.push({el:$("#groupGrid"),msg:"請選擇所屬組別"});
+  if(miss.length&&CHAR_OB){ charObPage(1); showCharMiss(miss); return; }
   if(miss.length){
     $("#cErr").textContent=miss.map(m=>m.msg).join("；");
     Sound.sfx("error");
@@ -4889,7 +5172,8 @@ $("#cForm").addEventListener("submit",async e=>{
   }
   document.querySelectorAll(".missing").forEach(el=>el.classList.remove("missing"));
   Sound.sfx("select");
-  const isNew=!S.group;
+  const isNew=!S.group, ob=CHAR_OB&&isNew&&!touristLocked(); CHAR_OB=false;
+  if(ob&&!S.onb) S.onb={start:Date.now(),got:{}};         // 第一週任務清單
   const profileChanged=!isNew&&(S.name!==name||S.emp!==emp||S.group!==grp);
   if(isNew&&!S.since) S.since=Date.now();             // 加入時間（種子補償「只給目前已加入的人」用）
   S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; S.av=Object.assign({},draft); S.group=grp; save();
@@ -4898,7 +5182,7 @@ $("#cForm").addEventListener("submit",async e=>{
     else { S.approval="approved"; save(); }
   }
   if(touristLocked()) touristVisitLog(); else if(isNew) logSignup(pendingApproval()?"申請加入":"首次登錄"); else if(profileChanged) logSignup("修改資料");
-  if(isNew&&pendingApproval()) setTimeout(()=>uiAlert("📨 已送出加入申請！\n管理者審核通過前，你可以先看任務、照顧寵物和農場；交誼廳互動、留言等功能會在審核通過後自動解鎖，進度都會保留。"),900);
+  if(isNew&&pendingApproval()&&!ob) setTimeout(()=>uiAlert("📨 已送出加入申請！\n管理者審核通過前，你可以先看任務、照顧寵物和農場；交誼廳互動、留言等功能會在審核通過後自動解鎖，進度都會保留。"),900);
   if(pendingApproval()) checkApproval(false);
   renderTouristBar();
   queueSync(true);
@@ -4907,12 +5191,14 @@ $("#cForm").addEventListener("submit",async e=>{
   toast(isNew?`${dispName()} 加入了${grp}！`:"角色資料已更新");
   if(isNew) setTimeout(()=>loadInbox(false),2500);
   loungePresence(true,{here:true}).catch(()=>{});      // 建立角色就出現在交誼廳（修改造型也會更新名片）
-  if(isNew&&cloudReady()&&!CLOUD&&S.tourDone&&!touristLocked()) setTimeout(()=>{ if(!CLOUD&&!$("#cDlg").open&&!$("#wDlg").open&&!TOUR) openCloud("create"); },1800);
+  if(isNew&&!ob&&cloudReady()&&!CLOUD&&S.tourDone&&!touristLocked()) setTimeout(()=>{ if(!CLOUD&&!$("#cDlg").open&&!$("#wDlg").open&&!TOUR) openCloud("create"); },1800);
   if(curPlace) renderPlace();
   if(isNew&&wAfterChar){ wAfterChar=false; }
-  if(isNew&&!S.tourDone) setTimeout(()=>startTour(true),500);
+  if(isNew&&!S.tourDone&&!ob) setTimeout(()=>startTour(true),500);
+  if(ob){ S.tourDone=false; save(); setTimeout(()=>obOpen("apply"),450); }
+  renderObList();
 });
-$("#cForm").addEventListener("change",e=>{$("#cErr").textContent="";document.querySelectorAll("#cDlg .missing").forEach(el=>el.classList.remove("missing"));if(e.target.name==="group")Sound.sfx("cursor");});
+$("#cForm").addEventListener("change",e=>{ if(e.target.classList&&e.target.classList.contains("cinput")) return;   /* 文字欄位離開焦點時不要清掉剛顯示的錯誤 */ $("#cErr").textContent="";document.querySelectorAll("#cDlg .missing").forEach(el=>el.classList.remove("missing"));if(e.target.name==="group")Sound.sfx("cursor");});
 $("#cForm").addEventListener("input",e=>{ if(e.target.id==="cName"||e.target.id==="cEmp"){ $("#cErr").textContent=""; e.target.classList.remove("missing"); } });
 $("#avRandom").addEventListener("click",()=>Sound.sfx("select"));
 $("#hudFace").addEventListener("click",openChar);
@@ -5616,7 +5902,7 @@ function applySave(obj){
   rebuildIndex(); renderHUD(); refreshAll(); renderGroups();
   return true;
 }
-async function cloudSignIn(acc,pw,mode){
+async function cloudSignIn(acc,pw,mode,opt){
   const code=await accCode(acc), key=await deriveKey(acc,pw);
   let remote=null;
   try{ remote=await cloudFetch(code); }catch(e){ throw new Error("offline"); }
@@ -5648,6 +5934,7 @@ async function cloudSignIn(acc,pw,mode){
   }else{
     await cloudPush(true);
     toast("已建立雲端存檔，之後進度會自動同步");
+    if(opt&&opt.quiet) return freshCode;                 // 新人報到設定：救援碼改在設定畫面裡顯示
     showRecovery(freshCode,"帳號建立完成！萬一忘記密碼，就靠這組救援碼把進度救回來。");
   }
   return true;
@@ -5699,7 +5986,7 @@ const localMt=()=>{ try{ return localStorage.getItem("sino22-local-at")||""; }ca
 const syncFp=()=>{ try{ return localStorage.getItem("sino22-sync-fp")||""; }catch(e){ return ""; } };
 function markSynced(ph){ try{ localStorage.setItem("sino22-sync-fp",hashStr(saveFingerprint(S))); localStorage.setItem(PUSH_KEY,ph||pushHash()); }catch(e){} }   // 線上已經是這份：之後沒變就不用再送
 const localChangedSinceSync=()=>!!S.group&&hashStr(saveFingerprint(S))!==syncFp();
-const FP_SKIP=new Set(["rpsClaimed","seenQuests","bonusSeen","fav","favDel","consults","ivReplies","pdClaimed","giftClaimed","ixSeen","achSeen","seenContent","loc","seedAt","lvMax","ach","guardUntil","starUntil","farmSeed","tourDone","npcMile","cleanedAt"]);
+const FP_SKIP=new Set(["rpsClaimed","seenQuests","bonusSeen","fav","favDel","consults","ivReplies","pdClaimed","giftClaimed","ixSeen","achSeen","seenContent","loc","seedAt","lvMax","ach","guardUntil","starUntil","farmSeed","tourDone","npcMile","cleanedAt","onb"]);
 const stableStr=v=>v&&typeof v==="object"?(Array.isArray(v)?"["+v.map(x=>x===undefined?"null":stableStr(x)).join(",")+"]":"{"+Object.keys(v).filter(k=>v[k]!==undefined&&typeof v[k]!=="function").sort().map(k=>JSON.stringify(k)+":"+stableStr(v[k])).join(",")+"}"):JSON.stringify(v);
 function fpNorm(v){                                   // 空的預設值（空物件、空田地、預設牆紙地板）視為沒有
   if(Array.isArray(v)){ const a=v.map(fpNorm); return a.every(x=>x===undefined)?undefined:a.map(x=>x===undefined?null:x); }
@@ -5819,10 +6106,11 @@ function showRecovery(code,intro){
   Sound.sfx("achieve");
 }
 $("#rcCopy").addEventListener("click",()=>copyText(rcCurrent));
-$("#rcSave").addEventListener("click",()=>{
-  const txt=`園區及城鄉發展部｜新人冒險指南 雲端存檔救援碼\n帳號：${(CLOUD&&CLOUD.acc)||""}\n救援碼：${rcCurrent}\n產生時間：${new Date().toLocaleString("zh-TW")}\n\n忘記密碼時，在登入視窗按「忘記密碼」，輸入帳號與這組救援碼即可重設密碼。\n`;
+function saveRcFile(code){
+  const txt=`園區及城鄉發展部｜新人冒險指南 雲端存檔救援碼\n帳號：${(CLOUD&&CLOUD.acc)||""}\n救援碼：${code}\n產生時間：${new Date().toLocaleString("zh-TW")}\n\n忘記密碼時，在登入視窗按「忘記密碼」，輸入帳號與這組救援碼即可重設密碼。\n`;
   saveFile(`新人冒險指南_救援碼_${(CLOUD&&CLOUD.acc)||"帳號"}.txt`,new Blob([txt],{type:"text/plain;charset=utf-8"}));
-});
+}
+$("#rcSave").addEventListener("click",()=>saveRcFile(rcCurrent));
 const maskSupported=(()=>{ try{ return CSS.supports("-webkit-text-security","disc")||CSS.supports("text-security","disc"); }catch(e){ return false; } })();
 function maskField(el,masked){
   if(!el) return;
@@ -5898,18 +6186,22 @@ function gateFinish(){
 function startAfterLogin(){
   setTimeout(()=>{ try{ if(!document.querySelector('dialog[open]')) checkSnowman(); else setTimeout(checkSnowman,8000); }catch(e){} },6000);
   if(adminOpen) return;
-  if(cloudReady()&&!CLOUD&&!touristLocked()){ LOGIN_GATE=true;     /* 觀光客通道不用註冊 */ const open=()=>{ if(bootShowing()){ BOOT_WAIT.push(open); return; } openCloud("login"); }; open(); return; }
+  if(cloudReady()&&!CLOUD&&!touristLocked()){ LOGIN_GATE=true;     /* 觀光客通道不用註冊 */ const open=()=>{ if(bootShowing()){ BOOT_WAIT.push(open); return; } if(!S.group) obOpen("welcome"); else openCloud("login"); }; open(); return; }
   gateFinish();
 }
 $("#cloudDlg").addEventListener("cancel",e=>{ if(LOGIN_GATE) e.preventDefault(); });   // 登入前不能按 Esc 跳過
 $("#cloudDlg").addEventListener("close",()=>{
+  if(obBack){ obBack=false; setTimeout(()=>obOpen(obBackTo||"account"),60); return; }   // 從登入畫面回到新人報到設定
   if(!LOGIN_GATE) return;
   if(CLOUD||gateSkip){ gateFinish(); return; }
   setTimeout(()=>{ if(LOGIN_GATE&&!CLOUD&&!gateSkip) openCloud(cloudMode==="create"?"create":"login"); },200);
 });
 let gateSkip=false;
 $("#cloudOffline").addEventListener("click",()=>{ gateSkip=true; $("#cloudDlg").close(); toast("先在這台電腦使用。連上網路後，可以到「溫暖的家 → 角色設定」登入雲端存檔"); });
-$("#cloudSwitch").addEventListener("click",()=>openCloud(cloudMode==="create"?"login":"create"));
+$("#cloudSwitch").addEventListener("click",()=>{
+  if(cloudMode==="login"&&!S.group&&!touristLocked()){ obBack=true; obBackTo="account"; $("#cloudDlg").close(); return; }   // 新人：回到報到設定的「建立帳號」
+  openCloud(cloudMode==="create"?"login":"create");
+});
 $("#cloudForgot").addEventListener("click",()=>openCloud("recover"));
 $("#cloudForm").addEventListener("submit",async e=>{
   e.preventDefault();
@@ -6310,6 +6602,7 @@ function openPlace(id,push){
   if(entering) freshNow=new Set(INBOX.interviews.filter(ivUnseen).map(x=>x.id).concat(INBOX.consults.filter(csUnseen).map(x=>x.id)));
   curPlace=pl; curZone=null;
   S.loc=id; save();
+  if(id==="lounge"&&!restricted()) obMark("lounge");
   if(entering){ tryPlaceTreasure(id); tryHiddenFind(id); }
   if(entering&&id==="myhome"&&loungeReady()){
     loadLounge(false).then(()=>{ checkAch();
@@ -7563,7 +7856,8 @@ function startWelcome(force){
   if(adminOpen) return;
   if(!force&&bootShowing()){ BOOT_WAIT.push(()=>startWelcome(force)); return; }   // 等過場畫面結束再出現
   if(S.group&&S.tourDone===undefined&&(Object.keys(S.done||{}).length||Object.keys(S.visited||{}).length>1)){ S.tourDone=true; save(); }
-  if(S.group&&!S.tourDone){ startTour(true); return; }
+  if(S.group&&!S.tourDone){ startTour(true,!!S.onb); return; }
+  if(!S.group&&!touristLocked()){ obOpen("welcome"); return; }     // 新人：報到設定（帳號 → 基本資料 → 角色 → 三分鐘上手）
   if(!force&&welcomedThisSession()){ if(!S.group) openChar(); return; }
   openWelcome(S.group?welcomePagesReturning():welcomePagesIntro());
 }
@@ -7582,6 +7876,193 @@ $("#wDlg").addEventListener("close",()=>{
   setTimeout(()=>{ if(!S.group&&!$("#cDlg").open&&!adminOpen){ wAfterChar=true; openChar(); } },60);
 });
 $("#replayWelcome").addEventListener("click",()=>{ if(S.group) startTour(false); else startWelcome(true); });
+
+/* ================= 第一次進站：新人報到設定（帳號 → 救援碼 → 基本資料 → 角色 → 三分鐘上手） ================= */
+var OB={rc:"",acc:""};
+var obBack=false, obBackTo="";
+function obAccStep(){ return cloudReady()&&!touristLocked(); }
+function obStepsHTML(cur,active){
+  const st=[obAccStep()&&["account","建立帳號"],["profile","基本資料"],["avatar","設計角色"],["tour","三分鐘上手"]].filter(Boolean);
+  const ci=st.findIndex(x=>x[0]===cur);
+  return `<li class="obt" aria-hidden="true">新人報到設定</li>`+st.map((x,i)=>{
+    const isCur=i===ci&&active, done=i<ci, skip=done&&x[0]==="account"&&!CLOUD;
+    return `<li class="obs${isCur?" cur":done?(skip?" skip":" done"):""}"${isCur?' aria-current="step"':""}><b>${done?(skip?"–":"✓"):i+1}</b><span class="l">${x[1]}${skip?"（略過）":""}</span></li>`;
+  }).join("");
+}
+function obPane(id){
+  document.querySelectorAll("#obDlg .obpane").forEach(p=>p.hidden=p.dataset.ob!==id);
+  const steps=$("#obSteps");
+  steps.hidden=id==="welcome";
+  if(id==="account"||id==="rescue") steps.innerHTML=obStepsHTML("account",true);
+  else if(id==="apply") steps.innerHTML=obStepsHTML("tour",false);
+}
+function obOpen(step){
+  if(adminOpen) return;
+  if(bootShowing&&bootShowing()){ BOOT_WAIT.push(()=>obOpen(step)); return; }
+  if(step==="profile"){ obToProfile(); return; }
+  if(step==="account"&&(!obAccStep()||CLOUD||gateSkip)){ obToProfile(); return; }
+  if(step!=="apply"&&cloudReady()&&!CLOUD&&!gateSkip&&!touristLocked()){ LOGIN_GATE=true; gateDone=false; }
+  const d=$("#obDlg");
+  const face=avatarSVG(CHIEF_AV);
+  ["#obChief","#obChief2","#obChief3"].forEach(s=>{ const el=$(s); if(el) el.innerHTML=face; });
+  if(step==="welcome"){
+    $("#obChiefName").textContent=`部門村長　${CFG.chief}`;
+    const plan=[obAccStep()&&!CLOUD&&!gateSkip&&["建立帳號","換電腦也能接著玩"],["基本資料","姓名、員工編號、組別"],["設計角色","髮型、服裝隨你挑"],["三分鐘上手","村長帶你逛地圖"]].filter(Boolean);
+    $("#obPlan").innerHTML=plan.map((x,i)=>`<li><b><i>${i+1}</i>${x[0]}</b><span>${x[1]}</span></li>`).join("");
+    $("#obHave").hidden=!(obAccStep()&&!CLOUD);
+    $("#obFine").textContent=obAccStep()?"電腦、手機都能用・進度加密存到部門雲端・隨時可以按「聽村長說明」再看一次":"電腦、手機都能用・隨時可以按「聽村長說明」再看一次";
+  }
+  if(step==="account"){
+    $("#obAcc").value=OB.acc||S.emp||""; $("#obPw").value=""; $("#obPw2").value="";
+    ["obPw","obPw2"].forEach(id=>maskField($("#"+id),true));
+    document.querySelectorAll("[data-obeye]").forEach(b=>{ b.textContent="👁"; b.setAttribute("aria-label","顯示密碼"); });
+    $("#obAccErr").textContent=""; $("#obOffline").hidden=true; obAccCheck();
+  }
+  if(step==="rescue"){
+    $("#obRc").textContent=OB.rc||""; $("#obRcFor").textContent=`帳號 ${(CLOUD&&CLOUD.acc)||OB.acc} 的救援碼`;
+    $("#obRcOk").checked=false; $("#obRcNext").disabled=true;
+  }
+  if(step==="apply") obFillApply();
+  obPane(step);
+  if(!d.open) d.showModal();
+  Sound.sfx(step==="rescue"||step==="apply"?"achieve":"open");
+  const fc={welcome:"#obStart",account:"#obAcc",rescue:"#obRcCopy",apply:"#obTour"}[step];
+  setTimeout(()=>{ const el=$(fc); if(el) el.focus(); },60);
+}
+function obToProfile(){
+  const d=$("#obDlg"); if(d.open) d.close();
+  openChar({ob:true});
+}
+function obFillApply(){
+  const pend=pendingApproval();
+  $("#obAv").innerHTML=avatarSVG(S.av||AV_DEFAULT);
+  $("#obDoneTitle").textContent=`${dispName()}，你的角色完成了！`;
+  $("#obDoneSub").textContent=pend?"加入申請已經送給管理者。審核期間不用等，現在就可以開始冒險。":`歡迎加入${S.group}！現在就可以開始冒險。`;
+  const pill=$("#obPill"); pill.textContent=pend?"⏳ 審核中":"✓ 已加入"; pill.classList.toggle("ok",!pend);
+  $("#obLaterBox").hidden=!pend;
+  $("#obNowList").innerHTML=(pend?["看五大分類的任務，完成拿 EXP 升等","搜尋任務、按 ♡ 收藏到筆記本","回答 NPC 問答、每日問答拿種子","照顧寵物、種菜、佈置溫暖的家"]
+    :["看五大分類的任務，完成拿 EXP 升等","搜尋任務、按 ♡ 收藏到筆記本","回答 NPC 問答、每日問答拿種子","到交誼廳留言、按讚、去同事家串門子","照顧寵物、種菜、佈置溫暖的家"]).map(t=>`<li>${esc(t)}</li>`).join("");
+}
+$("#obDlg").addEventListener("cancel",e=>e.preventDefault());       // 報到設定要按按鈕離開
+$("#obStart").addEventListener("click",()=>{ Sound.sfx("select"); if(obAccStep()&&!CLOUD&&!gateSkip) obOpen("account"); else obToProfile(); });
+$("#obHave").addEventListener("click",()=>{ Sound.sfx("select"); $("#obDlg").close(); LOGIN_GATE=true; gateDone=false; openCloud("login"); });
+$("#obToLogin").addEventListener("click",()=>{ Sound.sfx("select"); OB.acc=$("#obAcc").value.trim(); $("#obDlg").close(); LOGIN_GATE=true; gateDone=false; openCloud("login"); if(OB.acc) $("#clAcc").value=OB.acc; });
+$("#obAccBack").addEventListener("click",()=>{ Sound.sfx("back"); OB.acc=$("#obAcc").value.trim(); obOpen("welcome"); });
+$("#obOffline").addEventListener("click",()=>{
+  gateSkip=true; LOGIN_GATE=false; gateDone=true; Sound.sfx("select");
+  toast("先在這台電腦使用。連上網路後，可以到「溫暖的家 → 角色設定」登入雲端存檔");
+  obToProfile();
+});
+$("#obAccForm").addEventListener("click",e=>{
+  const b=e.target.closest("[data-obeye]"); if(!b) return;
+  const el=$("#"+b.dataset.obeye); if(!el) return;
+  const nowMasked=maskSupported?el.classList.contains("masked"):el.type==="password";
+  maskField(el,!nowMasked); b.textContent=nowMasked?"🙈":"👁"; b.setAttribute("aria-label",nowMasked?"隱藏密碼":"顯示密碼"); el.focus();
+});
+function obAccCheck(){
+  const acc=$("#obAcc").value.trim(), pw=$("#obPw").value, pw2=$("#obPw2").value;
+  const set=(id,ok,txt)=>{ const el=$(id); el.textContent=(ok?"✓ ":"・")+txt; el.classList.toggle("ok",ok); el.classList.remove("ng"); };
+  set("#obChkAcc",/^[A-Za-z0-9_-]{3,20}$/.test(acc),"3–20 個英文字母、數字、_ 或 -");
+  set("#obChk1",pw.length>=6,"至少 6 個字");
+  set("#obChk2",!!pw2&&pw===pw2,"兩次一致");
+  if(pw2&&pw!==pw2){ $("#obChk2").textContent="✕ 兩次輸入的密碼不一樣"; $("#obChk2").classList.add("ng"); }
+}
+$("#obAccForm").addEventListener("input",()=>{ $("#obAccErr").textContent=""; obAccCheck(); });
+$("#obAccForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const err=$("#obAccErr"), acc=$("#obAcc").value.trim(), pw=$("#obPw").value;
+  err.textContent="";
+  if(!/^[A-Za-z0-9_-]{3,20}$/.test(acc)){ err.textContent="帳號請用 3–20 個英文字母、數字、_ 或 -"; Sound.sfx("error"); $("#obAcc").focus(); return; }
+  if(pw.length<6){ err.textContent="密碼至少 6 個字"; Sound.sfx("error"); $("#obPw").focus(); return; }
+  if(pw!==$("#obPw2").value){ err.textContent="兩次輸入的密碼不一樣"; Sound.sfx("error"); $("#obPw2").focus(); return; }
+  const btn=$("#obAccGo"); btn.disabled=true; btn.textContent="建立中…";
+  OB.acc=acc;
+  try{
+    const code=await cloudSignIn(acc,pw,"create",{quiet:true});
+    LOGIN_GATE=false; gateDone=true;                    // 帳號建立好了：接著建立角色（不跑舊的登入後歡迎流程）
+    if(S.group){ $("#obDlg").close(); gateDone=false; LOGIN_GATE=true; gateFinish(); return; }
+    OB.rc=(typeof code==="string"&&code)||(CLOUD&&CLOUD.rc)||"";
+    if(OB.rc) obOpen("rescue"); else obToProfile();
+  }catch(ex){
+    const m=ex&&ex.message;
+    err.textContent=m==="exists"?"這個帳號已經有人建立了。如果是你的帳號，請按左下角「已經有帳號了？改用登入」；不是的話請換一個帳號。":
+      m==="offline"?((()=>{ $("#obOffline").hidden=false; return "連不上部門試算表。可以稍後再試，或按「先離線使用」先在這台電腦開始。"; })()):
+      "建立失敗，請稍後再試";
+    Sound.sfx("error");
+  }finally{ btn.disabled=false; btn.textContent="建立帳號，下一步"; }
+});
+$("#obRcCopy").addEventListener("click",()=>copyText(OB.rc));
+$("#obRcSave").addEventListener("click",()=>saveRcFile(OB.rc));
+$("#obRcOk").addEventListener("change",e=>{ $("#obRcNext").disabled=!e.target.checked; if(e.target.checked) Sound.sfx("cursor"); });
+$("#obRcNext").addEventListener("click",()=>{ if(!$("#obRcOk").checked) return; Sound.sfx("select"); obToProfile(); });
+$("#obTour").addEventListener("click",()=>{ $("#obDlg").close(); Sound.sfx("select"); startTour(true,true); });
+$("#obExplore").addEventListener("click",()=>{
+  $("#obDlg").close(); Sound.sfx("select");
+  S.tourDone=true; if(S.onb) S.onb.tourSkip=1; save();
+  renderObList(); flashLoc("village");
+  toast("想看導覽時，按「第一週任務清單」裡的「聽村長說明」");
+});
+
+/* ---- 第一週任務清單（新人才有；完成項目自動送種子） ---- */
+const OB_ITEMS=[
+  {k:"char",t:"建立角色",ok:()=>!!S.group},
+  {k:"tour",t:"看完三分鐘上手",ok:()=>!!(S.onb&&S.onb.tour),go:()=>startTour(false,true)},
+  {k:"task",t:"在新手村完成第一個任務",r:["carrot",5],ok:()=>ALLQ.some(q=>q.zone&&q.zone.id==="village"&&S.done&&S.done[q.id]),go:()=>{ openZone("village"); toast("打開任務看說明，看完按「完成」"); }},
+  {k:"fav",t:"按 ♡ 收藏一則任務",r:["tomato",5],ok:()=>Object.keys(S.fav||{}).length>0,go:()=>{ openZone("village"); toast("打開任務，按「♡ 加入最愛」"); }},
+  {k:"search",t:"用搜尋找一次資料",r:["corn",5],ok:()=>!!(S.onb&&S.onb.search),go:()=>{ if($("#viewMap").hidden) $("#btnMap").click(); const s=$("#search"); s.scrollIntoView({block:"center",behavior:"smooth"}); setTimeout(()=>s.focus({preventScroll:true}),300); toast("輸入關鍵字試試看，例如「名片」"); }},
+  {k:"quiz",t:"答對一題 NPC 問答",r:["pumpkin",10],ok:()=>!!(S.onb&&S.onb.quiz),go:()=>{ openZone("village"); toast("找找畫面上的 NPC，點他回答問題"); }},
+  {k:"lounge",t:"去交誼廳跟大家打招呼",r:["tomato",10],lock:()=>restricted(),ok:()=>!!(S.onb&&S.onb.lounge),go:()=>openPlace("lounge")}
+];
+const OB_BONUS=[["strawberry",5],["pumpkin",5]];
+function obActive(){ return !!(S.onb&&S.group&&!touristLocked()); }
+function obCheck(){
+  if(!obActive()) return;
+  const g=S.onb.got=S.onb.got||{}, msgs=[];
+  OB_ITEMS.forEach(it=>{
+    if(!it.r||g[it.k]||(it.lock&&it.lock())||!it.ok()) return;
+    g[it.k]=1; const [c,n]=it.r; seeds()[c]=(seeds()[c]||0)+n;
+    msgs.push(`${CROPS[c].name}種子 ×${n}`);
+  });
+  if(!g.all&&OB_ITEMS.every(it=>it.ok())){
+    g.all=1; OB_BONUS.forEach(([c,n])=>{ seeds()[c]=(seeds()[c]||0)+n; });
+    msgs.push("全部完成獎勵："+OB_BONUS.map(([c,n])=>`${CROPS[c].name}種子 ×${n}`).join("、"));
+  }
+  if(msgs.length){ save(); queueSync(); toast("🎁 第一週任務完成！獲得 "+msgs.join("、")); Sound.sfx("achieve"); }
+  renderObList();
+}
+function obMark(k){ if(!obActive()||S.onb[k]) return; S.onb[k]=1; save(); setTimeout(obCheck,600); }
+function renderObList(){
+  const el=$("#obList"); if(!el) return;
+  const on=obActive()&&!S.onb.closed;
+  el.hidden=!on; if(!on){ el.innerHTML=""; return; }
+  const items=OB_ITEMS.map(it=>({it,ok:it.ok(),lock:!!(it.lock&&it.lock())}));
+  const n=items.filter(x=>x.ok).length, all=n===items.length;
+  const nx=items.find(x=>!x.ok&&!x.lock);
+  el.classList.toggle("min",!!S.onb.min);
+  const head=`<div class="olh"><h3>${all?"🎉 第一週全部完成！":"第一週任務清單"}</h3><span class="oln">${n}/${items.length}</span></div>`;
+  if(S.onb.min){ el.innerHTML=`<button type="button" class="olopen" data-obl="open" aria-expanded="false" title="展開清單">${head}</button>`; return; }
+  el.innerHTML=head+`<div class="olbar" aria-hidden="true"><i style="width:${Math.round(n/items.length*100)}%"></i></div>
+    <ul>${items.map(({it,ok,lock})=>{
+      const rw=it.r?`🌱 ${it.r[1]}`:"";
+      const cls=ok?"ol-ok":lock?"ol-lock":nx&&nx.it===it?"ol-nx":"";
+      const mk=ok?"✓":lock?"🔒":nx&&nx.it===it?"▶":"□";
+      const label=esc(it.t)+(lock?"（審核後）":"");
+      const tip=it.r?` title="完成可得 ${esc(CROPS[it.r[0]].name)}種子 ×${it.r[1]}"`:"";
+      return `<li class="${cls}"><button type="button" data-obi="${it.k}"${ok||lock||!it.go?" disabled":""}${tip}><span class="mk" aria-hidden="true">${mk}</span><span class="t">${label}${ok?'<span class="sr">（已完成）</span>':""}</span><span class="rw">${rw}</span></button></li>`;
+    }).join("")}</ul>
+    <p class="olsay"><span class="obface" aria-hidden="true">${avatarSVG(CHIEF_AV)}</span><span>${all?"太厲害了！獎勵種子已經放進你的種子袋，記得到開心農場種下去。":"全部完成再送你一包種子！忘記怎麼玩，按下面的按鈕再聽我說一次。"}</span></p>
+    <div class="olbtns"><button type="button" data-obl="tour">聽村長說明</button><button type="button" data-obl="${all?"close":"min"}">${all?"關閉清單":"收起清單"}</button></div>`;
+}
+$("#obList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-obi],[data-obl]"); if(!b||b.disabled||!S.onb) return;
+  if(b.dataset.obi){ const it=OB_ITEMS.find(x=>x.k===b.dataset.obi); if(it&&it.go){ Sound.sfx("select"); it.go(); } return; }
+  const a=b.dataset.obl;
+  if(a==="tour"){ Sound.sfx("select"); startTour(false,true); return; }
+  if(a==="min"){ S.onb.min=1; Sound.sfx("back"); }
+  else if(a==="open"){ delete S.onb.min; Sound.sfx("cursor"); }
+  else if(a==="close"){ S.onb.closed=1; Sound.sfx("back"); }
+  save(); renderObList();
+});
 /* ================= 村長的地圖導覽（第一次使用時，走到各建物旁邊說明） ================= */
 let TOUR=null;
 function tourSteps(){
@@ -7602,6 +8083,16 @@ function tourSteps(){
     {zone:"village",text:"導覽結束！建築上出現「!」就代表有新內容。不知道怎麼玩時，各區塊標題旁的「?」都有說明。先從新手村出發吧！",last:true}
   ];
 }
+function tourQuickSteps(){                              // 三分鐘上手：新人第一次的短版導覽（5 步）
+  const name=dispName();
+  return [
+    {zone:"village",text:`${name}，地圖上有五大分類：新手村、情報酒館、行政塔、寶物庫、存摺神殿，公司的制度都整理在裡面。建議先從新手村開始！`},
+    {zone:"village",text:"點進建築會看到一則一則的任務。打開任務看說明，看完按「完成」就能拿 EXP 升等；升到 LV 3 還可以領養寵物！"},
+    {place:"myhome",text:"任務裡看到常用的資料，按「♡ 加入最愛」就會收進筆記本。回到這裡「溫暖的家」打開筆記本，隨時查得到。"},
+    {glow:"#search",text:"找不到答案時，在地圖上方的搜尋框輸入關鍵字，例如「名片」「加班」，所有任務會一起搜尋。"},
+    {zone:"village",text:`每個地點旁邊的 NPC 每天會出一題問答，答對拿 ${QUIZ_MULT} 倍種子，順便把規定記起來。導覽結束！右邊的「第一週任務清單」會帶你一步一步熟悉。`,last:true}
+  ];
+}
 function tourEnsure(){
   const frame=document.querySelector(".mapframe"); if(!frame) return null;
   let el=$("#tour");
@@ -7616,7 +8107,7 @@ function tourEnsure(){
           <button type="button" class="act" data-tour="next">下一步</button></span></div></div>`;
     frame.appendChild(el);
     el.addEventListener("click",e=>{ const b=e.target.closest("[data-tour]"); if(!b) return; const a=b.dataset.tour;
-      if(a==="next") tourGo(TOUR.i+1); else if(a==="prev") tourGo(TOUR.i-1); else if(a==="again") tourGo(0); else if(a==="skip"&&!TOUR.first) endTour(true); });
+      if(a==="next") tourGo(TOUR.i+1); else if(a==="prev") tourGo(TOUR.i-1); else if(a==="again") tourGo(0); else if(a==="skip"&&(!TOUR.first||TOUR.quick)) endTour(true); });
   }
   return el;
 }
@@ -7640,7 +8131,9 @@ function tourGo(i){
   typeInto(el.querySelector(".tour-text"),step.text);
   el.querySelector(".tour-step").textContent=`${i+1} / ${steps.length}`;
   el.querySelector('[data-tour="prev"]').hidden=i===0;
-  el.querySelector('[data-tour="skip"]').hidden=!!step.last||TOUR.first;
+  el.querySelector('[data-tour="skip"]').hidden=!!step.last||(TOUR.first&&!TOUR.quick);
+  document.querySelectorAll(".tour-glow").forEach(x=>x.classList.remove("tour-glow"));
+  if(step.glow){ const g=document.querySelector(step.glow); if(g) g.classList.add("tour-glow"); }
   el.querySelector('[data-tour="again"]').hidden=!step.last;
   el.querySelector('[data-tour="next"]').textContent=step.last?"開始冒險！":"下一步 ▶";
   const cs=Math.max(26,Math.min(52,fw/14));
@@ -7669,13 +8162,13 @@ function tourGo(i){
   Sound.sfx(i?"cursor":"open");
   el.querySelector('[data-tour="next"]').focus({preventScroll:true});
 }
-function startTour(first){
+function startTour(first,quick){
   if(adminOpen) return;
   if($("#viewMap").hidden) $("#btnMap").click();
   document.querySelectorAll("dialog[open]").forEach(d=>{ if(d.id!=="cloudDlg") d.close(); });
   setTimeout(()=>{
     const el=tourEnsure(); if(!el) return;
-    TOUR={i:0,steps:tourSteps(),first:!!first};
+    TOUR={i:0,steps:quick?tourQuickSteps():tourSteps(),first:!!first,quick:!!quick};
     el.hidden=false; document.body.classList.add("touring"); document.body.classList.toggle("tour-lock",!!first);
     el.querySelector(".tour-chief").innerHTML=avatarSVG(CHIEF_AV);
     const frame=document.querySelector(".mapframe"), hud=document.querySelector("header.hud,.hud");
@@ -7689,15 +8182,19 @@ function startTour(first){
 function endTour(skipped){
   const el=$("#tour"); if(el) el.hidden=true;
   document.body.classList.remove("touring","tour-lock");
-  const first=TOUR&&TOUR.first; TOUR=null;
-  S.tourDone=true; save();
+  const first=TOUR&&TOUR.first, quick=TOUR&&TOUR.quick; TOUR=null;
+  document.querySelectorAll(".tour-glow").forEach(x=>x.classList.remove("tour-glow"));
+  S.tourDone=true;
+  if(quick&&!skipped&&S.onb){ S.onb.tour=1; }
+  save();
+  if(quick) setTimeout(obCheck,300);
   flashLoc("village");
   if(!skipped) Sound.sfx("achieve");
-  if(first&&cloudReady()&&!CLOUD&&!touristLocked()) setTimeout(()=>{ if(!CLOUD&&!document.querySelector("dialog[open]")) openCloud("create"); },900);
+  if(first&&!quick&&cloudReady()&&!CLOUD&&!touristLocked()) setTimeout(()=>{ if(!CLOUD&&!document.querySelector("dialog[open]")) openCloud("create"); },900);
 }
 document.addEventListener("keydown",e=>{
   if(!TOUR||document.querySelector("dialog[open]")) return;
-  if(e.key==="Escape"){ e.preventDefault(); if(!TOUR.first) endTour(true); }
+  if(e.key==="Escape"){ e.preventDefault(); if(!TOUR.first||TOUR.quick) endTour(true); }
   else if(e.key==="ArrowRight"){ tourGo(TOUR.i+1); }
   else if(e.key==="ArrowLeft"){ tourGo(TOUR.i-1); }
 });
@@ -7727,6 +8224,7 @@ function toggleFav(){
     setTimeout(()=>tryFind((curQ.zone&&curQ.zone.id)||"",.3,"收藏"),900); }
   save(); queueCloud(); syncFavBtn(); renderZone(); refreshSearch(); checkAch();
   if(curPlace&&curPlace.id==="myhome") renderPlace();
+  setTimeout(obCheck,1200);
 }
 function syncFavBtn(){
   const on=curQ&&isFav(curQ.id), b=$("#qFav");
@@ -7999,6 +8497,7 @@ function answerNpcQuiz(i){
   const ok=i===c.qz.ans, mult=ok?QUIZ_MULT:1;
   document.querySelectorAll("#nqOpts .nqopt").forEach((b,j)=>{ b.disabled=true; if(j===c.qz.ans) b.classList.add("right"); else if(j===i) b.classList.add("wrong"); });
   const got=giveNpcSeeds(c.n,mult);
+  if(ok) obMark("quiz");
   Sound.sfx(ok?"achieve":"error");
   $("#nqResult").innerHTML=ok?`<p class="nqok">⭕ 答對了！${esc(c.n.name)}送你 <b>${esc(got)}</b> 種子（${QUIZ_MULT} 倍）！</p>`
     :`<p class="nqng">❌ 可惜答錯了。正確答案是「${esc(c.qz.opts[c.qz.ans])}」。${esc(c.n.name)}還是送你 <b>${esc(got)}</b> 種子。</p><p class="ahint">${esc(c.qz.explain)}</p>`;

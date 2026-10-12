@@ -373,6 +373,41 @@ main{max-width:1180px;margin:0 auto;padding:6px 16px 40px}
 .menu .oblist .olopen{padding:0;border:0;background:none;width:100%}
 .menu .oblist .olopen:hover{background:none}
 .tour-glow{position:relative;z-index:42;outline:4px solid var(--gold)!important;outline-offset:3px;box-shadow:0 0 0 9px rgba(242,193,78,.35)!important}
+
+/* ---------- 管理者：題庫 ---------- */
+.qbtypes{display:flex;flex-wrap:wrap;gap:8px 18px;margin:4px 0 12px;padding:10px 14px;background:rgba(255,255,255,.06);border-radius:5px}
+.qbtypes .lab{font-family:var(--pixel);color:var(--gold);font-size:15px}
+.qbfilter{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;margin:0 0 12px}
+.qbfilter label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--win-muted)}
+.qbfilter .ainput{padding:6px 10px;font-size:14px}
+.qbfilter .qbsearch{flex:1 1 220px}
+.qbzone{margin:18px 0 0}
+.qbzone>h4{font-family:var(--pixel);font-weight:400;font-size:19px;color:var(--gold);margin:0 0 8px}
+.qbquest{border:2px solid rgba(255,255,255,.25);border-radius:5px;margin:0 0 12px;overflow:hidden}
+.qbquest>p{margin:0!important;padding:8px 14px;font-weight:700;background:rgba(255,255,255,.06);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.qbquest>p span{font-weight:400;font-size:13px;color:var(--win-muted)}
+.qbrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.14)}
+.qbquest>p+.qbrow{border-top:0}
+.qbrow.off .qbstem,.qbrow.off .qbopts{opacity:.45;text-decoration:line-through}
+.qbrow.dirty{box-shadow:inset 4px 0 0 var(--gold)}
+.qbkind{display:inline-block;font-size:12px;border:1px solid rgba(255,255,255,.35);border-radius:3px;padding:0 6px;margin-right:6px;color:var(--win-muted)}
+.qbstem{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.7}
+.qbstem .blank{background:rgba(242,193,78,.22);color:var(--gold);border-radius:3px;padding:0 5px;font-weight:700}
+.qbopts{list-style:none;margin:6px 0 0!important;padding:0!important;display:flex;flex-wrap:wrap;gap:6px}
+.qbopts li{font-size:13px;border:1px solid rgba(255,255,255,.3);border-radius:3px;padding:0 8px;margin:0!important;color:var(--win-muted)}
+.qbopts li.ans{border-color:#7FD39C;color:#7FD39C;font-weight:700}
+.qbnote{margin:4px 0 0!important;font-size:13px;color:var(--win-muted)}
+.qbnote b{color:var(--gold);font-weight:400}
+.qbside{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.qbtoggle{display:flex;border:2px solid rgba(255,255,255,.4);border-radius:4px;overflow:hidden}
+.qbtoggle button{font-family:var(--pixel);font-size:13px;border:0;background:#0B1030;color:var(--win-muted);padding:4px 10px;cursor:pointer;min-height:32px}
+.qbtoggle button+button{border-left:2px solid rgba(255,255,255,.4)}
+.qbtoggle button[aria-pressed="true"].on{background:#2E7D4F;color:#fff}
+.qbtoggle button[aria-pressed="true"].off{background:#8E2F36;color:#fff}
+.qbedit{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 10px;background:rgba(255,255,255,.06);border-radius:4px}
+.qbedit .ainput{flex:1 1 260px;padding:6px 10px;font-size:14px}
+.qbedit .cerr{flex-basis:100%;margin:0}
+@media (max-width:640px){.qbrow{grid-template-columns:minmax(0,1fr)}.qbside{flex-direction:row;align-items:center;justify-content:flex-start}}
 /* ---------- dialogs ---------- */
 dialog{padding:0;border:0;background:none;max-width:min(760px,calc(100vw - 28px));width:100%;color:var(--win-text)}
 dialog::backdrop{background:rgba(8,10,30,.72)}
@@ -1636,6 +1671,7 @@ footer.site p{margin:4px 0}
       <button role="tab" type="button" data-tab="rps" aria-selected="false">諮詢回覆</button>
       <button role="tab" type="button" data-tab="npcs" aria-selected="false">NPC 設定</button>
       <button role="tab" type="button" data-tab="comp" aria-selected="false">種子補償</button>
+      <button role="tab" type="button" data-tab="quizbank" aria-selected="false">題庫<span class="tabcount" id="qbTabCount" hidden></span></button>
       <button role="tab" type="button" data-tab="approve" aria-selected="false">新人審核<span class="tabcount" id="apTabCount" hidden></span></button>
       <button role="tab" type="button" data-tab="roster" aria-selected="false">使用者名冊</button>
       <button role="tab" type="button" data-tab="rescue" aria-selected="false">帳號救援</button>
@@ -1885,6 +1921,24 @@ footer.site p{margin:4px 0}
         <div class="abar"><h3>已發送的補償</h3><button class="act ghost" type="button" id="cpReload">重新讀取</button></div>
         <div class="tscroll"><table class="atable" id="cpTable"></table></div>
         <p class="ahint" style="margin-top:10px">撤回後，還沒領取的人就不會再收到；已經領取的種子不會被收回。</p>
+      </section>
+    </div>
+    <div class="apanel" data-panel="quizbank" role="tabpanel" hidden>
+      <section class="window abox">
+        <div class="abar"><h3>題庫</h3><span class="afilters">
+          <button class="act ghost" type="button" id="qbRevert">還原未發布的變更</button>
+          <button class="act" type="button" id="qbPublish">發布題庫設定</button></span></div>
+        <p class="ahint">NPC 情報問答和種子商店的每日問答，都是從任務內容自動出題。這裡列出目前任務內容會出的每一題：<b>停用</b>的題目不會再出現；選項不合理時可以按「自訂選項」，自己寫 3 個錯誤選項。修改任務內容後，改到的句子會變成新題目（預設啟用），記得回來看一下。</p>
+        <p class="ahint" id="qbInfo"></p>
+        <div class="qbtypes" id="qbTypes" role="group" aria-label="題型開關"></div>
+        <div class="qbfilter">
+          <label>地點<select class="ainput" id="qbZone"></select></label>
+          <label>題型<select class="ainput" id="qbKind"></select></label>
+          <label>狀態<select class="ainput" id="qbState">
+            <option value="all">全部</option><option value="on">啟用中</option><option value="off">已停用</option><option value="custom">自訂選項</option><option value="none">選項不足（不會出題）</option><option value="dirty">未發布的變更</option></select></label>
+          <label class="qbsearch">搜尋<input class="ainput" id="qbSearch" type="search" placeholder="題目、答案或任務名稱"></label>
+        </div>
+        <div id="qbList"></div>
       </section>
     </div>
     <div class="apanel" data-panel="approve" role="tabpanel" hidden>
@@ -5394,7 +5448,7 @@ async function unpackPayload(str){
   return JSON.parse(t.startsWith("j:")?t.slice(2):t);
 }
 async function parseFeed(rows){
-  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map(),approve:new Map(),profreq:new Map()};
+  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map(),approve:new Map(),profreq:new Map(),quiz:new Map()};
   rows.forEach((r,i)=>{
     const ts=String(r[0]||""), type=String(r[1]||"").trim(), id=String(r[2]||"").trim(), part=String(r[3]||"").trim(), data=String(r[4]||""), by=String(r[5]||"");
     if(!type||!id) return;
@@ -5425,6 +5479,9 @@ async function parseFeed(rows){
     if(best){ try{ out.profreq=Object.assign({},await unpackPayload(best.rec.data),{id:best.id,ts:best.rec.ts,by:best.rec.by}); }catch(e){} } }
   out.approve={};
   for(const [id,rec] of recs.approve){ try{ out.approve[id.toUpperCase()]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
+  out.quiz=null;                                        // 題庫設定：取最後一筆
+  { let best=null; for(const [id,rec] of recs.quiz){ if(!best||rec.row>best.rec.row) best={id,rec}; }
+    if(best){ try{ const x=await unpackPayload(best.rec.data); if(x&&x.v) out.quiz=Object.assign({off:[],types:{},wrong:{}},x,{id:best.id,ts:best.rec.ts,by:best.rec.by}); }catch(e){} } }
   out.roster={};
   for(const [id,rec] of recs.roster){ try{ out.roster[id]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
   return out;
@@ -8380,58 +8437,105 @@ function nounTerms(q){                                 // 這則任務裡有意�
 const optKey=x=>String(x).normalize("NFKC").replace(/[\s　]+/g,"").replace(/[～〜~]/g,"~").replace(/[－–—]/g,"-").toLowerCase();   // 比對選項是否重複（忽略空白、全形半形）
 const quizOK=q=>!!q&&new Set(q.opts.map(optKey)).size===q.opts.length;
 const sufOf=w=>{ const m=w.match(new RegExp("("+NOUN_SUF+")$")); return m?m[1]:""; };
-function makeNpcQuizV2(n,today,ZONES,ALLQ){
-  const r=seededRand(n.id+"|"+today+"|"+(n.zone||""));
-  const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
-  const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id); if(!qs.length) return null;
-  // 全站名詞庫（干擾選項用）
-  const allNouns=new Map(); ALLQ.forEach(q=>nounTerms(q).forEach((src,w)=>{ if(!allNouns.has(w)) allNouns.set(w,src); }));
+/* ---- 題庫設定：停用的題目、停用的題型、自訂干擾選項（管理者在「題庫」分頁發布） ---- */
+const QZ_KINDS=["數字題","名詞題","歸屬題","分類題"];
+const QUIZ_DEFAULT={v:1,off:["q925r5l", "quypfzt", "q1czdq6t", "q1dlbeye", "q1e5svrg", "q1jzzl9n", "q1g660lm", "q1guwc28", "q1hgtj8x", "q1ja7j2r", "q30umr", "q1ozvpf7", "qh4s2xz", "q8gk4u2", "qlyuykl", "q1fzqezp", "q16jh7r9", "qz34uh1", "qap3ggk", "q5umxjo", "q16at0k4", "qw88q5w", "q1fbuwyk", "q1jy3j3j", "qnopsfk", "q1ia487k", "q1lk7134", "quz7lu0", "qc4164a", "q1bovqp", "q1xo42b6", "q1f6n6ep", "q3l2gmo", "qvn0egn", "q7pg9ti", "qataj4l", "q1jy50r8", "q1dfptjv", "qc6b0re", "q19oljj6", "q159y0gz", "qstyedl", "q1w36s05", "qtnviga", "q1m866zm", "q1gozwli", "q6o6o4l", "qoa1pxg", "q10wt38h", "q1h0trb4", "qh2a40z", "q1uzrd8i", "qhce82u", "qu5ygav", "qjhzzdf", "q1x9f2jv", "q1141x64", "q1wudgkf", "q15qcnoa"],types:{"分類題":false},wrong:{"qq3xcqr": ["基準值", "門檻值", "達成率"], "qn38n4h": ["1.5天", "2天", "3天"]}};   // 2026/10/12 題庫檢查的結果
+const quizCfg=()=>(FEED&&FEED.quiz&&FEED.quiz.v)?FEED.quiz:QUIZ_DEFAULT;
+const qzKey=(kind,qid,stem,ans)=>"q"+hashStr(kind+"|"+qid+"|"+stem+"|"+ans);
+const belKey=(z,q)=>qzKey("歸屬題",q.id,z.id,q.title);
+const clsKey=q=>qzKey("分類題",q.id,"",q.chapter);
+function qzOn(key,kind,cfg){ cfg=cfg||quizCfg(); if(cfg.types&&cfg.types[kind]===false) return false; return !(cfg.off||[]).includes(key); }
+function qzWrong(key,cfg){ cfg=cfg||quizCfg(); const w=cfg.wrong&&cfg.wrong[key]; return Array.isArray(w)&&w.length>=3?w.slice(0,3).map(String):null; }
+const qzNumAns=tok=>String(tok).replace(/(\d)\s+(?=[^\d\s:～~\-–至到])/g,"$1");
+const numsIn=x=>(String(x).match(/\d[\d,]*(?:\.\d+)?/g)||[]).map(v=>parseFloat(v.replace(/,/g,"")));
+function quizCands(z,ALLQ){                             // 這個地點所有可能出的數字題、名詞題
+  const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id);
   const numC=[], nounC=[], zoneNumToks=[];
-  qs.forEach(q=>questSentences(q).forEach(t=>{
+  qs.forEach(q=>{ const terms=nounTerms(q); questSentences(q).forEach(t=>{
     numTokens(t).forEach(c=>{ zoneNumToks.push(c);
-      if(t.indexOf(c.tok)===t.lastIndexOf(c.tok)&&t.replace(c.tok,"").replace(/\s/g,"").length>=8) numC.push(Object.assign({q,t},c)); });
-    const terms=nounTerms(q);
+      if(t.indexOf(c.tok)===t.lastIndexOf(c.tok)&&t.replace(c.tok,"").replace(/\s/g,"").length>=8){
+        const stem=t.slice(0,c.s)+"＿＿＿＿"+t.slice(c.e), ans=qzNumAns(c.tok);
+        numC.push(Object.assign({q,t,stem,ans,key:qzKey("數字題",q.id,stem,ans)},c)); } });
     terms.forEach((src,w)=>{ const i=t.indexOf(w);
       if(i<0||t.indexOf(w,i+1)>=0) return;               // 句子裡要剛好出現一次
       if(src==="label"&&i===0&&t.length-w.length<10) return;
       if(q.title.includes(w)) return;                    // 答案不能寫在題目的任務標題裡
       if(t.length-w.length<8) return;                    // 挖空後還要有足夠的線索
-      nounC.push({q,t,w,src,s:i,e:i+w.length});
+      const stem=t.slice(0,i)+"＿＿＿＿"+t.slice(i+w.length);
+      nounC.push({q,t,w,src,s:i,e:i+w.length,stem,ans:w,key:qzKey("名詞題",q.id,stem,w)});
     });
-  }));
-  const pickNum=()=>{
-    for(const c of shuffleR(numC,r)){
-      const unit=unitOf(c.tok);
-      const ansTxt=c.tok.replace(/(\d)\s+(?=[^\d\s:～~\-–至到])/g,"$1"), ansK=optKey(ansTxt), tK=optKey(c.t);
-      let wrong=shuffleR([...new Set(zoneNumToks.filter(x=>x.kind===c.kind&&optKey(x.tok)!==ansK&&unitOf(x.tok)===unit&&(!/個月/.test(c.tok)===!/個月/.test(x.tok))).map(x=>x.tok.replace(/(\d)\s+(?=[^\d\s:～~\-–至到])/g,"$1")))],r);
-      const okTime=x=>!/\d{1,2}:\d{2}/.test(x)||(x.match(/\d{1,2}:\d{2}/g)||[]).every(h=>{ const v=toMin(h); return v>=360&&v<=1320; });
-      const val=x=>parseFloat(String(x).replace(/,/g,"")), u=unitOf(c.tok), v0=val(c.tok);
-      const okUnit=x=>{ const v=val(x); if(!(v>0)&&v!==0) return true;
-        if(u==="月"&&!/個月/.test(x)) return v>=1&&v<=12&&Number.isInteger(v);
-        if(u==="歲") return v>=18&&v<=70;
-        if(c.kind==="unit"&&Number.isInteger(v0)&&v0>=10&&v0%5===0) return v%5===0;   // 整數答案配整數選項
-        return true; };
-      const sane=x=>okTime(x)&&okUnit(x);
-      wrong=wrong.concat(shuffleR(fakeNum(c,r),r)).map(x=>String(x).replace(/(\d)\s+(?=[^\d\s:～~\-–至到])/g,"$1")).filter((x,i,a)=>a.findIndex(y=>optKey(y)===optKey(x))===i&&optKey(x)!==ansK&&!tK.includes(optKey(x))&&sane(x)).slice(0,3);
-      if(wrong.length<3) continue;
-      const opts=shuffleR([ansTxt].concat(wrong),r);
-      return {kind:"數字題",text:`根據「${c.q.title}」：\n${c.t.slice(0,c.s)}＿＿＿＿${c.t.slice(c.e)}`,opts,ans:opts.indexOf(ansTxt),quest:c.q.id,explain:c.t};
-    }
-    return null;
-  };
+  }); });
+  return {qs,numC,nounC,zoneNumToks};
+}
+function buildNumQuiz(c,r,zoneNumToks,cfg){
+  const unit=unitOf(c.tok), ansTxt=c.ans, ansK=optKey(ansTxt), tK=optKey(c.t);
+  let wrong=qzWrong(c.key,cfg);
+  if(!wrong){
+    const okTime=x=>!/\d{1,2}:\d{2}/.test(x)||(x.match(/\d{1,2}:\d{2}/g)||[]).every(h=>{ const v=toMin(h); return v>=360&&v<=1320; });
+    const val=x=>parseFloat(String(x).replace(/,/g,"")), v0=val(c.tok);
+    const okUnit=x=>{ const v=val(x); if(!(v>0)&&v!==0) return true;
+      if(unit==="月"&&!/個月/.test(x)) return v>=1&&v<=12&&Number.isInteger(v);
+      if(unit==="歲") return v>=18&&v<=70;
+      if(c.kind==="unit"&&Number.isInteger(v0)&&v0>=10&&v0%5===0) return v%5===0;   // 整數答案配整數選項
+      return true; };
+    const ansN=numsIn(c.tok), ansInt=ansN.every(Number.isInteger);
+    const okNums=x=>{                                    // 不出現 0.75 小時、22.5 歲、1–1 週、5～1 月這類不合理的選項
+      if(c.kind==="timerange"){ const h=(String(x).match(/\d{1,2}:\d{2}/g)||[]).map(toMin); return h.length<2||h[0]<h[1]; }
+      if(c.kind==="time"||c.kind==="date"||c.kind==="ext") return true;
+      const v=numsIn(x); if(!v.length) return false;
+      if(!v.every(n=>Number.isInteger(n)||(Number.isInteger(n*2)&&n<3&&(!ansInt||unit==="小時")))) return false;   // 只接受整數，或 3 以下的 .5
+      if(v.length>=2&&!(v[0]<v[1])) return false;
+      if(unit==="月"&&!/個月/.test(c.tok)&&!v.every(n=>n>=1&&n<=12)) return false;
+      return true; };
+    const sane=x=>okTime(x)&&okUnit(x)&&okNums(x);
+    let pool=shuffleR([...new Set(zoneNumToks.filter(x=>x.kind===c.kind&&optKey(x.tok)!==ansK&&unitOf(x.tok)===unit&&(!/個月/.test(c.tok)===!/個月/.test(x.tok))).map(x=>qzNumAns(x.tok)))],r);
+    wrong=pool.concat(shuffleR(fakeNum(c,r),r)).map(qzNumAns).filter((x,i,a)=>a.findIndex(y=>optKey(y)===optKey(x))===i&&optKey(x)!==ansK&&!tK.includes(optKey(x))&&sane(x)).slice(0,3);
+    if(wrong.length<3) return null;
+  }
+  const opts=shuffleR([ansTxt].concat(wrong),r);
+  return {kind:"數字題",text:`根據「${c.q.title}」：\n${c.stem}`,opts,ans:opts.indexOf(ansTxt),quest:c.q.id,explain:c.t,key:c.key};
+}
+function quizNounPool(ALLQ){ const m=new Map(); ALLQ.forEach(q=>nounTerms(q).forEach((src,w)=>{ if(!m.has(w)) m.set(w,src); })); return m; }
+function buildNounQuiz(c,r,allNouns,cfg){
+  let wrong=qzWrong(c.key,cfg);
+  if(!wrong){
+    const pool=[...allNouns.keys()].filter(w=>w!==c.w&&!c.t.includes(w)&&!c.w.includes(w)&&!w.includes(c.w));
+    const suf=sufOf(c.w);
+    wrong=suf?shuffleR(pool.filter(w=>sufOf(w)===suf),r):[];
+    if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>allNouns.get(w)===c.src&&Math.abs(w.length-c.w.length)<=3),r));
+    if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>Math.abs(w.length-c.w.length)<=2),r));
+    wrong=wrong.filter((x,i,a)=>a.findIndex(y=>optKey(y)===optKey(x))===i&&optKey(x)!==optKey(c.w)).slice(0,3);
+    if(wrong.length<3) return null;
+  }
+  const opts=shuffleR([c.w].concat(wrong),r);
+  return {kind:"名詞題",text:`根據「${c.q.title}」：\n${c.stem}`,opts,ans:opts.indexOf(c.w),quest:c.q.id,explain:c.t,key:c.key};
+}
+function buildBelongQuiz(z,right,r,ALLQ){
+  const others=ALLQ.filter(q=>q.zone&&q.zone.id!==z.id); if(others.length<3) return null;
+  const wrong=shuffleR(others,r).filter((q,i,a)=>optKey(q.title)!==optKey(right.title)&&a.findIndex(y=>optKey(y.title)===optKey(q.title))===i).slice(0,3);
+  if(wrong.length<3) return null;
+  const opts=shuffleR([right].concat(wrong),r);
+  return {kind:"歸屬題",text:`下列哪一項，是在「${z.name}」可以查到的情報？`,opts:opts.map(q=>q.title),ans:opts.indexOf(right),quest:right.id,
+    explain:`「${right.title}」在${z.name}的「${right.chapter}」裡。`,key:belKey(z,right)};
+}
+function buildClassQuiz(z,right,qs,r){
+  const chs=[...new Set(qs.map(q=>q.chapter))]; if(chs.length<2) return null;
+  const opts=shuffleR(chs,r).slice(0,4);
+  if(!opts.includes(right.chapter)) opts[0]=right.chapter;
+  const o2=shuffleR(opts,r);
+  return {kind:"分類題",text:`「${right.title}」屬於${z.name}的哪個分類？`,opts:o2,ans:o2.indexOf(right.chapter),quest:right.id,explain:`它在「${right.chapter}」分類裡。`,key:clsKey(right)};
+}
+function makeNpcQuizV2(n,today,ZONES,ALLQ,cfg){
+  cfg=cfg||quizCfg();
+  const r=seededRand(n.id+"|"+today+"|"+(n.zone||""));
+  const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
+  const {qs,numC,nounC,zoneNumToks}=quizCands(z,ALLQ); if(!qs.length) return null;
+  const allNouns=quizNounPool(ALLQ);                     // 全站名詞庫（干擾選項用）
+  const okNum=numC.filter(c=>qzOn(c.key,"數字題",cfg)), okNoun=nounC.filter(c=>qzOn(c.key,"名詞題",cfg));
+  const pickNum=()=>{ for(const c of shuffleR(okNum,r)){ const q=buildNumQuiz(c,r,zoneNumToks,cfg); if(q) return q; } return null; };
   const pickNoun=()=>{
     const pri=x=>x.src==="quote"||x.src==="bold"?0:1;
-    for(const c of shuffleR(nounC,r).sort((a,b)=>pri(a)-pri(b))){
-      const pool=[...allNouns.keys()].filter(w=>w!==c.w&&!c.t.includes(w)&&!c.w.includes(w)&&!w.includes(c.w));
-      const suf=sufOf(c.w);
-      let wrong=suf?shuffleR(pool.filter(w=>sufOf(w)===suf),r):[];
-      if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>allNouns.get(w)===c.src&&Math.abs(w.length-c.w.length)<=3),r));
-      if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>Math.abs(w.length-c.w.length)<=2),r));
-      wrong=wrong.filter((x,i,a)=>a.findIndex(y=>optKey(y)===optKey(x))===i&&optKey(x)!==optKey(c.w)).slice(0,3);
-      if(wrong.length<3) continue;
-      const opts=shuffleR([c.w].concat(wrong),r);
-      return {kind:"名詞題",text:`根據「${c.q.title}」：\n${c.t.slice(0,c.s)}＿＿＿＿${c.t.slice(c.e)}`,opts,ans:opts.indexOf(c.w),quest:c.q.id,explain:c.t};
-    }
+    for(const c of shuffleR(okNoun,r).sort((a,b)=>pri(a)-pri(b))){ const q=buildNounQuiz(c,r,allNouns,cfg); if(q) return q; }
     return null;
   };
   const roll=r();
@@ -8442,24 +8546,30 @@ function makeNpcQuiz(n){
   const today=new Date().toISOString().slice(0,10), r=seededRand(n.id+"|"+today+"|"+(n.zone||"")+"|mix");
   const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
   const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id); if(!qs.length) return null;
-  if(r()<.75){ const q=makeNpcQuizV2(n,today,ZONES,ALLQ); if(quizOK(q)) return q; }
-  // ② 歸屬題：哪一項可以在這裡查到
-  const others=ALLQ.filter(q=>q.zone&&q.zone.id!==z.id);
-  if(others.length>=3&&(r()<.6||new Set(qs.map(q=>q.chapter)).size<2)){
-    const right=qs[Math.floor(r()*qs.length)], wrong=shuffleR(others,r).filter((q,i,a)=>optKey(q.title)!==optKey(right.title)&&a.findIndex(y=>optKey(y.title)===optKey(q.title))===i).slice(0,3);
-    const opts=shuffleR([right].concat(wrong),r);
-    return {kind:"歸屬題",text:`下列哪一項，是在「${z.name}」可以查到的情報？`,opts:opts.map(q=>q.title),ans:opts.indexOf(right),quest:right.id,
-      explain:`「${right.title}」在${z.name}的「${right.chapter}」裡。`};
-  }
-  // ③ 分類題：屬於哪個分類
-  const chs=[...new Set(qs.map(q=>q.chapter))];
-  if(chs.length>=2){
-    const right=qs[Math.floor(r()*qs.length)], opts=shuffleR(chs,r).slice(0,4);
-    if(!opts.includes(right.chapter)) opts[0]=right.chapter;
-    const o2=shuffleR(opts,r);
-    return {kind:"分類題",text:`「${right.title}」屬於${z.name}的哪個分類？`,opts:o2,ans:o2.indexOf(right.chapter),quest:right.id,explain:`它在「${right.chapter}」分類裡。`};
-  }
+  const cfg=quizCfg(), chs=[...new Set(qs.map(q=>q.chapter))];
+  const v2=()=>makeNpcQuizV2(n,today,ZONES,ALLQ,cfg);
+  const bel=()=>{ const ok=qs.filter(q=>qzOn(belKey(z,q),"歸屬題",cfg)); return ok.length?buildBelongQuiz(z,ok[Math.floor(r()*ok.length)],r,ALLQ):null; };   // ② 歸屬題：哪一項可以在這裡查到
+  const cls=()=>{ const ok=qs.filter(q=>qzOn(clsKey(q),"分類題",cfg)); return ok.length?buildClassQuiz(z,ok[Math.floor(r()*ok.length)],qs,r):null; };   // ③ 分類題：屬於哪個分類
+  const a=r(), b=r();
+  const seq=(a<.75?[v2]:[]).concat([b<.6||chs.length<2?bel:cls],[v2,bel,cls]);   // 抽到的題型被停用或出不了題，就換下一種
+  for(const f of seq){ const q=f(); if(quizOK(q)&&q.ans>=0) return q; }
   return null;
+}
+function quizBank(cfg){                                 // 管理者「題庫」分頁：列出目前任務內容會出的每一題
+  cfg=cfg||quizCfg();
+  const allNouns=quizNounPool(ALLQ), out=[];
+  ZONES.forEach(z=>{
+    const {qs,numC,nounC,zoneNumToks}=quizCands(z,ALLQ); if(!qs.length) return;
+    const chs=[...new Set(qs.map(q=>q.chapter))];
+    const rows=[];
+    numC.forEach(c=>{ const smp=buildNumQuiz(c,seededRand(c.key),zoneNumToks,cfg); rows.push({key:c.key,kind:"數字題",q:c.q,stem:c.stem,ans:c.ans,opts:smp&&smp.opts,backup:false}); });
+    nounC.forEach(c=>{ const smp=buildNounQuiz(c,seededRand(c.key),allNouns,cfg); rows.push({key:c.key,kind:"名詞題",q:c.q,stem:c.stem,ans:c.ans,opts:smp&&smp.opts,backup:!(c.src==="quote"||c.src==="bold")}); });
+    qs.forEach(q=>{ const smp=buildBelongQuiz(z,q,seededRand(belKey(z,q)),ALLQ); rows.push({key:belKey(z,q),kind:"歸屬題",q,stem:`下列哪一項，是在「${z.name}」可以查到的情報？`,ans:q.title,opts:smp&&smp.opts,backup:false}); });
+    if(chs.length>=2) qs.forEach(q=>{ const smp=buildClassQuiz(z,q,qs,seededRand(clsKey(q))); rows.push({key:clsKey(q),kind:"分類題",q,stem:`「${q.title}」屬於${z.name}的哪個分類？`,ans:q.chapter,opts:smp&&smp.opts,backup:false}); });
+    const seen=new Set();
+    rows.forEach(x=>{ if(seen.has(x.key)) return; seen.add(x.key); x.zone=z; out.push(x); });
+  });
+  return out;
 }
 function giveNpcSeeds(n,mult){
   const got=[];
@@ -8534,6 +8644,106 @@ function renderNpcAdmin(){
   </article>`).join("");
 }
 
+
+/* ================= 管理者：題庫 ================= */
+let QB_DRAFT=null, QB_BASE="", QB_BASEOBJ=null, QB_EDIT="";
+const qbClone=c=>({v:1,off:[...new Set((c.off||[]).map(String))],types:Object.assign({},c.types||{}),wrong:JSON.parse(JSON.stringify(c.wrong||{}))});
+const qbJSON=c=>JSON.stringify({off:[...c.off].sort(),types:QZ_KINDS.reduce((o,k)=>(o[k]=c.types[k]!==false,o),{}),wrong:Object.keys(c.wrong).sort().reduce((o,k)=>(o[k]=c.wrong[k],o),{})});
+const qbDirty=()=>!!QB_DRAFT&&qbJSON(QB_DRAFT)!==QB_BASE;
+function openQuizAdmin(){
+  if(!QB_DRAFT||!qbDirty()){ QB_DRAFT=qbClone(quizCfg()); QB_BASEOBJ=qbClone(quizCfg()); QB_BASE=qbJSON(QB_BASEOBJ); }
+  const zs=$("#qbZone"); if(!zs.options.length) zs.innerHTML=`<option value="">全部地點</option>`+ZONES.map(z=>`<option value="${esc(z.id)}">${esc(z.name)}</option>`).join("");
+  const ks=$("#qbKind"); if(!ks.options.length) ks.innerHTML=`<option value="">全部題型</option>`+QZ_KINDS.map(k=>`<option>${k}</option>`).join("");
+  renderQuizAdmin();
+}
+function qbRowState(x){
+  const base=QB_BASEOBJ||qbClone(quizCfg());
+  const off=QB_DRAFT.off.includes(x.key), typeOff=QB_DRAFT.types[x.kind]===false;
+  const custom=!!qzWrong(x.key,QB_DRAFT);
+  const dirty=off!==base.off.includes(x.key)||JSON.stringify(QB_DRAFT.wrong[x.key]||null)!==JSON.stringify(base.wrong[x.key]||null);
+  return {off,typeOff,custom,dirty,live:!off&&!typeOff};
+}
+function renderQuizAdmin(){
+  if(!QB_DRAFT) return;
+  const bank=quizBank(QB_DRAFT);
+  const fz=$("#qbZone").value, fk=$("#qbKind").value, fs=$("#qbState").value, q=$("#qbSearch").value.trim();
+  const rows=bank.map(x=>Object.assign(x,{st:qbRowState(x)}));
+  const live=rows.filter(x=>x.st.live&&x.opts).length, offN=rows.filter(x=>!x.st.live).length, none=rows.filter(x=>x.st.live&&!x.opts).length;
+  const fb=FEED&&FEED.quiz;
+  $("#qbInfo").innerHTML=`共 <b>${rows.length}</b> 題・會出現 <b>${live}</b> 題・停用 <b>${offN}</b> 題${none?`・選項不足不會出題 ${none} 題`:""}。`
+    +(fb?`目前生效的是 ${esc(fmtShort(new Date(parseSheetTs(fb.ts)||Date.now())))}${fb.by?`（${esc(fb.by)}）`:""}發布的設定。`:"目前使用網站內建的題庫設定（2026/10/12 檢查結果），還沒有發布過。")
+    +(qbDirty()?` <span class="st st-wait">有未發布的變更</span>`:"");
+  const tc=$("#qbTabCount"); if(tc){ tc.hidden=!qbDirty(); tc.textContent="!"; }
+  $("#qbTypes").innerHTML=`<span class="lab">題型開關</span>`+QZ_KINDS.map(k=>`<label class="chk"><input type="checkbox" data-qbtype="${k}"${QB_DRAFT.types[k]===false?"":" checked"}> ${k}（${rows.filter(x=>x.kind===k).length}）</label>`).join("");
+  const show=rows.filter(x=>(!fz||x.zone.id===fz)&&(!fk||x.kind===fk)&&(!q||(x.stem+x.ans+x.q.title).includes(q))
+    &&(fs==="all"||(fs==="on"&&x.st.live)||(fs==="off"&&!x.st.live)||(fs==="custom"&&x.st.custom)||(fs==="none"&&x.st.live&&!x.opts)||(fs==="dirty"&&x.st.dirty)));
+  const out=[];
+  ZONES.forEach(z=>{
+    const zr=show.filter(x=>x.zone.id===z.id); if(!zr.length) return;
+    out.push(`<section class="qbzone"><h4>${esc(z.name)}（${zr.length}）</h4>`);
+    const groups=new Map();
+    zr.forEach(x=>{ const g=x.kind==="歸屬題"||x.kind==="分類題"?"#"+x.kind:x.q.id; if(!groups.has(g)) groups.set(g,[]); groups.get(g).push(x); });
+    groups.forEach((list,g)=>{
+      const head=g[0]==="#"?`${g.slice(1)}<span>${g==="#歸屬題"?"問「哪一項可以在這裡查到」，答案是任務標題":"問任務屬於哪個分類"}</span>`:`${esc(list[0].q.title)}<span>${list.length} 題</span>`;
+      out.push(`<div class="qbquest"><p>${head}</p>${list.map(qbRowHTML).join("")}</div>`);
+    });
+    out.push(`</section>`);
+  });
+  $("#qbList").innerHTML=out.join("")||`<p class="ahint">沒有符合條件的題目。</p>`;
+}
+function qbRowHTML(x){
+  const st=x.st;
+  const stem=x.kind==="歸屬題"?`答案：<b>${esc(x.ans)}</b>`:x.kind==="分類題"?`「${esc(x.q.title)}」→ <b>${esc(x.ans)}</b>`:esc(x.stem).replace("＿＿＿＿",'<span class="blank">＿＿＿＿</span>')+`　→ <b>${esc(x.ans)}</b>`;
+  const opts=x.opts?`<ul class="qbopts" aria-label="選項範例">${x.opts.map(o=>`<li class="${o===x.ans?"ans":""}">${esc(o)}${o===x.ans?" ✓":""}</li>`).join("")}</ul>`:"";
+  const notes=[];
+  if(st.typeOff) notes.push("整個題型已停用");
+  if(!x.opts&&!st.typeOff&&!st.off) notes.push("<b>選項不足，目前不會出題</b>（可以自訂選項）");
+  if(st.custom) notes.push("<b>使用自訂選項</b>");
+  if(x.backup) notes.push("備用題：同一地點其他名詞題都出不了時才會出現");
+  if(st.dirty) notes.push("<b>未發布</b>");
+  const canEdit=x.kind==="數字題"||x.kind==="名詞題";
+  const edit=QB_EDIT===x.key?`<div class="qbedit"><input class="ainput" id="qbWrong" value="${esc((QB_DRAFT.wrong[x.key]||[]).join("、"))}" placeholder="3 個錯誤選項，用「、」隔開" aria-label="自訂錯誤選項">
+      <button class="mini-btn" type="button" data-qbsave="${x.key}">套用</button><button class="mini-btn" type="button" data-qbclear="${x.key}">改回自動</button><button class="mini-btn" type="button" data-qbcancel>取消</button><p class="cerr" id="qbErr" role="alert"></p></div>`:"";
+  return `<div class="qbrow${st.live?"":" off"}${st.dirty?" dirty":""}" data-key="${x.key}">
+    <div><span class="qbkind">${x.kind}</span><span class="qbstem">${stem}</span>${opts}${notes.length?`<p class="qbnote">${notes.join("・")}</p>`:""}</div>
+    <div class="qbside"><div class="qbtoggle" role="group" aria-label="啟用或停用">
+      <button type="button" class="on" data-qbon="${x.key}" aria-pressed="${!st.off}">啟用</button><button type="button" class="off" data-qboff="${x.key}" aria-pressed="${st.off}">停用</button></div>
+      ${canEdit?`<button class="mini-btn" type="button" data-qbedit="${x.key}">自訂選項</button>`:""}</div>${edit}</div>`;
+}
+$("#qbList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-qbon],[data-qboff],[data-qbedit],[data-qbsave],[data-qbclear],[data-qbcancel]"); if(!b||!QB_DRAFT) return;
+  if(b.dataset.qbon||b.dataset.qboff){ const k=b.dataset.qbon||b.dataset.qboff, off=!!b.dataset.qboff;
+    QB_DRAFT.off=QB_DRAFT.off.filter(x=>x!==k); if(off) QB_DRAFT.off.push(k); Sound.sfx("cursor"); renderQuizAdmin(); return; }
+  if(b.dataset.qbedit){ QB_EDIT=QB_EDIT===b.dataset.qbedit?"":b.dataset.qbedit; renderQuizAdmin(); const i=$("#qbWrong"); if(i) i.focus(); return; }
+  if(b.hasAttribute("data-qbcancel")){ QB_EDIT=""; renderQuizAdmin(); return; }
+  if(b.dataset.qbclear){ delete QB_DRAFT.wrong[b.dataset.qbclear]; QB_EDIT=""; renderQuizAdmin(); return; }
+  if(b.dataset.qbsave){
+    const k=b.dataset.qbsave, x=quizBank(QB_DRAFT).find(r=>r.key===k); if(!x) return;
+    const list=$("#qbWrong").value.split(/[、,，\n]/).map(v=>v.trim()).filter(Boolean);
+    const err=list.length!==3?"請輸入 3 個錯誤選項，用「、」隔開"
+      :new Set(list.map(optKey)).size<3?"3 個選項不能重複"
+      :list.some(v=>optKey(v)===optKey(x.ans))?"錯誤選項不能和正確答案一樣":"";
+    if(err){ $("#qbErr").textContent=err; Sound.sfx("error"); return; }
+    QB_DRAFT.wrong[k]=list; QB_EDIT=""; Sound.sfx("select"); renderQuizAdmin();
+  }
+});
+$("#qbList").addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="qbWrong"){ e.preventDefault(); const b=document.querySelector("[data-qbsave]"); if(b) b.click(); } });
+$("#qbTypes").addEventListener("change",e=>{ const k=e.target.dataset.qbtype; if(!k||!QB_DRAFT) return; QB_DRAFT.types[k]=e.target.checked; renderQuizAdmin(); });
+["#qbZone","#qbKind","#qbState"].forEach(id=>$(id).addEventListener("change",renderQuizAdmin));
+$("#qbSearch").addEventListener("input",renderQuizAdmin);
+$("#qbRevert").addEventListener("click",()=>{ QB_DRAFT=null; QB_EDIT=""; openQuizAdmin(); toast("已還原成目前生效的題庫設定"); });
+$("#qbPublish").addEventListener("click",async()=>{
+  if(!QB_DRAFT) return;
+  if(!qbDirty()&&FEED&&FEED.quiz){ toast("沒有需要發布的變更"); return; }
+  const bank=quizBank(QB_DRAFT), keys=new Set(bank.map(x=>x.key));
+  const data={v:1,off:QB_DRAFT.off.filter(k=>keys.has(k)),types:QZ_KINDS.reduce((o,k)=>(o[k]=QB_DRAFT.types[k]!==false,o),{}),
+    wrong:Object.keys(QB_DRAFT.wrong).filter(k=>keys.has(k)).reduce((o,k)=>(o[k]=QB_DRAFT.wrong[k],o),{})};
+  const live=bank.filter(x=>qzOn(x.key,x.kind,data)&&x.opts).length;
+  if(!(await uiConfirm(`發布後約 1–5 分鐘生效：會出現 ${live} 題、停用 ${bank.length-live} 題。確定發布嗎？`,"發布"))) return;
+  const id="QZ-"+Date.now().toString(36).toUpperCase();
+  const ok=await adminSend("quiz",id,"j:"+JSON.stringify(data),"題庫設定",null);
+  if(ok){ QB_BASEOBJ=qbClone(data); QB_BASE=qbJSON(QB_BASEOBJ); renderQuizAdmin(); }
+});
 /* ================= 管理者：新人審核 ================= */
 let AP_ROWS=[], AP_BUSY=false, AP_LOCAL={};
 async function loadApprovals(force){
@@ -10838,7 +11048,7 @@ $("#spOpts").addEventListener("click",e=>{
   SEEDPICK=null; injectNpcGift();
 });
 $("#nqGo").addEventListener("click",()=>{ const c=QUIZ_CUR; $("#npcQuizDlg").close(); if(c&&c.qz.quest) setTimeout(()=>openQuest(c.qz.quest),120); });
-document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); } if(b.dataset.tab==="rps") loadConsultAdmin();if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster(); if(b.dataset.tab==="approve") loadApprovals(true); if(b.dataset.tab==="comp") openCompAdmin();}});
+document.querySelector(".atabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){selectTab(b.dataset.tab);Sound.sfx("cursor");if(b.dataset.tab==="npcs"){ NPCD=null; renderNpcAdmin(); } if(b.dataset.tab==="rps") loadConsultAdmin();if(b.dataset.tab==="rescue") rsKeyState(); if(b.dataset.tab==="roster") loadRoster(); if(b.dataset.tab==="approve") loadApprovals(true); if(b.dataset.tab==="quizbank") openQuizAdmin(); if(b.dataset.tab==="comp") openCompAdmin();}});
 $("#viewAdmin").addEventListener("click",e=>{
   const c=e.target.closest("[data-copy]"); if(c){ copyText($("#"+c.dataset.copy).textContent); return; }
   if(e.target.closest("[data-reload]")){ loadAdminLists(true); if($("#ivTable").closest(".apanel")&&!$("#ivTable").closest(".apanel").hidden) loadIvReplies(); }
@@ -10895,6 +11105,7 @@ function pubDone(p,feed){
   if(p.type==="content"||p.type==="settings") return feed.batchIds.has(p.id);
   if(p.type==="ping") return feed.pings.has(p.id);
   if(p.type==="profreq"){ const x=feed.profreq; return !!x&&x.id===p.id&&(p.expect==null||String(!!x.ended)===p.expect); }
+  if(p.type==="quiz") return !!feed.quiz&&feed.quiz.id===p.id;
   if(p.type==="approve"){ const x=(feed.approve||{})[String(p.id).toUpperCase()]; return !!x&&(p.expect==null||String(!!x.ok)===p.expect); }
   if(p.type==="comp"){ const x=(feed.comps||[]).find(v=>v.id===p.id); return !!x&&(p.expect==null||String(!!x.revoked)===p.expect); }
   if(p.type==="interview"){ const x=feed.interviews.find(v=>v.id===p.id); return !!x&&(p.expect==null||String(x.status||"")===p.expect); }

@@ -1316,6 +1316,39 @@ body.tour-lock .mapframe{z-index:41}
 .trbar i{display:block;height:100%;background:repeating-linear-gradient(90deg,#E0525A 0 8px,#B33A42 8px 10px);transition:width .5s}
 .trg{width:110px;height:110px;display:block}
 .trg.down{opacity:.45;transform:rotate(-10deg)}
+.trarena{--lunge:clamp(60px,26vw,250px)}
+.trhero{position:relative;display:block;width:84px;height:84px;z-index:2}
+.trhero .trme{width:100%;height:100%}
+.trwpn{position:absolute;left:60%;top:28%;width:48%;height:48%;transform-origin:15% 85%;transform:rotate(-25deg);pointer-events:none}
+.trwpn svg{display:block}
+.trhero:not(.atk):not(.hurt){animation:trbob 1.8s ease-in-out infinite}
+@keyframes trbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.trhero.atk{animation:tratk .7s cubic-bezier(.35,.05,.3,1) both}
+@keyframes tratk{0%{transform:translateX(0)}12%{transform:translateX(-8px) scaleX(.95)}40%{transform:translateX(var(--lunge)) translateY(-10px)}55%{transform:translateX(calc(var(--lunge) - 8px))}100%{transform:translateX(0)}}
+.trhero.atk .trwpn{animation:trswing .7s ease-in-out both}
+@keyframes trswing{0%,25%{transform:rotate(-25deg)}32%{transform:rotate(-85deg)}48%{transform:rotate(100deg)}70%{transform:rotate(80deg)}100%{transform:rotate(-25deg)}}
+.trhero.hurt{animation:trhurt .55s .3s both}
+@keyframes trhurt{0%{transform:translateX(0);filter:none}15%{transform:translateX(-10px);filter:brightness(1.5) sepia(1) saturate(6) hue-rotate(-40deg)}30%{transform:translateX(8px)}45%{transform:translateX(-6px)}60%{transform:translateX(4px);filter:none}100%{transform:translateX(0)}}
+.trshield{position:absolute;inset:-6px;border-radius:50%;border:3px solid #8FD3F0;box-shadow:0 0 12px #8FD3F0,inset 0 0 12px rgba(143,211,240,.6);animation:trshield .8s .3s both}
+@keyframes trshield{0%{opacity:0;transform:scale(.6)}30%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.15)}}
+.trpetf.atk{position:relative;z-index:2;animation:trpatk .7s .15s cubic-bezier(.35,.05,.3,1) both}
+@keyframes trpatk{0%{transform:translate(0,0)}40%{transform:translate(calc(var(--lunge) + 16px),-26px) rotate(12deg)}60%{transform:translate(calc(var(--lunge) + 6px),0)}100%{transform:translate(0,0)}}
+.trg{position:relative;animation:trfloat 2.6s ease-in-out infinite}
+@keyframes trfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.trg.hit{animation:trhit .55s .28s both}
+@keyframes trhit{0%{transform:translateX(0);filter:none}10%{transform:translateX(12px) rotate(4deg);filter:brightness(2.4)}30%{transform:translateX(-8px) rotate(-3deg);filter:brightness(1.4)}50%{transform:translateX(6px)}70%{transform:translateX(-3px);filter:none}100%{transform:translateX(0)}}
+.trg.hit.down{animation:trhit .55s .28s both,trfall .6s .85s forwards}
+@keyframes trfall{to{transform:rotate(-14deg) translateY(8px);opacity:.45;filter:grayscale(.6)}}
+.trg.down:not(.hit){animation:none}
+.trg.atk{z-index:2;animation:trgatk .65s cubic-bezier(.35,.05,.3,1) both}
+@keyframes trgatk{0%{transform:translateX(0)}15%{transform:translateX(10px) scale(1.04)}45%{transform:translateX(calc(-1 * var(--lunge))) translateY(-8px)}60%{transform:translateX(calc(10px - var(--lunge)))}100%{transform:translateX(0)}}
+.trslash{position:absolute;left:-10%;top:10%;width:120%;height:80%;pointer-events:none;background:linear-gradient(135deg,transparent 44%,#fff 48%,#FFE08A 50%,#fff 52%,transparent 56%);opacity:0;animation:trslash .4s .3s ease-out both}
+.trslash.b{background:linear-gradient(45deg,transparent 44%,#fff 48%,#FFE08A 50%,#fff 52%,transparent 56%);animation-delay:.42s}
+@keyframes trslash{0%{opacity:0;transform:scale(.3)}40%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.15)}}
+@media (max-width:640px){.trhero{width:64px;height:64px}}
+@media (prefers-reduced-motion:reduce){.trhero,.trhero .trwpn,.trpetf,.trg,.trslash,.trshield{animation:none!important}.trslash{opacity:0}}
+.trnewpet{display:flex;align-items:center;gap:12px;margin:10px 0;padding:10px 14px;background:#0B1030;border:2px solid var(--gold);border-radius:6px;text-align:left}
+.trnewpet .pv{width:72px;height:72px;flex:none}
 .trpop{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);margin:0;font-family:var(--pixel);font-size:30px;text-shadow:3px 3px 0 #05071A;animation:trpop .9s ease-out}
 .trpop.ok{color:#FFE08A}.trpop.ng{color:#FF8A8F}
 @keyframes trpop{0%{opacity:0;transform:translate(-50%,-20%) scale(.6)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}100%{opacity:1;transform:translate(-50%,-60%) scale(1)}}
@@ -1384,6 +1417,8 @@ body.tour-lock .mapframe{z-index:41}
 @keyframes jcgrow{0%{transform:translate(-50%,-50%) scale(.15);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
 @keyframes jcspin{0%{transform:translate(-50%,-50%) scale(.3) rotate(0);opacity:1}100%{transform:translate(-50%,-50%) scale(1) rotate(270deg);opacity:0}}
 @media (prefers-reduced-motion:reduce){.jcfx{display:none}}
+.jswsel{width:auto;min-width:200px;max-width:100%}
+.jguard{display:flex;align-items:center;gap:8px}.jguard .pv{width:40px;height:40px;flex:none}
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -2929,7 +2964,7 @@ Object.assign(ACC,{sa_beret:{"name": "紅色貝雷帽", "rows": ["......kkkkkk.k
 const PET_GEAR={pg_bandana:{"name": "紅色領巾", "slot": "neck", "rows": ["KKKKKKKKKKK", "KRRRRWRRRRK", ".KRRRRRRRK.", "..KRWRRRK..", "...KRRRK...", "....KRK....", ".....K....."]},pg_antler:{"name": "麋鹿角", "slot": "head", "rows": ["K.K.K......K.K.K", "KBKBK......KBKBK", "KBBBK......KBBBK", ".KBBK......KBBK.", "..KBK......KBK..", "..KBBK....KBBK..", "...KK......KK..."]},pg_witch:{"name": "迷你女巫帽", "slot": "head", "rows": [".......KK.....", "......KVVK....", ".....KVVK.....", "....KVVVVK....", "...KVVVVVVK...", "...KOOOOOOK...", "KKKVVVVVVVVKKK", "KVVVVVVVVVVVVK", ".KKKKKKKKKKKK."]},pg_leaf:{"name": "楓葉領巾", "slot": "neck", "rows": ["KKKKKKKKKKK", "KOOOOOOOOOK", ".KOORRKOOK.", "..KORRRRK..", "...KORRK...", "....KOK....", ".....K....."]},pg_tie:{"name": "小領帶", "slot": "neck", "rows": [".KKKKK.", ".KNNNK.", "..KNK..", ".KNNNK.", ".KNYNK.", ".KNNNK.", ".KNYNK.", "..KNK..", "...K..."]},pg_mushroom:{"name": "蘑菇帽", "slot": "head", "rows": ["....KKKKKK....", "..KKRRWRRRKK..", ".KRRWWRRRWRRK.", "KRRRRRRRWWRRRK", "KRWWRRRRRRRWRK", "KKKKKKKKKKKKKK", ".KEEEEEEEEEEK."]},pg_antenna:{"name": "外星天線", "slot": "head", "rows": ["KK..........KK", "KGK........KGK", ".KK........KK.", "..K........K..", "..K........K..", "..KKKKKKKKKK..", "..KSSSSSSSSK..", "..KKKKKKKKKK.."]},pg_sparkbow:{"name": "亮片領結", "slot": "neck", "rows": ["KK.....KK", "KMMK.KMMK", "KMWMKMMMK", "KMMMKMWMK", "KMMK.KMMK", "KK.....KK"]},pg_tophat:{"name": "紳士小禮帽", "slot": "head", "rows": ["...KKKKKKK...", "...KAAAAAK...", "...KAAAAAK...", "...KAAAAAK...", "...KRRRRRK...", ".KKKAAAAAKKK.", ".KAAAAAAAAAK.", ".KKKKKKKKKKK."]}};
 Object.assign(PET_GEAR,{"pg_job_road": {"name": "迷你反光背心", "slot": "neck", "rows": ["KKKKKKKKKKK", "KOOWOOOWOOK", ".KOOOOOOOK.", "..KOWWWOK..", "...KOOOK...", "....KKK...."], "job": "road"}, "pg_job_civil": {"name": "小安全帽", "slot": "head", "rows": ["....KKKK....", "..KKYYYYKK..", ".KYYYYYYYYK.", "KYYYYWYYYYYK", "KKKKKKKKKKKK"], "job": "civil"}, "pg_job_drain": {"name": "小雨衣帽", "slot": "head", "rows": ["....KKKKK....", "..KKNNNNNKK..", ".KNNSNNNNNNK.", "KNNNNNNNNNNNK", "KKKKKKKKKKKKK"], "job": "drain"}, "pg_job_park": {"name": "迷你無塵帽", "slot": "head", "rows": ["...KKKKKKK...", "..KWWWWWWWK..", ".KWVWWWWWVWK.", ".KWWWWWWWWWK.", "KKKKKKKKKKKKK"], "job": "park"}, "pg_job_plan": {"name": "小綸巾", "slot": "head", "rows": ["..KKKKKKKK..", ".KNNNNNNNNK.", ".KNYNNNNNNK.", "KKNNNNNNNNKK", "..KK....KK.."], "job": "plan"}, "pg_job_renew": {"name": "小護目鏡", "slot": "head", "rows": ["KKK.....KKK", "KSSKKKKKSSK", "KSSKBBBKSSK", "KKKK...KKKK"], "job": "renew"}, "pg_job_eco": {"name": "小花環", "slot": "head", "rows": [".M.G.M.G.M.", "MGMGMGMGMGM", ".G.M.G.M.G."], "job": "eco"}, "pg_job_south": {"name": "小草帽", "slot": "head", "rows": ["....KKKKK....", "...KEEEEEK...", "..KRRRRRRRK..", "KKEEEEEEEEEKK", "KEEEEEEEEEEEK", ".KKKKKKKKKKK."], "job": "south"}, "pg_job_digital": {"name": "小耳機", "slot": "head", "rows": [".KKKKKKKKKKK.", "KAK.......KAK", "KAK.......KAK", "KGK.......KGK", ".K.........K."], "job": "digital"}, "pg_job_support": {"name": "小補給圍巾", "slot": "neck", "rows": [".KKKKKKKKK.", "KMMMMMMMMMK", "KMRRWRRMMMK", "KMMRRRMMMMK", ".KKKKKKKKK."], "job": "support"}});
 const GEAR_PAL={K:"#231F20",R:"#E8453C",W:"#FFFFFF",B:"#A0522D",V:"#7A4BB5",O:"#FF9F43",N:"#27336B",Y:"#FFD23F",G:"#57C35A",S:"#C4CAD8",M:"#E94FA8",A:"#2B2B31",E:"#F4E1C1"};
-const PET_HEAD={dog:{baby:[16,6],adult:[16,2]},cat:{baby:[16,8],adult:[16,4]},guinea:{baby:[16,12],adult:[16,8]},slime:{baby:[16,10],adult:[16,6]},
+const PET_HEAD={guardian:{baby:[16,4],adult:[16,4]},dog:{baby:[16,6],adult:[16,2]},cat:{baby:[16,8],adult:[16,4]},guinea:{baby:[16,12],adult:[16,8]},slime:{baby:[16,10],adult:[16,6]},
   chicken:{baby:[16,5],adult:[16,3]},sheep:{baby:[16,8],adult:[16,3]},horse:{baby:[16,6],adult:[16,2]},rabbit:{baby:[16,8],adult:[16,10]},
   tiger:{baby:[16,8],adult:[16,4]},caterpillar:{baby:[22,12],adult:[25,9]},snowman:{baby:[16,9],adult:[16,3]},scruffy:{baby:[11,9],adult:[12,3]},pom:{baby:[16,14],adult:[16,9]},shiba:{baby:[16,12],adult:[16,6]},panda:{baby:[16,10],adult:[16,5]},duck:{baby:[15,10],adult:[15,5]},fireball:{baby:[16,15],adult:[16,10]},bear:{baby:[16,10],adult:[16,5]},grumpy:{baby:[16,10],adult:[16,5]}};
 function petGearPos(type,st,g){                          // 回傳配件左上角（32 格座標）
@@ -2990,8 +3025,10 @@ const JOB_PAL32={"road":{"0":"#3A2A2A","1":"#E8572E","2":"#A93A1E","3":"#FFB27A"
 const JOB_CAPE32=[{"21":"......>~<<<<<<<<<<<<<<<<~>......","22":"....>~<<<<<<<<<<<<<<<<<<<<~>....","23":"...>~<<<<<<<<<<<<<<<<<<<<<<~>...","24":"..>~<<<<<<<<<<<<<<<<<<<<<<<<~>..","25":"..>~<<<<<<<<<<<<<<<<<<<<<<<<~>..","26":".>~<<><<<<><<<<><<<<><<<<><<<~>.","27":".>~<<><<<<><<<<><<<<><<<<><<<~>.","28":".>~<<><<<<><<<<><<<<><<<<><<<~>.","29":".>~<<><<<<><<<<><<<<><<<<><<<~>.","30":"..>>>>>>>>>>>>>>>>>>>>>>>>>>>>.."},{"21":"......y~<<<<<<<<<<<<<<<<~y......","22":"....y~<<<<<<<<<<<<<<<<<<<<~y....","23":"...y~<<<<<<<<<<<<<<<<<<<<<<~y...","24":"..y~<<<<<<<<<<<<<<<<<<<<<<<<~y..","25":"..y~<<<<<<<<<<<<<<<<<<<<<<<<~y..","26":".y~<<><<<<><<<<><<<<><<<<><<<~y.","27":".y~<<><<<<><<<<><<<<><<<<><<<~y.","28":".y~<<><<<<><<<<><<<<><<<<><<<~y.","29":".y~<<><<<<><<<<><<<<><<<<><<<~y.","30":"..yyyyyyyyyyyyyyyyyyyyyyyyyyyy.."}];
 function jobLook(av){                                   // 角色身上的職業造型：{job,tier,full}
   const j=av&&jobById(av.job); if(!j) return null;
-  const tier=+av.jt===2?2:1;
-  return {job:j.id,tier,full:av.jl!=="cape"};
+  const tier=+av.jt===2?2:1, old=av.jl!=="cape";
+  const out=av.jo!=null?!!+av.jo:old, hat=av.jh!=null?!!+av.jh:old, cape=av.jc!=null?!!+av.jc:true;
+  if(!out&&!hat&&!cape) return null;
+  return {job:j.id,tier,out,hat,cape,full:out};
 }
 function underlay(grid,rows){                           // 只畫在空白處（披風在身體後面）
   Object.entries(rows||{}).forEach(([y,row])=>{
@@ -3079,7 +3116,7 @@ function avatarParts32(av){
   const key=JSON.stringify(Object.assign({},AV_DEFAULT,av||{}));
   if(AV32_CACHE.has(key)) return AV32_CACHE.get(key);
   const J=jobLook(av), JA=J&&JOB_ART32[J.job];
-  const base=avatarParts(JA?Object.assign({},av,{job:null},J.full?{outfit:"tee"}:{}):av);
+  const base=avatarParts(JA?Object.assign({},av,{job:null},J.out?{outfit:"tee"}:{},J.hat?{acc:"none"}:{}):av);   // 職業服裝取代衣服、職業頭飾取代配件
   const hc=(HAIRC[(av||{}).hc]||HAIRC[0])[1];
   const out={rows:refine32(base.rows),pal:Object.assign({},base.pal,{a:tint(hc,.32)})};
   if(JA){
@@ -3089,9 +3126,10 @@ function avatarParts32(av){
         if(mode==="under"){ if(g[y][x]===".") g[y][x]=c; }
         else if(mode==="body"&&c==="k"&&KEEP.includes(g[y][x])) continue;   // 衣服描邊不蓋到下巴、頭髮
         else g[y][x]=c; } });
-    if(J.full) lay(JA.back&&JA.back[J.tier-1],"under");      // 背後：光環、全息面板
-    lay(JOB_CAPE32[J.tier-1],"under");
-    if(J.full){ lay(JA.out[J.tier-1],"body"); lay(JA.hat[J.tier-1],"hat"); }
+    if(J.out||J.hat) lay(JA.back&&JA.back[J.tier-1],"under");      // 背後：光環、全息面板
+    if(J.cape) lay(JOB_CAPE32[J.tier-1],"under");
+    if(J.out) lay(JA.out[J.tier-1],"body");
+    if(J.hat) lay(JA.hat[J.tier-1],"hat");
     out.rows=g.map(r=>r.join(""));
     Object.assign(out.pal,{"8":"#F2C14E","9":"#FFF4C2",y:"#F2C14E"},JOB_PAL32[J.job]);
   }
@@ -3107,12 +3145,14 @@ function avatarParts32(av){
   AV32_CACHE.set(key,out);
   return out;
 }
-function avMaskSVG(av,sc,ox,oy){ const m=ACC[(av||{}).acc]; if(!m||!m.img) return ""; sc=sc||1; const [x,y,w,h]=m.box; return `<image href="${m.img}" x="${(ox||0)+x*sc}" y="${(oy||0)+y*sc}" width="${w*sc}" height="${h*sc}" style="image-rendering:pixelated"/>`; }
+function avMaskSVG(av,sc,ox,oy){ const m=ACC[(av||{}).acc]; if(!m||!m.img) return ""; const JL=jobLook(av); if(JL&&JL.hat) return ""; sc=sc||1; const [x,y,w,h]=m.box; return `<image href="${m.img}" x="${(ox||0)+x*sc}" y="${(oy||0)+y*sc}" width="${w*sc}" height="${h*sc}" style="image-rendering:pixelated"/>`; }
 function avatarSVG(av){const {rows,pal}=avatarParts32(av);return `<svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(rows,1,0,0,pal)}${avMaskSVG(av)}</svg>`;}
 
 /* ---- 寵物（LV3 領養／LV5 換衣服；已取消寶寶型態，一律是成年的樣子） ---- */
 Object.assign(SPR,{guardian:["....KKKKKKKK....","...KAAAAAAAAK...","..KAAYYAAYYAAK..","..KAAFYAAFYAAK..","..KAAAAAAAAAAK..","...KAAKKKKAAK...",".KKKAAAAAAAAKKK.","KAAKAISSSSIAKAAK","KAAKAISAASIAKAAK","KAAKAISSSSIAKAAK",".KKKAAAAAAAAKKK.","...KAAIAAIAAK...","...KAAK..KAAK...","...KAAK..KAAK...","..KAAAK..KAAAK..","..KKKKK..KKKKK.."]});
 Object.assign(SPR,{octopus:["................", "....KKKKKKKK....", "...KVVVVVVVVK...", "...KVVVVVVVVK...", "..KVVVVVVVVVVK..", "..KVVWWVVWWVVK..", "..KVVWKVVKWVVK..", "..KVPVVVVVVPVK..", "..KVVVVKKVVVVK..", "...KVVVVVVVVK...", "..KKVVVVVVVVK...", ".KVVVVVVVVVVVK..", ".KVVKVVKVVKVVK..", ".KVKKVKKVKKVK...", ".KPVKPVKPVKPVK..", "..KK.KK.KK.KK..."]});
+Object.assign(PETS,{guardian:{name:"石像守護者",hidden:true,noWear:true,defColor:3,baby:["...........kkkkk.kkkk...........","..........kGGGGGkGGGGk..........",".........kkGGGGGGGGGGkk.........","........kllkkkkGGkkkklQk........","........klPQkkkkkkkklPQk........",".......kQPkkLllllllQkkPQk.......",".......kQQLLPPPPPPPGGQQQk.......","......kklLLPPPPyyPPPGGlQkk......",".....kklPPPPPPywwyPPPPPPQkk.....",".....klPPPPPPPPyyPPPPPPdPQk.....",".....klPPPPPPPPPPPPPPPPPdQk.....","....klPPPPwnnPPPPPPwnnPdPPQk....","....klPPPPnwnPPPPPPnwnPPPPQk....","....klPPPPnnnPPPPPPnnnPPPPQk....","....klPPPPnnLPPPPPPnnLPPPPQk....","....kQPccPPPPPPPPPPPPPPccPQk....",".....klPPPPPPnPnnPnPPPPPPQk.....",".....kQPPPPPPPnPPnPPPPPPPQk.....","......kQPPPPPPPPPPPPPPPPQk......",".......kQQPPPPPPPPPPPPQQk.......","........kkQQPPPPPPPPQQkk........","......kkkkkkQkkkkkkQkkkkkk......",".....kllQklPkyyyyyykPlkllQk.....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....kQPPPQkPkyyyyyykPkQPPPQk....",".....kQQQkdPPkkkkkkPPPkQQQk.....","......kkkkkdkkPPPPkkkkkkkk......","........kllllQkPPkllllQk........",".......kQPPPPPQkkQPPPPPQk.......","........kQQQQQkQQkQQQQQk........"],adult:["...........kkkkk.kkkk...........","..........kGGGGGkGGGGk..........",".........kkGGGGGGGGGGkk.........","........kllkkkkGGkkkklQk........","........klPQkkkkkkkklPQk........",".......kQPkkLllllllQkkPQk.......",".......kQQLLPPPPPPPGGQQQk.......","......kklLLPPPPyyPPPGGlQkk......",".....kklPPPPPPywwyPPPPPPQkk.....",".....klPPPPPPPPyyPPPPPPdPQk.....",".....klPPPPPPPPPPPPPPPPPdQk.....","....klPPPPwnnPPPPPPwnnPdPPQk....","....klPPPPnwnPPPPPPnwnPPPPQk....","....klPPPPnnnPPPPPPnnnPPPPQk....","....klPPPPnnLPPPPPPnnLPPPPQk....","....kQPccPPPPPPPPPPPPPPccPQk....",".....klPPPPPPnPnnPnPPPPPPQk.....",".....kQPPPPPPPnPPnPPPPPPPQk.....","......kQPPPPPPPPPPPPPPPPQk......",".......kQQPPPPPPPPPPPPQQk.......","........kkQQPPPPPPPPQQkk........","......kkkkkkQkkkkkkQkkkkkk......",".....kllQklPkyyyyyykPlkllQk.....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....kQPPPQkPkyyyyyykPkQPPPQk....",".....kQQQkdPPkkkkkkPPPkQQQk.....","......kkkkkdkkPPPPkkkkkkkk......","........kllllQkPPkllllQk........",".......kQPPPPPQkkQPPPPPQk.......","........kQQQQQkQQkQQQQQk........"]}});
+const GUARD_CROWN=[".............k.yy.k.............","...........k.y....y.k...........",".........kky........ykk.........","........klkyryyrryyrykQk........","........klkyyyyyyyyyykQk........",".......kQPkkkkkkkkkkkkPQk.......",".......kQQLLPPPPPPPGGQQQk.......","......kklLLPPPPyyPPPGGlQkk......",".....kklPPPPPPywwyPPPPPPQkk.....",".....klPPPPPPPPyyPPPPPPdPQk.....",".....klPPPPPPPPPPPPPPPPPdQk.....","....klPPPPwnnPPPPPPwnnPdPPQk....","....klPPPPnwnPPPPPPnwnPPPPQk....","....klPPPPnnnPPPPPPnnnPPPPQk....","....klPPPPnnLPPPPPPnnLPPPPQk....","....kQPccPPPPPPPPPPPPPPccPQk....",".....klPPPPPPnPnnPnPPPPPPQk.....",".....kQPPPPPPPnPPnPPPPPPPQk.....","......kQPPPPPPPPPPPPPPPPQk......",".......kQQPPPPPPPPPPPPQQk.......","........kkQQPPPPPPPPQQkk........","......kkkkkkQkkkkkkQkkkkkk......",".....kllQklPkyyyyyykPlkllQk.....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....kQPPPQkPkyyyyyykPkQPPPQk....",".....kQQQkdPPkkkkkkPPPkQQQk.....","......kkkkkdkkPPPPkkkkkkkk......","........kllllQkPPkllllQk........",".......kQPPPPPQkkQPPPPPQk.......","........kQQQQQkQQkQQQQQk........"];
 const PETC=[["棕","#A9713F"],["奶油","#F0E0C0"],["白","#F2F2F7"],["灰","#A9ADC6"],["黑","#3A3A45"],["金","#E0B24A"],["粉","#E58FB0"],["綠","#5FA35A"],["藍","#6FA8DE"],
   ["銀色","#DCE3F0"],["黃金","#F6C744"]];
 const PETC_SPECIAL=9;
@@ -4290,7 +4330,7 @@ function openNpcGift(){
   const lines=(NPC_LINES[who]||{})[theme]||["「挑一件吧。」"];
   $("#npSay").textContent=lines[Math.floor(Math.random()*lines.length)];
   $("#npPick").innerHTML=picks.map(k=>`<button class="seaopt" type="button" data-npgift="${k}">
-      <span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,{outfit:k,jl:"cape"}))}</span>${esc(OUTFIT[k].name)}<small>${esc(OUTFIT[k].theme||"秘密服裝")}</small></button>`).join("");
+      <span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,{outfit:k,jo:0}))}</span>${esc(OUTFIT[k].name)}<small>${esc(OUTFIT[k].theme||"秘密服裝")}</small></button>`).join("");
   const d=$("#npcDlg"); if(!d.open) d.showModal();
   Sound.sfx("open");
   return true;
@@ -4866,18 +4906,27 @@ document.addEventListener("click",e=>{                   // 滑鼠點、手機�
   const now=Date.now(); if(now-JC_LAST<70) return; JC_LAST=now;
   try{ jcFx(e.clientX,e.clientY,id,e.target); }catch(_){}
 },true);
+function jobWear(){                                      // 職業服裝、職業頭飾、披風各自穿脫
+  const J=jobS();
+  if(!J.wear||typeof J.wear!=="object"){ const l=J.look; J.wear=l==="off"?{out:0,hat:0,cape:0}:l==="cape"?{out:0,hat:0,cape:1}:{out:1,hat:1,cape:1}; }
+  ["out","hat","cape"].forEach(k=>J.wear[k]=J.wear[k]?1:0);
+  return J.wear;
+}
+function jobWearAll(){ Object.assign(jobWear(),{out:1,hat:1,cape:1}); }
 function syncJobAv(){                                   // 角色身上的職業造型跟著目前職業
   if(!S.av) return false;
-  const id=jobCur(), J=S.job||{};
-  const want=id&&J.look!=="off"?{job:id,jt:jobTier(id),jl:J.look==="cape"?"cape":"full"}:null;
-  const now=S.av.job?{job:S.av.job,jt:S.av.jt,jl:S.av.jl}:null;
+  const id=jobCur(), w=id?jobWear():null;
+  const want=id&&(w.out||w.hat||w.cape)?{job:id,jt:jobTier(id),jo:w.out,jh:w.hat,jc:w.cape,jl:w.out?"full":"cape"}:null;
+  const now=S.av.job?{job:S.av.job,jt:S.av.jt,jo:S.av.jo,jh:S.av.jh,jc:S.av.jc,jl:S.av.jl}:null;
   if(JSON.stringify(want)===JSON.stringify(now)) return false;
-  const av=Object.assign({},S.av); delete av.job; delete av.jt; delete av.jl;
+  const av=Object.assign({},S.av); ["job","jt","jl","jo","jh","jc"].forEach(k=>delete av[k]);
   S.av=want?Object.assign(av,want):av; save();
   return true;
 }
-function jobOutfitChanged(){                            // 自己換了衣服：職業造型改成只穿披風
-  const J=S.job; if(J&&J.cur&&J.look!=="off"&&J.look!=="cape"){ J.look="cape"; syncJobAv(); }
+function jobOutfitChanged(part){                        // 自己換了衣服（或戴上配件）：脫下對應的職業服裝（或職業頭飾）
+  const J=S.job; if(!J||!J.cur) return;
+  const w=jobWear(); if(part==="hat") w.hat=0; else w.out=0;
+  syncJobAv();
 }
 const jobFindsDone=()=>FINDS.filter(f=>findSeen(f.id)).length;
 const jobWeaponList=()=>WEAPONS.filter(w=>!w.job);
@@ -4917,20 +4966,26 @@ function takeBless(){
 }
 /* ---- 換職、造型 ---- */
 function jobSwapLeft(){ const J=jobS(); return J.swapDay===dayKey()?0:1; }
-async function jobSwap(id){
+async function jobSwap(id,direct){
   if(touristBlock("換職")) return;
   if(!jobTier(id)||jobCur()===id) return;
   if(!jobSwapLeft()){ toast("今天已經換過職業了，明天再換"); Sound.sfx("error"); return; }
-  if(!(await uiConfirm(`要換成「${jobName(id,jobTier(id))}」嗎？今天就不能再換了。`,"換職"))) return;
-  const J=jobS(); J.cur=id; J.swapDay=dayKey(); if(J.look==="off") J.look="full";
+  if(!direct&&!(await uiConfirm(`要換成「${jobName(id,jobTier(id))}」嗎？今天就不能再換了。`,"換職"))) return;
+  const J=jobS(); J.cur=id; J.swapDay=dayKey(); { const w=jobWear(); if(!w.out&&!w.hat&&!w.cape) jobWearAll(); }
   syncJobAv(); save(); queueSync(true); Sound.sfx("levelup");
   toast(`⚔️ 換成「${jobName(id,jobTier(id))}」了！`);
   lastPresence=0; try{ loungePresence(true,{card:true}); }catch(e){}
   renderJobHall(); renderHUD();
 }
 function jobSetLook(v){
-  const J=jobS(); J.look=v==="cape"||v==="off"?v:"full"; syncJobAv(); save(); queueSync();
-  Sound.sfx("cursor"); renderJobHall(); renderHUD();
+  if(v==="off") Object.assign(jobWear(),{out:0,hat:0,cape:0}); else if(v==="cape") Object.assign(jobWear(),{out:0,hat:0,cape:1}); else jobWearAll();
+  jobWearDone();
+}
+function jobWearToggle(part){ const w=jobWear(); if(!(part in w)) return; w[part]=w[part]?0:1; jobWearDone(); }
+function jobWearDone(){
+  syncJobAv(); save(); queueSync(); try{ pushFarm(); }catch(e){}
+  Sound.sfx("cursor"); renderJobHall(); renderHUD(); try{ buildMap(); }catch(e){}
+  if(typeof curPlace!=="undefined"&&curPlace&&curPlace.id==="myhome") try{ renderPlace(); }catch(e){}
 }
 /* ---- 轉職殿堂畫面 ---- */
 function jobHallBadge(){
@@ -4952,7 +5007,7 @@ function priestLine(){
 }
 function renderJobHall(){
   const box=$("#jobHall"); if(!box) return;
-  jobS();
+  jobS(); try{ checkGuardianPet(); }catch(e){}
   const head=`<div class="nqtop jhtop"><span class="npcface" aria-hidden="true">${avatarSVG(PRIEST_AV)}</span><div><p class="mename">神殿祭司<span class="ahint">・轉職殿堂 ${helpBtn("job")}</span></p><p class="dbody">${esc(priestLine())}</p></div></div>`;
   let body="";
   if(!jobOn()) body=`<p class="empty-note">管理者暫停了轉職功能。已經學會的職業會保留，重新開放後就會恢復。</p>`;
@@ -4971,7 +5026,7 @@ function jobListHTML(locked){
   const cur=jobCur();
   return `<div class="jobgrid">${JOBS.map(j=>{
     const t=jobTier(j.id), home=jobHomeOf(j.id), info=JOB_INFO[j.id];
-    const look=Object.assign({},S.av||AV_DEFAULT,{job:j.id,jt:Math.max(1,t),jl:"full"});
+    const look=Object.assign({},S.av||AV_DEFAULT,{job:j.id,jt:Math.max(1,t),jo:1,jh:1,jc:1});
     const state=cur===j.id?`<span class="st st-gold">目前職業</span>`:t>=2?`<span class="st st-ok">已完成二轉</span>`:t?`<span class="st st-ok">已學會</span>`:"";
     return `<button type="button" class="jobcard${cur===j.id?" on":""}${locked?" locked":""}" style="--jc:${j.color}" data-jobopen="${j.id}">
       <span class="jctop">${jobMarkHTML(j.id,t)}${home?`<span class="jhome">本家</span>`:""}</span>
@@ -4982,6 +5037,7 @@ function jobListHTML(locked){
       ${state}
     </button>`;
   }).join("")}</div>
+  <p class="ahint jguard"><span class="pv" aria-hidden="true">${petSVG({type:"guardian",color:3,name:"石像守護者",wear:"none",wc:0},"adult")}</span>${S.petKinds&&S.petKinds.guardian?"已經把神殿的石像守護者帶回家了！":`學會全部 ${JOBS.length} 個職業（目前 ${jobLearned().length} / ${JOBS.length}），神殿的石像守護者就會成為你的寵物。`}</p>
   <p class="ahint">本家好處（選自己組別的職業）：轉職禮包加倍、名片上的「本家」標記、試煉守護者的血少 20%。轉職不影響任務進度、智慧存摺點數和結業。</p>`;
 }
 function jobMineHTML(){
@@ -4990,7 +5046,7 @@ function jobMineHTML(){
   const others=jobLearned().filter(x=>x.id!==id);
   const fd=jobFindsDone(), wd=jobWeaponsDone(), wt=jobWeaponList().length;
   return `<div class="jmine" style="--jc:${j.color}">
-    <span class="jmface" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,{job:id,jt:t,jl:J.look==="cape"?"cape":"full"}))}</span>
+    <span class="jmface" aria-hidden="true">${avatarSVG(S.av||AV_DEFAULT)}</span>
     <div class="jminfo">
       <p class="jmname">${jobMarkHTML(id,t)}<b>${esc(jobName(id,t))}</b>${jobHomeOf(id)?`<span class="jhome">本家</span>`:""}<span class="st st-info">${t>=2?"第二次轉職":"第一次轉職"}</span></p>
       <p class="ahint" style="margin:0">${esc(info.flavor)}</p>
@@ -4999,10 +5055,11 @@ function jobMineHTML(){
   </div>
   <div class="jrow">
     <span class="jlab">職業造型</span>
-    ${[["full","完整造型"],["cape","只穿披風"],["off","不顯示"]].map(([v,n])=>`<button type="button" class="themechip${(J.look||"full")===v?" on":""}" data-joblook="${v}" aria-pressed="${(J.look||"full")===v}">${n}</button>`).join("")}
+    ${[["out","👕 職業服裝"],["hat","🎩 職業頭飾"],["cape","🧣 披風"]].map(([v,n])=>{ const on=!!jobWear()[v]; return `<button type="button" class="themechip${on?" on":""}" data-jobwear="${v}" aria-pressed="${on}">${n}${on?"・穿著":""}</button>`; }).join("")}
+    <span class="ahint">點一下穿上或脫下。脫下職業服裝會換回衣櫃的衣服、脫下職業頭飾會換回原本的配件；衣櫃和「角色設定」裡也能直接選職業服裝、職業頭飾。</span>
   </div>
   ${jcOwned().length?`<div class="jrow"><span class="jlab">職業鼠標</span>${jcOwned().map(o=>`<button type="button" class="themechip jcchip${jcCur()===o.id?" on":""}" data-jobcursor="${o.id}" aria-pressed="${jcCur()===o.id}"><img src="${JOB_CURSOR[o.id][0]}" alt="" width="20" height="20">${esc(o.n2)}</button>`).join("")}<button type="button" class="themechip${jcCur()?"":" on"}" data-jobcursor="off" aria-pressed="${!jcCur()}">系統預設</button><span class="ahint">點畫面時會出現職業特效（手機也有）</span></div>`:""}
-  ${others.length?`<div class="jrow"><span class="jlab">換職</span>${others.map(o=>`<button type="button" class="act ghost" data-jobswap="${o.id}" ${jobSwapLeft()?"":"disabled"}>${jobMarkHTML(o.id,jobTier(o.id),true)}${esc(jobName(o.id,jobTier(o.id)))}</button>`).join("")}<span class="ahint">${jobSwapLeft()?"每天可以換 1 次，免費":"今天已經換過了"}</span></div>`:""}
+  ${others.length?`<div class="jrow"><label class="jlab" for="jobSwapSel">換職</label><select id="jobSwapSel" class="ainput jswsel" ${jobSwapLeft()?"":"disabled"}>${others.map(o=>`<option value="${o.id}">${esc(jobName(o.id,jobTier(o.id)))}（${esc(o.group)}）</option>`).join("")}</select><button type="button" class="act" data-jobswapgo ${jobSwapLeft()?"":"disabled"}>確定</button><span class="ahint">${jobSwapLeft()?"每天可以換 1 次，免費":"今天已經換過了，明天再來"}</span></div>`:""}
   <div class="jrow"><span class="jlab">每日祝福</span>${blessLeft()?`<button type="button" class="act" data-jobbless>✨ 抽今天的祝福${jb("support",2)?`（還有 ${blessLeft()} 次）`:""}</button>`:`<span class="ahint">今天的祝福領過了，明天再來</span>`}<span class="ahint">種子 5～20 顆、肥料或寵物零食</span></div>
   ${t<2?`<div class="j2box">
     <p class="dsec">第二次轉職：${esc(j.n2)}</p>
@@ -5033,8 +5090,8 @@ function openJobDetail(id){
     act=`<span class="ahint">${t>=2?"已完成第二次轉職":esc(r2||`第二次轉職：供品 ${JOB_COST[1]} 顆種子・今天還能挑戰 ${jobTriesLeft(2)} 次`)}</span>${swap}${t<2?`<button type="button" class="act" data-jobtrial="${id}|2" ${r2?"disabled":""}>挑戰第二次轉職</button>`:""}`;
   }
   $("#jdBody").innerHTML=`<div class="jdlooks">
-      <figure><span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},base,{job:id,jt:1,jl:"full"}))}</span><figcaption>${esc(j.n1)}</figcaption></figure>
-      <figure><span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},base,{job:id,jt:2,jl:"full"}))}</span><figcaption>${esc(j.n2)}<br><small>金邊披風・光環</small></figcaption></figure>
+      <figure><span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},base,{job:id,jt:1,jo:1,jh:1,jc:1}))}</span><figcaption>${esc(j.n1)}</figcaption></figure>
+      <figure><span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},base,{job:id,jt:2,jo:1,jh:1,jc:1}))}</span><figcaption>${esc(j.n2)}<br><small>金邊披風・光環</small></figcaption></figure>
     </div>
     <p class="dbody">${esc(info.flavor)}</p>
     <p class="dsec">第一次轉職的加成</p><ul class="jbonus">${info.b1.map(b=>`<li>${esc(b)}</li>`).join("")}</ul>
@@ -5047,7 +5104,7 @@ function openJobDetail(id){
   Sound.sfx("open");
 }
 /* ---- 神殿試煉 ---- */
-const PET_SKILL={dog:["忠犬護主","block1"],cat:["貓的直覺","hint"],guinea:["囤糧","combo"],slime:["分裂","double"],chicken:["早起","opener"],sheep:["毛茸茸","wool"],horse:["衝鋒","charge"],rabbit:["跳躍","skip"],
+const PET_SKILL={guardian:["石像之盾","wool"],dog:["忠犬護主","block1"],cat:["貓的直覺","hint"],guinea:["囤糧","combo"],slime:["分裂","double"],chicken:["早起","opener"],sheep:["毛茸茸","wool"],horse:["衝鋒","charge"],rabbit:["跳躍","skip"],
   scruffy:["亂咬一通","chaos"],grumpy:["氣到爆炸","rage"],pom:["蓬蓬護盾","block1"],shiba:["倔強衝鋒","charge"],panda:["圓滾滾","wool"],duck:["呱呱提示","hint"],fireball:["燃燒","double"],bear:["熊掌開場","opener"],
   tiger:["猛虎連擊","combo"],caterpillar:["破繭","skip"],snowman:["冰凍護盾","block1"]};
 const SKILL_DESC={block1:"第一次答錯時擋下來，不扣心",hint:"每場 1 次，刪去 1 個錯誤選項（自己按）",combo:"連續答對時，從第 2 題起每題再 +3（最多 +9）",double:"答對時有一半機率再追加一次寵物攻擊",
@@ -5167,7 +5224,7 @@ function trialWin(){
   const id=TR.job, t=TR.tier, home=TR.home, J=jobS(), info=JOB_INFO[id];
   delete J.live;
   const first=!jobLearned().length;
-  J.have[id]=t; J.cur=id; J.at=J.at||{}; J.at[id+t]=Date.now(); if(!J.look||J.look==="off") J.look="full";
+  J.have[id]=t; J.cur=id; J.at=J.at||{}; J.at[id+t]=Date.now(); jobWearAll();      // 轉職完成：換上全套新造型
   giveSeedSpread(home?200:100);
   S.fert=S.fert||{}; S.fert.fz_basic=(S.fert.fz_basic||0)+(home?4:2);
   shopState(); S.shopOwned=S.shopOwned||{};
@@ -5180,6 +5237,10 @@ function trialWin(){
     if(JOB_CURSOR[id]){ J.cursor=id; got.push(`職業鼠標「${jobById(id).n2}」與點擊特效（已換上）`); }
     if(id==="plan") farmPlots();
   }
+  if(jobLearned().length>=JOBS.length&&!(S.petKinds&&S.petKinds.guardian)){   // 10 個職業全部學會：隱藏版寵物
+    S.petKinds=S.petKinds||{}; S.petKinds.guardian=true; TR.newPet=true;
+    got.push("🗿 隱藏版寵物「石像守護者」（10 個職業全部學會）");
+  }
   if(TR.pet){ S.aff=S.aff||{}; const b=affOf(TR.pet); S.aff[TR.pet]=Math.min(AFF_MAX,b+3); if(b<AFF_MAX&&S.aff[TR.pet]>=AFF_MAX&&S.pet&&S.pet.type===TR.pet) setTimeout(()=>affinityMax(TR.pet),400); }
   syncJobAv(); save(); queueSync(true); checkAch();
   lastPresence=0; try{ loungePresence(true,{card:true}); }catch(e){}
@@ -5190,9 +5251,24 @@ function trialWin(){
 function trialHeartsHTML(){
   return Array.from({length:TR.maxHearts},(_,i)=>`<svg class="theart${i<TR.hearts?"":" off"}" viewBox="0 0 10 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h3v1h2V0h3v1h1v4H9v1H8v1H7v1H6v1H4V8H3V7H2V6H1V5H0V1h1z"/></svg>`).join("");
 }
+async function offerGuardian(){                           // 拿到石像守護者：問要不要換成牠
+  if(S.pet&&S.pet.type==="guardian") return;
+  const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name);
+  if(!S.pet||await uiConfirm(`要把夥伴換成石像守護者嗎？${keep?`名字會維持「${keep}」，`:""}之後也能在寵物窩換回原本的樣子。`,"換成石像守護者")){
+    S.pet=Object.assign({},PET_DEFAULT,{type:"guardian",color:3,name:keep||"石像守護者",gear:(S.pet&&S.pet.gear)||""}); save(); queueSync(true); pushFarm(true);
+    toast(keep?`${keep}變成石像守護者了！`:"石像守護者成為你的夥伴了！"); renderHUD(); buildMap();
+    if(curPlace&&curPlace.id==="myhome") renderPlace();
+  }
+}
+function checkGuardianPet(){                              // 以前就學會全部職業的人：補發
+  if(!jobOn()||jobLearned().length<JOBS.length||(S.petKinds&&S.petKinds.guardian)) return;
+  S.petKinds=S.petKinds||{}; S.petKinds.guardian=true; save(); queueSync(true);
+  toast("🗿 10 個職業全部學會：隱藏版寵物「石像守護者」在寵物窩等你了");
+}
 function guardianSVG(t){
-  const pal=t>=2?Object.assign({},PAL,{A:"#F6D77A",I:"#D3A23A",Z:"#8A6420"}):PAL;
-  return `<svg viewBox="0 0 16 16" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(SPR.guardian,1,0,0,pal)}</svg>`;
+  const main=t>=2?"#E9C46A":"#A9B4C8";
+  const pal=Object.assign({},ACC_PAL,{k:"#231F20",P:main,Q:tint(main,-.28),d:tint(main,-.4),L:tint(main,.62),l:tint(main,.4),w:"#F7F7FB",n:"#231F20",y:t>=2?"#FFF4C2":"#F2C14E",r:"#D8434B",c:"#F4929A"});
+  return `<svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(t>=2?GUARD_CROWN:PETS.guardian.adult,1,0,0,pal)}</svg>`;
 }
 function renderTrial(){
   const box=$("#trialBody"), foot=$("#trialFoot"); if(!box||!TR) return;
@@ -5229,23 +5305,25 @@ function renderTrial(){
       <p class="dsec">${TR.home?"轉職禮包（本家加倍）":"轉職禮包"}</p>
       <ul class="jbonus">${TR.got.map(g=>`<li>${esc(g)}</li>`).join("")}</ul>
       ${TR.pet?`<p class="ahint">${esc(petNameOf(trialPetView(TR.pet))||PETS[TR.pet].name)}陪你一起通過試煉，親密度 +3！</p>`:""}
-      <p class="ahint">職業造型可以在「轉職殿堂 → 我的職業」改成只穿披風或不顯示。</p>
+      ${TR.newPet?`<div class="trnewpet"><span class="pv" aria-hidden="true">${petSVG({type:"guardian",color:3,name:"石像守護者",wear:"none",wc:0},"adult")}</span><div><p class="dbody"><b>隱藏版寵物：石像守護者</b></p><p class="ahint">10 個職業全部學會了！神殿的石像守護者決定跟著你回家，之後在寵物窩或寵物交換所都能選到牠。</p></div></div>`:""}
+      <p class="ahint">職業服裝、頭飾和披風可以在「轉職殿堂 → 我的職業」分開穿脫。</p>
     </div>`;
     foot.innerHTML=`<span></span><button class="act" type="button" data-trial="done">完成</button>`;
     return;
   }
   const pv=TR.pet?trialPetView(TR.pet):null, w=weaponById(TR.weapon), q=TR.q;
+  const hitOK=TR.phase==="res"&&TR.picked===q.ans, hitNG=TR.phase==="res"&&TR.picked!==q.ans;   // 答對：角色衝上去攻擊；答錯：守護者反擊
   const arena=`<div class="trarena${TR.tier>=2?" t2":""}">
     <div class="trside">
       <div class="trhearts" aria-label="剩下 ${TR.hearts} 顆心，共 ${TR.maxHearts} 顆">${trialHeartsHTML()}</div>
-      <div class="trteam"><span class="trme" aria-hidden="true">${avatarSVG(S.av)}</span>${pv?`<span class="trpetf" aria-hidden="true">${petSVG(pv,"adult")}</span>`:""}</div>
+      <div class="trteam"><span class="trhero${hitOK?" atk":hitNG&&!TR.blocked?" hurt":""}" aria-hidden="true"><span class="trme">${avatarSVG(S.av)}</span>${w?`<span class="trwpn">${spriteSVG("w_"+w.id)}</span>`:""}${hitNG&&TR.blocked?`<span class="trshield"></span>`:""}</span>${pv?`<span class="trpetf${hitOK&&TR.pd?" atk":""}" aria-hidden="true">${petSVG(pv,"adult")}</span>`:""}</div>
       <p class="trstat">${w?`${esc(w.name)} ${TR.wd}`:`徒手 ${TR.wd}`}${pv?`＋${esc(petNameOf(pv)||PETS[TR.pet].name)} ${TR.pd}`:""}${TR.skill?`<br><small>技能：${esc(petSkill(TR.pet)[0])}</small>`:""}</p>
     </div>
     ${TR.phase==="res"?`<p class="trpop ${TR.picked===q.ans?"ok":"ng"}" aria-hidden="true">${TR.picked===q.ans?`−${TR.lastDmg}`:TR.blocked?"擋住了！":"−1 ♥"}</p>`:""}
     <div class="trside">
       <div class="trhp"><span>${gName}</span><b>${TR.hp} / ${TR.max}</b></div>
       <div class="trbar" role="img" aria-label="守護者剩下 ${TR.hp} 血"><i style="width:${Math.round(TR.hp/TR.max*100)}%"></i></div>
-      <span class="trg${TR.hp<=0?" down":""}" aria-hidden="true">${guardianSVG(TR.tier)}</span>
+      <span class="trg${hitOK?" hit":hitNG?" atk":""}${TR.hp<=0?" down":""}" aria-hidden="true">${guardianSVG(TR.tier)}${hitOK?'<i class="trslash"></i><i class="trslash b"></i>':""}</span>
     </div>
   </div>`;
   const opts=q.opts.map((o,i)=>{
@@ -5280,6 +5358,9 @@ document.addEventListener("click",e=>{
   const tr=t.closest("[data-jobtrial]"); if(tr){ const [id,tt]=tr.dataset.jobtrial.split("|"); openTrialPrep(id,+tt); return; }
   const sw=t.closest("[data-jobswap]"); if(sw){ if($("#jobDlg").open) $("#jobDlg").close(); jobSwap(sw.dataset.jobswap); return; }
   const lk=t.closest("[data-joblook]"); if(lk){ jobSetLook(lk.dataset.joblook); return; }
+  const jw=t.closest("[data-jobwear]"); if(jw){ jobWearToggle(jw.dataset.jobwear); return; }
+  if(t.closest("[data-jobswapgo]")){ const sel=$("#jobSwapSel"); if(sel&&sel.value) jobSwap(sel.value,true); return; }
+  if(t.closest("[data-joboutfit]")){ if(jobCur()){ jobWear().out=1; jobWearDone(); toast(`換上了 ${jobName(jobCur(),jobTier(jobCur()))}的職業服裝`); Sound.sfx("get"); } return; }
   const jcb=t.closest("[data-jobcursor]"); if(jcb){ jobS().cursor=jcb.dataset.jobcursor; save(); queueSync(); applyJobCursor(); renderJobHall(); Sound.sfx("select"); return; }
   if(t.closest("[data-jobbless]")){ takeBless(); return; }
   const ta=t.closest("[data-trans]"); if(ta){ trialAnswer(+ta.dataset.trans); return; }
@@ -5291,7 +5372,7 @@ document.addEventListener("click",e=>{
     else if(a==="next") trialNext();
     else if(a==="hint"||a==="skip") trialSkill(a);
     else if(a==="again"){ const id=TR.job, tt=TR.tier; TR=null; $("#trialDlg").close(); openTrialPrep(id,tt); }
-    else if(a==="done"){ TR=null; $("#trialDlg").close(); renderJobHall(); if(curZone) renderZone(); }
+    else if(a==="done"){ const np=TR&&TR.newPet; TR=null; $("#trialDlg").close(); renderJobHall(); if(curZone) renderZone(); if(np) setTimeout(offerGuardian,250); }
   }
 });
 $("#trialDlg").addEventListener("change",e=>{
@@ -6041,9 +6122,9 @@ function avRows(){ return [
  {key:"hair",label:"髮型",type:"thumb",list:Object.entries(HAIR).map(([v,o])=>[v,o.name])},
  {key:"hc",label:"髮色",type:"sw",list:HAIRC.map((c,i)=>[i,c[0],c[1]])},
  {key:"skin",label:"膚色",type:"sw",list:SKIN.map((c,i)=>[i,c[0],c[1]])},
- {key:"outfit",label:"服裝",type:"thumb",list:Object.entries(OUTFIT).filter(([v,o])=>!o.secret||outfitOK(v)).map(([v,o])=>[v,o.name,!!o.secret])},
+ {key:"outfit",label:"服裝",type:"thumb",list:(jobCur()?[["@job","職業服裝",true]]:[]).concat(Object.entries(OUTFIT).filter(([v,o])=>!o.secret||outfitOK(v)).map(([v,o])=>[v,o.name,!!o.secret]))},
  {key:"oc",label:"衣服顏色",type:"sw",list:CLOTH.map((c,i)=>[i,c[0],c[1]])},
- {key:"acc",label:"配件",type:"txt",list:Object.entries(ACC).filter(([v])=>accOK(v)).map(([v,o])=>[v,o.name])}
+ {key:"acc",label:"配件",type:"txt",list:Object.entries(ACC).filter(([v])=>accOK(v)).map(([v,o])=>[v,o.name]).concat(jobCur()?[["@job","⚔️ 職業頭飾"]]:[])}
 ];}
 let AV_ROWS=avRows();
 function buildAvOpts(){
@@ -6057,21 +6138,37 @@ function buildAvOpts(){
   }).join("")}</div></div>`).join("");
 }
 buildAvOpts();
+function edThumb(k,v){                                    // 角色設定的小預覽：職業服裝／頭飾跟一般衣服配件互換
+  if(v==="@job") return Object.assign({},draft,k==="outfit"?{jo:1}:{jh:1});
+  return Object.assign({},draft,{[k]:v},k==="outfit"?{jo:0}:(k==="acc"||k==="hair")?{jh:0}:{});   // 選髮型時先拿掉職業頭飾，看得到頭髮
+}
+function edVal(k){
+  if(draft.job&&k==="outfit"&&+draft.jo) return "@job";
+  if(draft.job&&k==="acc"&&+draft.jh) return "@job";
+  return draft[k];
+}
+function edJobInit(){                                     // 有職業時，草稿帶著職業造型的穿著狀態
+  const id=jobCur(); if(!id) return;
+  const w=jobWear(); Object.assign(draft,{job:id,jt:jobTier(id),jo:draft.jo!=null?+draft.jo:w.out,jh:draft.jh!=null?+draft.jh:w.hat,jc:w.cape}); delete draft.jl;
+}
 function drawEditor(){
   $("#avPreview").innerHTML=avatarSVG(draft);
-  document.querySelectorAll("#avOpts .th").forEach(el=>{el.innerHTML=avatarSVG(Object.assign({},draft,{[el.dataset.k]:el.dataset.v}));});
-  AV_ROWS.forEach(r=>document.querySelectorAll(`input[name="av-${r.key}"]`).forEach(i=>i.checked=String(draft[r.key])===i.value));
+  document.querySelectorAll("#avOpts .th").forEach(el=>{el.innerHTML=avatarSVG(edThumb(el.dataset.k,el.dataset.v));});
+  AV_ROWS.forEach(r=>document.querySelectorAll(`input[name="av-${r.key}"]`).forEach(i=>i.checked=String(edVal(r.key))===i.value));
 }
 $("#avOpts").addEventListener("change",e=>{
   Sound.sfx("cursor");
   const m=e.target.name&&e.target.name.match(/^av-(.+)$/); if(!m) return;
-  const k=m[1]; draft[k]=(k==="hc"||k==="skin"||k==="oc")?+e.target.value:e.target.value;
+  const k=m[1], v=e.target.value;
+  if(v==="@job"){ if(k==="outfit") draft.jo=1; else if(k==="acc") draft.jh=1; }
+  else{ draft[k]=(k==="hc"||k==="skin"||k==="oc")?+v:v; if(k==="outfit") draft.jo=0; if(k==="acc") draft.jh=0; }
   drawEditor();
 });
 $("#avRandom").addEventListener("click",()=>{
   const pick=a=>a[Math.floor(Math.random()*a.length)];
   draft={hair:pick(Object.keys(HAIR)),hc:Math.floor(Math.random()*HAIRC.length),skin:Math.floor(Math.random()*SKIN.length),
     outfit:pick(Object.keys(OUTFIT).filter(outfitOK)),oc:Math.floor(Math.random()*CLOTH.length),acc:Math.random()<.3?"glasses":"none"};
+  if(jobCur()){ draft.jo=0; draft.jh=0; edJobInit(); }
   drawEditor();
 });
 let CHAR_OB=false, cPage=1;
@@ -6127,7 +6224,7 @@ function openChar(opt){
   document.querySelectorAll("#cDlg .missing").forEach(el=>el.classList.remove("missing"));
   buildAvOpts();
   draft=Object.assign({},AV_DEFAULT,S.av||{});
-  if(draft.job&&draft.jl!=="cape") draft.jl="cape";       // 角色設定：看得到自己的衣服（職業造型先只顯示披風）
+  delete draft.jo; delete draft.jh; edJobInit();
   drawEditor();
   renderGroups();
   f.querySelectorAll('input[name="group"]').forEach(r=>r.checked=r.value===S.group||(touristLocked()&&r.value===TOURIST));
@@ -6170,7 +6267,7 @@ $("#cForm").addEventListener("submit",async e=>{
   if(!touristLocked()&&(isNew||S.name!==name||S.emp!==emp)) S.profAt=Date.now();   // 最後一次填寫或修改真實姓名、員工編號的時間（資料更新通知用）
   if(isNew&&!S.since) S.since=Date.now();             // 加入時間（種子補償「只給目前已加入的人」用）
   const outfitChg=!!(S.av&&draft.outfit!==S.av.outfit);
-  S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; S.av=Object.assign({},draft); S.group=grp; if(outfitChg) jobOutfitChanged(); save();
+  S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; S.av=Object.assign({},draft); S.group=grp; if(draft.job&&jobCur()){ const w=jobWear(); w.out=+draft.jo?1:0; w.hat=+draft.jh?1:0; } syncJobAv(); void outfitChg; save();
   if(isNew&&!touristLocked()){                          // 新人審核：新建立的角色先送出申請
     if(approvalNeeded()){ S.approval="pending"; S.applyAt=Date.now(); save(); sendApply(); }
     else { S.approval="approved"; save(); }
@@ -7716,7 +7813,7 @@ function runCheat(msg){
     setTimeout(()=>{ checkAch(); pushFarm(true); },300);
   }else if(c.kind==="acc"){
     S.accs=S.accs||{}; S.accs[c.acc]=true;
-    S.av=Object.assign({},S.av||AV_DEFAULT,{acc:c.acc});
+    S.av=Object.assign({},S.av||AV_DEFAULT,{acc:c.acc}); jobOutfitChanged("hat");
     gift=`<span class="pv">${avatarSVG(S.av)}</span><div><p class="dbody"><b>隱藏配件：${esc(ACC[c.acc].name)}</b></p><p class="ahint">已經幫你戴上了，在「角色設定」的配件可以拿下或換回其他配件。</p></div>`;
     setTimeout(()=>{ pushFarm(true); },300);
   }else if(c.kind==="deco"){
@@ -7752,7 +7849,7 @@ function runCheat(msg){
 }
 /* ---- 各功能的說明提示（點「?」顯示） ---- */
 const HELP={
-  job:"滿級（LV 10）之後可以在這裡轉職。職業可以自由選，選自己組別的職業有「本家」好處（禮包加倍、名片標記、守護者的血少 20%）。轉職要獻上種子並通過神殿試煉：答情境題打守護者，答對一題造成「武器傷害＋寵物攻擊力」，答錯扣 1 顆心；中途放棄或關掉網頁都算失敗，供品不退還。收集全部 20 種小物和 16 把武器（含請假卡）後，可以挑戰第二次轉職。學會的職業每天可以免費換 1 次，職業加成只套用目前的職業。第二次轉職還會拿到職業鼠標和點擊特效（手機點畫面也有），可以在「我的職業」切換或改回系統預設。",
+  job:"滿級（LV 10）之後可以在這裡轉職。職業可以自由選，選自己組別的職業有「本家」好處（禮包加倍、名片標記、守護者的血少 20%）。轉職要獻上種子並通過神殿試煉：答情境題打守護者，答對一題造成「武器傷害＋寵物攻擊力」，答錯扣 1 顆心；中途放棄或關掉網頁都算失敗，供品不退還。收集全部 20 種小物和 16 把武器（含請假卡）後，可以挑戰第二次轉職。學會的職業每天可以免費換 1 次（在「我的職業」選好再按確定），職業加成只套用目前的職業。職業服裝、職業頭飾、披風可以分開穿，也能跟衣櫃的衣服、角色設定的配件互換。10 個職業全部學會，神殿的石像守護者會成為你的隱藏版寵物。第二次轉職還會拿到職業鼠標和點擊特效（手機點畫面也有），可以在「我的職業」切換或改回系統預設。",
   map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝，或停下來聊兩句（有時會透露留言板的密技）；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
   zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
   places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。",
@@ -7920,7 +8017,7 @@ function startHomePlay(){
   homePlayTimer=setTimeout(play,5000+Math.random()*3000);
 }
 Object.assign(SPR,{f_splat:[".....X......", ".....R....X.", ".X.......R..", "..R.........", "....RFRR....", "...RXRRRRR..", "..RRRRXRR...", "....RRRR....", ".R........R.", "X..........X", "......R.....", ".......X...."]});
-const TOSS_KEY="sino22-toss", PET_FAV={rabbit:"carrot",horse:"carrot",snowman:"carrot",guinea:"bokchoy",sheep:"bokchoy",chicken:"corn",scruffy:"corn",dog:"pumpkin",tiger:"pumpkin",cat:"tomato",grumpy:"tomato",slime:"strawberry",caterpillar:"strawberry",pom:"bokchoy",shiba:"pumpkin",panda:"bokchoy",duck:"corn",fireball:"tomato",bear:"strawberry"};   // 每種蔬菜都有寵物愛吃（一般寵物 8 種就涵蓋全部 6 種蔬菜）
+const TOSS_KEY="sino22-toss", PET_FAV={guardian:"strawberry",rabbit:"carrot",horse:"carrot",snowman:"carrot",guinea:"bokchoy",sheep:"bokchoy",chicken:"corn",scruffy:"corn",dog:"pumpkin",tiger:"pumpkin",cat:"tomato",grumpy:"tomato",slime:"strawberry",caterpillar:"strawberry",pom:"bokchoy",shiba:"pumpkin",panda:"bokchoy",duck:"corn",fireball:"tomato",bear:"strawberry"};   // 每種蔬菜都有寵物愛吃（一般寵物 8 種就涵蓋全部 6 種蔬菜）
 /* 領取紀錄瘦身：交誼廳 60 天前的禮物／猜拳／串門子不再處理，所以 75 天前的領取紀錄可以安全刪掉 */
 const CLAIM_DAYS=60, CLAIM_KEEP=75;
 const dayNo=t=>Math.floor((t instanceof Date?t.getTime():(t||Date.now()))/864e5);
@@ -7976,7 +8073,7 @@ function feedPet(k){
 const SEED_START=10;
 const SEED_WEIGHT={bokchoy:30,carrot:25,tomato:20,corn:12,pumpkin:8,strawberry:5};
 const SPLAT_PAL={tomato:["#E8453C","#F2726A"],carrot:["#FF9F43","#FFC68A"],pumpkin:["#F08A24","#FFB766"],corn:["#FFD23F","#FFF3B0"],bokchoy:["#57C35A","#9BE38E"],strawberry:["#E8453C","#FF8FB1"]};
-const PET_VOICE={pom:"汪汪！（毛蓬起來）",shiba:"汪！（尾巴捲得更緊了）",panda:"嚼嚼嚼……好吃",duck:"呱呱！",fireball:"轟～暖呼呼！",bear:"嗚嗷～再一口",dog:"汪！好好吃～",cat:"喵～還要！",guinea:"啾啾！",slime:"噗嚕噗嚕～",chicken:"咕咕咕！",sheep:"咩～",horse:"嘶～好吃！",rabbit:"嚼嚼嚼……",scruffy:"汪嗚～",grumpy:"……還不錯啦。",tiger:"吼～再來一份！",caterpillar:"沙沙沙……（開心地扭動）",snowman:"嘿咻～（雪花飄飄）"};
+const PET_VOICE={guardian:"咕嚕咕嚕……（開心地發出石頭摩擦的聲音）",pom:"汪汪！（毛蓬起來）",shiba:"汪！（尾巴捲得更緊了）",panda:"嚼嚼嚼……好吃",duck:"呱呱！",fireball:"轟～暖呼呼！",bear:"嗚嗷～再一口",dog:"汪！好好吃～",cat:"喵～還要！",guinea:"啾啾！",slime:"噗嚕噗嚕～",chicken:"咕咕咕！",sheep:"咩～",horse:"嘶～好吃！",rabbit:"嚼嚼嚼……",scruffy:"汪嗚～",grumpy:"……還不錯啦。",tiger:"吼～再來一份！",caterpillar:"沙沙沙……（開心地扭動）",snowman:"嘿咻～（雪花飄飄）"};
 const GUARD_MS=5*60*1000;
 const guardMs=()=>jb("eco")?10*60*1000:GUARD_MS;          // 永續德魯伊：看守 10 分鐘
 function seeds(){
@@ -10413,7 +10510,7 @@ function showcaseLists(){
 }
 function outfitDisplaySVG(k,av){
   const o=OUTFIT[k]; if(!o) return "";
-  const {pal}=avatarParts32(Object.assign({},av||S.av||AV_DEFAULT,{outfit:k,jl:"cape"}));
+  const {pal}=avatarParts32(Object.assign({},av||S.av||AV_DEFAULT,{outfit:k,jo:0}));
   // 只畫衣服：加上外框後放大、補布料層次
   const bare=o.rows.map(r=>r.replace(/h/g,".").replace(/s/g,"."));
   const g=bare.map(r=>r.split(""));
@@ -10829,7 +10926,7 @@ function shopPreview(cat,id){
   if(cat==="paper") return `<span class="shopsw showroom ${id}" aria-hidden="true"></span>`;
   if(cat==="ground") return `<span class="shopsw flsw" aria-hidden="true"><i class="sr-floor ${id}"></i></span>`;
   if(cat==="rug") return `<span class="shopsw rugsw" aria-hidden="true">${decoSVG(id)}</span>`;
-  if(cat==="wear"||cat==="avacc") return `<span class="shopic avpv" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,cat==="wear"?{outfit:id,jl:"cape"}:{acc:id,jl:"cape"}))}</span>`;
+  if(cat==="wear"||cat==="avacc") return `<span class="shopic avpv" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,cat==="wear"?{outfit:id,jo:0}:{acc:id,jh:0}))}</span>`;
   if(cat==="pets"){ const t=shopPetType(id); return `<span class="shopic petpv" aria-hidden="true">${petSVG({type:t,color:PETS[t].defColor||0,name:"",wear:"none",gear:S.pet&&S.pet.gear||""},"adult")}</span>`; }
   if(cat==="petgear") return `<span class="shopic petpv" aria-hidden="true">${petSVG(Object.assign({},S.pet||{type:"dog",color:0,name:""},{gear:id}),S.pet?undefined:"adult")}</span>`;
   return `<span class="shopic" aria-hidden="true">${decoSVG(id)}</span>`;
@@ -11137,7 +11234,7 @@ async function adoptShopPet(id,ask){                  // 換成商店買的寵�
 }
 function wearShopItem(cat,id){                            // 換上／拿下商店服裝與配件
   if(cat==="wear"&&OUTFIT[id]){ S.av=Object.assign({},S.av||AV_DEFAULT,{outfit:id}); jobOutfitChanged(); }
-  else if(cat==="avacc") S.av=Object.assign({},S.av||AV_DEFAULT,{acc:ACC[id]?id:"none"});
+  else if(cat==="avacc"){ S.av=Object.assign({},S.av||AV_DEFAULT,{acc:ACC[id]?id:"none"}); if(ACC[id]&&id!=="none") jobOutfitChanged("hat"); }
   else if(cat==="petgear"&&S.pet) S.pet.gear=PET_GEAR[id]?id:"";
 }
 function shopUse(cat,id){
@@ -11287,7 +11384,7 @@ function feedRare(k){
 const FRIEND_LV=[[1,"認識"],[5,"好朋友"],[15,"麻吉"],[30,"最佳拍檔"]];
 const FRIEND_ACH=10;
 Object.assign(SPR,{friendbook:["............",".KKKKKKKKKK.",".KEPPPPPPPK.",".KEPRRPRRPK.",".KEPRRRRRPK.",".KEPPRRRPPK.",".KEPPPRPPPK.",".KEPPPPPPPK.",".KEPPPPPPPK.",".KEWWWWWWWK.",".KKKKKKKKKK.","............"]});
-const PET_PLAY={pom:"汪！我是毛球，滾過來囉～",shiba:"汪！我才不會乖乖給你抱",panda:"翻滾～翻滾～",duck:"呱！一起去散步！",fireball:"咻咻～小心別燙到！",bear:"嗷！來抱抱！",dog:"汪汪！來追我～",cat:"喵！抓到你了！",guinea:"啾啾啾～一起滾！",slime:"噗嚕！彈彈彈～",chicken:"咕咕！一起散步！",sheep:"咩～好開心！",horse:"嘶～來賽跑吧！",rabbit:"跳跳跳～",scruffy:"汪嗚！",grumpy:"……好啦，陪你玩一下。",tiger:"吼～來玩摔角！",caterpillar:"沙沙～一起曬太陽",snowman:"來打雪仗吧！"};
+const PET_PLAY={guardian:"咚、咚、咚！（踏著小碎步跟過來）",pom:"汪！我是毛球，滾過來囉～",shiba:"汪！我才不會乖乖給你抱",panda:"翻滾～翻滾～",duck:"呱！一起去散步！",fireball:"咻咻～小心別燙到！",bear:"嗷！來抱抱！",dog:"汪汪！來追我～",cat:"喵！抓到你了！",guinea:"啾啾啾～一起滾！",slime:"噗嚕！彈彈彈～",chicken:"咕咕！一起散步！",sheep:"咩～好開心！",horse:"嘶～來賽跑吧！",rabbit:"跳跳跳～",scruffy:"汪嗚！",grumpy:"……好啦，陪你玩一下。",tiger:"吼～來玩摔角！",caterpillar:"沙沙～一起曬太陽",snowman:"來打雪仗吧！"};
 const dayKey=d=>{ const x=d instanceof Date&&!isNaN(d)?d:new Date(); return `${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`; };
 function friends(){ if(!S.friends||typeof S.friends!=="object") S.friends={}; return S.friends; }
 function friendLv(n){ let i=-1; FRIEND_LV.forEach(([m],k)=>{ if(n>=m) i=k; }); return i; }
@@ -11320,7 +11417,7 @@ function photoHTML(ph){
 }
 /* 友誼項圈：心形墜子，每種寵物掛的位置不同 */
 const COLLAR_ROWS=["Y.......Y",".Y.....Y.","..WR.RR..","..RRRRR..","...RRR...","....R...."];
-const PET_COLLAR={dog:{adult:[11,18],baby:[11,19]},cat:{adult:[11,18],baby:[11,22]},guinea:{adult:[11,22],baby:[11,23]},
+const PET_COLLAR={guardian:{adult:[11,19],baby:[11,19]},dog:{adult:[11,18],baby:[11,19]},cat:{adult:[11,18],baby:[11,22]},guinea:{adult:[11,22],baby:[11,23]},
   slime:{adult:[11,21],baby:[11,20]},chicken:{adult:[11,18],baby:[11,19]},sheep:{adult:[11,20],baby:[11,22]},
   horse:{adult:[11,18],baby:[11,19]},rabbit:{adult:[11,22],baby:[11,22]},tiger:{adult:[11,17],baby:[11,20]},
   pom:{adult:[11,18],baby:[11,21]},shiba:{adult:[11,19],baby:[11,21]},panda:{adult:[11,20],baby:[11,22]},duck:{adult:[10,17],baby:[10,20]},fireball:{adult:[11,26],baby:[11,27]},bear:{adult:[11,20],baby:[11,22]},
@@ -11927,37 +12024,42 @@ function outfitSilhouetteSVG(k){
 function closetGroupOf(k){ return CLOSET_GROUPS.find(g=>g.test(k))||CLOSET_GROUPS[0]; }
 function renderCloset(panel){
   panel.dataset.kind="closet";
-  const total=Object.keys(OUTFIT).length, got=outfitOwnedCount(), wear=(S.av||AV_DEFAULT).outfit;
+  const total=Object.keys(OUTFIT).length, got=outfitOwnedCount(), wear=(S.av||AV_DEFAULT).outfit, jid=jobCur(), jOn=!!(jid&&jobWear().out);
   panel.innerHTML=`<section class="window pbox">
     <div class="abar"><h3>衣櫃 ${helpBtn("closet")}</h3><span class="ahint">已收集 ${got} / ${total} 套</span></div>
-    <p class="dbody">目前穿著：<b>${esc((OUTFIT[wear]||{}).name||"—")}</b>　點衣服可以預覽並換上；暗色剪影是還沒拿到的秘密服裝。</p>
+    <p class="dbody">目前穿著：<b>${jOn?esc(jobName(jid,jobTier(jid)))+"的職業服裝":esc((OUTFIT[wear]||{}).name||"—")}</b>　點衣服可以預覽並換上；暗色剪影是還沒拿到的秘密服裝。</p>
     <div class="orow" role="radiogroup" aria-label="衣服顏色"><span class="olab">衣服顏色</span><div class="ochoices">
       ${CLOTH.map((c,i)=>`<label class="opt sw" title="${esc(c[0])}"><input type="radio" name="closet-oc" value="${i}" ${+((S.av||AV_DEFAULT).oc)===i?"checked":""}><i style="background:${c[1]}"></i></label>`).join("")}
     </div></div>
     <p class="ahint" style="margin-top:4px">部分秘密服裝（例如雨衣、實驗白袍、公司藍色運動外套、梅傑德白袍）有固定配色，不受顏色影響。</p>
-    ${tabsHTML("closet",CLOSET_GROUPS.map(g=>{
+    ${tabsHTML("closet",(jid?[{id:"job",label:"⚔️ 職業",html:`<div class="catblock"><p class="cattitle">職業服裝<span class="ahint">轉職取得，可以跟其他衣服互換</span></p><div class="armgrid">
+        <button type="button" class="armcard closetcard${jOn?" on":""}" data-joboutfit title="職業服裝">
+          <span class="armicon clicon" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,{job:jid,jt:jobTier(jid),jo:1,jh:0,jc:0}))}</span>
+          <span class="armname">${esc(jobName(jid,jobTier(jid)))}</span>
+          <span class="armmeta">${jOn?'<span class="st st-gold">穿著中</span>':"點一下換上"}</span>
+        </button></div><p class="ahint">職業頭飾和披風在「存摺神殿 → 轉職殿堂 → 我的職業」或「角色設定」切換。</p></div>`}]:[]).concat(CLOSET_GROUPS.map(g=>{
       const list=Object.keys(OUTFIT).filter(g.test); if(!list.length) return "";
       const mine=list.filter(outfitOK).length;
       return {id:g.id||g.name,label:esc(g.name),badge:`${mine}/${list.length}`,html:`<div class="catblock">
         <p class="cattitle">${esc(g.name)}${g.who?`<span class="ahint">秘密服裝</span>`:g.id==="商店"?`<span class="ahint">用種子購買</span>`:""}<span class="ahint">${mine}/${list.length}</span></p>
         <div class="armgrid">${list.map(k=>{
-          const own=outfitOK(k), on=wear===k;
+          const own=outfitOK(k), on=wear===k&&!jOn;
           return `<button type="button" class="armcard closetcard${own?"":" alock"}${on?" on":""}" data-outfit="${esc(k)}" title="${esc(own?OUTFIT[k].name:"還沒取得")}">
             <span class="armicon clicon" aria-hidden="true">${own?outfitDisplaySVG(k):outfitSilhouetteSVG(k)}</span>
             <span class="armname">${own?esc(OUTFIT[k].name):"？？？"}</span>
             <span class="armmeta">${on?'<span class="st st-gold">穿著中</span>':own?"已取得":"未取得"}</span>
           </button>`;
         }).join("")}</div></div>`};
-    }),{def:(CLOSET_GROUPS.find(g=>g.test(wear))||{}).id||(CLOSET_GROUPS.find(g=>g.test(wear))||{}).name})}
+    })),{def:jOn?"job":(CLOSET_GROUPS.find(g=>g.test(wear))||{}).id||(CLOSET_GROUPS.find(g=>g.test(wear))||{}).name})}
   </section>`;
 }
 function openOutfit(k){
   const o=OUTFIT[k]; if(!o) return;
-  const own=outfitOK(k), on=(S.av||AV_DEFAULT).outfit===k, g=closetGroupOf(k);
+  const own=outfitOK(k), on=(S.av||AV_DEFAULT).outfit===k&&!(jobCur()&&jobWear().out), g=closetGroupOf(k);
   $("#wpDept").textContent=`衣櫃｜${g.name}${g.who?"主題":""}`;
   $("#wpTitle").textContent=own?o.name:"還沒取得的秘密服裝";
   const icon=$("#wpIcon"); icon.className="fdicon"+(own?"":" clsil");
-  icon.innerHTML=own?avatarSVG(Object.assign({},S.av||AV_DEFAULT,{outfit:k,jl:"cape"})):outfitSilhouetteSVG(k);
+  icon.innerHTML=own?avatarSVG(Object.assign({},S.av||AV_DEFAULT,{outfit:k,jo:0})):outfitSilhouetteSVG(k);
   $("#wpMeta").innerHTML=`<span class="st st-info">${esc(g.name)}</span>${own?'<span class="st st-ok">已取得</span>':'<span class="st st-off">未取得</span>'}${on?'<span class="st st-gold">穿著中</span>':""}`;
   $("#wpDesc").textContent=own?(g.who?`${g.who}送的${g.name}主題秘密服裝。左邊是你穿上的樣子，衣服顏色可以在衣櫃上方調整。`:"基本款服裝，隨時可以換上。左邊是你穿上的樣子。"):"拿到之後，這裡會顯示它的樣子。";
   $("#wpWhere").innerHTML=!g.who?"一開始就有，不用蒐集。"

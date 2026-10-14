@@ -410,6 +410,22 @@ main{max-width:1180px;margin:0 auto;padding:6px 16px 40px}
 @media (max-width:640px){.qbrow{grid-template-columns:minmax(0,1fr)}.qbside{flex-direction:row;align-items:center;justify-content:flex-start}}
 .prexempt{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .prexempt .ainput{padding:6px 10px;color-scheme:dark}
+.qbscened{margin:0 0 14px;padding:14px 16px;border:2px solid var(--gold);border-radius:5px;background:rgba(242,193,78,.08);display:grid;gap:10px}
+.qbscened h4{margin:0!important;font-family:var(--pixel);font-weight:400;font-size:18px;color:var(--gold)}
+.qbsegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.qbscened label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--win-muted)}
+.qbscened .ainput{padding:6px 10px;font-size:14px;width:100%;box-sizing:border-box}
+.qbseopts{border:0;margin:0;padding:0;min-width:0}
+.qbseopts legend{font-size:13px;color:var(--win-muted);padding:0;margin-bottom:6px}
+.qbseopt{display:flex;gap:8px;align-items:center;margin:0 0 6px}
+.qbseopt input[type=radio]{width:18px;height:18px;accent-color:#7FD39C;flex:none}
+.qbseopt .ainput{flex:1}
+.qbscened .cerr{margin:0}
+.qbtag{display:inline-block;font-size:12px;border-radius:3px;padding:0 6px;margin-left:6px;background:rgba(255,255,255,.12);color:var(--win-muted)}
+.qbtag.edit{background:rgba(242,193,78,.22);color:var(--gold)}
+.qbtag.new{background:rgba(127,211,156,.2);color:#7FD39C}
+.qbexp{margin:4px 0 0!important;font-size:13px;color:var(--win-muted)}
+@media (max-width:640px){.qbsegrid{grid-template-columns:1fr}}
 /* ---------- dialogs ---------- */
 dialog{padding:0;border:0;background:none;max-width:min(760px,calc(100vw - 28px));width:100%;color:var(--win-text)}
 dialog::backdrop{background:rgba(8,10,30,.72)}
@@ -1236,6 +1252,45 @@ body.tour-lock .mapframe{z-index:41}
 .lptext{margin:0 0 8px;line-height:1.7}
 .lreplies{border-left:3px solid rgba(255,255,255,.18);padding-left:12px;margin:8px 0;display:grid;gap:6px}
 .lreplies p{margin:0;font-size:15px;line-height:1.6}
+/* 交誼廳 2026/10：電腦版兩欄、手機版分頁（預設名片）、名片預設只看最近 7 天 */
+.lg2{gap:16px}
+.lg2 .lgtop .lrow{margin-bottom:0}
+.lgtabs{display:flex;gap:8px}
+.lgtabs button{flex:1;font-family:var(--pixel);font-size:16px;padding:10px 8px;border:3px solid var(--line);border-radius:5px;background:#1B2466;color:#D9DEF8;cursor:pointer;display:flex;gap:6px;align-items:center;justify-content:center}
+.lgtabs button[aria-selected="true"]{background:var(--gold);color:#2B1B00;border-color:#fff}
+.lgtabs .lgcnt{font-size:12px;opacity:.8}
+.lnew{display:inline-block;background:#E0565B;color:#fff;font-family:var(--pixel);font-size:11px;line-height:1.5;padding:0 6px;border-radius:3px;font-weight:400;vertical-align:1px}
+.lg-wide .lgtabs{display:none}
+.lg2:not(.lg-wide)[data-tab="cards"] .lgboard,.lg2:not(.lg-wide)[data-tab="board"] .lgcards{display:none}
+.lg-wide .lgcols{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:18px;align-items:start}
+.lg2:not(.lg-wide) .lgcols{display:grid;gap:16px}
+.lgchips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0 4px}
+.lgchip{font-size:14px;padding:5px 11px;border:2px solid var(--line);border-radius:999px;background:#1B2466;color:#D9DEF8;cursor:pointer;white-space:nowrap}
+.lgchip b{font-weight:400;opacity:.75;margin-left:3px}
+.lgchip[aria-pressed="true"]{background:#2F6E57;border-color:#4CC38A;color:#fff}
+.lgfind{display:flex;margin:8px 0 2px}
+.lgfind .ainput{flex:1;min-width:0}
+.lg-wide .lgrid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr))}
+.lgmore{display:block;width:100%;margin-top:14px}
+.lglist{display:grid;gap:8px;margin-top:10px}
+.lrc{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;align-items:center;background:#232E7E;border:3px solid var(--line);border-radius:5px;padding:8px 10px;box-shadow:2px 3px 0 var(--shadow)}
+.lrc.on{border-color:#4CC38A}
+.lrc.champ{border-color:var(--gold)}
+.lrc.nocard{opacity:.8}.lrc.nocard .lav svg{filter:grayscale(1) brightness(.75)}
+.lrc .lface{width:56px;height:56px;margin:0;padding:2px;border-width:2px}
+.lrc .lface:hover::after,.lrc .lface:focus-visible::after{display:none}
+.lrc .lpet{width:28px;height:28px;right:-8px;bottom:-6px;border-width:2px;padding:1px}
+.lrc .lname{justify-content:flex-start;font-size:16px;margin:0}
+.lrc .ahint{margin:0;font-size:13px}
+.lrc .lmsg{margin:2px 0 0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrc .like{white-space:nowrap;padding-left:10px;padding-right:10px}
+.lrc .like.liked{background:#8E2A31;color:#FFD9DC}
+.lpfoot{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.lpfoot .linkbtn{font-size:14px}
+.lprev{font-size:14px;color:#AEB6E4;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.lpost.new{border-color:#E0565B}
+@media (max-width:480px){.lgchips{gap:4px}.lgchip{font-size:13px;padding:4px 6px}.lgchip b{margin-left:2px}.lgtabs button{font-size:15px;padding:9px 6px}}
+.lpost .lphead{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin:0 0 4px}.lpost .lphead .retract{margin-left:auto}
 
 /* ---------- pet ---------- */
 .petswap{margin-top:0;grid-column:1/-1}
@@ -1928,6 +1983,7 @@ footer.site p{margin:4px 0}
     <div class="apanel" data-panel="quizbank" role="tabpanel" hidden>
       <section class="window abox">
         <div class="abar"><h3>題庫</h3><span class="afilters">
+          <button class="act ghost" type="button" id="qbAddScen">＋ 新增情境題</button>
           <button class="act ghost" type="button" id="qbRevert">還原未發布的變更</button>
           <button class="act" type="button" id="qbPublish">發布題庫設定</button></span></div>
         <p class="ahint">NPC 情報問答和種子商店的每日問答，都是從任務內容自動出題。這裡列出目前任務內容會出的每一題：<b>停用</b>的題目不會再出現；選項不合理時可以按「自訂選項」，自己寫 3 個錯誤選項。修改任務內容後，改到的句子會變成新題目（預設啟用），記得回來看一下。</p>
@@ -1939,6 +1995,21 @@ footer.site p{margin:4px 0}
           <label>狀態<select class="ainput" id="qbState">
             <option value="all">全部</option><option value="on">啟用中</option><option value="off">已停用</option><option value="custom">自訂選項</option><option value="none">選項不足（不會出題）</option><option value="dirty">未發布的變更</option></select></label>
           <label class="qbsearch">搜尋<input class="ainput" id="qbSearch" type="search" placeholder="題目、答案或任務名稱"></label>
+        </div>
+        <div class="qbscened" id="qbScenEd" hidden>
+          <h4 id="qbSeTitle">新增情境題</h4>
+          <div class="qbsegrid">
+            <label>地點（哪位 NPC 會出這題）<select class="ainput" id="qbSeZone"></select></label>
+            <label>相關任務（答題後可以「看說明」）<select class="ainput" id="qbSeQuest"></select></label>
+          </div>
+          <label class="qbsefull">情境題目<textarea class="ainput" id="qbSeQ" rows="2" maxlength="120" placeholder="例如：今天 8:40 才刷卡進公司，該怎麼處理？"></textarea></label>
+          <fieldset class="qbseopts"><legend>選項（4 個，點選圓圈標示正確答案）</legend>
+            <div id="qbSeOpts"></div></fieldset>
+          <label class="qbsefull">解說（答錯時顯示）<textarea class="ainput" id="qbSeEx" rows="2" maxlength="160" placeholder="例如：超過彈性上班範圍 30 分鐘內到達者，應請假 1 小時。"></textarea></label>
+          <p class="cerr" id="qbSeErr" role="alert"></p>
+          <div class="formfoot"><span></span><span class="afilters">
+            <button class="act ghost" type="button" id="qbSeCancel">取消</button>
+            <button class="act" type="button" id="qbSeSave">套用</button></span></div>
         </div>
         <div id="qbList"></div>
       </section>
@@ -3306,14 +3377,14 @@ const ZONES=[
   ]}
  ]},
 {id:"temple",name:"存摺神殿",real:"智慧存摺",sprite:"temple",tile:[33,11],
- intro:"智慧存摺記錄每年累積的點數。部門一起朝年度 50 點前進，你的點數也在這裡蓋章記錄。",
+ intro:"智慧存摺記錄每年累積的點數。部門一起朝年度 100 點前進，你的點數也在這裡蓋章記錄。",
  chapters:[
-  {title:"智慧存摺 2026",sub:"年度目標 50 點",quests:[
+  {title:"智慧存摺 2026",sub:"年度目標 100 點",quests:[
    {id:"p1",title:"智慧存摺的年度目標",body:`
     <p>（2026/6/1 更新）</p>
-    <p><b>目標值</b>：部門以所屬員工點數平均值加計部門點數，年度應達 <b>50 點</b>。</p>
+    <p><b>目標值</b>：部門以所屬員工點數平均值加計部門點數，年度應達 <b>100 點</b>。</p>
     <p>詳細說明請參考 <a href="https://portal2023.sinotech.com.tw/iPassport/Content/ISO%e5%93%81%e8%b3%aa%e7%9b%ae%e6%a8%99.pdf" target="_blank" rel="noopener">ISO 品質目標.pdf</a>（需公司內網）。</p>
-    <span class="tip">神殿頁面下方的集點卡可以記下你目前的點數，隨時對照離 50 點還差多少。</span>`}
+    <span class="tip">神殿頁面下方的集點卡可以記下你目前的點數，隨時對照離 100 點還差多少。</span>`}
   ]}
  ],
  passbook:true}
@@ -3331,7 +3402,7 @@ const DEFAULT_CONFIG={
     {label:"園城人",url:"https://cdp.sinotech.com.tw/LHA/"},
     {label:"部門 DMIS",url:"https://engserv.sinotech.com.tw/Dept22/BaseApp/Home/Default.aspx"}
   ],
-  goal:50,
+  goal:100,
   interviewOn:false,
   touristOn:true,
   approvalOn:true,
@@ -3894,7 +3965,10 @@ function celebrate(w){
 }
 let lastDig=0, MAPLAND=null;
 const SEA_LINES=["撲通！只撈到一個空瓶。","浪花打過來，什麼都沒撈到。","腳邊滑過一群小魚。","好像踩到什麼…只是石頭。"];
-let lastOct=0;
+const ENC_KEY="sino22-enc";
+const encGet=k=>{ try{ return +((JSON.parse(localStorage.getItem(ENC_KEY)||"{}")||{})[k])||0; }catch(e){ return 0; } };
+function encSet(k,v){ try{ const o=JSON.parse(localStorage.getItem(ENC_KEY)||"{}")||{}; o[k]=v; localStorage.setItem(ENC_KEY,JSON.stringify(o)); }catch(e){} }
+let lastOct=encGet("oct");
 const SEA_SEEDS=10;
 const octMet=()=>!!(S.octMet||(S.petColors&&(S.petColors[9]||S.petColors[10])));   // 以前選過海怪限定色的也算遇過
 function openSeaMonster(){
@@ -3925,7 +3999,7 @@ function openSeaMonster(){
   const d=$("#seaDlg"); if(!d.open) d.showModal();
   Sound.sfx("open");
 }
-let lastNpc=0;
+let lastNpc=encGet("npc");
 const NPC_LINES={
   chief:{工程:["「剛從工地回來，這幾件工作服給你挑一件。」","「跑現場要穿得安全，挑一件帶走吧。」"],
          帥氣:["「今天要穿得帥一點！這幾件看你喜歡哪一件。」","「公司活動剩下的外套，穿起來很有精神喔。」"]},
@@ -4001,7 +4075,7 @@ const CHAT_TOURIST={                                    // 觀光客：村長、
     "「逛累了就回溫暖的家看看你的寵物吧，牠會在家裡等你。」"]
 };
 const TOURIST_SKIP_TIP=/留言板|按讚|救援碼|偷菜|串門子/;
-let lastChat=0, CHAT=null;
+let lastChat=encGet("chat"), CHAT=null;
 const CHAT_RECENT=[];
 function chatPick(who){
   if(touristLocked()&&CHAT&&CHAT.n===0){ const L=CHAT_TOURIST[who]; return {tip:L[Math.floor(Math.random()*L.length)],hello:true}; }
@@ -4041,23 +4115,23 @@ function openNpcChat(){
 $("#ctMore").addEventListener("click",()=>{ if(CHAT){ showChatLine(); Sound.sfx("cursor"); } });
 function tryNpcChat(){
   if(!S.group||TOUR) return false;
-  const now=Date.now(); if(now-lastChat<3*60*1000||now-lastNpc<60*1000) return false;   // 3 分鐘最多一次，剛送完衣服也不會馬上又來
+  const now=Date.now(); if(now-lastChat<15*60*1000||now-lastNpc<5*60*1000) return false;   // 15 分鐘最多一次，剛送完衣服也不會馬上又來
   if(document.querySelector("dialog[open]")) return false;
-  if(Math.random()>=0.06) return false;                            // 機率 6%
-  lastChat=now; return openNpcChat();
+  if(Math.random()>=0.03) return false;                            // 機率 3%
+  lastChat=now; encSet("chat",now); return openNpcChat();
 }
 function tryNpcMeet(){
   if(!S.group) return false;
-  const now=Date.now(); if(now-lastNpc<30*60*1000) return false;   // 30 分鐘一次
+  const now=Date.now(); if(now-lastNpc<60*60*1000||now-lastChat<5*60*1000) return false;   // 60 分鐘一次，剛聊完天也不會馬上又來
   if(!secretPool().length) return false;
-  if(Math.random()>=0.03) return false;                            // 機率 3%
-  lastNpc=now; return openNpcGift();
+  if(Math.random()>=0.02) return false;                            // 機率 2%
+  lastNpc=now; encSet("npc",now); return openNpcGift();
 }
 function trySeaMonster(){
   if(!S.pet||!S.group) return false;
-  const now=Date.now(); if(now-lastOct<5*60*1000) return false;
-  if(Math.random()>=0.18) return false;
-  lastOct=now; openSeaMonster(); return true;
+  const now=Date.now(); if(now-lastOct<(octMet()?30:10)*60*1000) return false;   // 第一次見面前 10 分鐘、之後 30 分鐘最多一次
+  if(Math.random()>=(octMet()?0.05:0.08)) return false;          // 機率：第一次見面前 8%，之後 5%
+  lastOct=now; encSet("oct",now); openSeaMonster(); return true;
 }
 function trySeaTreasure(){
   if(!S.group) return;
@@ -5489,7 +5563,7 @@ async function parseFeed(rows){
   for(const [id,rec] of recs.approve){ try{ out.approve[id.toUpperCase()]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
   out.quiz=null;                                        // 題庫設定：取最後一筆
   { let best=null; for(const [id,rec] of recs.quiz){ if(!best||rec.row>best.rec.row) best={id,rec}; }
-    if(best){ try{ const x=await unpackPayload(best.rec.data); if(x&&x.v) out.quiz=Object.assign({off:[],types:{},wrong:{}},x,{id:best.id,ts:best.rec.ts,by:best.rec.by}); }catch(e){} } }
+    if(best){ try{ const x=await unpackPayload(best.rec.data); if(x&&x.v) out.quiz=Object.assign({off:[],types:{},wrong:{},scen:{}},x,{id:best.id,ts:best.rec.ts,by:best.rec.by}); }catch(e){} } }
   out.roster={};
   for(const [id,rec] of recs.roster){ try{ out.roster[id]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
   return out;
@@ -6837,8 +6911,8 @@ const HELP={
   guest:"別人在交誼廳點你的人像，就會來拜訪並留下紀錄或留言。有新訪客時，家具按鈕上會顯示人數。",
   gear:"顯示目前拿在手上的武器。想換武器或看還沒拿到的武器，請到「武器庫」。",
   cloud:"建立雲端存檔帳號後，進度會自動存到部門試算表，換電腦或清除瀏覽器資料也能接著玩。網站開著時每小時會自動同步一次（雲端存檔、交誼廳名片、田地，並讀回新禮物和新任務）。請記好密碼和救援碼。",
-  lounge:"大家的冒險者名片。點人像可以去對方家拜訪、偷菜或送菜；按 ♥ 幫喜歡的人按讚，按讚最多的人會戴上皇冠。",
-  board:"在這裡留言或回覆別人。送出後自己馬上看得到，其他人最慢約 5 分鐘後才會看到。",
+  lounge:"大家的冒險者名片。預設只列最近 7 天來過交誼廳的人，可以切換「上線中」「我的組」「全部」，或直接搜尋名字、組別。點人像可以去對方家拜訪、偷菜或送菜；按 ♥ 幫喜歡的人按讚，按讚最多的人會戴上皇冠。",
+  board:"在這裡留言或回覆別人。回應平常收起來，按「看回應」展開；你上次來之後的新留言會標 NEW。送出後自己馬上看得到，其他人最慢約 5 分鐘後才會看到。",
   visitFarm:"成熟的菜可以偷 1 份，每塊田最多被偷 2 次。屋主的寵物剛吃飽時會認真看守，比較容易被抓到。",
   visitAct:"選一種蔬菜，可以砸過去（牆上會留下蔬菜漬，屋主清理時能撿回去）或送給屋主。屋主回家會收到通知，知道是誰做的。也可以跟屋主的寵物猜拳：贏了拿走屋主倉庫 1 份蔬菜，輸了要餵寵物 1 份牠最愛吃的蔬菜（屋主的寵物親密度會提升）。",
   visitBook:"進門會自動留下拜訪紀錄，也可以留一句話給屋主。",
@@ -7488,6 +7562,7 @@ function loungeDrafts(box){
   const d={msg:null,post:"",replies:{},focus:null};
   const m=box.querySelector("#lgMsg"); if(m) d.msg=m.value;
   const p=box.querySelector("#lgPost"); if(p) d.post=p.value;
+  const f=box.querySelector("#lgFind"); if(f) LG_Q=f.value;
   box.querySelectorAll("[data-replyfor]").forEach(i=>{ if(i.value) d.replies[i.dataset.replyfor]=i.value; });
   const a=document.activeElement;
   if(a&&box.contains(a)&&a.matches("input,textarea")) d.focus={sel:a.id?"#"+a.id:a.dataset.replyfor?`[data-replyfor="${CSS.escape(a.dataset.replyfor)}"]`:"",s:a.selectionStart,e:a.selectionEnd};
@@ -7499,6 +7574,67 @@ function restoreDrafts(box,d){
   const p=box.querySelector("#lgPost"); if(p&&d.post) p.value=d.post;
   Object.entries(d.replies).forEach(([id,v])=>{ const i=box.querySelector(`[data-replyfor="${CSS.escape(id)}"]`); if(i) i.value=v; });
   if(d.focus&&d.focus.sel){ const f=box.querySelector(d.focus.sel); if(f){ f.focus({preventScroll:true}); try{ f.setSelectionRange(d.focus.s,d.focus.e); }catch(e){} } }
+}
+/* 交誼廳版面狀態：每次走進交誼廳重設（手機先看名片、名片先看最近 7 天） */
+const LG_WIDE_Q="(min-width:900px)", LG_PAGE=24, LG_POST_PAGE=10, LG_WEEK=7*864e5, LG_SEEN_KEY="sino22-lounge-seen";
+let LG_TAB="cards", LG_FILTER="recent", LG_Q="", LG_SHOW=LG_PAGE, LG_POSTS=LG_POST_PAGE, LG_SEEN_BASE=null, LG_BOARD_SEEN=false, LG_D=null;
+const LG_OPEN=new Set(), LG_RDRAFT={};
+const lgWide=()=>{ try{ return matchMedia(LG_WIDE_Q).matches; }catch(e){ return true; } };
+function lgEnter(){
+  LG_TAB="cards"; LG_FILTER="recent"; LG_Q=""; LG_SHOW=LG_PAGE; LG_POSTS=LG_POST_PAGE; LG_BOARD_SEEN=false; LG_OPEN.clear();
+  let v=0; try{ v=+localStorage.getItem(LG_SEEN_KEY)||0; }catch(e){}
+  LG_SEEN_BASE=v||Date.now();                          // 第一次來：不標「新」
+}
+function lgMarkSeen(){ LG_BOARD_SEEN=true; try{ localStorage.setItem(LG_SEEN_KEY,String(Date.now())); }catch(e){} }
+const lgIsNew=x=>!!(LG_SEEN_BASE&&x.at&&x.at.getTime()>LG_SEEN_BASE&&x.code!==myCode().toUpperCase());
+function lgFilters(d){
+  const me=myCode().toUpperCase(), now=Date.now();
+  const recent=p=>p.code===me||p.online||!!(p.at&&now-p.at.getTime()<LG_WEEK);
+  const F=[["recent","最近 7 天",recent],["online","上線中",p=>p.online]];
+  if(S.group&&S.group!==TOURIST) F.push(["group","我的組",p=>p.group===S.group]);
+  F.push(["all","全部",()=>true]);
+  return F.map(([k,label,fn])=>({k,label,fn,n:d.list.filter(fn).length}));
+}
+function lgCardsHTML(d){
+  const F=lgFilters(d), f=F.find(x=>x.k===LG_FILTER)||F[0];
+  const q=String(LG_Q||"").trim().toLowerCase();
+  const all=q?d.list.filter(p=>(String(p.name||"")+" "+String(p.group||"")).toLowerCase().includes(q)):d.list.filter(f.fn);
+  const shown=all.slice(0,LG_SHOW), wide=lgWide();
+  const body=shown.length
+    ?(wide?`<div class="lgrid">${shown.map(p=>loungeCard(p,d.champion)).join("")}</div>`
+          :`<div class="lglist">${shown.map(p=>loungeRow(p,d.champion)).join("")}</div>`)
+    :`<p class="empty-note">${q?`找不到「${esc(LG_Q)}」，換個名字或組別試試。`:f.k==="online"?"現在沒有其他人在線上。":f.k==="recent"?"最近 7 天沒有人來交誼廳，看看「全部」吧。":"這裡還沒有人。"}</p>`;
+  return `${q?`<p class="ahint" style="margin:6px 0 0">在全部 ${d.list.length} 位中搜尋，找到 ${all.length} 位</p>`:""}${body}
+    ${all.length>shown.length?`<button class="act ghost lgmore" type="button" data-lounge="morecards">顯示其他 ${all.length-shown.length} 位</button>`:""}`;
+}
+function loungeRow(p,champion){
+  try{
+    const crown=p.code===champion, liked=!!(S.likes&&S.likes[p.code]), me=p.code===myCode().toUpperCase();
+    return `<article class="lrc${crown?" champ":""}${p.online?" on":""}${p.nocard?" nocard":""}">
+      <div class="lface" role="button" tabindex="0" data-visit="${esc(p.code)}" title="${me?"回到自己的家":"拜訪"+esc(p.name||"")+"的家"}">
+        <span class="lav" aria-hidden="true">${avatarSVG(p.nocard?AV_DEFAULT:(p.av||AV_DEFAULT))}</span>
+        ${!p.nocard&&p.pet?`<span class="lpet" aria-hidden="true">${petSVG(p.pet,(+p.level||1)>=4?"adult":"baby")}</span>`:""}
+      </div>
+      <div style="min-width:0">
+        <p class="lname">${crown?"👑 ":""}${esc(p.name||"新人冒險者")}${me?`<span class="st st-info">你</span>`:""}</p>
+        <p class="ahint">${esc(p.group||"—")}・LV ${esc(p.level||"1")}${p.online?`<span class="st st-ok" style="margin-left:6px">上線中</span>`:p.at?`・${esc(fmtShort(p.at))}`:""}</p>
+        ${p.nocard?`<p class="lmsg nocardnote">還沒逛過交誼廳，名片準備中</p>`:p.msg?`<p class="lmsg">「${esc(p.msg)}」</p>`:""}
+      </div>
+      <button class="act ghost like${liked?" liked":""}" type="button" data-like="${esc(p.code)}" ${me||liked?"disabled":""} aria-label="幫${esc(p.name||"")}按讚">♥ ${p.likes}</button>
+    </article>`;
+  }catch(e){ return ""; }
+}
+function lgPostHTML(x,d){
+  const me=myCode().toUpperCase(), rs=d.replies[x.id]||[], open=LG_OPEN.has(x.id), isNew=lgIsNew(x)||rs.some(lgIsNew);
+  const last=rs[rs.length-1];
+  return `<article class="lpost${lgIsNew(x)?" new":""}">
+    <p class="lphead"><b>${esc(x.name||"新人冒險者")}</b>${isNew?` <span class="lnew">NEW</span>`:""}<span class="ahint">${esc(fmtShort(x.at))}${x.pending?"・同步中":""}</span>${x.code===me?`<button class="linkbtn retract" type="button" data-retract="post" data-target="${esc(x.id)}">收回</button>`:""}</p>
+    <p class="lptext">${esc(x.msg)}</p>
+    ${open?`${rs.length?`<div class="lreplies">${rs.map(r=>`<p><b>${esc(r.name||"新人")}</b>：${esc(r.msg)}<span class="ahint"> ${esc(fmtShort(r.at))}${r.pending?"・同步中":""}</span>${lgIsNew(r)?` <span class="lnew">NEW</span>`:""}${r.code===me?`<button class="linkbtn retract" type="button" data-retract="reply" data-target="${esc(x.id)}" data-msg="${esc(r.msg)}">收回</button>`:""}</p>`).join("")}</div>`:""}
+      <div class="lrow"><input class="ainput wide" maxlength="60" data-replyfor="${esc(x.id)}" placeholder="回應這則留言…" value="${esc(LG_RDRAFT[x.id]||"")}"><button class="act ghost" type="button" data-lounge="reply" data-id="${esc(x.id)}">回應</button></div>
+      <div class="lpfoot"><button class="linkbtn" type="button" data-lounge="toggle" data-id="${esc(x.id)}">收起回應</button></div>`
+    :`<div class="lpfoot"><button class="linkbtn" type="button" data-lounge="toggle" data-id="${esc(x.id)}">💬 ${rs.length?`看回應（${rs.length}）`:"回應"}</button>${last?`<p class="lprev"><b>${esc(last.name||"新人")}</b>：${esc(last.msg)}</p>`:""}</div>`}
+  </article>`;
 }
 function renderLounge(box,force){
   if(!force&&loungeReady()&&box.querySelector(".lounge")&&loungeTyping(box)){ LOUNGE_DEFER=true; return; }   // 打字中：等打完再更新
@@ -7513,10 +7649,16 @@ function renderLoungeInner(box){
       <p class="empty-note">交誼廳還沒設定。管理者需要建立「交誼廳」表單與「交誼廳資料」工作表，並在設定小幫手填入。</p></section>`;
     return;
   }
-  const d=loungeData();
-  box.innerHTML=`<div class="lounge">
-    <section class="window pbox">
-      <div class="abar"><h3>大家的冒險者名片 ${helpBtn("lounge")}</h3><span class="afilters">
+  const d=loungeData(); LG_D=d;
+  const wide=lgWide();
+  if(wide||LG_TAB==="board") lgMarkSeen();
+  const newN=d.posts.filter(x=>lgIsNew(x)||(d.replies[x.id]||[]).some(lgIsNew)).length;
+  const F=lgFilters(d);
+  if(!F.some(x=>x.k===LG_FILTER)) LG_FILTER="recent";
+  const posts=d.posts.slice(0,LG_POSTS);
+  box.innerHTML=`<div class="lounge lg2${wide?" lg-wide":""}" data-tab="${LG_TAB}">
+    <section class="window pbox lgtop">
+      <div class="abar"><h3>交誼廳 ${helpBtn("lounge")}</h3><span class="afilters">
         <span class="ahint">上線中 ${d.online} 人・共 ${d.list.length} 位</span>
         <button class="act ghost" type="button" data-lounge="refresh">重新整理</button></span></div>
       ${pendingApproval()?`<p class="touristlounge">⏳ 註冊審核中：可以看名片、留言板，也可以去同事家參觀；按讚、留言、送禮、偷菜等互動，以及你的名片上線，會在審核通過後開放。</p>`:touristLocked()?`<p class="touristlounge">🧳 你正在以<b>觀光客</b>身分參觀，同事看不到你。可以看名片、留言板，也可以去同事家參觀；按讚、留言、送禮、偷菜等互動不開放。</p>`:`<div class="lrow">
@@ -7525,28 +7667,40 @@ function renderLoungeInner(box){
         <button class="act" type="button" data-lounge="me">更新我的名片</button>
       </div>`}
       ${LOUNGE.err?`<p class="cerr">讀不到交誼廳資料，請稍後再試。</p>`:""}
-      <div class="lgrid">${d.list.map(p=>loungeCard(p,d.champion)).join("")}</div>
     </section>
-    <section class="window pbox">
-      <div class="abar"><h3>留言板 ${helpBtn("board")}</h3><span class="ahint">${d.posts.length} 則留言</span></div>
-      <p class="ahint">送出後自己會馬上看到（標示「同步中」），其他人最慢約 5 分鐘後才會看到，這是 Google 試算表發布的更新間隔。</p>
-      <div class="lrow">
-        <label class="sr" for="lgPost">留言內容</label>
-        <input id="lgPost" class="ainput wide" maxlength="80" placeholder="想跟大家說什麼？">
-        <button class="act" type="button" data-lounge="post">張貼</button>
-      </div>
-      <div class="lboard">${d.posts.length?d.posts.slice(0,30).map(x=>{
-        const rs=d.replies[x.id]||[];
-        return `<article class="lpost">
-          <p class="lphead"><b>${esc(x.name||"新人冒險者")}</b><span class="ahint">${esc(fmtShort(x.at))}${x.pending?"・同步中":""}</span>${x.code===myCode().toUpperCase()?`<button class="linkbtn retract" type="button" data-retract="post" data-target="${esc(x.id)}">收回</button>`:""}</p>
-          <p class="lptext">${esc(x.msg)}</p>
-          ${rs.length?`<div class="lreplies">${rs.map(r=>`<p><b>${esc(r.name||"新人")}</b>：${esc(r.msg)}<span class="ahint"> ${esc(fmtShort(r.at))}${r.pending?"・同步中":""}</span>${r.code===myCode().toUpperCase()?`<button class="linkbtn retract" type="button" data-retract="reply" data-target="${esc(x.id)}" data-msg="${esc(r.msg)}">收回</button>`:""}</p>`).join("")}</div>`:""}
-          <div class="lrow"><input class="ainput wide" maxlength="60" data-replyfor="${esc(x.id)}" placeholder="回應這則留言…"><button class="act ghost" type="button" data-lounge="reply" data-id="${esc(x.id)}">回應</button></div>
-        </article>`;
-      }).join(""):`<p class="empty-note">還沒有人留言，當第一個吧！</p>`}</div>
-    </section>
+    <div class="lgtabs" role="tablist" aria-label="交誼廳分頁">
+      <button type="button" role="tab" aria-selected="${LG_TAB==="cards"}" data-lounge="tab" data-v="cards">🪪 名片 <span class="lgcnt">${d.list.length}</span></button>
+      <button type="button" role="tab" aria-selected="${LG_TAB==="board"}" data-lounge="tab" data-v="board">💬 留言板 ${newN&&!LG_BOARD_SEEN?`<span class="lnew">${newN} 新</span>`:`<span class="lgcnt">${d.posts.length}</span>`}</button>
+    </div>
+    <div class="lgcols">
+      <section class="window pbox lgcards">
+        <div class="abar"><h3>大家的冒險者名片</h3></div>
+        <div class="lgchips" role="group" aria-label="篩選名片">${F.map(x=>`<button type="button" class="lgchip" data-lounge="filter" data-v="${x.k}" aria-pressed="${x.k===LG_FILTER&&!LG_Q}">${x.label}<b>${x.n}</b></button>`).join("")}</div>
+        <div class="lgfind"><label class="sr" for="lgFind">搜尋名字或組別</label><input id="lgFind" class="ainput" type="search" maxlength="20" placeholder="🔍 搜尋名字或組別" value="${esc(LG_Q)}" autocomplete="off"></div>
+        <div id="lgCards">${lgCardsHTML(d)}</div>
+      </section>
+      <section class="window pbox lgboard">
+        <div class="abar"><h3>留言板 ${helpBtn("board")}</h3><span class="ahint">${d.posts.length} 則留言</span></div>
+        <p class="ahint">送出後自己會馬上看到（標示「同步中」），其他人最慢約 5 分鐘後才會看到。</p>
+        <div class="lrow">
+          <label class="sr" for="lgPost">留言內容</label>
+          <input id="lgPost" class="ainput wide" maxlength="80" placeholder="想跟大家說什麼？">
+          <button class="act" type="button" data-lounge="post">張貼</button>
+        </div>
+        <div class="lboard">${posts.length?posts.map(x=>lgPostHTML(x,d)).join(""):`<p class="empty-note">還沒有人留言，當第一個吧！</p>`}</div>
+        ${d.posts.length>posts.length?`<button class="act ghost lgmore" type="button" data-lounge="moreposts">載入更早的留言（還有 ${d.posts.length-posts.length} 則）</button>`:""}
+      </section>
+    </div>
   </div>`;
 }
+$("#placeBody").addEventListener("input",e=>{
+  if(e.target.id!=="lgFind"||!LG_D) return;
+  LG_Q=e.target.value; LG_SHOW=LG_PAGE;
+  const c=$("#lgCards"); if(c) c.innerHTML=lgCardsHTML(LG_D);
+  $("#placeBody").querySelectorAll(".lgchip").forEach(b=>b.setAttribute("aria-pressed",String(!LG_Q.trim()&&b.dataset.v===LG_FILTER)));
+});
+$("#placeBody").addEventListener("input",e=>{ const id=e.target.dataset&&e.target.dataset.replyfor; if(id) LG_RDRAFT[id]=e.target.value; });
+try{ matchMedia(LG_WIDE_Q).addEventListener("change",()=>{ if(curPlace&&curPlace.id==="lounge") renderLounge($("#placeBody"),true); }); }catch(e){}
 function renderPlace(greet){ renderPlaceInner(greet); try{ injectNpcGift(); }catch(e){} }
 $("#placeBody").addEventListener("focusout",()=>{
   if(!LOUNGE_DEFER) return;
@@ -7573,6 +7727,7 @@ function renderPlaceInner(greet){
     $("#plHostFace").innerHTML=avatarSVG(S.av);
     $("#plHostName").textContent=dispName();
     if(greet) typeInto($("#plSay"),"來交誼廳看看大家的角色和寵物吧！點人像可以去他家拜訪，幫喜歡的人按讚，按讚最多的人會戴上皇冠。");
+    if(greet||LG_SEEN_BASE===null) lgEnter();
     renderLounge($("#placeBody"),!!greet);
     if(!greet&&loungeTimer) return;                    // 只是重畫畫面：不用重新送上線紀錄與重設計時器
     loungePresence(true,{here:true}).then(()=>loadLounge(true)).then(()=>{ if(curPlace&&curPlace.id==="lounge") renderLounge($("#placeBody")); });
@@ -7731,7 +7886,22 @@ $("#placeBody").addEventListener("click",async e=>{
   }
   const lg=t.closest("[data-lounge]");
   if(lg){
-    const act=lg.dataset.lounge;
+    const act=lg.dataset.lounge, box=$("#placeBody");
+    if(act==="tab"){
+      LG_TAB=lg.dataset.v==="board"?"board":"cards"; renderLounge(box,true); Sound.sfx("cursor");
+      const tb=box.querySelector(".lgtabs"); if(tb&&tb.getBoundingClientRect().top<0) tb.scrollIntoView({block:"start"});
+      return;
+    }
+    if(act==="filter"){ LG_FILTER=lg.dataset.v; LG_Q=""; LG_SHOW=LG_PAGE; renderLounge(box,true); Sound.sfx("cursor"); return; }
+    if(act==="morecards"){ LG_SHOW+=LG_PAGE; if(LG_D){ const c=$("#lgCards"); if(c) c.innerHTML=lgCardsHTML(LG_D); } return; }
+    if(act==="moreposts"){ LG_POSTS+=LG_POST_PAGE; renderLounge(box,true); return; }
+    if(act==="toggle"){
+      const id=lg.dataset.id;
+      if(LG_OPEN.has(id)) LG_OPEN.delete(id); else LG_OPEN.add(id);
+      renderLounge(box,true);
+      if(LG_OPEN.has(id)){ const i=box.querySelector(`[data-replyfor="${CSS.escape(id)}"]`); if(i&&!(d=>d.replies[id]&&d.replies[id].length)(LG_D||{replies:{}})) i.focus({preventScroll:true}); }
+      return;
+    }
     if(act==="refresh"){ lg.disabled=true; await loadLounge(true); lg.disabled=false; renderLounge($("#placeBody"),true); Sound.sfx("select"); return; }
     if(act==="me"){
       if(touristBlock("交誼廳名片")) return;
@@ -7771,7 +7941,7 @@ $("#placeBody").addEventListener("click",async e=>{
       const ok=await loungeSend(payload);
       lg.disabled=false;
       if(ok){
-        addPending(payload); if(inp) inp.value="";
+        addPending(payload); if(inp) inp.value=""; delete LG_RDRAFT[id]; LG_OPEN.add(id);
         Sound.sfx("get"); toast("已回應，其他人最慢約 5 分鐘後看得到");
         setTimeout(boardFrame,900);
         renderLounge($("#placeBody"),true);
@@ -8450,11 +8620,24 @@ const optKey=x=>String(x).normalize("NFKC").replace(/[\s　]+/g,"").replace(/[�
 const quizOK=q=>!!q&&new Set(q.opts.map(optKey)).size===q.opts.length;
 const sufOf=w=>{ const m=w.match(new RegExp("("+NOUN_SUF+")$")); return m?m[1]:""; };
 /* ---- 題庫設定：停用的題目、停用的題型、自訂干擾選項（管理者在「題庫」分頁發布） ---- */
-const QZ_KINDS=["數字題","名詞題","歸屬題","分類題"];
-const QUIZ_DEFAULT={v:1,off:["q925r5l", "quypfzt", "q1czdq6t", "q1dlbeye", "q1e5svrg", "q1jzzl9n", "q1g660lm", "q1guwc28", "q1hgtj8x", "q1ja7j2r", "q30umr", "q1ozvpf7", "qh4s2xz", "q8gk4u2", "qlyuykl", "q1fzqezp", "q16jh7r9", "qz34uh1", "qap3ggk", "q5umxjo", "q16at0k4", "qw88q5w", "q1fbuwyk", "q1jy3j3j", "qnopsfk", "q1ia487k", "q1lk7134", "quz7lu0", "qc4164a", "q1bovqp", "q1xo42b6", "q1f6n6ep", "q3l2gmo", "qvn0egn", "q7pg9ti", "qataj4l", "q1jy50r8", "q1dfptjv", "qc6b0re", "q19oljj6", "q159y0gz", "qstyedl", "q1w36s05", "qtnviga", "q1m866zm", "q1gozwli", "q6o6o4l", "qoa1pxg", "q10wt38h", "q1h0trb4", "qh2a40z", "q1uzrd8i", "qhce82u", "qu5ygav", "qjhzzdf", "q1x9f2jv", "q1141x64", "q1wudgkf", "q15qcnoa"],types:{"分類題":false},wrong:{"qq3xcqr": ["基準值", "門檻值", "達成率"], "qn38n4h": ["1.5天", "2天", "3天"]}};   // 2026/10/12 題庫檢查的結果
+const QZ_KINDS=["情境題","數字題","名詞題","歸屬題","分類題"];
+/* 情境判斷題（內建）：依任務內容設計，第一個選項是正確答案，出題時打亂順序；管理者可在「題庫」分頁修改、停用或新增 */
+const SCEN_DEFAULT=[{"id": "s01", "zone": "village", "quest": "v4", "q": "報到第一天還沒拿到員工證，到了公司門口要怎麼刷卡進去？", "opts": ["向櫃台借白卡（臨時證）刷卡，並在借用簿登記", "請同事用他的員工證幫你刷卡進門", "先不刷卡，之後到出勤系統補登上班時間", "到行政部臨時申請一張正式員工證"], "ans": 0, "explain": "沒有員工證時可以向櫃台借白卡刷卡：輸入員編、歸還白卡，並在借用簿註明刷卡人及時間。"}, {"id": "s02", "zone": "village", "quest": "v4", "q": "用借來的白卡刷卡進公司後，事後還要記得做什麼？", "opts": ["到出勤系統確認有沒有刷卡紀錄", "把白卡留在座位，下班時再一起還", "請主管在請假卡幫你補簽到", "不用做任何事，白卡會自動記錄"], "ans": 0, "explain": "借白卡刷卡後要歸還，事後記得到出勤系統確認是否有紀錄。"}, {"id": "s03", "zone": "village", "quest": "v5", "q": "還沒配發電腦，但今天想先上訂餐系統訂便當，怎麼做最快？", "opts": ["從公司官網［員工專區］＞［一般員工］登入", "等電腦配發後，才能登入訂餐系統", "請部門行政組用他的帳號幫你代訂", "先安裝中興行動 APP，再用手機訂"], "ans": 0, "explain": "只需要訂餐、出勤、E-learning 系統時，可以從公司官網的［員工專區］＞［一般員工］登入。"}, {"id": "s04", "zone": "village", "quest": "v2", "q": "想把薪水轉進自己的郵局帳戶，可以嗎？", "opts": ["可以，薪轉戶可選彰化銀行、遠東銀行或郵局", "不行，薪轉戶只能選公司一樓的遠東銀行", "不行，薪轉戶只能選隔壁大樓的彰化銀行", "可以，但要另外專案申請並經主管核准"], "ans": 0, "explain": "公司薪轉戶可以選擇彰化銀行、遠東銀行、郵局。"}, {"id": "s05", "zone": "village", "quest": "v6", "q": "報到後第 5 天，主管問你安全衛生的線上課程上完了沒。規定是什麼？", "opts": ["報到一週內在職安署數位學習平台上完 2 小時", "等每季的實體課程，再一起上完 3 小時", "報到一個月內在 E-learning 上完 1 小時", "新人第一年免上，第二年再補上就好"], "ans": 0, "explain": "一般安全衛生教育訓練共 3 小時：報到一週內完成 2 小時線上課程，每季實體課程 1 小時。"}, {"id": "s06", "zone": "village", "quest": "v6", "q": "新人教育訓練當天的筆試考了 70 分，接下來會怎樣？", "opts": ["要補考", "要補修整門課", "已經及格，不用處理", "下一季重新報名上課"], "ans": 0, "explain": "筆試未達 80 分要補考，未達 60 分要補修。"}, {"id": "s07", "zone": "village", "quest": "v7", "q": "人員履歷的欄位全部填好了，最後一步要做什麼？", "opts": ["點選［申請主管簽核］", "印出來交給行政部", "寄 Email 給人資", "按儲存就完成了"], "ans": 0, "explain": "全部欄位填好後，點選［申請主管簽核］。之後每年依工作資歷、新增證照更新一次。"}, {"id": "s08", "zone": "tavern", "quest": "t1", "q": "彈性上班到 8:30，你今天 8:40 才刷卡進公司，該怎麼處理？", "opts": ["請假 1 小時", "不用處理，還在彈性時間內", "請假半天", "當天加班補回來就好"], "ans": 0, "explain": "超過彈性上班範圍 30 分鐘內到達者，應請假 1 小時。"}, {"id": "s09", "zone": "tavern", "quest": "t1", "q": "加班到晚上 7 點才要離開公司，要從哪裡出去？", "opts": ["B1 後門", "正門", "請警衛開正門", "哪一個門都可以"], "ans": 0, "explain": "正門開放時間 7:00～18:00，18:00 後請從 B1 後門進出。"}, {"id": "s10", "zone": "tavern", "quest": "t1", "q": "你今天 8:20 刷卡上班，最早幾點可以下班？", "opts": ["17:20", "16:20", "16:30", "17:30"], "ans": 0, "explain": "以 8 小時計算，加上中午 1 小時午休，例如 8:15 上班就是 17:15 下班。"}, {"id": "s11", "zone": "tavern", "quest": "t3", "q": "今天下班後預計要加班，加班申請卡最晚要在什麼時候完成？", "opts": ["加班前、最晚 16:30 填好並經主管簽核", "加班結束後，隔天上班再補填並簽核", "當月 30 號前，和正常工作卡一起填", "下班前、最晚 17:30 填好並經主管簽核"], "ans": 0, "explain": "加班申請卡要在加班前、最晚 16:30 完成填寫並經主管簽核，也可以事先申請一週的加班。"}, {"id": "s12", "zone": "tavern", "quest": "t3", "q": "昨天實際加班了 2 小時，加班卡要什麼時候填？", "opts": ["隔天務必填寫", "月底再和工作卡一起填", "不用填，有加班申請卡就夠了", "下一週再一起補填"], "ans": 0, "explain": "加班卡依實際加班時數，隔天務必填寫，逾時未填會記點。"}, {"id": "s13", "zone": "tavern", "quest": "t3", "q": "這個月已經加班 44 小時，主管問你這個月還能再申請幾小時？", "opts": ["2 小時", "4 小時", "12 小時", "沒有上限"], "ans": 0, "explain": "加班一天最多 4 小時，週六日最多 12 小時，當月最多 46 小時。"}, {"id": "s14", "zone": "tavern", "quest": "t3", "q": "週日來公司加班，可以怎麼申請？", "opts": ["只能申請補休，而且要在 7 日內補休", "只能領加班費，不能申請補休", "加班費或補休擇一，年底前休完即可", "只能申請補休，年底前休完就好"], "ans": 0, "explain": "週日只能申請補休，依勞基法須於 7 日內補休；未工作滿 8 小時者，須以特休假或補休補足。"}, {"id": "s15", "zone": "tavern", "quest": "t3", "q": "想請 1 小時病假去看醫生，要在哪裡填？", "opts": ["請假卡，由主管核假", "正常工作卡，填在當天的時數裡", "加班卡，之後再用補休抵", "寄 Email 給行政部登記"], "ans": 0, "explain": "病假、公出、特休、加班補休等，都在［請假卡］填卡，由主管核假。"}, {"id": "s16", "zone": "tavern", "quest": "t3", "q": "今天是 18 號，中旬的正常工作卡還沒填，最晚要在幾號前完成？", "opts": ["20 號", "10 號", "30 號", "下個月 5 號"], "ans": 0, "explain": "正常工作卡每月 10 號（上旬卡）、20 號（中旬卡）、30 號（下旬卡）前完成，逾時未填會記點。"}, {"id": "s17", "zone": "tavern", "quest": "t4", "q": "你 3 月 1 日報到，到了 7 月 1 日，總共有幾天特休？", "opts": ["2 天", "4 天", "1 天", "第一年沒有特休"], "ans": 0, "explain": "新人第 1 年，每滿 2 個月給特別休假 1 天，滿 4 個月就是 2 天。"}, {"id": "s18", "zone": "tavern", "quest": "t4", "q": "到了年底，還有 2 天特休沒休完，會怎樣？", "opts": ["換算成薪資，隔年 1 月匯入薪資帳戶", "全部作廢，不能保留也不能換錢", "自動延到明年，3 月底前要休完", "換成加班補休，隔年再慢慢休"], "ans": 0, "explain": "特休每年 12/31 結算，未休完的換算薪資，於隔年 1 月匯入薪資帳戶。"}, {"id": "s19", "zone": "tavern", "quest": "t6", "q": "上午 10:00 才想到要訂便當，還來得及嗎？", "opts": ["來不及，訂餐和取消都要在 9:50 前", "可以，中午 12 點前都還能訂", "可以，打電話給便當店直接加訂", "可以，但要改用現金付款"], "ans": 0, "explain": "線上訂餐須於每日 9:50 前完成，要取消也請於 9:50 前辦理。"}, {"id": "s20", "zone": "tavern", "quest": "t6", "q": "在線上訂好的便當，中午要去哪裡拿？", "opts": ["電梯前的桌上，便當上標有姓名", "1 樓櫃台，報名字領取", "部門前方的冰箱裡", "行政部辦公室，簽名領取"], "ans": 0, "explain": "便當中午放在電梯前桌上，上面標有姓名，午休時領取。"}, {"id": "s21", "zone": "tavern", "quest": "t7", "q": "要用座位電話打給客戶的手機，該怎麼撥？", "opts": ["撥 5 給總機，由總機協助撥打", "按 9 再直接撥手機號碼", "撥 0 給總機，由總機協助撥打", "直接撥手機號碼就可以"], "ans": 0, "explain": "撥打手機要撥 5 給總機，由總機協助撥打（113/12/16 起由 0 改為 5）；按 9 是撥外線市話。"}, {"id": "s22", "zone": "tavern", "quest": "t7", "q": "隔壁同事不在，他的座位電話一直響，你要怎麼代接？", "opts": ["按 ＊ ＋ 7", "按轉接鍵", "按 9", "按 5"], "ans": 0, "explain": "代接其他座位電話：按 ＊ ＋ 7。"}, {"id": "s23", "zone": "tavern", "quest": "t10", "q": "要把一個大檔案傳給別組同事，放到 P 槽後要提醒對方什麼？", "opts": ["當天就要下載，P 槽每天 00:00 會自動刪除", "檔案會保留一個月，慢慢下載就好", "放在 P 槽只有自己看得到，要另外分享", "P 槽只限部門內部，別組同事打不開"], "ans": 0, "explain": "P 槽用來資料交換，上傳後所有人都能下載，每日 00:00 自動刪除，重要檔案請另外保存。"}, {"id": "s24", "zone": "tavern", "quest": "t11", "q": "上班時不小心扭傷腳踝，保健室可以幫你做什麼？", "opts": ["只能初步緊急處理，扭傷要到醫療院所治療", "可以幫你打止痛針，休息後再回去上班", "可以幫你包紮，並做完整的扭傷治療", "會直接幫你掛號、安排醫生看診"], "ans": 0, "explain": "保健室醫護人員僅作初步緊急處理及健康諮詢，不處理扭傷、挫傷、跌傷等持續性治療。"}, {"id": "s25", "zone": "tavern", "quest": "t12", "q": "出差時想用手機批閱表單，從外部登入員工專區需要什麼？", "opts": ["密碼加一次性密碼（OTP）", "員編和密碼就好，不用驗證", "要先連上公司的 VPN", "外部網路不能登入員工專區"], "ans": 0, "explain": "自 115/1/1 起，從外部網站登入員工專區需要「密碼＋一次性密碼」，手機要安裝 Google Authenticator。"}, {"id": "s26", "zone": "tavern", "quest": "t9", "q": "在電腦按了列印，要怎麼把文件印出來？", "opts": ["到影印機刷員工證，再按［釋放列印］", "送出後印表機就會自動印出來", "請行政組在後台幫你放行文件", "在影印機輸入員編密碼就會印出"], "ans": 0, "explain": "文件送出列印（選 Epson Printer）後，到影印機刷員工證，按［釋放列印］。"}, {"id": "s27", "zone": "tower", "quest": "w1", "q": "下週要去台中的業主那邊開會，應該辦什麼手續？", "opts": ["出差，出差前填「員工出差申請及報告單」", "公出，事後再報支交通費就好", "請特休，再自行報銷交通費", "不用申請，直接搭車前往"], "ans": 0, "explain": "公務地點距原工作地 80 公里以外（新竹以南）屬出差，出差前填「員工出差申請及報告單」陳核。"}, {"id": "s28", "zone": "tower", "quest": "w2", "q": "要去台北市區的業主辦公室開會，當天來回，離開公司時要做什麼？", "opts": ["以公出辦理，先按「公出」鍵再用識別證感應", "以出差辦理，先填出差申請及報告單", "請半天特休，再報銷交通費", "直接離開，回來再跟主管說"], "ans": 0, "explain": "80 公里以內（新竹以北）以公出辦理；經主管許可公出，離開公司時先按「公出」鍵，再以 IC 識別證感應。"}, {"id": "s29", "zone": "tower", "quest": "w1", "q": "出差搭高鐵，可以買商務車廂報銷嗎？", "opts": ["不行，以標準（經濟）等級為限", "可以，按實際票價報支", "主管同意就可以報商務車廂", "只有回程可以買商務車廂"], "ans": 0, "explain": "搭高鐵或飛機以標準（經濟）等級為限。"}, {"id": "s30", "zone": "tower", "quest": "w1", "q": "出差住宿用 Agoda 訂房，訂房網的收據可以核銷嗎？", "opts": ["不行，要直接向飯店訂房拿有統編的單據", "可以，附上訂房網的收據就能報", "可以，但只能報一半的住宿費", "可以，改填交通費報銷單後就能報"], "ans": 0, "explain": "核銷不能使用訂房網（如 Agoda）的收據，請直接向飯店訂房並索取有公司統編的單據。"}, {"id": "s31", "zone": "tower", "quest": "w1", "q": "出差到澎湖 2 天，膳雜費每天可以報多少？", "opts": ["550 元", "400 元", "3,000 元", "不能報膳雜費"], "ans": 0, "explain": "膳雜費每日 400 元；馬祖、金門、澎湖等離島每日 550 元。"}, {"id": "s32", "zone": "tower", "quest": "w3", "q": "搭 Uber 去業主那邊開會，車資要怎麼報銷？", "opts": ["附上有起訖地和金額的資料，經搭乘人和主管簽章", "一定要填交通費報銷單，附上信用卡帳單", "多元計程車沒有收據，所以不能報銷", "把車資畫面傳給行政組就好，不用簽章"], "ans": 0, "explain": "多元計程車檢附載有「搭乘起訖地及支付金額」的資料，經搭乘人、部門主管等簽章後即可報銷，不必再填交通費報銷單。"}, {"id": "s33", "zone": "tower", "quest": "w3", "q": "因公搭計程車，下車地點是自己家，報銷時要注意什麼？", "opts": ["要另外註明搭車的原因", "起訖點有自宅就不能報銷", "不用說明，照一般程序報銷", "只能用多元計程車才可以報"], "ans": 0, "explain": "只要起訖點其中一端是自宅，都仍須註明原因。"}, {"id": "s34", "zone": "tower", "quest": "w6", "q": "電腦突然開不了機，要怎麼報修？", "opts": ["到內網［資訊設備報修］填單，或打分機 11014", "撥 24 小時直撥專線 10011 報修", "把電腦搬到行政部請人檢查", "填［EF07102 電腦軟硬體申請表］換新的"], "ans": 0, "explain": "電腦或軟體壞掉：公司內網＞［服務專區］＞［資訊設備報修］，資訊設備問題請洽分機 11014–11017。"}, {"id": "s35", "zone": "tower", "quest": "w9", "q": "辦公室的冷氣不冷，要找誰報修？", "opts": ["撥 24 小時直撥專線 10011", "到［資訊設備報修］填單報修", "填［EF07102 電腦軟硬體申請表］", "到 2F 保健室旁的福委會反映"], "ans": 0, "explain": "水電、空調、電話及清潔等報修，請撥 24 小時直撥專線 10011。"}, {"id": "s36", "zone": "tower", "quest": "w5", "q": "工作需要安裝一套工程軟體，第一步要做什麼？", "opts": ["先和主管確認，再填電腦軟硬體申請表", "自己上網下載安裝，再登記到軟體清單", "向同事借帳號，先用他的軟體授權", "撥 10011，請資訊人員直接來安裝"], "ans": 0, "explain": "軟體要先和主管確認要安裝哪些，再到表單入口網填［EF07102 電腦軟硬體申請表］。"}, {"id": "s37", "zone": "chest", "quest": "c2", "q": "你還在試用期，報名了英文課，可以申請員工進修補助嗎？", "opts": ["不行，試用期間的新進員工不適用", "可以，每年補助 2,000 元", "可以，補助一半的學費", "可以，但要先經主管同意"], "ans": 0, "explain": "員工進修補助：試用期間的新進員工不適用。"}, {"id": "s38", "zone": "chest", "quest": "c2", "q": "今年上了一門 1,500 元的電腦課，也拿到結訓證明，可以申請進修補助嗎？", "opts": ["不行，進修費用累計要超過 2,000 元", "可以，按實際費用補助 1,500 元", "可以，固定補助 2,000 元", "可以，補助一半 750 元"], "ans": 0, "explain": "繳交的進修費用累計須超過 2,000 元，且有結訓證明，每人每年最多申請一次、補助 2,000 元。"}, {"id": "s39", "zone": "chest", "quest": "c3", "q": "到職已滿一年，請 2 天特休去花蓮玩，花了 7,000 元，自辦休假旅遊最多補助多少？", "opts": ["6,000 元", "7,000 元", "9,000 元", "3,000 元"], "ans": 0, "explain": "須請特休自辦或參加旅遊，每天最高補助 3,000 元（檢據報銷），每年合計以 3 天、9,000 元為限。"}, {"id": "s40", "zone": "chest", "quest": "c3", "q": "週末沒有請假，自己安排了兩天一夜的旅遊，可以申請自辦休假旅遊補助嗎？", "opts": ["不行，要請特休（或代休假）才有補助", "可以，每天補助 3,000 元", "可以，但只補助一天", "可以，週末旅遊補助加倍"], "ans": 0, "explain": "非特休（或代休假）日的旅遊不在補助範圍。"}, {"id": "s41", "zone": "chest", "quest": "c3", "q": "只請了 4 小時特休去旅遊，可以申請自辦休假旅遊補助嗎？", "opts": ["不行，每次請假不得少於 8 小時", "可以，按比例補助一半", "可以，一樣補助 3,000 元", "可以，但要先經主管同意"], "ans": 0, "explain": "每次請假不得少於 8 小時。"}, {"id": "s42", "zone": "chest", "quest": "c4", "q": "到職 8 個月，想申請公司補助的健康檢查，可以嗎？", "opts": ["還不行，到職滿 1 年後才能申請", "可以，到職後隨時都能申請", "可以，但費用要全部自費", "要等到滿 30 歲才能申請"], "ans": 0, "explain": "新進員工到職滿 1 年後才能申請，須在「健檢預約系統」申請並產生公假卡。"}, {"id": "s43", "zone": "chest", "quest": "c4", "q": "這次健檢費用是 12,000 元，可以給多少公假？", "opts": ["0.5 天", "1 天", "2 天", "不給公假"], "ans": 0, "explain": "當次金額未滿 15,000 元給 0.5 天公假，15,000 元（含）以上給 1 天。"}, {"id": "s44", "zone": "chest", "quest": "c4", "q": "自己找合法的健檢機構做完健檢，要在多久內報銷？", "opts": ["健檢後 1 個月內，檢附收據加會行政部", "當年度 12/31 前送出即可", "健檢後一週內，交給保健室", "不能報銷，只能去特約醫院"], "ans": 0, "explain": "自行找合法健檢機構者，健檢後 1 個月內檢附收據加會行政部報銷。"}, {"id": "s45", "zone": "chest", "quest": "c1", "q": "收到公司發的電子禮券，要怎麼使用？", "opts": ["下載 APP「Edenred」並完成綁定", "到行政部換成紙本的禮券使用", "在線上訂餐系統裡直接折抵餐費", "寄信給福委會，兌換成現金"], "ans": 0, "explain": "電子禮券需下載 APP「Edenred」並完成員工綁定。"}, {"id": "s46", "zone": "temple", "quest": "p1", "q": "主管說部門的智慧存摺年底要達標，這個目標是怎麼算的？", "opts": ["員工點數平均值加部門點數，要達 100 點", "每個人各自都要累積到 100 點", "部門所有人的點數加總達 100 點", "每一季都要達到 100 點"], "ans": 0, "explain": "目標值：部門以所屬員工點數平均值加計部門點數，年度應達 100 點。"}, {"id": "s47", "zone": "village", "quest": "v1", "q": "下面哪一份是報到「前」就要準備好的文件，而不是報到當天才填？", "opts": ["保密承諾書", "定期／不定期契約書", "團體保險資料", "參加社團資料"], "ans": 0, "explain": "報到前要依報到單準備員工登記表、發薪基本資料表、健保申請表、保密承諾書等；契約書、團體保險和社團資料是報到當天填寫。"}, {"id": "s48", "zone": "village", "quest": "v1", "q": "準備員工登記表時，要附上什麼照片？", "opts": ["近半年的 2 吋大頭貼", "近一年的 1 吋大頭貼", "近三個月的生活照", "不用附照片"], "ans": 0, "explain": "員工登記表要附近半年 2 吋大頭貼及人員履歷表。"}, {"id": "s49", "zone": "village", "quest": "v3", "q": "報到當天，下面哪一份是要在公司現場填寫的資料？", "opts": ["定期／不定期契約書", "健保申請表", "勞退提繳申報表", "發薪基本資料表"], "ans": 0, "explain": "報到當天要填寫報到單、定期／不定期契約書、團體保險資料、參加社團資料；健保、勞退、發薪資料表是報到前就要準備好的。"}, {"id": "s50", "zone": "tavern", "quest": "t5", "q": "第一次領薪水，什麼時候入帳、薪資單要去哪裡看？", "opts": ["每月 16 號匯款，薪資單用 Email 寄送", "每月 5 號匯款，薪資單紙本發放", "每月月底匯款，薪資單到內網下載", "每月 16 號匯款，薪資單到行政部領取"], "ans": 0, "explain": "薪資每月 16 號匯款，匯入整月薪資；薪資單以 Email 寄送。"}, {"id": "s51", "zone": "tavern", "quest": "t8", "q": "常常外出，想讓座位分機的來電轉到手機，要怎麼申請？", "opts": ["填 0309002 E-Call 申辦單上傳簽核", "撥 5 請總機幫你把來電轉到手機", "在座位電話按 ＊ ＋ 7 開啟來電轉接", "撥 10011 報修專線請人來設定"], "ans": 0, "explain": "到表單入口網下載 0309002 分機跟隨手機（E-Call）申辦單，填寫後另存 PDF，回到［簽核表單上傳］送出。"}, {"id": "s52", "zone": "tavern", "quest": "t10", "q": "部門同事之間要共用的專案資料，應該放在哪裡？", "opts": ["O 槽", "P 槽", "自己電腦的桌面", "寄 Email 附件給大家"], "ans": 0, "explain": "O 槽是部門內資料共用；P 槽是資料交換，每天 00:00 會自動刪除。"}, {"id": "s53", "zone": "tavern", "quest": "t11", "q": "中午 12:30 想去保健室量血壓，保健室開著嗎？", "opts": ["沒有，中午 12:00–13:00 休息", "有，保健室中午也有醫護人員值班", "有，保健室週一到週五全天開放", "沒有，保健室只在每天上午開放"], "ans": 0, "explain": "保健室位於 2F，服務時間週一至週五 8:00–12:00、13:00–17:00。"}, {"id": "s54", "zone": "tower", "quest": "w4", "q": "想申請公司的 Email 信箱，要去哪裡申請？", "opts": ["內網［員工專區］＞［Email帳號申請］", "表單入口網的印製名片申請單", "撥分機 11014 請資訊人員開通", "到行政部填紙本申請單"], "ans": 0, "explain": "Email 信箱：公司內網＞［員工專區］＞［Email帳號申請］＞［我要申請］，之後可在［我的帳號查詢］追蹤進度。"}, {"id": "s55", "zone": "tower", "quest": "w7", "q": "需要原子筆和筆記本，要怎麼領？", "opts": ["內網［辦公用品及其他］加入領物清單後送簽", "直接到行政部的倉庫自己拿", "填電腦軟硬體申請表一起申請", "請助理先買，再填黏貼憑證報帳"], "ans": 0, "explain": "公司內網＞［表單管理］＞［辦公用品及其他］，把物品加入領物清單後［送出（線上簽核）］。"}, {"id": "s56", "zone": "tower", "quest": "w8", "q": "想申請公司的機車車位，什麼時候辦理？", "opts": ["每年 5～6 月統計並抽籤", "報到當天就能登記", "每季開放一次登記", "隨時找行政部申請就有"], "ans": 0, "explain": "機車／自行車車位每年 5～6 月統計並抽籤，詳細辦法請看公司公告或洽行政部。"}, {"id": "s57", "zone": "chest", "quest": "c1", "q": "下個月要結婚，婚假最小可以請多少時間？", "opts": ["1 小時", "0.5 天", "1 天", "4 小時"], "ans": 0, "explain": "喪假、婚假自 113/9/27 起改以 1 小時為最小請假單位。"}, {"id": "s58", "zone": "chest", "quest": "c1", "q": "公司的大型員工旅遊是怎麼補助的？", "opts": ["上下半年分梯舉辦，每人 6,000 元", "每年辦一次，每人 9,000 元", "自行安排，3 天特休共 9,000 元", "上下半年各一次，每次 3,000 元"], "ans": 0, "explain": "大型員工旅遊上下半年分梯舉辦，每人 6,000 元；自行安排、3 天特休共 9,000 元的是「補助員工休假旅遊」。"}, {"id": "s59", "zone": "temple", "quest": "p1", "q": "想隨時對照自己的智慧存摺點數離 100 點還差多少，可以用網站的什麼功能？", "opts": ["存摺神殿頁面下方的集點卡", "溫暖的家的筆記本", "交誼廳的留言板", "種子商店的每日問答"], "ans": 0, "explain": "神殿頁面下方的集點卡可以記下你目前的點數，隨時對照離 100 點還差多少。"}, {"id": "s60", "zone": "temple", "quest": "p1", "q": "想了解智慧存摺目標值的詳細計算方式，要去哪裡看？", "opts": ["內網的「ISO 品質目標.pdf」", "存摺神殿的集點卡說明", "中興規章入口網的工作規則", "福委會網站的補助辦法"], "ans": 0, "explain": "詳細說明請參考 ISO 品質目標.pdf（需公司內網）。"}];
+const QUIZ_DEFAULT={v:1,scen:{},off:["q925r5l", "quypfzt", "q1czdq6t", "q1dlbeye", "q1e5svrg", "q1jzzl9n", "q1g660lm", "q1guwc28", "q1hgtj8x", "q1ja7j2r", "q30umr", "q1ozvpf7", "qh4s2xz", "q8gk4u2", "qlyuykl", "q1fzqezp", "q16jh7r9", "qz34uh1", "qap3ggk", "q5umxjo", "q16at0k4", "qw88q5w", "q1fbuwyk", "q1jy3j3j", "qnopsfk", "q1ia487k", "q1lk7134", "quz7lu0", "qc4164a", "q1bovqp", "q1xo42b6", "q1f6n6ep", "q3l2gmo", "qvn0egn", "q7pg9ti", "qataj4l", "q1jy50r8", "q1dfptjv", "qc6b0re", "q19oljj6", "q159y0gz", "qstyedl", "q1w36s05", "qtnviga", "q1m866zm", "q1gozwli", "q6o6o4l", "qoa1pxg", "q10wt38h", "q1h0trb4", "qh2a40z", "q1uzrd8i", "qhce82u", "qu5ygav", "qjhzzdf", "q1x9f2jv", "q1141x64", "q1wudgkf", "q15qcnoa"],types:{"數字題":false,"名詞題":false,"歸屬題":false,"分類題":false},wrong:{"qq3xcqr": ["基準值", "門檻值", "達成率"], "qn38n4h": ["1.5天", "2天", "3天"]}};   // 2026/10/12 題庫檢查的結果
 const quizCfg=()=>(FEED&&FEED.quiz&&FEED.quiz.v)?FEED.quiz:QUIZ_DEFAULT;
 const qzKey=(kind,qid,stem,ans)=>"q"+hashStr(kind+"|"+qid+"|"+stem+"|"+ans);
 const belKey=(z,q)=>qzKey("歸屬題",q.id,z.id,q.title);
+const scenKey=x=>"s:"+x.id;
+function scenList(cfg){                                 // 內建情境題（套用管理者修改）＋管理者新增的情境題
+  cfg=cfg||quizCfg(); const ov=cfg.scen||{}, out=[];
+  SCEN_DEFAULT.forEach(x=>{ const o=ov[x.id]; out.push(Object.assign({},x,o&&typeof o==="object"?o:{},{id:x.id,builtin:true,edited:!!(o&&typeof o==="object")})); });
+  Object.keys(ov).forEach(id=>{ if(SCEN_DEFAULT.some(x=>x.id===id)) return; const o=ov[id]; if(o&&typeof o==="object") out.push(Object.assign({},o,{id,builtin:false,edited:false})); });
+  return out.filter(x=>x.q&&Array.isArray(x.opts)&&x.opts.length>=2&&+x.ans>=0&&+x.ans<x.opts.length&&ZONES.some(z=>z.id===x.zone));
+}
+function buildScenQuiz(x,r){
+  const order=shuffleR(x.opts.map((o,i)=>i),r), opts=order.map(i=>String(x.opts[i]));
+  return {kind:"情境題",text:`情境題：\n${x.q}`,opts,ans:order.indexOf(+x.ans),quest:QIDS.has(x.quest)?x.quest:"",explain:x.explain||"",key:scenKey(x)};
+}
 const clsKey=q=>qzKey("分類題",q.id,"",q.chapter);
 function qzOn(key,kind,cfg){ cfg=cfg||quizCfg(); if(cfg.types&&cfg.types[kind]===false) return false; return !(cfg.off||[]).includes(key); }
 function qzWrong(key,cfg){ cfg=cfg||quizCfg(); const w=cfg.wrong&&cfg.wrong[key]; return Array.isArray(w)&&w.length>=3?w.slice(0,3).map(String):null; }
@@ -8562,8 +8745,10 @@ function makeNpcQuiz(n){
   const v2=()=>makeNpcQuizV2(n,today,ZONES,ALLQ,cfg);
   const bel=()=>{ const ok=qs.filter(q=>qzOn(belKey(z,q),"歸屬題",cfg)); return ok.length?buildBelongQuiz(z,ok[Math.floor(r()*ok.length)],r,ALLQ):null; };   // ② 歸屬題：哪一項可以在這裡查到
   const cls=()=>{ const ok=qs.filter(q=>qzOn(clsKey(q),"分類題",cfg)); return ok.length?buildClassQuiz(z,ok[Math.floor(r()*ok.length)],qs,r):null; };   // ③ 分類題：屬於哪個分類
-  const a=r(), b=r();
-  const seq=(a<.75?[v2]:[]).concat([b<.6||chs.length<2?bel:cls],[v2,bel,cls]);   // 抽到的題型被停用或出不了題，就換下一種
+  const scs=scenList(cfg).filter(x=>x.zone===z.id&&qzOn(scenKey(x),"情境題",cfg));
+  const sc=()=>scs.length?buildScenQuiz(scs[Math.floor(r()*scs.length)],r):null;   // ⓪ 情境題
+  const a=r(), b=r(), c=r();
+  const seq=(c<.35?[sc]:[]).concat(a<.75?[v2]:[],[b<.6||chs.length<2?bel:cls],[v2,sc,bel,cls]);   // 抽到的題型被停用或出不了題，就換下一種
   for(const f of seq){ const q=f(); if(quizOK(q)&&q.ans>=0) return q; }
   return null;
 }
@@ -8578,6 +8763,8 @@ function quizBank(cfg){                                 // 管理者「題庫」
     nounC.forEach(c=>{ const smp=buildNounQuiz(c,seededRand(c.key),allNouns,cfg); rows.push({key:c.key,kind:"名詞題",q:c.q,stem:c.stem,ans:c.ans,opts:smp&&smp.opts,backup:!(c.src==="quote"||c.src==="bold")}); });
     qs.forEach(q=>{ const smp=buildBelongQuiz(z,q,seededRand(belKey(z,q)),ALLQ); rows.push({key:belKey(z,q),kind:"歸屬題",q,stem:`下列哪一項，是在「${z.name}」可以查到的情報？`,ans:q.title,opts:smp&&smp.opts,backup:false}); });
     if(chs.length>=2) qs.forEach(q=>{ const smp=buildClassQuiz(z,q,qs,seededRand(clsKey(q))); rows.push({key:clsKey(q),kind:"分類題",q,stem:`「${q.title}」屬於${z.name}的哪個分類？`,ans:q.chapter,opts:smp&&smp.opts,backup:false}); });
+    scenList(cfg).filter(x=>x.zone===z.id).forEach(x=>{ const smp=buildScenQuiz(x,seededRand(scenKey(x)));
+      rows.push({key:scenKey(x),kind:"情境題",q:ALLQ.find(q=>q.id===x.quest)||{id:"",title:"（沒有指定任務）"},stem:x.q,ans:String(x.opts[x.ans]),opts:smp.opts,backup:false,scen:x}); });
     const seen=new Set();
     rows.forEach(x=>{ if(seen.has(x.key)) return; seen.add(x.key); x.zone=z; out.push(x); });
   });
@@ -8659,8 +8846,8 @@ function renderNpcAdmin(){
 
 /* ================= 管理者：題庫 ================= */
 let QB_DRAFT=null, QB_BASE="", QB_BASEOBJ=null, QB_EDIT="";
-const qbClone=c=>({v:1,off:[...new Set((c.off||[]).map(String))],types:Object.assign({},c.types||{}),wrong:JSON.parse(JSON.stringify(c.wrong||{}))});
-const qbJSON=c=>JSON.stringify({off:[...c.off].sort(),types:QZ_KINDS.reduce((o,k)=>(o[k]=c.types[k]!==false,o),{}),wrong:Object.keys(c.wrong).sort().reduce((o,k)=>(o[k]=c.wrong[k],o),{})});
+const qbClone=c=>({v:1,off:[...new Set((c.off||[]).map(String))],types:Object.assign({},c.types||{}),wrong:JSON.parse(JSON.stringify(c.wrong||{})),scen:JSON.parse(JSON.stringify(c.scen||{}))});
+const qbJSON=c=>JSON.stringify({off:[...c.off].sort(),types:QZ_KINDS.reduce((o,k)=>(o[k]=c.types[k]!==false,o),{}),wrong:Object.keys(c.wrong).sort().reduce((o,k)=>(o[k]=c.wrong[k],o),{}),scen:Object.keys(c.scen||{}).sort().reduce((o,k)=>(o[k]=c.scen[k],o),{})});
 const qbDirty=()=>!!QB_DRAFT&&qbJSON(QB_DRAFT)!==QB_BASE;
 function openQuizAdmin(){
   if(!QB_DRAFT||!qbDirty()){ QB_DRAFT=qbClone(quizCfg()); QB_BASEOBJ=qbClone(quizCfg()); QB_BASE=qbJSON(QB_BASEOBJ); }
@@ -8671,8 +8858,10 @@ function openQuizAdmin(){
 function qbRowState(x){
   const base=QB_BASEOBJ||qbClone(quizCfg());
   const off=QB_DRAFT.off.includes(x.key), typeOff=QB_DRAFT.types[x.kind]===false;
-  const custom=!!qzWrong(x.key,QB_DRAFT);
-  const dirty=off!==base.off.includes(x.key)||JSON.stringify(QB_DRAFT.wrong[x.key]||null)!==JSON.stringify(base.wrong[x.key]||null);
+  const custom=!!qzWrong(x.key,QB_DRAFT)||!!(x.scen&&(x.scen.edited||!x.scen.builtin));
+  const sid=x.scen&&x.scen.id;
+  const dirty=off!==base.off.includes(x.key)||JSON.stringify(QB_DRAFT.wrong[x.key]||null)!==JSON.stringify(base.wrong[x.key]||null)
+    ||(!!sid&&JSON.stringify((QB_DRAFT.scen||{})[sid]||null)!==JSON.stringify((base.scen||{})[sid]||null));
   return {off,typeOff,custom,dirty,live:!off&&!typeOff};
 }
 function renderQuizAdmin(){
@@ -8683,7 +8872,7 @@ function renderQuizAdmin(){
   const live=rows.filter(x=>x.st.live&&x.opts).length, offN=rows.filter(x=>!x.st.live).length, none=rows.filter(x=>x.st.live&&!x.opts).length;
   const fb=FEED&&FEED.quiz;
   $("#qbInfo").innerHTML=`共 <b>${rows.length}</b> 題・會出現 <b>${live}</b> 題・停用 <b>${offN}</b> 題${none?`・選項不足不會出題 ${none} 題`:""}。`
-    +(fb?`目前生效的是 ${esc(fmtShort(new Date(parseSheetTs(fb.ts)||Date.now())))}${fb.by?`（${esc(fb.by)}）`:""}發布的設定。`:"目前使用網站內建的題庫設定（2026/10/12 檢查結果），還沒有發布過。")
+    +(fb?`目前生效的是 ${esc(fmtShort(new Date(parseSheetTs(fb.ts)||Date.now())))}${fb.by?`（${esc(fb.by)}）`:""}發布的設定。`:"目前使用網站內建的題庫設定（2026/10/14：只出情境題），還沒有發布過。")
     +(qbDirty()?` <span class="st st-wait">有未發布的變更</span>`:"");
   const tc=$("#qbTabCount"); if(tc){ tc.hidden=!qbDirty(); tc.textContent="!"; }
   $("#qbTypes").innerHTML=`<span class="lab">題型開關</span>`+QZ_KINDS.map(k=>`<label class="chk"><input type="checkbox" data-qbtype="${k}"${QB_DRAFT.types[k]===false?"":" checked"}> ${k}（${rows.filter(x=>x.kind===k).length}）</label>`).join("");
@@ -8694,9 +8883,10 @@ function renderQuizAdmin(){
     const zr=show.filter(x=>x.zone.id===z.id); if(!zr.length) return;
     out.push(`<section class="qbzone"><h4>${esc(z.name)}（${zr.length}）</h4>`);
     const groups=new Map();
-    zr.forEach(x=>{ const g=x.kind==="歸屬題"||x.kind==="分類題"?"#"+x.kind:x.q.id; if(!groups.has(g)) groups.set(g,[]); groups.get(g).push(x); });
+    zr.filter(x=>x.kind==="情境題").forEach(x=>{ if(!groups.has("#情境題")) groups.set("#情境題",[]); groups.get("#情境題").push(x); });
+    zr.filter(x=>x.kind!=="情境題").forEach(x=>{ const g=x.kind==="歸屬題"||x.kind==="分類題"?"#"+x.kind:x.q.id; if(!groups.has(g)) groups.set(g,[]); groups.get(g).push(x); });
     groups.forEach((list,g)=>{
-      const head=g[0]==="#"?`${g.slice(1)}<span>${g==="#歸屬題"?"問「哪一項可以在這裡查到」，答案是任務標題":"問任務屬於哪個分類"}</span>`:`${esc(list[0].q.title)}<span>${list.length} 題</span>`;
+      const head=g[0]==="#"?`${g.slice(1)}<span>${g==="#歸屬題"?"問「哪一項可以在這裡查到」，答案是任務標題":g==="#情境題"?`遇到這種情況該怎麼辦？（${list.length} 題）`:"問任務屬於哪個分類"}</span>`:`${esc(list[0].q.title)}<span>${list.length} 題</span>`;
       out.push(`<div class="qbquest"><p>${head}</p>${list.map(qbRowHTML).join("")}</div>`);
     });
     out.push(`</section>`);
@@ -8705,7 +8895,8 @@ function renderQuizAdmin(){
 }
 function qbRowHTML(x){
   const st=x.st;
-  const stem=x.kind==="歸屬題"?`答案：<b>${esc(x.ans)}</b>`:x.kind==="分類題"?`「${esc(x.q.title)}」→ <b>${esc(x.ans)}</b>`:esc(x.stem).replace("＿＿＿＿",'<span class="blank">＿＿＿＿</span>')+`　→ <b>${esc(x.ans)}</b>`;
+  const stem=x.kind==="情境題"?`${esc(x.stem)}<span class="qbtag${x.scen.builtin?(x.scen.edited?" edit":""):" new"}">${x.scen.builtin?(x.scen.edited?"內建・已修改":"內建"):"自訂"}</span>`
+    :x.kind==="歸屬題"?`答案：<b>${esc(x.ans)}</b>`:x.kind==="分類題"?`「${esc(x.q.title)}」→ <b>${esc(x.ans)}</b>`:esc(x.stem).replace("＿＿＿＿",'<span class="blank">＿＿＿＿</span>')+`　→ <b>${esc(x.ans)}</b>`;
   const opts=x.opts?`<ul class="qbopts" aria-label="選項範例">${x.opts.map(o=>`<li class="${o===x.ans?"ans":""}">${esc(o)}${o===x.ans?" ✓":""}</li>`).join("")}</ul>`:"";
   const notes=[];
   if(st.typeOff) notes.push("整個題型已停用");
@@ -8713,14 +8904,17 @@ function qbRowHTML(x){
   if(st.custom) notes.push("<b>使用自訂選項</b>");
   if(x.backup) notes.push("備用題：同一地點其他名詞題都出不了時才會出現");
   if(st.dirty) notes.push("<b>未發布</b>");
+  if(x.kind==="情境題"){ if(x.q.id) notes.unshift(`相關任務：${esc(x.q.title)}`); else notes.unshift("沒有指定相關任務"); }
   const canEdit=x.kind==="數字題"||x.kind==="名詞題";
+  const scenBtns=x.kind==="情境題"?`<button class="mini-btn" type="button" data-qbse="${esc(x.scen.id)}">編輯</button>${x.scen.builtin?(x.scen.edited?`<button class="mini-btn" type="button" data-qbsereset="${esc(x.scen.id)}">還原預設</button>`:""):`<button class="mini-btn" type="button" data-qbsedel="${esc(x.scen.id)}">刪除</button>`}`:"";
+  const expl=x.kind==="情境題"&&x.scen.explain?`<p class="qbexp">解說：${esc(x.scen.explain)}</p>`:"";
   const edit=QB_EDIT===x.key?`<div class="qbedit"><input class="ainput" id="qbWrong" value="${esc((QB_DRAFT.wrong[x.key]||[]).join("、"))}" placeholder="3 個錯誤選項，用「、」隔開" aria-label="自訂錯誤選項">
       <button class="mini-btn" type="button" data-qbsave="${x.key}">套用</button><button class="mini-btn" type="button" data-qbclear="${x.key}">改回自動</button><button class="mini-btn" type="button" data-qbcancel>取消</button><p class="cerr" id="qbErr" role="alert"></p></div>`:"";
   return `<div class="qbrow${st.live?"":" off"}${st.dirty?" dirty":""}" data-key="${x.key}">
-    <div><span class="qbkind">${x.kind}</span><span class="qbstem">${stem}</span>${opts}${notes.length?`<p class="qbnote">${notes.join("・")}</p>`:""}</div>
+    <div><span class="qbkind">${x.kind}</span><span class="qbstem">${stem}</span>${opts}${expl}${notes.length?`<p class="qbnote">${notes.join("・")}</p>`:""}</div>
     <div class="qbside"><div class="qbtoggle" role="group" aria-label="啟用或停用">
       <button type="button" class="on" data-qbon="${x.key}" aria-pressed="${!st.off}">啟用</button><button type="button" class="off" data-qboff="${x.key}" aria-pressed="${st.off}">停用</button></div>
-      ${canEdit?`<button class="mini-btn" type="button" data-qbedit="${x.key}">自訂選項</button>`:""}</div>${edit}</div>`;
+      ${canEdit?`<button class="mini-btn" type="button" data-qbedit="${x.key}">自訂選項</button>`:""}${scenBtns}</div>${edit}</div>`;
 }
 $("#qbList").addEventListener("click",e=>{
   const b=e.target.closest("[data-qbon],[data-qboff],[data-qbedit],[data-qbsave],[data-qbclear],[data-qbcancel]"); if(!b||!QB_DRAFT) return;
@@ -8739,6 +8933,48 @@ $("#qbList").addEventListener("click",e=>{
     QB_DRAFT.wrong[k]=list; QB_EDIT=""; Sound.sfx("select"); renderQuizAdmin();
   }
 });
+/* ---- 情境題編輯 ---- */
+let QB_SE_ID="";
+function qbSeQuests(zid,sel){ $("#qbSeQuest").innerHTML=`<option value="">（不指定）</option>`+ALLQ.filter(q=>q.zone&&q.zone.id===zid).map(q=>`<option value="${esc(q.id)}"${q.id===sel?" selected":""}>${esc(q.title)}</option>`).join(""); }
+function openScenEd(id){
+  if(!QB_DRAFT) return;
+  const x=id?scenList(QB_DRAFT).find(v=>v.id===id):null;
+  QB_SE_ID=id||"";
+  $("#qbSeTitle").textContent=x?(x.builtin?"編輯內建情境題":"編輯自訂情境題"):"新增情境題";
+  const zid=x?x.zone:($("#qbZone").value||ZONES[0].id);
+  $("#qbSeZone").innerHTML=ZONES.map(z=>`<option value="${esc(z.id)}"${z.id===zid?" selected":""}>${esc(z.name)}</option>`).join("");
+  qbSeQuests(zid,x?x.quest:"");
+  $("#qbSeQ").value=x?x.q:""; $("#qbSeEx").value=x?(x.explain||""):"";
+  const opts=x?x.opts.slice(0,4):["","","",""]; while(opts.length<4) opts.push("");
+  const ans=x?+x.ans:0;
+  $("#qbSeOpts").innerHTML=opts.map((o,i)=>`<div class="qbseopt"><input type="radio" name="qbSeAns" value="${i}" id="qbSeA${i}"${i===ans?" checked":""} aria-label="選項 ${i+1} 是正確答案"><input class="ainput" id="qbSeO${i}" maxlength="40" value="${esc(o)}" placeholder="${i===ans?"正確答案":"錯誤選項"}" aria-label="選項 ${i+1}"></div>`).join("");
+  $("#qbSeErr").textContent=""; $("#qbScenEd").hidden=false;
+  $("#qbScenEd").scrollIntoView({block:"center",behavior:"smooth"}); setTimeout(()=>$("#qbSeQ").focus({preventScroll:true}),300);
+}
+$("#qbSeZone").addEventListener("change",e=>qbSeQuests(e.target.value,""));
+$("#qbScenEd").addEventListener("input",()=>{ $("#qbSeErr").textContent=""; });
+$("#qbAddScen").addEventListener("click",()=>{ openQuizAdmin(); openScenEd(""); });
+$("#qbSeCancel").addEventListener("click",()=>{ $("#qbScenEd").hidden=true; QB_SE_ID=""; });
+$("#qbSeSave").addEventListener("click",()=>{
+  const q=$("#qbSeQ").value.trim(), ex=$("#qbSeEx").value.trim(), opts=[0,1,2,3].map(i=>$("#qbSeO"+i).value.trim());
+  const ans=+((document.querySelector('input[name="qbSeAns"]:checked')||{}).value||0);
+  const err=!q?"請輸入情境題目":opts.some(o=>!o)?"4 個選項都要填":new Set(opts.map(optKey)).size<4?"選項不能重複":"";
+  if(err){ $("#qbSeErr").textContent=err; Sound.sfx("error"); return; }
+  const obj={zone:$("#qbSeZone").value,quest:$("#qbSeQuest").value,q,opts,ans,explain:ex};
+  QB_DRAFT.scen=QB_DRAFT.scen||{};
+  const isEdit=!!QB_SE_ID, id=QB_SE_ID||("c"+Date.now().toString(36));
+  const def=SCEN_DEFAULT.find(v=>v.id===id);
+  if(def&&JSON.stringify({zone:def.zone,quest:def.quest,q:def.q,opts:def.opts,ans:+def.ans,explain:def.explain})===JSON.stringify(obj)) delete QB_DRAFT.scen[id];
+  else QB_DRAFT.scen[id]=obj;
+  $("#qbScenEd").hidden=true; QB_SE_ID=""; Sound.sfx("select");
+  renderQuizAdmin(); toast(isEdit?"已修改情境題，記得按「發布題庫設定」":"已加入情境題，記得按「發布題庫設定」");
+});
+$("#qbList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-qbse],[data-qbsereset],[data-qbsedel]"); if(!b||!QB_DRAFT) return;
+  if(b.dataset.qbse){ openScenEd(b.dataset.qbse); return; }
+  if(b.dataset.qbsereset){ delete QB_DRAFT.scen[b.dataset.qbsereset]; Sound.sfx("undo"); renderQuizAdmin(); return; }
+  if(b.dataset.qbsedel){ const id=b.dataset.qbsedel; delete QB_DRAFT.scen[id]; QB_DRAFT.off=QB_DRAFT.off.filter(k=>k!=="s:"+id); Sound.sfx("undo"); renderQuizAdmin(); toast("已刪除這題（發布後生效）"); }
+});
 $("#qbList").addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="qbWrong"){ e.preventDefault(); const b=document.querySelector("[data-qbsave]"); if(b) b.click(); } });
 $("#qbTypes").addEventListener("change",e=>{ const k=e.target.dataset.qbtype; if(!k||!QB_DRAFT) return; QB_DRAFT.types[k]=e.target.checked; renderQuizAdmin(); });
 ["#qbZone","#qbKind","#qbState"].forEach(id=>$(id).addEventListener("change",renderQuizAdmin));
@@ -8749,11 +8985,13 @@ $("#qbPublish").addEventListener("click",async()=>{
   if(!qbDirty()&&FEED&&FEED.quiz){ toast("沒有需要發布的變更"); return; }
   const bank=quizBank(QB_DRAFT), keys=new Set(bank.map(x=>x.key));
   const data={v:1,off:QB_DRAFT.off.filter(k=>keys.has(k)),types:QZ_KINDS.reduce((o,k)=>(o[k]=QB_DRAFT.types[k]!==false,o),{}),
-    wrong:Object.keys(QB_DRAFT.wrong).filter(k=>keys.has(k)).reduce((o,k)=>(o[k]=QB_DRAFT.wrong[k],o),{})};
+    wrong:Object.keys(QB_DRAFT.wrong).filter(k=>keys.has(k)).reduce((o,k)=>(o[k]=QB_DRAFT.wrong[k],o),{}),scen:JSON.parse(JSON.stringify(QB_DRAFT.scen||{}))};
   const live=bank.filter(x=>qzOn(x.key,x.kind,data)&&x.opts).length;
   if(!(await uiConfirm(`發布後約 1–5 分鐘生效：會出現 ${live} 題、停用 ${bank.length-live} 題。確定發布嗎？`,"發布"))) return;
   const id="QZ-"+Date.now().toString(36).toUpperCase();
-  const ok=await adminSend("quiz",id,"j:"+JSON.stringify(data),"題庫設定",null);
+  const payload=await packPayload(data,true);
+  if(payload.length>38000){ await uiAlert("題庫設定太大（多半是自訂情境題太多），請刪掉一些自訂情境題再發布。"); return; }
+  const ok=await adminSend("quiz",id,payload,"題庫設定",null);
   if(ok){ QB_BASEOBJ=qbClone(data); QB_BASE=qbJSON(QB_BASEOBJ); renderQuizAdmin(); }
 });
 /* ================= 管理者：新人審核 ================= */

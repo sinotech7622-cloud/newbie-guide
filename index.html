@@ -5068,7 +5068,7 @@ document.addEventListener("click",e=>{
 function touristVisitLog(){                            // 觀光客進站人次：每天記一筆
   if(!touristLocked()||!S.group) return;
   let d=""; try{ d=localStorage.getItem("sino22-tourist-day")||""; }catch(e){}
-  const today=new Date().toISOString().slice(0,10); if(d===today) return;
+  const today=npcToday(); if(d===today) return;          // 每天 0:00 換日（電腦時間）
   try{ localStorage.setItem("sino22-tourist-day",today); }catch(e){}
   logSignup("觀光客進站");
 }
@@ -7345,7 +7345,7 @@ async function tossVeg(p,h){
   const host=String(p.code).toUpperCase(), barn=S.barn||{}, k=($("#vsGiftSel")||{}).value;
   if(!CROPS[k]||!(barn[k]>0)){ toast("倉庫裡沒有這種蔬菜了"); return; }
   let log={}; try{ log=JSON.parse(localStorage.getItem(TOSS_KEY)||"{}"); }catch(e){}
-  const today=new Date().toISOString().slice(0,10), lk=host+"|"+today;
+  const today=npcToday(), lk=host+"|"+today;
   if((log[lk]||0)>=3){ toast("今天已經砸了 3 次，饒了他吧～"); return; }
   const room=$("#vsRoom .showroom"); if(!room) return;
   const btn=$("#vsToss"); if(btn) btn.disabled=true;
@@ -7464,7 +7464,7 @@ async function openVisit(code){
   sendPlaydate(code,d.people[code]).catch(()=>{});      // 寵物串門子：每對寵物每天第一次見面
   // 自動留下拜訪紀錄（同一個人一天一次）
   let log={}; try{ log=JSON.parse(localStorage.getItem(VISIT_KEY)||"{}"); }catch(e){}
-  const today=new Date().toISOString().slice(0,10);
+  const today=npcToday();
   if(log[code]!==today&&S.group){
     const payload={type:"visit",code:myCode(),name:dispName(),target:code,msg:""};
     if(await loungeSend(payload)){ addPending(payload); log[code]=today; try{ localStorage.setItem(VISIT_KEY,JSON.stringify(log)); }catch(e){} renderVisit(); }
@@ -8332,7 +8332,11 @@ function cleanNpcs(list){
 const npcList=()=>CFG.npcs||cleanNpcs(null);
 const npcSeedText=n=>n.seed==="mix"?"隨機綜合種子":`${CROPS[n.seed].name}種子`;
 const npcSupplyText=n=>n.supply||`供應${npcSeedText(n)}`;
-function npcClaimedToday(id){ return ((S.npcDay||{})[id])===new Date().toISOString().slice(0,10); }
+function npcToday(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }   // NPC 問答與種子：依電腦時間每天 0:00 換日
+function npcClaimedToday(id){ return ((S.npcDay||{})[id])===npcToday(); }
+let NPC_DAY_SEEN="";
+setInterval(()=>{ const t=npcToday(); if(!NPC_DAY_SEEN){ NPC_DAY_SEEN=t; return; } if(t===NPC_DAY_SEEN) return;   // 網頁開著跨過午夜：NPC 卡片換成新的一天
+  NPC_DAY_SEEN=t; if(curZone&&!$("#npcQuizDlg").open) try{ renderZoneNpc(curZone.id); }catch(e){} },30000);
 function renderZoneNpc(zoneId){
   const box=$("#zNpc"); if(!box) return;
   const here=npcList().filter(n=>n.zone===zoneId);
@@ -8356,7 +8360,7 @@ function claimNpcSeeds(id){
     const amt=n.seed==="strawberry"||n.seed==="pumpkin"?2:3;
     seeds()[n.seed]=(seeds()[n.seed]||0)+amt; got.push(`${CROPS[n.seed].name} ×${amt}`);
   }
-  S.npcDay=S.npcDay||{}; S.npcDay[id]=new Date().toISOString().slice(0,10);
+  S.npcDay=S.npcDay||{}; S.npcDay[id]=npcToday();
   save(); queueSync(); Sound.sfx("get");
   toast(`🌱 ${n.name}給了你 ${got.join("、")} 種子！`);
   renderZoneNpc(curZone&&curZone.id);
@@ -8551,7 +8555,7 @@ function makeNpcQuizV2(n,today,ZONES,ALLQ,cfg){
   return first()||second()||null;
 }
 function makeNpcQuiz(n){
-  const today=new Date().toISOString().slice(0,10), r=seededRand(n.id+"|"+today+"|"+(n.zone||"")+"|mix");
+  const today=npcToday(), r=seededRand(n.id+"|"+today+"|"+(n.zone||"")+"|mix");
   const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
   const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id); if(!qs.length) return null;
   const cfg=quizCfg(), chs=[...new Set(qs.map(q=>q.chapter))];
@@ -8582,13 +8586,13 @@ function quizBank(cfg){                                 // 管理者「題庫」
 function giveNpcSeeds(n,mult){
   const got=[];
   if(n.seed==="mix"){
-    const r=seededRand(n.id+"|mix|"+new Date().toISOString().slice(0,10));
+    const r=seededRand(n.id+"|mix|"+npcToday());
     shuffleR(Object.keys(CROPS),r).slice(0,2).forEach(k=>{ const a=2*mult; seeds()[k]=(seeds()[k]||0)+a; got.push(`${CROPS[k].name} ×${a}`); });
   }else{
     const a=(n.seed==="strawberry"||n.seed==="pumpkin"?2:3)*mult;
     seeds()[n.seed]=(seeds()[n.seed]||0)+a; got.push(`${CROPS[n.seed].name} ×${a}`);
   }
-  S.npcDay=S.npcDay||{}; S.npcDay[n.id]=new Date().toISOString().slice(0,10);
+  S.npcDay=S.npcDay||{}; S.npcDay[n.id]=npcToday();
   save(); queueSync();
   return got.join("、");
 }

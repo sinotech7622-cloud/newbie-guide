@@ -2973,7 +2973,7 @@ const JOBS=[
   {id:"renew",group:"土開小組",mark:"更",n1:"都更鍊金術士",n2:"新城鍊金師",color:"#D08A3E"},
   {id:"eco",group:"國土永續中心",mark:"永",n1:"永續德魯伊",n2:"大地守護者",color:"#5FBF6A"},
   {id:"south",group:"南部辦公室",mark:"南",n1:"南國遊俠",n2:"烈陽遊俠",color:"#FF9F2E"},
-  {id:"digital",group:"數位總合辦公室",mark:"數",n1:"數位魔導士",n2:"AI 大法師",color:"#2FD4C4"},
+  {id:"digital",group:"數位總合辦",alias:["數位總合辦公室"],mark:"數",n1:"數位魔導士",n2:"AI 大法師",color:"#2FD4C4"},
   {id:"support",group:"支援組",mark:"援",n1:"後勤補給官",n2:"萬能支援神官",color:"#FF7FA0"}
 ];
 const jobById=id=>JOBS.find(j=>j.id===id);
@@ -3643,7 +3643,7 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 const DEFAULT_CONTENT=clone(ZONES.map(z=>({id:z.id,intro:z.intro,chapters:z.chapters})));
 const DEFAULT_CONFIG={
   chief:"曹資協",
-  groups:["公路組","土木組","排水組","城鄉組","規劃組","土開小組","國土永續中心","南部辦公室","數位總合辦公室","支援組"],
+  groups:["公路組","土木組","排水組","城鄉組","規劃組","土開小組","國土永續中心","南部辦公室","數位總合辦","支援組"],
   portals:[
     {label:"公司內網",url:"https://portal2023.sinotech.com.tw/sip/#"},
     {label:"園城人",url:"https://cdp.sinotech.com.tw/LHA/"},
@@ -4780,7 +4780,8 @@ function jobCur(){
   const id=S.job.cur; return id&&jobById(id)&&jobTier(id)>0?id:"";
 }
 const jb=(id,t)=>!restricted()&&jobCur()===id&&jobTier(id)>=(t||1);       // 目前職業的加成
-const jobHomeOf=id=>{ const j=jobById(id); return !!(j&&S.group&&j.group===S.group); };
+const jobGroupIs=(j,g)=>{ g=String(g||"").replace(/\s+/g,""); return !!(j&&g&&(j.group===g||(j.alias||[]).includes(g))); };   // 組別名稱（含舊名）
+const jobHomeOf=id=>jobGroupIs(jobById(id),S.group);
 const jobName=(id,t)=>{ const j=jobById(id); return j?(t>=2?j.n2:j.n1):""; };
 const jobMaxLv=()=>myLv()>=TITLES.length;
 function jobMarkHTML(id,t,small){
@@ -7651,7 +7652,7 @@ function loungeCardInner(p,champion){
       ${p.av&&p.av.weapon&&SPR["w_"+p.av.weapon]?`<span class="lwep" title="${esc((weaponById(p.av.weapon)||{}).name||"")}" aria-hidden="true">${spriteSVG("w_"+p.av.weapon)}</span>`:""}
     </div>
     <p class="lname">${esc(p.name||"新人冒險者")}${me?`<span class="st st-info">你</span>`:""}${crown?`<span class="st st-gold">人氣王獎章</span>`:""}</p>
-    ${jobBadgeHTML(p.av)?`<p class="ljob">${jobBadgeHTML(p.av)}${p.av&&jobById(p.av.job)&&jobById(p.av.job).group===p.group?`<span class="jhome">本家</span>`:""}</p>`:""}
+    ${jobBadgeHTML(p.av)?`<p class="ljob">${jobBadgeHTML(p.av)}${p.av&&jobGroupIs(jobById(p.av.job),p.group)?`<span class="jhome">本家</span>`:""}</p>`:""}
     <p class="ahint" style="margin:0">${esc(p.group||"—")}・LV ${esc(p.level||"1")}${p.online?`<span class="st st-ok" style="margin-left:6px">上線中</span>`:p.at?`・${esc(fmtShort(p.at))}`:""}</p>
     ${p.msg?`<p class="lmsg">「${esc(p.msg)}」</p>`:""}
     <button class="act ghost like${liked?" liked":""}" type="button" data-like="${esc(p.code)}" ${me||liked?"disabled":""}>♥ ${p.likes}${me?"":liked?"　已按讚":""}</button>

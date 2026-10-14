@@ -1419,6 +1419,21 @@ body.tour-lock .mapframe{z-index:41}
 @media (prefers-reduced-motion:reduce){.jcfx{display:none}}
 .jswsel{width:auto;min-width:200px;max-width:100%}
 .jguard{display:flex;align-items:center;gap:8px}.jguard .pv{width:40px;height:40px;flex:none}
+.upddiff{list-style:none;margin:8px 0;padding:0;font-size:15px;line-height:1.7}
+.upddiff li{padding:3px 10px;border-radius:3px;margin:3px 0;white-space:pre-wrap;word-break:break-word;border-left:4px solid transparent}
+.upddiff li b{margin-right:6px}
+.upddiff .add{background:rgba(95,191,106,.18);border-left-color:#5FBF6A}
+.upddiff .add b{color:#7FE0A8}
+.upddiff .del{background:rgba(216,67,75,.15);border-left-color:#D8434B;text-decoration:line-through;opacity:.85}
+.upddiff .del b{color:#FF8A8F}
+.upddiff .same{color:#9AA3D6;font-size:13px}
+.updcnt{display:inline-flex;gap:8px;margin-left:8px;font-size:13px}
+.updcnt .a{color:#7FE0A8}.updcnt .d{color:#FF8A8F}
+.upditem{border:2px solid rgba(255,255,255,.25);border-radius:6px;padding:8px 12px;margin:8px 0}
+.upditem summary{cursor:pointer;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.upditem[open] summary{margin-bottom:6px}
+.updacts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+#updDlg .body{max-height:60vh;overflow:auto}
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -2821,6 +2836,13 @@ footer.site p{margin:4px 0}
   </div>
 </dialog>
 
+<dialog id="updDlg" aria-labelledby="updTitle">
+  <div class="window dlg form updwrap">
+    <div class="head"><div><p class="dept" id="updDept">任務內容更新</p><h3 id="updTitle">任務內容更新</h3></div></div>
+    <div class="body" id="updBody"></div>
+    <div class="foot" id="updFoot"></div>
+  </div>
+</dialog>
 <dialog id="jobDlg" aria-labelledby="jdTitle">
   <div class="window dlg form jdwrap">
     <div class="head">
@@ -4711,7 +4733,7 @@ function openZone(id,push){
   syncSoundBtns();
   renderZone();
   try{ renderZoneNpc(id); }catch(e){}
-  if(hadNew){ setTimeout(()=>toast("這個地點的任務內容有更新，標示「更新」的就是新的或修改過的"),600); }
+  if(hadNew&&zoneQuestNew(z)){ setTimeout(()=>toast("標示「更新」的任務內容修改過了，點開會告訴你改了哪裡"),600); }
   clearZoneNew(id);                       // 標記留到這次瀏覽結束，下次不再顯示
   $("#viewMap").hidden=true; $("#viewPlace").hidden=true; $("#viewZone").hidden=false; curPlace=null;
   if(push!==false){try{history.replaceState(null,"","#"+id);}catch(e){}}
@@ -4744,7 +4766,7 @@ function qRow(q,showWhere){
   const d=!!S.done[q.id];
   return `<li><button type="button" class="qbtn ${d?"done":""}" data-q="${q.id}">
     <span class="star" aria-hidden="true">${d?"★":"☆"}</span>
-    <span class="qt">${q.title}${QUEST_NEW[q.id]?'<span class="newtag">更新</span>':(S.bonusPend||[]).includes(q.id)?'<span class="newtag">NEW</span>':""}${isFav(q.id)?'<span class="heart" aria-label="已加入最愛">♥</span>':""}${showWhere?`<span class="where">${q.zone.name}・${q.chapter}</span>`:""}<span class="sr">${d?"（已完成）":"（未完成）"}</span></span>
+    <span class="qt">${q.title}${QUEST_NEW[q.id]?'<span class="newtag" title="內容修改過了，點開看改了哪裡">更新</span>':(S.bonusPend||[]).includes(q.id)?'<span class="newtag">NEW</span>':""}${isFav(q.id)?'<span class="heart" aria-label="已加入最愛">♥</span>':""}${showWhere?`<span class="where">${q.zone.name}・${q.chapter}</span>`:""}<span class="sr">${d?"（已完成）":"（未完成）"}</span></span>
     <span class="xp">${d?"CLEAR":"+10 EXP"}</span></button></li>`;
 }
 function showMap(){
@@ -5484,6 +5506,7 @@ function openQuest(id,ctx){
   $("#qPrev").disabled=i<=0; $("#qNext").disabled=i<0||i>=listCtx.length-1;
   syncDoneBtn(); syncFavBtn();
   const dlg=$("#qDlg"); if(!dlg.open) dlg.showModal();
+  if(QUEST_NEW[id]) setTimeout(()=>{ if(curQ&&curQ.id===id) openUpdNote(id); },250);
 }
 function syncDoneBtn(){
   const d=!!S.done[curQ.id], b=$("#qDone");
@@ -6618,11 +6641,100 @@ function markContentUpdates(){
     }));
   });
   S.seenContent=seen; S.seenQuests=qseen;
+  ZONES.forEach(z=>{ if(zoneQuestNew(z)) ZONE_NEW[z.id]=true; });
   if(changed) save();
-  const n=Object.keys(ZONE_NEW).length;
-  if(n&&!first) toast(`村長更新了 ${n} 個地點的任務內容，地圖上有「！」的地方去看看吧`);
+  try{ qSnapSync(); }catch(e){}
+  const n=Object.keys(ZONE_NEW).length, nq=Object.keys(QUEST_NEW).length;
+  if(nq&&!first) setTimeout(()=>updListAuto(),2500);
+  else if(n&&!first) toast(`村長更新了 ${n} 個地點的介紹，地圖上有「！」的地方去看看吧`);
   setTimeout(refreshBonus,0);
 }
+/* ---- 任務內容更新：比對舊版、跳出「改了哪裡」 ---- */
+var QSNAP_KEY="sino22-qsnap", UPD_SHOWN_KEY="sino22-upd-shown";   // var：開站時可能在這行之前就被呼叫
+function zoneQuestNew(z){ return (z.chapters||[]).some(ch=>(ch.quests||[]).some(q=>QUEST_NEW[q.id])); }
+function qText(html){                                     // 任務內容轉成一行一行的純文字（用來比對）
+  const src=String(html||"").replace(/<(br|\/p|\/li|\/h\d|\/tr|\/div|\/ol|\/ul|\/blockquote)\b[^>]*>/gi,"$&\n");
+  let txt=""; try{ txt=new DOMParser().parseFromString(src,"text/html").body.textContent||""; }catch(e){ txt=src.replace(/<[^>]+>/g,""); }
+  return txt.split(/\n+/).map(x=>x.replace(/\s+/g," ").trim()).filter(Boolean).slice(0,300);
+}
+function qSnapGet(){ try{ return JSON.parse(localStorage.getItem("sino22-qsnap")||"{}")||{}; }catch(e){ return {}; } }
+function qSnapPut(m){ try{ localStorage.setItem("sino22-qsnap",JSON.stringify(m)); }catch(e){} }
+function qSnapSync(){                                      // 已經看過的版本存一份，之後有修改才比對得出來
+  const snap=qSnapGet(), qseen=S.seenQuests||{}; let ch=false;
+  ALLQ.forEach(q=>{ const h=questHash(q); if(qseen[q.id]===h&&(!snap[q.id]||snap[q.id].h!==h)){ snap[q.id]={h,t:q.title,x:qText(q.body)}; ch=true; } });
+  if(ch) qSnapPut(snap);
+}
+function lineDiff(a,b){
+  const n=a.length, m=b.length, L=Array.from({length:n+1},()=>new Uint16Array(m+1));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]=a[i]===b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const out=[]; let i=0,j=0;
+  while(i<n&&j<m){ if(a[i]===b[j]){ out.push(["=",a[i]]); i++; j++; } else if(L[i+1][j]>=L[i][j+1]) out.push(["-",a[i++]]); else out.push(["+",b[j++]]); }
+  while(i<n) out.push(["-",a[i++]]); while(j<m) out.push(["+",b[j++]]);
+  return out;
+}
+function updInfo(id){
+  const q=ALLQ.find(x=>x.id===id); if(!q) return null;
+  const sn=qSnapGet()[id];
+  if(!sn||!Array.isArray(sn.x)) return {q,none:true,add:0,del:0};
+  const ops=lineDiff(sn.x,qText(q.body));
+  return {q,ops,oldTitle:sn.t&&sn.t!==q.title?sn.t:"",add:ops.filter(o=>o[0]==="+").length,del:ops.filter(o=>o[0]==="-").length};
+}
+function updDiffHTML(u){
+  if(!u) return "";
+  if(u.none) return `<p class="ahint">這項任務的內容有修改。這台裝置沒有存舊的版本，標不出改了哪裡，請把任務內容重新看一次。</p>`;
+  let html="", same=0;
+  const flush=()=>{ if(same){ html+=`<li class="same">⋯ 其他 ${same} 行沒有變</li>`; same=0; } };
+  u.ops.forEach(([t,x])=>{ if(t==="="){ same++; return; } flush(); const s=x.length>220?x.slice(0,220)+"…":x; html+=`<li class="${t==="+"?"add":"del"}"><b aria-hidden="true">${t==="+"?"＋":"－"}</b><span class="sr">${t==="+"?"新增：":"刪除："}</span>${esc(s)}</li>`; });
+  flush();
+  if(!u.add&&!u.del&&!u.oldTitle) html=`<li class="same">只有排版或連結調整，文字沒有變。</li>`;
+  return `${u.oldTitle?`<p class="dbody">標題：<s>${esc(u.oldTitle)}</s> → <b>${esc(u.q.title)}</b></p>`:""}<ul class="upddiff">${html}</ul>`;
+}
+function updCountHTML(u){ return u.none?`<span class="updcnt">內容有修改</span>`:`<span class="updcnt">${u.add?`<span class="a">＋${u.add} 行</span>`:""}${u.del?`<span class="d">－${u.del} 行</span>`:""}${!u.add&&!u.del?"小修改":""}</span>`; }
+function updConfirm(id){                                   // 看完了：消掉「更新」標籤
+  const q=ALLQ.find(x=>x.id===id); if(!q) return;
+  const qseen=S.seenQuests||(S.seenQuests={}), h=questHash(q);
+  qseen[id]=h; delete QUEST_NEW[id];
+  const snap=qSnapGet(); snap[id]={h,t:q.title,x:qText(q.body)}; qSnapPut(snap);
+  const z=q.zone&&ZONES.find(x=>x.id===q.zone.id);
+  if(z){ if(zoneQuestNew(z)) ZONE_NEW[z.id]=true; else delete ZONE_NEW[z.id]; }
+  save(); queueSync();
+  try{ refreshAll(); }catch(e){}
+}
+function openUpdNote(id){                                  // 單一任務：改了哪裡
+  const u=updInfo(id); if(!u) return;
+  $("#updDept").textContent=`任務內容更新｜${u.q.zone.name}`;
+  $("#updTitle").textContent=u.q.title;
+  $("#updBody").innerHTML=`<p class="dbody">📢 這項任務的內容修改過了${u.none?"。":`，下面是改動的地方：${updCountHTML(u)}`}</p>${updDiffHTML(u)}<p class="ahint">按「看完了」之後，這項任務的「更新」標籤就會消失。</p>`;
+  $("#updFoot").innerHTML=`<button class="act ghost" type="button" data-close>稍後再看</button><button class="act" type="button" data-updok="${esc(id)}">✓ 看完了</button>`;
+  const d=$("#updDlg"); if(!d.open) d.showModal(); Sound.sfx("open");
+}
+function openUpdList(){                                    // 全部更新的清單
+  const ids=Object.keys(QUEST_NEW).filter(id=>ALLQ.some(q=>q.id===id));
+  if(!ids.length){ const d=$("#updDlg"); if(d.open) d.close(); return; }
+  $("#updDept").textContent="任務內容更新";
+  $("#updTitle").textContent=`村長更新了 ${ids.length} 項任務`;
+  $("#updBody").innerHTML=`<p class="dbody">點每一項可以看改了哪裡，看完按「看完了」就會消掉「更新」標籤。</p>${ids.map(id=>{ const u=updInfo(id); return `<details class="upditem"><summary><b>${esc(u.q.title)}</b><span class="ahint">${esc(u.q.zone.name)}｜${esc(u.q.chapter||"")}</span>${updCountHTML(u)}</summary>${updDiffHTML(u)}<div class="updacts"><button class="act ghost" type="button" data-updopen="${esc(id)}">打開任務</button><button class="act" type="button" data-updok="${esc(id)}">✓ 看完了</button></div></details>`; }).join("")}`;
+  $("#updFoot").innerHTML=`<button class="act ghost" type="button" data-close>稍後再看</button><button class="act" type="button" data-updall>全部看完了</button>`;
+  $("#updDlg").dataset.mode="list";
+  const d=$("#updDlg"); if(!d.open) d.showModal();
+}
+function updListAuto(tries){                               // 開站時：有新的更新就跳出清單（同一批更新每天最多一次）
+  tries=tries||0;
+  const ids=Object.keys(QUEST_NEW).sort(); if(!ids.length||!S.group) return;
+  const key=hashStr(ids.map(id=>id+":"+((S.seenQuests||{})[id]||"")).join(","))+"|"+dayKey();
+  let shown=""; try{ shown=localStorage.getItem("sino22-upd-shown")||""; }catch(e){}
+  if(shown===key) return;
+  if(document.querySelector("dialog[open]")||TOUR){ if(tries<20) setTimeout(()=>updListAuto(tries+1),3000); return; }
+  try{ localStorage.setItem("sino22-upd-shown",key); }catch(e){}
+  openUpdList();
+}
+document.addEventListener("click",e=>{
+  const t=e.target, ok=t.closest("[data-updok]");
+  if(ok){ const id=ok.dataset.updok, list=$("#updDlg").dataset.mode==="list"; updConfirm(id); Sound.sfx("get"); toast("✓ 已經看完這項更新");
+    if(list&&Object.keys(QUEST_NEW).length) openUpdList(); else $("#updDlg").close(); return; }
+  if(t.closest("[data-updall]")){ Object.keys(QUEST_NEW).forEach(updConfirm); Sound.sfx("get"); toast("✓ 全部的更新都看完了"); $("#updDlg").close(); return; }
+  const op=t.closest("[data-updopen]"); if(op){ $("#updDlg").close(); openQuest(op.dataset.updopen); return; }
+});
 function refreshBonus(){
   if(!S.awarded||!ALLQ.length) return;
   const ids=ALLQ.map(q=>q.id);
@@ -6654,13 +6766,12 @@ function grantBonus(){
   Sound.sfx("levelup");
   setTimeout(()=>toast(`🎖 恭喜獲得第 ${S.bonusCerts.length} 張 Bonus 進修證書！到「溫暖的家 → 證書牆」查看`),400);
 }
-function clearZoneNew(id){
+function clearZoneNew(id){                                // 地點介紹看過了；任務的「更新」要點開看完才會消
   const z=ZONES.find(x=>x.id===id); if(!z) return;
-  const seen=S.seenContent||{}, qseen=S.seenQuests||{};
+  const seen=S.seenContent||{};
   seen[id]=contentHash(z);
-  (z.chapters||[]).forEach(ch=>(ch.quests||[]).forEach(q=>{ qseen[q.id]=questHash(q); delete QUEST_NEW[q.id]; }));
-  delete ZONE_NEW[id];
-  S.seenContent=seen; S.seenQuests=qseen; save();
+  if(zoneQuestNew(z)) ZONE_NEW[id]=true; else delete ZONE_NEW[id];
+  S.seenContent=seen; save();
 }
 function applyContent(data){
   const src=(data&&Array.isArray(data.zones))?data.zones:DEFAULT_CONTENT;
@@ -6740,6 +6851,7 @@ async function bootstrap(){
   if(!previewContent){
     if(feed&&feed.content&&Array.isArray(feed.content.zones)){ applyContent(feed.content); SOURCE.content="feed"; }
     else if(ct.status==="fulfilled"&&ct.value&&ct.value.length){ const c=contentFromRows(ct.value); if(c){ applyContent(c); SOURCE.content="sheet"; } }
+    if(SOURCE.content!=="feed"&&SOURCE.content!=="sheet") try{ const b4=JSON.stringify([ZONE_NEW,QUEST_NEW]); markContentUpdates(); if(JSON.stringify([ZONE_NEW,QUEST_NEW])!==b4) refreshAll(); }catch(e){}   // 後台沒有內容：用網站內建內容比對更新
   }
   refreshLive();
   const wanted=[sheetUrl("feed"),sheetUrl("settings"),sheetUrl("content")];
@@ -13408,7 +13520,7 @@ bootstrap().then(()=>{
     try{ localStorage.setItem("sino22-card-check",dayKey()); }catch(e){}
     if(!LOUNGE.at) loadLounge(false).catch(()=>{});
   },20000);   // 每次開站都讓大家看到自己在線上
-  try{ if(!S.seenContent||!Object.keys(S.seenContent).length) markContentUpdates(); else refreshBonus(); }catch(e){}
+  try{ if(!S.seenContent||!Object.keys(S.seenContent).length||!HAS_SHEETS) markContentUpdates(); else refreshBonus(); }catch(e){}
   if(S.group){
     setTimeout(()=>loadInbox(),1500);
     try{ if(!sessionStorage.getItem("sino22-reported")){ sessionStorage.setItem("sino22-reported","1"); queueSync(true); } }catch(e){}

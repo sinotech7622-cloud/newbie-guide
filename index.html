@@ -1434,6 +1434,7 @@ body.tour-lock .mapframe{z-index:41}
 .upditem[open] summary{margin-bottom:6px}
 .updacts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
 #updDlg .body{max-height:60vh;overflow:auto}
+<<<<<<< HEAD
 .bstar{color:#F2C14E;letter-spacing:1px}.bstar.big{font-size:18px}
 .bondline{margin:6px 0 0}
 .bondtop{display:flex;gap:14px;align-items:center}
@@ -1443,6 +1444,8 @@ body.tour-lock .mapframe{z-index:41}
 .bondshop{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
 .bondit{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border:2px solid rgba(255,255,255,.2);border-radius:6px}
 .bondit small{display:block;color:#B9C0F0}
+=======
+>>>>>>> 58ba090212c5610df4fba6fa36987de8b1730644
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -5320,7 +5323,11 @@ function trialWin(){
     S.petKinds=S.petKinds||{}; S.petKinds.guardian=true; TR.newPet=true;
     got.push("🗿 隱藏版寵物「石像守護者」（10 個職業全部學會）");
   }
+<<<<<<< HEAD
   if(TR.pet){ if(affGain(TR.pet,3,true)&&S.pet&&S.pet.type===TR.pet) setTimeout(()=>affinityMax(TR.pet),400); }
+=======
+  if(TR.pet){ S.aff=S.aff||{}; const b=affOf(TR.pet); S.aff[TR.pet]=Math.min(AFF_MAX,b+3); if(b<AFF_MAX&&S.aff[TR.pet]>=AFF_MAX&&S.pet&&S.pet.type===TR.pet) setTimeout(()=>affinityMax(TR.pet),400); }
+>>>>>>> 58ba090212c5610df4fba6fa36987de8b1730644
   syncJobAv(); save(); queueSync(true); checkAch();
   lastPresence=0; try{ loungePresence(true,{card:true}); }catch(e){}
   TR.phase="cer"; TR.got=got; TR.first=first;
@@ -5396,7 +5403,11 @@ function renderTrial(){
     <div class="trside">
       <div class="trhearts" aria-label="剩下 ${TR.hearts} 顆心，共 ${TR.maxHearts} 顆">${trialHeartsHTML()}</div>
       <div class="trteam"><span class="trhero${hitOK?" atk":hitNG&&!TR.blocked?" hurt":""}" aria-hidden="true"><span class="trme">${avatarSVG(S.av)}</span>${w?`<span class="trwpn">${spriteSVG("w_"+w.id)}</span>`:""}${hitNG&&TR.blocked?`<span class="trshield"></span>`:""}</span>${pv?`<span class="trpetf${hitOK&&TR.pd?" atk":""}" aria-hidden="true">${petSVG(pv,"adult")}</span>`:""}</div>
+<<<<<<< HEAD
       <p class="trstat">${w?`${esc(w.name)} ${TR.wd}`:`徒手 ${TR.wd}`}${pv?`＋${esc(petNameOf(pv)||PETS[TR.pet].name)} ${TR.pd}`:""}${TR.skill?`<br><small>技能：${esc(petSkill(TR.pet)[0])} Lv${TR.skLv||1}</small>`:""}</p>
+=======
+      <p class="trstat">${w?`${esc(w.name)} ${TR.wd}`:`徒手 ${TR.wd}`}${pv?`＋${esc(petNameOf(pv)||PETS[TR.pet].name)} ${TR.pd}`:""}${TR.skill?`<br><small>技能：${esc(petSkill(TR.pet)[0])}</small>`:""}</p>
+>>>>>>> 58ba090212c5610df4fba6fa36987de8b1730644
     </div>
     ${TR.phase==="res"?`<p class="trpop ${TR.picked===q.ans?"ok":"ng"}" aria-hidden="true">${TR.picked===q.ans?`−${TR.lastDmg}`:TR.blocked?"擋住了！":"−1 ♥"}</p>`:""}
     <div class="trside">
@@ -12190,7 +12201,11 @@ function renderCloset(panel){
           <span class="armicon clicon" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,{job:jid,jt:jobTier(jid),jo:1,jh:0,jc:0}))}</span>
           <span class="armname">${esc(jobName(jid,jobTier(jid)))}</span>
           <span class="armmeta">${jOn?'<span class="st st-gold">穿著中</span>':"點一下換上"}</span>
+<<<<<<< HEAD
         </button></div><p class="ahint">職業頭飾和披風在「智慧神殿 → 轉職殿堂 → 我的職業」或「角色設定」切換。</p></div>`}]:[]).concat(CLOSET_GROUPS.map(g=>{
+=======
+        </button></div><p class="ahint">職業頭飾和披風在「存摺神殿 → 轉職殿堂 → 我的職業」或「角色設定」切換。</p></div>`}]:[]).concat(CLOSET_GROUPS.map(g=>{
+>>>>>>> 58ba090212c5610df4fba6fa36987de8b1730644
       const list=Object.keys(OUTFIT).filter(g.test); if(!list.length) return "";
       const mine=list.filter(outfitOK).length;
       return {id:g.id||g.name,label:esc(g.name),badge:`${mine}/${list.length}`,html:`<div class="catblock">
@@ -13562,7 +13577,10 @@ bootstrap().then(()=>{
     if(!LOUNGE.at) loadLounge(false).catch(()=>{});
   },20000);   // 每次開站都讓大家看到自己在線上
   try{ if(!S.seenContent||!Object.keys(S.seenContent).length||!HAS_SHEETS) markContentUpdates(); else refreshBonus(); }catch(e){}
+<<<<<<< HEAD
   setTimeout(()=>{ try{ bondDailyGift(); }catch(e){} },6000);   // 寵物叼小禮物
+=======
+>>>>>>> 58ba090212c5610df4fba6fa36987de8b1730644
   if(S.group){
     setTimeout(()=>loadInbox(),1500);
     try{ if(!sessionStorage.getItem("sino22-reported")){ sessionStorage.setItem("sino22-reported","1"); queueSync(true); } }catch(e){}

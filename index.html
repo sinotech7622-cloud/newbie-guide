@@ -3846,7 +3846,7 @@ try{
 let S={name:"",emp:"",av:null,pet:null,group:"",fav:{},achSeen:{},consults:[],ivReplies:{},done:{},visited:{},points:0,ach:{},loc:"village"};
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw)||{});}catch(e){}
 { let cut=false; Object.values(S.fav||{}).forEach(f=>{ if(f&&"memo" in f){ delete f.memo; cut=true; } }); if(cut) try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }   // 已移除個人筆記功能：清掉舊的筆記文字
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); localStorage.setItem("sino22-local-at",new Date().toISOString());}catch(e){}}
+function save(){try{ rememberLooks(); }catch(e){} try{localStorage.setItem(KEY,JSON.stringify(S)); localStorage.setItem("sino22-local-at",new Date().toISOString());}catch(e){}}
 
 const $=s=>document.querySelector(s);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -5207,7 +5207,13 @@ const SKILL_DESC=Object.fromEntries(Object.keys(SKV).map(k=>[k,skillDesc(k,1)]))
 const petSkill=t=>PET_SKILL[t]||["夥伴的守護","block1"];
 function petAtk(t){ const a=affOf(t); return (a>=100?10:a>=90?9:a>=60?7:a>=30?5:3)+(S.collarOK?2:0)+bondStars(t); }   // 羈絆每顆星 +1
 function trialPets(){ return Object.keys(PETS).filter(t=>petKindOK(t)&&(affOf(t)>0||(S.pet&&S.pet.type===t))); }
-function trialPetView(t){ return S.pet&&S.pet.type===t?petView(S.pet):{type:t,color:PETS[t].defColor||0,name:"",wear:"none",gear:""}; }
+function trialPetView(t){
+  if(S.pet&&S.pet.type===t) return petView(S.pet);
+  const f=partyList().find(x=>x.type===t); if(f) return petView(f);
+  const p=petFromLook(t);
+  if(p.gear&&gearBusy(p.gear,t)) p.gear="";                  // 隊長和跟班正在戴的配件，其他寵物不顯示
+  return p;
+}
 const trialWeapons=()=>WEAPONS.filter(w=>weaponOwned(w.id)&&JOB_WDMG[w.tier]);
 let TR=null;
 function trialPool(){
@@ -5351,10 +5357,10 @@ function trialHeartsHTML(){
 }
 async function offerGuardian(){                           // 拿到石像守護者：問要不要換成牠
   if(S.pet&&S.pet.type==="guardian") return;
-  const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name);
-  if(!S.pet||await uiConfirm(`要把夥伴換成石像守護者嗎？${keep?`名字會維持「${keep}」，`:""}之後也能在寵物窩換回原本的樣子。`,"換成石像守護者")){
-    S.pet=Object.assign({},PET_DEFAULT,{type:"guardian",color:3,name:keep||"石像守護者",gear:(S.pet&&S.pet.gear)||""}); save(); queueSync(true); pushFarm(true);
-    toast(keep?`${keep}變成石像守護者了！`:"石像守護者成為你的夥伴了！"); renderHUD(); buildMap();
+  const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name), nn=lookName("guardian");
+  if(!S.pet||await uiConfirm(`要把隊長換成石像守護者「${nn}」嗎？${keep?`${keep}會先回家休息，`:""}之後也能在寵物窩換回來。`,"換成石像守護者")){
+    rememberLooks(); S.pet=petFromLook("guardian",{color:3}); save(); queueSync(true); pushFarm(true);
+    toast(`${nn}成為你的隊長了！`); renderHUD(); buildMap();
     if(curPlace&&curPlace.id==="myhome") renderPlace();
   }
 }
@@ -5385,7 +5391,7 @@ function renderTrial(){
       <p class="dsec">一同出戰的寵物</p>
       ${pets.length?`<div class="trpets" role="radiogroup" aria-label="一同出戰的寵物">${pets.map(t=>{ const sk=petSkill(t); return `<label class="trpet${TR.pet===t?" on":""}"><input type="radio" name="tr-pet" value="${t}" ${TR.pet===t?"checked":""}>
         <span class="pv" aria-hidden="true">${petSVG(trialPetView(t),"adult")}</span>
-        <span class="trpi"><b>${esc((S.pet&&S.pet.type===t&&S.pet.name)||PETS[t].name)}</b><small>親密度 ${affOf(t)}${bondStars(t)?`・<span class="bstar">${"★".repeat(bondStars(t))}</span>`:""}・攻擊 +${petAtk(t)}</small><small class="trsk">${esc(sk[0])} Lv${petSkLv(t)}：${esc(skillDesc(sk[1],petSkLv(t)))}</small></span></label>`; }).join("")}</div>
+        <span class="trpi"><b>${esc(petNameOf(trialPetView(t)))}</b><small>親密度 ${affOf(t)}${bondStars(t)?`・<span class="bstar">${"★".repeat(bondStars(t))}</span>`:""}・攻擊 +${petAtk(t)}</small><small class="trsk">${esc(sk[0])} Lv${petSkLv(t)}：${esc(skillDesc(sk[1],petSkLv(t)))}</small></span></label>`; }).join("")}</div>
         <p class="ahint">寵物攻擊力看親密度：1～29 +3、30～59 +5、60～89 +7、90～99 +9、滿 100 +10${S.collarOK?"；有友誼項圈再 +2（已含）":"；有友誼項圈再 +2"}；羈絆每顆星再 +1。贏了之後，一同出戰的寵物親密度 +3。</p>`
         :`<p class="ahint">還沒有養過寵物，這次自己上場。</p>`}
       <p class="trest">每答對一題造成 <b>${per}</b> 傷害（武器 ${wd}${pd?` ＋ 寵物 ${pd}`:""}），大約答對 <b>${need}</b> 題就能通過。</p>
@@ -5544,7 +5550,7 @@ function renderPetSwap(){
 $("#zChapters").addEventListener("change",e=>{
   const n=e.target.name; if(n!=="swap-type"&&n!=="swap-color") return;
   swapDraft=swapDraft||{type:S.pet.type,color:S.pet.color};
-  if(n==="swap-type"){ swapDraft.type=e.target.value; const nm=$("#swapName"); if(nm) swapDraft.name=nm.value; Sound.sfx("cursor"); renderPetSwap(); return; }   // 換種類：重畫顏色選項
+  if(n==="swap-type"){ const v=e.target.value, L=petFromLook(v); swapDraft.type=v; swapDraft.color=L.color; swapDraft.name=v===S.pet.type?(S.pet.name||""):lookName(v); Sound.sfx("cursor"); renderPetSwap(); return; }   // 換種類：帶出那隻自己的名字、毛色
   swapDraft.color=+e.target.value;
   Sound.sfx("cursor");
   const preview=petView(Object.assign({},S.pet,swapDraft));
@@ -5560,7 +5566,8 @@ $("#zChapters").addEventListener("click",e=>{
     const name=cleanText($("#swapName").value,8);
     if(!name){ $("#swapErr").textContent="請幫牠取個名字"; Sound.sfx("error"); $("#swapName").focus(); return; }
     const nd=Object.assign({},swapDraft||{}); delete nd.name;
-    S.pet=petView(Object.assign({},S.pet,nd,{name}));
+    const nt=nd.type||S.pet.type;
+    rememberLooks(); S.pet=petView(Object.assign(nt===S.pet.type?Object.assign({},S.pet):petFromLook(nt),nd,{name}));
     save(); swapDraft=null; box.dataset.open="";
     Sound.sfx("achieve"); toast(`夥伴換成了 ${name}（${PETS[S.pet.type].name}）`);
     renderHUD(); renderPetSwap(); queueSync();
@@ -7984,7 +7991,7 @@ function runCheat(msg){
   if(c.kind==="pet"){
     S.petKinds=S.petKinds||{}; S.petKinds[c.pet]=true;
     const name=PETS[c.pet].name;
-    S.pet=Object.assign({},PET_DEFAULT,S.pet||{},{type:c.pet,color:2,name:(S.pet&&S.pet.name)||name});
+    rememberLooks(); S.pet=petFromLook(c.pet,{color:2});
     gift=`<span class="pv">${petSVG(S.pet)}</span><div><p class="dbody"><b>隱藏版寵物：${esc(name)}</b></p><p class="ahint">已經變成你的夥伴了，之後在寵物窩或寵物交換所也能選到牠。</p></div>`;
   }else if(c.kind==="star"){
     S.starUntil=Date.now()+STAR_MS;
@@ -8436,10 +8443,10 @@ async function giveToNpc(id){
     $("#chGift").innerHTML=`<span class="pv">${petSVG(preview,"adult")}</span><div><p class="dbody"><b>隱藏版寵物：${esc(g.petName)}</b></p><p class="ahint">之後在寵物窩或智慧神殿的寵物交換所也能選到牠。</p></div>`;
     const d=$("#cheatDlg"); if(!d.open) d.showModal();
     d.addEventListener("close",async()=>{
-      const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name);   // 換成新寵物時沿用原本的名字
-      if(!S.pet||await uiConfirm(`要把夥伴換成${g.petName}嗎？名字會維持「${keep}」，之後也能在寵物窩換回原本的樣子。`,"換成"+g.petName)){
-        S.pet=Object.assign({},PET_DEFAULT,{type:g.pet,color:g.color,name:keep||g.petName}); save(); queueSync(true); pushFarm(true);
-        toast(keep?`${keep}變成${g.petName}了，名字沒有改喔！`:`${g.petName}成為你的夥伴了！`); renderHUD(); buildMap();
+      const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name), nn=lookOf(g.pet).name?lookName(g.pet):g.petName;   // 每隻各自的名字
+      if(!S.pet||await uiConfirm(`要把隊長換成${g.petName}「${nn}」嗎？${keep?`${keep}會先回家休息，`:""}之後也能在寵物窩換回來。`,"換成"+g.petName)){
+        rememberLooks(); S.pet=Object.assign(petFromLook(g.pet,{color:g.color}),{name:nn}); save(); queueSync(true); pushFarm(true);
+        toast(`${nn}成為你的隊長了！`); renderHUD(); buildMap();
         if(curPlace&&curPlace.id==="myhome") renderPlace();
       }
     },{once:true});
@@ -8502,8 +8509,7 @@ function bondHTML(pet){
 function partyEditHTML(i,f){
   const L=partyList(), used=new Set([S.pet.type].concat(L.filter((x,j)=>j!==i).map(x=>x.type)));
   const kinds=Object.keys(PETS).filter(k=>petKindOK(k)&&!used.has(k));
-  const d=PARTY_DRAFT&&PARTY_DRAFT.i===i?PARTY_DRAFT:(PARTY_DRAFT={i,type:f?f.type:kinds[0],color:f?f.color:(PETS[kinds[0]]&&PETS[kinds[0]].defColor)||0,name:f?f.name:"",
-    wear:f?f.wear:"none",wc:f?f.wc:1,gear:f?f.gear:"",acc:f?f.acc:false,collar:f?f.collar:false});
+  const d=PARTY_DRAFT&&PARTY_DRAFT.i===i?PARTY_DRAFT:(PARTY_DRAFT=Object.assign({i},f?{type:f.type,color:f.color,name:f.name,wear:f.wear,wc:f.wc,gear:f.gear,acc:f.acc,collar:f.collar}:draftFromLook(kinds[0])));
   if(!kinds.includes(d.type)) d.type=kinds[0];
   if(!petColorOK(+d.color,d.type)) d.color=(PETS[d.type]&&PETS[d.type].defColor)||0;
   const dv={type:d.type,color:d.color,wear:!petNoWear(d.type)&&PET_WEAR[d.wear]?d.wear:"none",wc:d.wc,gear:d.gear,acc:!!d.acc&&affFull(d.type),collar:!!d.collar&&!!S.collarOK};
@@ -8570,7 +8576,7 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("change",e=>{
   const n=e.target.name; if(!PARTY_DRAFT) return;
-  if(n==="party-type"){ PARTY_DRAFT.type=e.target.value; PARTY_DRAFT.color=(PETS[e.target.value]&&PETS[e.target.value].defColor)||0; if(petNoWear(e.target.value)) PARTY_DRAFT.wear="none"; PARTY_DRAFT.acc=false; const nm=$("#partyName"); if(nm) PARTY_DRAFT.name=nm.value; renderPlace(); }
+  if(n==="party-type"){ Object.assign(PARTY_DRAFT,draftFromLook(e.target.value)); if(petNoWear(e.target.value)) PARTY_DRAFT.wear="none"; renderPlace(); }   // 換種類：帶出那隻自己的名字和裝扮
   else if(n==="party-color"){ PARTY_DRAFT.color=+e.target.value; const nm=$("#partyName"); if(nm) PARTY_DRAFT.name=nm.value; renderPlace(); }
   else if(["party-wear","party-wc","party-gear","party-acc","party-collar"].includes(n)){
     const D=PARTY_DRAFT, v=e.target.value, nm=$("#partyName"); if(nm) D.name=nm.value; D.open=true;
@@ -11265,6 +11271,36 @@ function partySlots(){                                     // 解鎖幾個跟班
   if(!ks.some(k=>affOf(k)>=AFF_MAX)) return 0;
   return ks.some(k=>bondStars(k)>=3)||JOBS.some(j=>jobTier(j.id)>=2)?2:1;
 }
+/* ---- 每隻動物的名字和裝扮（換隊長、帶跟班、試煉都讀這份） ---- */
+function rememberLooks(){
+  if(!S||(!S.pet&&!Array.isArray(S.party))) return;
+  S.petLooks=S.petLooks&&typeof S.petLooks==="object"?S.petLooks:{};
+  const put=p=>{ if(!p||!PETS[p.type]) return; const o={};
+    ["name","color","baseColor","wear","wc","gear","acc","collar"].forEach(k=>{ if(p[k]!==undefined&&p[k]!==null) o[k]=p[k]; });
+    S.petLooks[p.type]=o; };
+  put(S.pet); (Array.isArray(S.party)?S.party:[]).forEach(put);
+}
+const lookOf=t=>(S.petLooks&&S.petLooks[t]&&typeof S.petLooks[t]==="object")?S.petLooks[t]:{};
+const lookName=t=>{ const n=cleanText(lookOf(t).name||"",8); return n||(PETS[t]?PETS[t].name:""); };
+function gearBusy(g,exceptType){                           // 這個配件正在被隊長或跟班戴著（不算 exceptType 這隻）
+  if(!g) return false;
+  if(S.pet&&S.pet.gear===g&&S.pet.type!==exceptType) return true;
+  return partyList().some(f=>f.gear===g&&f.type!==exceptType);
+}
+function petFromLook(t,def){                               // 換成某隻動物當隊長：用牠自己記住的名字和裝扮
+  const L=lookOf(t), base=Object.assign({type:t,color:PETS[t].defColor||0},def||{});
+  const c=+L.color, color=L.color!=null&&Number.isInteger(c)&&PETC[c]&&petColorOK(c,t)?c:base.color;
+  const g=PET_GEAR[L.gear]&&S.shopOwned&&S.shopOwned[L.gear]&&!partyList().some(f=>f.gear===L.gear&&f.type!==t)?L.gear:"";
+  return petView(Object.assign({},PET_DEFAULT,{type:t,color,name:lookName(t),
+    wear:!petNoWear(t)&&PET_WEAR[L.wear]?L.wear:"none",wc:CLOTH[+L.wc]?+L.wc:1,gear:g,acc:!!L.acc,collar:!!L.collar&&!!S.collarOK},
+    L.baseColor!=null?{baseColor:L.baseColor}:{}));
+}
+function draftFromLook(t,slot){                            // 帶跟班：預設是牠上次的樣子
+  const L=lookOf(t), c=+L.color;
+  const g=PET_GEAR[L.gear]&&S.shopOwned&&S.shopOwned[L.gear]&&!gearBusy(L.gear,t)?L.gear:"";
+  return {type:t,color:L.color!=null&&Number.isInteger(c)&&PETC[c]&&petColorOK(c,t)?c:(PETS[t].defColor||0),
+    name:cleanText(L.name||"",8),wear:L.wear||"none",wc:CLOTH[+L.wc]?+L.wc:1,gear:g,acc:!!L.acc,collar:!!L.collar};
+}
 function partyList(){                                      // 整理過的跟班（不重複、不跟隊長同種、可以用的毛色）
   if(!S.pet||!Array.isArray(S.party)) return [];
   const seen=new Set([S.pet.type]), out=[], usedGear=new Set(S.pet.gear&&PET_GEAR[S.pet.gear]?[S.pet.gear]:[]);
@@ -11531,11 +11567,11 @@ async function shopBuy(id){
 async function adoptShopPet(id,ask){                  // 換成商店買的寵物（名字和商店配件保留）
   const t=shopPetType(id); if(!t||!petUnlocked()) return false;
   if(S.pet&&S.pet.type===t) return false;
-  const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name);
-  if(ask&&S.pet&&!(await uiConfirm(`要把夥伴換成${PETS[t].name}嗎？名字會維持「${keep}」，之後在智慧神殿的寵物交換所也能換回來。`,"換成"+PETS[t].name))) return false;
-  S.pet=Object.assign({},PET_DEFAULT,{type:t,color:PETS[t].defColor||0,name:keep||PETS[t].name,gear:(S.pet&&S.pet.gear)||""});
+  const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name), nn=lookName(t);
+  if(ask&&S.pet&&!(await uiConfirm(`要把隊長換成${PETS[t].name}「${nn}」嗎？${keep}會先回家休息，之後在智慧神殿的寵物交換所也能換回來。`,"換成"+PETS[t].name))) return false;
+  rememberLooks(); S.pet=petFromLook(t);
   save(); queueSync(true); pushFarm(true);
-  toast(keep?`${keep}變成${PETS[t].name}了，名字沒有改喔！`:`${PETS[t].name}成為你的夥伴了！`);
+  toast(`${nn}成為你的隊長了！`);
   renderHUD(); buildMap(); return true;
 }
 function wearShopItem(cat,id){                            // 換上／拿下商店服裝與配件
@@ -11641,11 +11677,11 @@ function grantSnowman(viaRare){                      // 稀有作物圖鑑集滿
   return true;
 }
 async function offerSnowman(){
-  const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name);
+  const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name), nn=lookName("snowman");
   if(S.pet&&S.pet.type==="snowman") return;
-  if(!S.pet||await uiConfirm(`要把夥伴換成雪人嗎？${keep?`名字會維持「${keep}」，`:""}之後也能在寵物窩換回原本的樣子。`,"換成雪人")){
-    S.pet=Object.assign({},PET_DEFAULT,{type:"snowman",color:8,name:keep||"雪人"}); save(); queueSync(true); pushFarm(true);
-    toast(keep?`${keep}變成雪人了！`:"雪人成為你的夥伴了！"); renderHUD(); buildMap();
+  if(!S.pet||await uiConfirm(`要把隊長換成雪人「${nn}」嗎？${keep?`${keep}會先回家休息，`:""}之後也能在寵物窩換回來。`,"換成雪人")){
+    rememberLooks(); S.pet=petFromLook("snowman",{color:8}); save(); queueSync(true); pushFarm(true);
+    toast(`${nn}成為你的隊長了！`); renderHUD(); buildMap();
     if(curPlace&&curPlace.id==="myhome") renderPlace();
   }
 }
@@ -12460,7 +12496,7 @@ $("#placeBody").addEventListener("change",e=>{
     petDraft=petDraft||Object.assign({},PET_DEFAULT);
     petDraft[n==="pet-type"?"type":"color"]=n==="pet-color"?+e.target.value:e.target.value;
     Sound.sfx("cursor");
-    if(n==="pet-type"){ const nm=$("#petName"); if(nm) petDraft.name=nm.value; petDraft=petView(petDraft); renderPlace(); return; }
+    if(n==="pet-type"){ const nm=$("#petName"); if(S.pet){ const L=petFromLook(e.target.value); petDraft.color=L.color; petDraft.name=e.target.value===S.pet.type?(S.pet.name||""):lookName(e.target.value); } else if(nm) petDraft.name=nm.value; petDraft=petView(petDraft); renderPlace(); return; }
     $("#petPv").innerHTML=petSVG(petDraft);
     document.querySelectorAll("#placeBody [data-petth]").forEach(el=>{el.innerHTML=petSVG(Object.assign({},petDraft,{type:el.dataset.petth}));});
     return;
@@ -12500,7 +12536,8 @@ $("#placeBody").addEventListener("click",async e=>{
     const name=cleanText(($("#petName")||{}).value,8);
     if(!name){ $("#petErr").textContent="請幫牠取個名字"; Sound.sfx("error"); const i=$("#petName"); if(i){i.classList.add("missing");i.focus();} return; }
     const isNew=!S.pet;
-    S.pet=petView(Object.assign({},PET_DEFAULT,S.pet||{},petDraft||{},{name,wear:S.pet?S.pet.wear:"none",wc:S.pet?S.pet.wc:1}));
+    const nt=(petDraft&&petDraft.type)||(S.pet&&S.pet.type)||"dog";
+    rememberLooks(); S.pet=petView(Object.assign(S.pet&&S.pet.type===nt?Object.assign({},PET_DEFAULT,S.pet):petFromLook(nt),{type:nt,color:petDraft&&petDraft.color!=null?+petDraft.color:petFromLook(nt).color},{name}));
     petAdopting=false; petDraft=null; save();
     Sound.sfx("achieve"); toast(isNew?`🐾 ${name} 加入了你的冒險！`:`夥伴換成了 ${name}`);
     checkAch(); renderHUD(); renderPlace();

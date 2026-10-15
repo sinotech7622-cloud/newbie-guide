@@ -1316,6 +1316,39 @@ body.tour-lock .mapframe{z-index:41}
 .trbar i{display:block;height:100%;background:repeating-linear-gradient(90deg,#E0525A 0 8px,#B33A42 8px 10px);transition:width .5s}
 .trg{width:110px;height:110px;display:block}
 .trg.down{opacity:.45;transform:rotate(-10deg)}
+.trarena{--lunge:clamp(60px,26vw,250px)}
+.trhero{position:relative;display:block;width:84px;height:84px;z-index:2}
+.trhero .trme{width:100%;height:100%}
+.trwpn{position:absolute;left:60%;top:28%;width:48%;height:48%;transform-origin:15% 85%;transform:rotate(-25deg);pointer-events:none}
+.trwpn svg{display:block}
+.trhero:not(.atk):not(.hurt){animation:trbob 1.8s ease-in-out infinite}
+@keyframes trbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.trhero.atk{animation:tratk .7s cubic-bezier(.35,.05,.3,1) both}
+@keyframes tratk{0%{transform:translateX(0)}12%{transform:translateX(-8px) scaleX(.95)}40%{transform:translateX(var(--lunge)) translateY(-10px)}55%{transform:translateX(calc(var(--lunge) - 8px))}100%{transform:translateX(0)}}
+.trhero.atk .trwpn{animation:trswing .7s ease-in-out both}
+@keyframes trswing{0%,25%{transform:rotate(-25deg)}32%{transform:rotate(-85deg)}48%{transform:rotate(100deg)}70%{transform:rotate(80deg)}100%{transform:rotate(-25deg)}}
+.trhero.hurt{animation:trhurt .55s .3s both}
+@keyframes trhurt{0%{transform:translateX(0);filter:none}15%{transform:translateX(-10px);filter:brightness(1.5) sepia(1) saturate(6) hue-rotate(-40deg)}30%{transform:translateX(8px)}45%{transform:translateX(-6px)}60%{transform:translateX(4px);filter:none}100%{transform:translateX(0)}}
+.trshield{position:absolute;inset:-6px;border-radius:50%;border:3px solid #8FD3F0;box-shadow:0 0 12px #8FD3F0,inset 0 0 12px rgba(143,211,240,.6);animation:trshield .8s .3s both}
+@keyframes trshield{0%{opacity:0;transform:scale(.6)}30%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.15)}}
+.trpetf.atk{position:relative;z-index:2;animation:trpatk .7s .15s cubic-bezier(.35,.05,.3,1) both}
+@keyframes trpatk{0%{transform:translate(0,0)}40%{transform:translate(calc(var(--lunge) + 16px),-26px) rotate(12deg)}60%{transform:translate(calc(var(--lunge) + 6px),0)}100%{transform:translate(0,0)}}
+.trg{position:relative;animation:trfloat 2.6s ease-in-out infinite}
+@keyframes trfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.trg.hit{animation:trhit .55s .28s both}
+@keyframes trhit{0%{transform:translateX(0);filter:none}10%{transform:translateX(12px) rotate(4deg);filter:brightness(2.4)}30%{transform:translateX(-8px) rotate(-3deg);filter:brightness(1.4)}50%{transform:translateX(6px)}70%{transform:translateX(-3px);filter:none}100%{transform:translateX(0)}}
+.trg.hit.down{animation:trhit .55s .28s both,trfall .6s .85s forwards}
+@keyframes trfall{to{transform:rotate(-14deg) translateY(8px);opacity:.45;filter:grayscale(.6)}}
+.trg.down:not(.hit){animation:none}
+.trg.atk{z-index:2;animation:trgatk .65s cubic-bezier(.35,.05,.3,1) both}
+@keyframes trgatk{0%{transform:translateX(0)}15%{transform:translateX(10px) scale(1.04)}45%{transform:translateX(calc(-1 * var(--lunge))) translateY(-8px)}60%{transform:translateX(calc(10px - var(--lunge)))}100%{transform:translateX(0)}}
+.trslash{position:absolute;left:-10%;top:10%;width:120%;height:80%;pointer-events:none;background:linear-gradient(135deg,transparent 44%,#fff 48%,#FFE08A 50%,#fff 52%,transparent 56%);opacity:0;animation:trslash .4s .3s ease-out both}
+.trslash.b{background:linear-gradient(45deg,transparent 44%,#fff 48%,#FFE08A 50%,#fff 52%,transparent 56%);animation-delay:.42s}
+@keyframes trslash{0%{opacity:0;transform:scale(.3)}40%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.15)}}
+@media (max-width:640px){.trhero{width:64px;height:64px}}
+@media (prefers-reduced-motion:reduce){.trhero,.trhero .trwpn,.trpetf,.trg,.trslash,.trshield{animation:none!important}.trslash{opacity:0}}
+.trnewpet{display:flex;align-items:center;gap:12px;margin:10px 0;padding:10px 14px;background:#0B1030;border:2px solid var(--gold);border-radius:6px;text-align:left}
+.trnewpet .pv{width:72px;height:72px;flex:none}
 .trpop{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);margin:0;font-family:var(--pixel);font-size:30px;text-shadow:3px 3px 0 #05071A;animation:trpop .9s ease-out}
 .trpop.ok{color:#FFE08A}.trpop.ng{color:#FF8A8F}
 @keyframes trpop{0%{opacity:0;transform:translate(-50%,-20%) scale(.6)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}100%{opacity:1;transform:translate(-50%,-60%) scale(1)}}
@@ -1384,6 +1417,32 @@ body.tour-lock .mapframe{z-index:41}
 @keyframes jcgrow{0%{transform:translate(-50%,-50%) scale(.15);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
 @keyframes jcspin{0%{transform:translate(-50%,-50%) scale(.3) rotate(0);opacity:1}100%{transform:translate(-50%,-50%) scale(1) rotate(270deg);opacity:0}}
 @media (prefers-reduced-motion:reduce){.jcfx{display:none}}
+.jswsel{width:auto;min-width:200px;max-width:100%}
+.jguard{display:flex;align-items:center;gap:8px}.jguard .pv{width:40px;height:40px;flex:none}
+.upddiff{list-style:none;margin:8px 0;padding:0;font-size:15px;line-height:1.7}
+.upddiff li{padding:3px 10px;border-radius:3px;margin:3px 0;white-space:pre-wrap;word-break:break-word;border-left:4px solid transparent}
+.upddiff li b{margin-right:6px}
+.upddiff .add{background:rgba(95,191,106,.18);border-left-color:#5FBF6A}
+.upddiff .add b{color:#7FE0A8}
+.upddiff .del{background:rgba(216,67,75,.15);border-left-color:#D8434B;text-decoration:line-through;opacity:.85}
+.upddiff .del b{color:#FF8A8F}
+.upddiff .same{color:#9AA3D6;font-size:13px}
+.updcnt{display:inline-flex;gap:8px;margin-left:8px;font-size:13px}
+.updcnt .a{color:#7FE0A8}.updcnt .d{color:#FF8A8F}
+.upditem{border:2px solid rgba(255,255,255,.25);border-radius:6px;padding:8px 12px;margin:8px 0}
+.upditem summary{cursor:pointer;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.upditem[open] summary{margin-bottom:6px}
+.updacts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+#updDlg .body{max-height:60vh;overflow:auto}
+.bstar{color:#F2C14E;letter-spacing:1px}.bstar.big{font-size:18px}
+.bondline{margin:6px 0 0}
+.bondtop{display:flex;gap:14px;align-items:center}
+.bondtop .petbig{flex:none}
+.bondbar i{background:linear-gradient(90deg,#FF9EC4,#F2C14E)}
+.bondsk{padding:8px 12px;border:2px solid rgba(255,255,255,.2);border-radius:6px}
+.bondshop{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.bondit{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border:2px solid rgba(255,255,255,.2);border-radius:6px}
+.bondit small{display:block;color:#B9C0F0}
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -2018,7 +2077,7 @@ footer.site p{margin:4px 0}
           <input id="sGoal" class="ainput" type="number" min="1" max="200" data-ss="goal">
           <label class="chk" style="margin-top:14px"><input type="checkbox" id="sApprOn" data-ss="approvalOn"> 啟用新人審核</label>
           <p class="ahint" style="margin:4px 0 0">新建立角色的人要等管理者在「新人審核」通過，才會解鎖交誼廳、留言等功能；審核前和觀光客一樣只能看。取消勾選並發布後，新人不用審核，審核中的人也會自動通過。</p>
-          <label class="chk" style="margin-top:14px"><input type="checkbox" id="sJobOn" data-ss="jobOn"> 開放轉職（存摺神殿的轉職殿堂）</label>
+          <label class="chk" style="margin-top:14px"><input type="checkbox" id="sJobOn" data-ss="jobOn"> 開放轉職（智慧神殿的轉職殿堂）</label>
           <p class="ahint" style="margin:4px 0 0">取消勾選並發布後，轉職殿堂暫停開放、職業加成暫停；大家已經學會的職業會保留，重新開放後恢復。</p>
           <label class="chk" style="margin-top:14px"><input type="checkbox" id="sTourOn" data-ss="touristOn"> 開放觀光客通道</label>
           <p class="ahint" style="margin:4px 0 0">取消勾選並發布後，觀光客網址就不能再進站；已經是觀光客的人會看到「暫停開放」的畫面。</p>
@@ -2786,6 +2845,13 @@ footer.site p{margin:4px 0}
   </div>
 </dialog>
 
+<dialog id="updDlg" aria-labelledby="updTitle">
+  <div class="window dlg form updwrap">
+    <div class="head"><div><p class="dept" id="updDept">任務內容更新</p><h3 id="updTitle">任務內容更新</h3></div></div>
+    <div class="body" id="updBody"></div>
+    <div class="foot" id="updFoot"></div>
+  </div>
+</dialog>
 <dialog id="jobDlg" aria-labelledby="jdTitle">
   <div class="window dlg form jdwrap">
     <div class="head">
@@ -2817,7 +2883,7 @@ footer.site p{margin:4px 0}
         <p class="seasay" id="seaSay"></p>
       </div>
       <p class="dsec" id="seaSec">牠想幫你的夥伴換個顏色</p>
-      <p class="dbody" id="seaBody">選一個顏色，海怪就會當場施法。<b>銀色和黃金色是海怪限定</b>，選過之後會永久解鎖，之後在存摺神殿換寵物時也能挑；選「保持原色」牠也不會生氣。</p>
+      <p class="dbody" id="seaBody">選一個顏色，海怪就會當場施法。<b>銀色和黃金色是海怪限定</b>，選過之後會永久解鎖，之後在智慧神殿換寵物時也能挑；選「保持原色」牠也不會生氣。</p>
       <div class="seapick" id="seaPick"></div>
     </div>
     <div class="foot seafoot"><span class="ahint" id="seaFoot">選好之後，海怪就會沉回浪花裡。</span></div>
@@ -2929,7 +2995,7 @@ Object.assign(ACC,{sa_beret:{"name": "紅色貝雷帽", "rows": ["......kkkkkk.k
 const PET_GEAR={pg_bandana:{"name": "紅色領巾", "slot": "neck", "rows": ["KKKKKKKKKKK", "KRRRRWRRRRK", ".KRRRRRRRK.", "..KRWRRRK..", "...KRRRK...", "....KRK....", ".....K....."]},pg_antler:{"name": "麋鹿角", "slot": "head", "rows": ["K.K.K......K.K.K", "KBKBK......KBKBK", "KBBBK......KBBBK", ".KBBK......KBBK.", "..KBK......KBK..", "..KBBK....KBBK..", "...KK......KK..."]},pg_witch:{"name": "迷你女巫帽", "slot": "head", "rows": [".......KK.....", "......KVVK....", ".....KVVK.....", "....KVVVVK....", "...KVVVVVVK...", "...KOOOOOOK...", "KKKVVVVVVVVKKK", "KVVVVVVVVVVVVK", ".KKKKKKKKKKKK."]},pg_leaf:{"name": "楓葉領巾", "slot": "neck", "rows": ["KKKKKKKKKKK", "KOOOOOOOOOK", ".KOORRKOOK.", "..KORRRRK..", "...KORRK...", "....KOK....", ".....K....."]},pg_tie:{"name": "小領帶", "slot": "neck", "rows": [".KKKKK.", ".KNNNK.", "..KNK..", ".KNNNK.", ".KNYNK.", ".KNNNK.", ".KNYNK.", "..KNK..", "...K..."]},pg_mushroom:{"name": "蘑菇帽", "slot": "head", "rows": ["....KKKKKK....", "..KKRRWRRRKK..", ".KRRWWRRRWRRK.", "KRRRRRRRWWRRRK", "KRWWRRRRRRRWRK", "KKKKKKKKKKKKKK", ".KEEEEEEEEEEK."]},pg_antenna:{"name": "外星天線", "slot": "head", "rows": ["KK..........KK", "KGK........KGK", ".KK........KK.", "..K........K..", "..K........K..", "..KKKKKKKKKK..", "..KSSSSSSSSK..", "..KKKKKKKKKK.."]},pg_sparkbow:{"name": "亮片領結", "slot": "neck", "rows": ["KK.....KK", "KMMK.KMMK", "KMWMKMMMK", "KMMMKMWMK", "KMMK.KMMK", "KK.....KK"]},pg_tophat:{"name": "紳士小禮帽", "slot": "head", "rows": ["...KKKKKKK...", "...KAAAAAK...", "...KAAAAAK...", "...KAAAAAK...", "...KRRRRRK...", ".KKKAAAAAKKK.", ".KAAAAAAAAAK.", ".KKKKKKKKKKK."]}};
 Object.assign(PET_GEAR,{"pg_job_road": {"name": "迷你反光背心", "slot": "neck", "rows": ["KKKKKKKKKKK", "KOOWOOOWOOK", ".KOOOOOOOK.", "..KOWWWOK..", "...KOOOK...", "....KKK...."], "job": "road"}, "pg_job_civil": {"name": "小安全帽", "slot": "head", "rows": ["....KKKK....", "..KKYYYYKK..", ".KYYYYYYYYK.", "KYYYYWYYYYYK", "KKKKKKKKKKKK"], "job": "civil"}, "pg_job_drain": {"name": "小雨衣帽", "slot": "head", "rows": ["....KKKKK....", "..KKNNNNNKK..", ".KNNSNNNNNNK.", "KNNNNNNNNNNNK", "KKKKKKKKKKKKK"], "job": "drain"}, "pg_job_park": {"name": "迷你無塵帽", "slot": "head", "rows": ["...KKKKKKK...", "..KWWWWWWWK..", ".KWVWWWWWVWK.", ".KWWWWWWWWWK.", "KKKKKKKKKKKKK"], "job": "park"}, "pg_job_plan": {"name": "小綸巾", "slot": "head", "rows": ["..KKKKKKKK..", ".KNNNNNNNNK.", ".KNYNNNNNNK.", "KKNNNNNNNNKK", "..KK....KK.."], "job": "plan"}, "pg_job_renew": {"name": "小護目鏡", "slot": "head", "rows": ["KKK.....KKK", "KSSKKKKKSSK", "KSSKBBBKSSK", "KKKK...KKKK"], "job": "renew"}, "pg_job_eco": {"name": "小花環", "slot": "head", "rows": [".M.G.M.G.M.", "MGMGMGMGMGM", ".G.M.G.M.G."], "job": "eco"}, "pg_job_south": {"name": "小草帽", "slot": "head", "rows": ["....KKKKK....", "...KEEEEEK...", "..KRRRRRRRK..", "KKEEEEEEEEEKK", "KEEEEEEEEEEEK", ".KKKKKKKKKKK."], "job": "south"}, "pg_job_digital": {"name": "小耳機", "slot": "head", "rows": [".KKKKKKKKKKK.", "KAK.......KAK", "KAK.......KAK", "KGK.......KGK", ".K.........K."], "job": "digital"}, "pg_job_support": {"name": "小補給圍巾", "slot": "neck", "rows": [".KKKKKKKKK.", "KMMMMMMMMMK", "KMRRWRRMMMK", "KMMRRRMMMMK", ".KKKKKKKKK."], "job": "support"}});
 const GEAR_PAL={K:"#231F20",R:"#E8453C",W:"#FFFFFF",B:"#A0522D",V:"#7A4BB5",O:"#FF9F43",N:"#27336B",Y:"#FFD23F",G:"#57C35A",S:"#C4CAD8",M:"#E94FA8",A:"#2B2B31",E:"#F4E1C1"};
-const PET_HEAD={dog:{baby:[16,6],adult:[16,2]},cat:{baby:[16,8],adult:[16,4]},guinea:{baby:[16,12],adult:[16,8]},slime:{baby:[16,10],adult:[16,6]},
+const PET_HEAD={guardian:{baby:[16,4],adult:[16,4]},dog:{baby:[16,6],adult:[16,2]},cat:{baby:[16,8],adult:[16,4]},guinea:{baby:[16,12],adult:[16,8]},slime:{baby:[16,10],adult:[16,6]},
   chicken:{baby:[16,5],adult:[16,3]},sheep:{baby:[16,8],adult:[16,3]},horse:{baby:[16,6],adult:[16,2]},rabbit:{baby:[16,8],adult:[16,10]},
   tiger:{baby:[16,8],adult:[16,4]},caterpillar:{baby:[22,12],adult:[25,9]},snowman:{baby:[16,9],adult:[16,3]},scruffy:{baby:[11,9],adult:[12,3]},pom:{baby:[16,14],adult:[16,9]},shiba:{baby:[16,12],adult:[16,6]},panda:{baby:[16,10],adult:[16,5]},duck:{baby:[15,10],adult:[15,5]},fireball:{baby:[16,15],adult:[16,10]},bear:{baby:[16,10],adult:[16,5]},grumpy:{baby:[16,10],adult:[16,5]}};
 function petGearPos(type,st,g){                          // 回傳配件左上角（32 格座標）
@@ -2990,8 +3056,10 @@ const JOB_PAL32={"road":{"0":"#3A2A2A","1":"#E8572E","2":"#A93A1E","3":"#FFB27A"
 const JOB_CAPE32=[{"21":"......>~<<<<<<<<<<<<<<<<~>......","22":"....>~<<<<<<<<<<<<<<<<<<<<~>....","23":"...>~<<<<<<<<<<<<<<<<<<<<<<~>...","24":"..>~<<<<<<<<<<<<<<<<<<<<<<<<~>..","25":"..>~<<<<<<<<<<<<<<<<<<<<<<<<~>..","26":".>~<<><<<<><<<<><<<<><<<<><<<~>.","27":".>~<<><<<<><<<<><<<<><<<<><<<~>.","28":".>~<<><<<<><<<<><<<<><<<<><<<~>.","29":".>~<<><<<<><<<<><<<<><<<<><<<~>.","30":"..>>>>>>>>>>>>>>>>>>>>>>>>>>>>.."},{"21":"......y~<<<<<<<<<<<<<<<<~y......","22":"....y~<<<<<<<<<<<<<<<<<<<<~y....","23":"...y~<<<<<<<<<<<<<<<<<<<<<<~y...","24":"..y~<<<<<<<<<<<<<<<<<<<<<<<<~y..","25":"..y~<<<<<<<<<<<<<<<<<<<<<<<<~y..","26":".y~<<><<<<><<<<><<<<><<<<><<<~y.","27":".y~<<><<<<><<<<><<<<><<<<><<<~y.","28":".y~<<><<<<><<<<><<<<><<<<><<<~y.","29":".y~<<><<<<><<<<><<<<><<<<><<<~y.","30":"..yyyyyyyyyyyyyyyyyyyyyyyyyyyy.."}];
 function jobLook(av){                                   // 角色身上的職業造型：{job,tier,full}
   const j=av&&jobById(av.job); if(!j) return null;
-  const tier=+av.jt===2?2:1;
-  return {job:j.id,tier,full:av.jl!=="cape"};
+  const tier=+av.jt===2?2:1, old=av.jl!=="cape";
+  const out=av.jo!=null?!!+av.jo:old, hat=av.jh!=null?!!+av.jh:old, cape=av.jc!=null?!!+av.jc:true;
+  if(!out&&!hat&&!cape) return null;
+  return {job:j.id,tier,out,hat,cape,full:out};
 }
 function underlay(grid,rows){                           // 只畫在空白處（披風在身體後面）
   Object.entries(rows||{}).forEach(([y,row])=>{
@@ -3079,7 +3147,7 @@ function avatarParts32(av){
   const key=JSON.stringify(Object.assign({},AV_DEFAULT,av||{}));
   if(AV32_CACHE.has(key)) return AV32_CACHE.get(key);
   const J=jobLook(av), JA=J&&JOB_ART32[J.job];
-  const base=avatarParts(JA?Object.assign({},av,{job:null},J.full?{outfit:"tee"}:{}):av);
+  const base=avatarParts(JA?Object.assign({},av,{job:null},J.out?{outfit:"tee"}:{},J.hat?{acc:"none"}:{}):av);   // 職業服裝取代衣服、職業頭飾取代配件
   const hc=(HAIRC[(av||{}).hc]||HAIRC[0])[1];
   const out={rows:refine32(base.rows),pal:Object.assign({},base.pal,{a:tint(hc,.32)})};
   if(JA){
@@ -3089,9 +3157,10 @@ function avatarParts32(av){
         if(mode==="under"){ if(g[y][x]===".") g[y][x]=c; }
         else if(mode==="body"&&c==="k"&&KEEP.includes(g[y][x])) continue;   // 衣服描邊不蓋到下巴、頭髮
         else g[y][x]=c; } });
-    if(J.full) lay(JA.back&&JA.back[J.tier-1],"under");      // 背後：光環、全息面板
-    lay(JOB_CAPE32[J.tier-1],"under");
-    if(J.full){ lay(JA.out[J.tier-1],"body"); lay(JA.hat[J.tier-1],"hat"); }
+    if(J.out||J.hat) lay(JA.back&&JA.back[J.tier-1],"under");      // 背後：光環、全息面板
+    if(J.cape) lay(JOB_CAPE32[J.tier-1],"under");
+    if(J.out) lay(JA.out[J.tier-1],"body");
+    if(J.hat) lay(JA.hat[J.tier-1],"hat");
     out.rows=g.map(r=>r.join(""));
     Object.assign(out.pal,{"8":"#F2C14E","9":"#FFF4C2",y:"#F2C14E"},JOB_PAL32[J.job]);
   }
@@ -3107,12 +3176,14 @@ function avatarParts32(av){
   AV32_CACHE.set(key,out);
   return out;
 }
-function avMaskSVG(av,sc,ox,oy){ const m=ACC[(av||{}).acc]; if(!m||!m.img) return ""; sc=sc||1; const [x,y,w,h]=m.box; return `<image href="${m.img}" x="${(ox||0)+x*sc}" y="${(oy||0)+y*sc}" width="${w*sc}" height="${h*sc}" style="image-rendering:pixelated"/>`; }
+function avMaskSVG(av,sc,ox,oy){ const m=ACC[(av||{}).acc]; if(!m||!m.img) return ""; const JL=jobLook(av); if(JL&&JL.hat) return ""; sc=sc||1; const [x,y,w,h]=m.box; return `<image href="${m.img}" x="${(ox||0)+x*sc}" y="${(oy||0)+y*sc}" width="${w*sc}" height="${h*sc}" style="image-rendering:pixelated"/>`; }
 function avatarSVG(av){const {rows,pal}=avatarParts32(av);return `<svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(rows,1,0,0,pal)}${avMaskSVG(av)}</svg>`;}
 
 /* ---- 寵物（LV3 領養／LV5 換衣服；已取消寶寶型態，一律是成年的樣子） ---- */
 Object.assign(SPR,{guardian:["....KKKKKKKK....","...KAAAAAAAAK...","..KAAYYAAYYAAK..","..KAAFYAAFYAAK..","..KAAAAAAAAAAK..","...KAAKKKKAAK...",".KKKAAAAAAAAKKK.","KAAKAISSSSIAKAAK","KAAKAISAASIAKAAK","KAAKAISSSSIAKAAK",".KKKAAAAAAAAKKK.","...KAAIAAIAAK...","...KAAK..KAAK...","...KAAK..KAAK...","..KAAAK..KAAAK..","..KKKKK..KKKKK.."]});
 Object.assign(SPR,{octopus:["................", "....KKKKKKKK....", "...KVVVVVVVVK...", "...KVVVVVVVVK...", "..KVVVVVVVVVVK..", "..KVVWWVVWWVVK..", "..KVVWKVVKWVVK..", "..KVPVVVVVVPVK..", "..KVVVVKKVVVVK..", "...KVVVVVVVVK...", "..KKVVVVVVVVK...", ".KVVVVVVVVVVVK..", ".KVVKVVKVVKVVK..", ".KVKKVKKVKKVK...", ".KPVKPVKPVKPVK..", "..KK.KK.KK.KK..."]});
+Object.assign(PETS,{guardian:{name:"石像守護者",hidden:true,noWear:true,defColor:3,baby:["...........kkkkk.kkkk...........","..........kGGGGGkGGGGk..........",".........kkGGGGGGGGGGkk.........","........kllkkkkGGkkkklQk........","........klPQkkkkkkkklPQk........",".......kQPkkLllllllQkkPQk.......",".......kQQLLPPPPPPPGGQQQk.......","......kklLLPPPPyyPPPGGlQkk......",".....kklPPPPPPywwyPPPPPPQkk.....",".....klPPPPPPPPyyPPPPPPdPQk.....",".....klPPPPPPPPPPPPPPPPPdQk.....","....klPPPPwnnPPPPPPwnnPdPPQk....","....klPPPPnwnPPPPPPnwnPPPPQk....","....klPPPPnnnPPPPPPnnnPPPPQk....","....klPPPPnnLPPPPPPnnLPPPPQk....","....kQPccPPPPPPPPPPPPPPccPQk....",".....klPPPPPPnPnnPnPPPPPPQk.....",".....kQPPPPPPPnPPnPPPPPPPQk.....","......kQPPPPPPPPPPPPPPPPQk......",".......kQQPPPPPPPPPPPPQQk.......","........kkQQPPPPPPPPQQkk........","......kkkkkkQkkkkkkQkkkkkk......",".....kllQklPkyyyyyykPlkllQk.....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....kQPPPQkPkyyyyyykPkQPPPQk....",".....kQQQkdPPkkkkkkPPPkQQQk.....","......kkkkkdkkPPPPkkkkkkkk......","........kllllQkPPkllllQk........",".......kQPPPPPQkkQPPPPPQk.......","........kQQQQQkQQkQQQQQk........"],adult:["...........kkkkk.kkkk...........","..........kGGGGGkGGGGk..........",".........kkGGGGGGGGGGkk.........","........kllkkkkGGkkkklQk........","........klPQkkkkkkkklPQk........",".......kQPkkLllllllQkkPQk.......",".......kQQLLPPPPPPPGGQQQk.......","......kklLLPPPPyyPPPGGlQkk......",".....kklPPPPPPywwyPPPPPPQkk.....",".....klPPPPPPPPyyPPPPPPdPQk.....",".....klPPPPPPPPPPPPPPPPPdQk.....","....klPPPPwnnPPPPPPwnnPdPPQk....","....klPPPPnwnPPPPPPnwnPPPPQk....","....klPPPPnnnPPPPPPnnnPPPPQk....","....klPPPPnnLPPPPPPnnLPPPPQk....","....kQPccPPPPPPPPPPPPPPccPQk....",".....klPPPPPPnPnnPnPPPPPPQk.....",".....kQPPPPPPPnPPnPPPPPPPQk.....","......kQPPPPPPPPPPPPPPPPQk......",".......kQQPPPPPPPPPPPPQQk.......","........kkQQPPPPPPPPQQkk........","......kkkkkkQkkkkkkQkkkkkk......",".....kllQklPkyyyyyykPlkllQk.....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....kQPPPQkPkyyyyyykPkQPPPQk....",".....kQQQkdPPkkkkkkPPPkQQQk.....","......kkkkkdkkPPPPkkkkkkkk......","........kllllQkPPkllllQk........",".......kQPPPPPQkkQPPPPPQk.......","........kQQQQQkQQkQQQQQk........"]}});
+const GUARD_CROWN=[".............k.yy.k.............","...........k.y....y.k...........",".........kky........ykk.........","........klkyryyrryyrykQk........","........klkyyyyyyyyyykQk........",".......kQPkkkkkkkkkkkkPQk.......",".......kQQLLPPPPPPPGGQQQk.......","......kklLLPPPPyyPPPGGlQkk......",".....kklPPPPPPywwyPPPPPPQkk.....",".....klPPPPPPPPyyPPPPPPdPQk.....",".....klPPPPPPPPPPPPPPPPPdQk.....","....klPPPPwnnPPPPPPwnnPdPPQk....","....klPPPPnwnPPPPPPnwnPPPPQk....","....klPPPPnnnPPPPPPnnnPPPPQk....","....klPPPPnnLPPPPPPnnLPPPPQk....","....kQPccPPPPPPPPPPPPPPccPQk....",".....klPPPPPPnPnnPnPPPPPPQk.....",".....kQPPPPPPPnPPnPPPPPPPQk.....","......kQPPPPPPPPPPPPPPPPQk......",".......kQQPPPPPPPPPPPPQQk.......","........kkQQPPPPPPPPQQkk........","......kkkkkkQkkkkkkQkkkkkk......",".....kllQklPkyyyyyykPlkllQk.....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....klPPPQkPkywyywykPklPPPQk....","....kQPPPQkPkyyyyyykPkQPPPQk....",".....kQQQkdPPkkkkkkPPPkQQQk.....","......kkkkkdkkPPPPkkkkkkkk......","........kllllQkPPkllllQk........",".......kQPPPPPQkkQPPPPPQk.......","........kQQQQQkQQkQQQQQk........"];
 const PETC=[["棕","#A9713F"],["奶油","#F0E0C0"],["白","#F2F2F7"],["灰","#A9ADC6"],["黑","#3A3A45"],["金","#E0B24A"],["粉","#E58FB0"],["綠","#5FA35A"],["藍","#6FA8DE"],
   ["銀色","#DCE3F0"],["黃金","#F6C744"]];
 const PETC_SPECIAL=9;
@@ -3123,6 +3194,32 @@ const PET_ACC={dog:{name:"金骨頭",off:[19,13],rows:["............", "........
 Object.assign(PET_ACC,{pom:{"name": "粉紅蝴蝶結", "off": [18, 5], "rows": [".KK......KK.", "KXXK....KXXK", "KXWXKKKKXXXK", "KXXXKXXKXXXK", "KXXXKKKKXXXK", "KXXK....KXXK", ".KK......KK.", "............", "............", "............", "............", "............"]},shiba:{"name": "小飯糰", "off": [21, 17], "rows": ["....KKKK....", "...KWWWWK...", "..KWWWWWWK..", "..KWWWWWWK..", ".KWWWWWWWWK.", ".KWWKKKKWWK.", "KWWKKKKKKWWK", "KWWKKKKKKWWK", ".KKKKKKKKKK.", "............", "............", "............"]},panda:{"name": "竹子", "off": [21, 12], "rows": ["........GG..", "......GGG...", "....KKG.....", "....KGK.....", "....KGK..GG.", "....KGKGGG..", "....KKKK....", "....KGK.....", "....KGK.....", "....KGK.....", "....KKK.....", "............"]},duck:{"name": "游泳圈", "off": [19, 19], "rows": ["...KKKKKK...", "..KRRWWRRK..", ".KRRKKKKRRK.", "KWWK....KWWK", "KRRK....KRRK", ".KRRKKKKRRK.", "..KWWRRWWK..", "...KKKKKK...", "............", "............", "............", "............"]},fireball:{"name": "棉花糖串", "off": [22, 14], "rows": ["..KKKK......", ".KWWWWK.....", ".KWWWTK.....", "..KKKK......", ".KXXXXK.....", ".KXXXTK.....", "..KKKK......", "....KBK.....", "....KBK.....", "....KBK.....", ".....K......", "............"]},bear:{"name": "蜂蜜罐", "off": [21, 18], "rows": ["...KKKKKK...", "..KYYYYYYK..", "..KKKKKKKK..", ".KTTTTTTTTK.", "KTTYYYYYYTTK", "KTYYWYYYYYTK", "KTYYYYYYYYTK", "KTTYYYYYYTTK", ".KTTTTTTTTK.", "..KKKKKKKK..", "............", "............"]}});
 const ACC_PAL={K:"#231F20",Y:"#FFD23F",R:"#E8453C",G:"#57C35A",B:"#A0522D",S:"#7FD1F7",V:"#9B6BD6",W:"#FFFFFF",X:"#FF8FB1",T:"#C98A2B",I:"#BFC5D2"};
 const affOf=t=>Math.min(AFF_MAX,+((S.aff||{})[t])||0);
+const BOND_MAX=500;
+let LAST_BOND=0;
+function bondS(t){                                         // 每隻寵物的羈絆：e 累積（決定星級）、p 可以花的羈絆點、sk 技能等級
+  S.bond=S.bond||{};
+  const o=S.bond[t]&&typeof S.bond[t]==="object"?S.bond[t]:(S.bond[t]={});
+  o.e=Math.max(0,Math.min(BOND_MAX,+o.e||0)); o.p=Math.max(0,Math.min(BOND_MAX,+o.p||0)); o.sk=Math.max(1,Math.min(3,+o.sk||1));
+  return o;
+}
+const bondPts=t=>S.bond&&S.bond[t]?Math.max(0,Math.min(BOND_MAX,+S.bond[t].p||0)):0;
+const bondStars=t=>S.bond&&S.bond[t]?Math.min(5,Math.floor((+S.bond[t].e||0)/100)):0;
+const petSkLv=t=>S.bond&&S.bond[t]?Math.max(1,Math.min(3,+S.bond[t].sk||1)):1;
+const starsTxt=n=>"★".repeat(n)+"☆".repeat(5-n);
+function affGain(t,n,quiet){                               // 親密度 +n；滿 100 之後多出來的變成羈絆點。回傳是否剛好滿級
+  S.aff=S.aff||{};
+  const before=affOf(t), raw=before+n; S.aff[t]=Math.min(AFF_MAX,raw);
+  LAST_BOND=0;
+  const over=raw-AFF_MAX;
+  if(over>0){
+    const b=bondS(t), s0=Math.floor(b.e/100);
+    LAST_BOND=Math.min(over,BOND_MAX-b.p); b.p+=LAST_BOND; b.e=Math.min(BOND_MAX,b.e+over);
+    const s1=Math.floor(b.e/100), pn=(S.pet&&S.pet.type===t&&S.pet.name)||PETS[t].name;
+    if(s1>s0) setTimeout(()=>{ Sound.sfx("levelup"); toast(`🌟 ${pn}的羈絆升到 ${starsTxt(s1)}！試煉攻擊和看守時間都變強了`); },1700);
+    else if(!quiet) setTimeout(()=>toast(LAST_BOND?`💞 ${pn}的羈絆點 +${LAST_BOND}（${bondPts(t)}/${BOND_MAX}）`:`💞 ${pn}的羈絆點已經存滿 ${BOND_MAX} 點，記得到「寵物窩 → 羈絆」使用`),1600);
+  }
+  return before<AFF_MAX&&S.aff[t]>=AFF_MAX;
+}
 const affFull=t=>affOf(t)>=AFF_MAX;
 const petSwatch=i=>i===RAINBOW?"linear-gradient(135deg,#E8453C,#FF9F43,#FFD23F,#57C35A,#4A7BF7,#9B6BD6)":(PETC[i]||PETC[0])[1];
 function petView(pet){                                 // 這一種寵物還沒滿級：不顯示彩虹色和專屬配件
@@ -3149,7 +3246,8 @@ function myLv(){
   return Math.max(now,best,1);
 }
 const petStage=()=>"adult";                            // 取消寶寶型態
-const dispName=()=>(S.nick||S.name||"新人冒險者");      // 遊戲中顯示暱稱；回報給部門與證書用真實姓名
+const dispName=()=>(S.nick||S.name||"新人冒險者");
+const callName=()=>{ try{ const id=jobCur(); if(id) return jobName(id,jobTier(id))+dispName(); }catch(e){} return dispName(); };   // 村長、總長叫你：有職業就是「職業稱號＋暱稱」      // 遊戲中顯示暱稱；回報給部門與證書用真實姓名
 const petUnlocked=()=>myLv()>=3;
 const petWearUnlocked=()=>myLv()>=5;
 const PET_SWAP_MIN=50;
@@ -3623,7 +3721,7 @@ const ZONES=[
     <p>詳閱：${R(RULES+"＞【保險及健檢規定】＞員工健康檢查年齡級別實施要點")}</p>`}
   ]}
  ]},
-{id:"temple",name:"存摺神殿",real:"智慧存摺",sprite:"temple",tile:[33,11],
+{id:"temple",name:"智慧神殿",real:"智慧存摺",sprite:"temple",tile:[33,11],
  intro:"智慧存摺記錄每年累積的點數。部門一起朝年度 100 點前進，你的點數也在這裡蓋章記錄。",
  chapters:[
   {title:"智慧存摺 2026",sub:"年度目標 100 點",quests:[
@@ -3700,10 +3798,10 @@ const ACH=[
  {id:"z_tavern",icon:"🍺",name:"情報通",desc:"完成情報酒館所有任務"},
  {id:"z_tower",icon:"📜",name:"流程大師",desc:"完成行政塔所有任務"},
  {id:"z_chest",icon:"💰",name:"寶箱獵人",desc:"打開寶物庫所有寶箱"},
- {id:"z_temple",icon:"📘",name:"神殿參拜",desc:"完成存摺神殿任務"},
+ {id:"z_temple",icon:"📘",name:"神殿參拜",desc:"完成智慧神殿任務"},
  {id:"stamp50",icon:"🏅",name:"集點達標",desc:"集點卡達到智慧存摺年度目標"},
  {id:"legend",icon:"👑",name:"園城部傳奇",desc:"完成全部任務"},
- {id:"job1",icon:"⚔️",name:"初次轉職",desc:"在存摺神殿完成第一次轉職"},
+ {id:"job1",icon:"⚔️",name:"初次轉職",desc:"在智慧神殿完成第一次轉職"},
  {id:"job2",icon:"🌟",name:"第二次轉職",desc:"完成第二次轉職"},
  {id:"jobhome",icon:"🏯",name:"本家之光",desc:"用自己組別的職業完成第二次轉職"},
  {id:"job3",icon:"🎓",name:"三職精通",desc:"學會 3 種職業"},
@@ -4251,7 +4349,7 @@ function openSeaMonster(){
     return;
   }
   $("#seaSec").textContent="牠想幫你的夥伴換個顏色";
-  $("#seaBody").innerHTML="選一個顏色，海怪就會當場施法。<b>銀色和黃金色是海怪限定</b>，選過之後會永久解鎖，之後在存摺神殿換寵物時也能挑；選「保持原色」牠也不會生氣。";
+  $("#seaBody").innerHTML="選一個顏色，海怪就會當場施法。<b>銀色和黃金色是海怪限定</b>，選過之後會永久解鎖，之後在智慧神殿換寵物時也能挑；選「保持原色」牠也不會生氣。";
   $("#seaFoot").textContent="選好之後，海怪就會沉回浪花裡。";
   const opts=[{k:9,label:"銀色",sub:"海怪限定"},{k:10,label:"黃金色",sub:"海怪限定"},{k:-1,label:"保持原色",sub:"這次先不用"}];
   $("#seaSay").textContent=`「吼——這隻${PETS[S.pet.type].name}很可愛嘛。要不要我幫牠換個顏色？」`;
@@ -4290,7 +4388,7 @@ function openNpcGift(){
   const lines=(NPC_LINES[who]||{})[theme]||["「挑一件吧。」"];
   $("#npSay").textContent=lines[Math.floor(Math.random()*lines.length)];
   $("#npPick").innerHTML=picks.map(k=>`<button class="seaopt" type="button" data-npgift="${k}">
-      <span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,{outfit:k,jl:"cape"}))}</span>${esc(OUTFIT[k].name)}<small>${esc(OUTFIT[k].theme||"秘密服裝")}</small></button>`).join("");
+      <span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,{outfit:k,jo:0}))}</span>${esc(OUTFIT[k].name)}<small>${esc(OUTFIT[k].theme||"秘密服裝")}</small></button>`).join("");
   const d=$("#npcDlg"); if(!d.open) d.showModal();
   Sound.sfx("open");
   return true;
@@ -4352,9 +4450,9 @@ function chatPick(who){
 }
 function jobGreet(who){
   const id=jobCur(); if(!id) return "";
-  const jn=jobName(id,jobTier(id));
-  const L=who==="chief"?[`「喔！這不是${jn}嗎？村裡的田就拜託你多照顧了。」`,`「${jn}今天也來巡視啦，辛苦了！」`,`「當上${jn}之後，走路都有風了呢。」`]
-    :[`「${jn}，數位總合辦公室隨時歡迎你來交流。」`,`「聽說${jn}最近很活躍，我都看到了。」`,`「${jn}的裝備真帥，改天借我研究一下。」`];
+  const jn=jobName(id,jobTier(id)), full=callName();
+  const L=who==="chief"?[`「喔！這不是${full}嗎？村裡的田就拜託你多照顧了。」`,`「${full}，今天也來巡視啦，辛苦了！」`,`「${full}！當上${jn}之後，走路都有風了呢。」`]
+    :[`「${full}，數位總合辦公室隨時歡迎你來交流。」`,`「聽說${full}最近很活躍，我都看到了。」`,`「${full}，你的裝備真帥，改天借我研究一下。」`];
   return L[Math.floor(Math.random()*L.length)];
 }
 function showChatLine(){
@@ -4671,7 +4769,7 @@ function openZone(id,push){
   syncSoundBtns();
   renderZone();
   try{ renderZoneNpc(id); }catch(e){}
-  if(hadNew){ setTimeout(()=>toast("這個地點的任務內容有更新，標示「更新」的就是新的或修改過的"),600); }
+  if(hadNew&&zoneQuestNew(z)){ setTimeout(()=>toast("標示「更新」的任務內容修改過了，點開會告訴你改了哪裡"),600); }
   clearZoneNew(id);                       // 標記留到這次瀏覽結束，下次不再顯示
   $("#viewMap").hidden=true; $("#viewPlace").hidden=true; $("#viewZone").hidden=false; curPlace=null;
   if(push!==false){try{history.replaceState(null,"","#"+id);}catch(e){}}
@@ -4704,7 +4802,7 @@ function qRow(q,showWhere){
   const d=!!S.done[q.id];
   return `<li><button type="button" class="qbtn ${d?"done":""}" data-q="${q.id}">
     <span class="star" aria-hidden="true">${d?"★":"☆"}</span>
-    <span class="qt">${q.title}${QUEST_NEW[q.id]?'<span class="newtag">更新</span>':(S.bonusPend||[]).includes(q.id)?'<span class="newtag">NEW</span>':""}${isFav(q.id)?'<span class="heart" aria-label="已加入最愛">♥</span>':""}${showWhere?`<span class="where">${q.zone.name}・${q.chapter}</span>`:""}<span class="sr">${d?"（已完成）":"（未完成）"}</span></span>
+    <span class="qt">${q.title}${QUEST_NEW[q.id]?'<span class="newtag" title="內容修改過了，點開看改了哪裡">更新</span>':(S.bonusPend||[]).includes(q.id)?'<span class="newtag">NEW</span>':""}${isFav(q.id)?'<span class="heart" aria-label="已加入最愛">♥</span>':""}${showWhere?`<span class="where">${q.zone.name}・${q.chapter}</span>`:""}<span class="sr">${d?"（已完成）":"（未完成）"}</span></span>
     <span class="xp">${d?"CLEAR":"+10 EXP"}</span></button></li>`;
 }
 function showMap(){
@@ -4749,7 +4847,7 @@ function bindPassbook(){
   upd();
 }
 
-/* ================= 轉職：存摺神殿的「轉職殿堂」 ================= */
+/* ================= 轉職：智慧神殿的「轉職殿堂」 ================= */
 Object.assign(TIERS,{J:{name:"神器",stars:"✦✦",cls:"t-j",order:6}});
 const JOB_INFO={
   road:{flavor:"在國道與省道之間疾馳的騎兵，走到哪裡都比別人快一步。",b1:["地圖走路速度 +50%","寵物猜拳每天 3 → 4 局"],b2:["串門子時寵物友誼額外 +1","地圖上走過的地方留下疾行腳印"],furn:"交通錐",weapon:"國道指揮棒",gear:"迷你反光背心"},
@@ -4866,18 +4964,27 @@ document.addEventListener("click",e=>{                   // 滑鼠點、手機�
   const now=Date.now(); if(now-JC_LAST<70) return; JC_LAST=now;
   try{ jcFx(e.clientX,e.clientY,id,e.target); }catch(_){}
 },true);
+function jobWear(){                                      // 職業服裝、職業頭飾、披風各自穿脫
+  const J=jobS();
+  if(!J.wear||typeof J.wear!=="object"){ const l=J.look; J.wear=l==="off"?{out:0,hat:0,cape:0}:l==="cape"?{out:0,hat:0,cape:1}:{out:1,hat:1,cape:1}; }
+  ["out","hat","cape"].forEach(k=>J.wear[k]=J.wear[k]?1:0);
+  return J.wear;
+}
+function jobWearAll(){ Object.assign(jobWear(),{out:1,hat:1,cape:1}); }
 function syncJobAv(){                                   // 角色身上的職業造型跟著目前職業
   if(!S.av) return false;
-  const id=jobCur(), J=S.job||{};
-  const want=id&&J.look!=="off"?{job:id,jt:jobTier(id),jl:J.look==="cape"?"cape":"full"}:null;
-  const now=S.av.job?{job:S.av.job,jt:S.av.jt,jl:S.av.jl}:null;
+  const id=jobCur(), w=id?jobWear():null;
+  const want=id&&(w.out||w.hat||w.cape)?{job:id,jt:jobTier(id),jo:w.out,jh:w.hat,jc:w.cape,jl:w.out?"full":"cape"}:null;
+  const now=S.av.job?{job:S.av.job,jt:S.av.jt,jo:S.av.jo,jh:S.av.jh,jc:S.av.jc,jl:S.av.jl}:null;
   if(JSON.stringify(want)===JSON.stringify(now)) return false;
-  const av=Object.assign({},S.av); delete av.job; delete av.jt; delete av.jl;
+  const av=Object.assign({},S.av); ["job","jt","jl","jo","jh","jc"].forEach(k=>delete av[k]);
   S.av=want?Object.assign(av,want):av; save();
   return true;
 }
-function jobOutfitChanged(){                            // 自己換了衣服：職業造型改成只穿披風
-  const J=S.job; if(J&&J.cur&&J.look!=="off"&&J.look!=="cape"){ J.look="cape"; syncJobAv(); }
+function jobOutfitChanged(part){                        // 自己換了衣服（或戴上配件）：脫下對應的職業服裝（或職業頭飾）
+  const J=S.job; if(!J||!J.cur) return;
+  const w=jobWear(); if(part==="hat") w.hat=0; else w.out=0;
+  syncJobAv();
 }
 const jobFindsDone=()=>FINDS.filter(f=>findSeen(f.id)).length;
 const jobWeaponList=()=>WEAPONS.filter(w=>!w.job);
@@ -4917,20 +5024,26 @@ function takeBless(){
 }
 /* ---- 換職、造型 ---- */
 function jobSwapLeft(){ const J=jobS(); return J.swapDay===dayKey()?0:1; }
-async function jobSwap(id){
+async function jobSwap(id,direct){
   if(touristBlock("換職")) return;
   if(!jobTier(id)||jobCur()===id) return;
   if(!jobSwapLeft()){ toast("今天已經換過職業了，明天再換"); Sound.sfx("error"); return; }
-  if(!(await uiConfirm(`要換成「${jobName(id,jobTier(id))}」嗎？今天就不能再換了。`,"換職"))) return;
-  const J=jobS(); J.cur=id; J.swapDay=dayKey(); if(J.look==="off") J.look="full";
+  if(!direct&&!(await uiConfirm(`要換成「${jobName(id,jobTier(id))}」嗎？今天就不能再換了。`,"換職"))) return;
+  const J=jobS(); J.cur=id; J.swapDay=dayKey(); { const w=jobWear(); if(!w.out&&!w.hat&&!w.cape) jobWearAll(); }
   syncJobAv(); save(); queueSync(true); Sound.sfx("levelup");
   toast(`⚔️ 換成「${jobName(id,jobTier(id))}」了！`);
   lastPresence=0; try{ loungePresence(true,{card:true}); }catch(e){}
   renderJobHall(); renderHUD();
 }
 function jobSetLook(v){
-  const J=jobS(); J.look=v==="cape"||v==="off"?v:"full"; syncJobAv(); save(); queueSync();
-  Sound.sfx("cursor"); renderJobHall(); renderHUD();
+  if(v==="off") Object.assign(jobWear(),{out:0,hat:0,cape:0}); else if(v==="cape") Object.assign(jobWear(),{out:0,hat:0,cape:1}); else jobWearAll();
+  jobWearDone();
+}
+function jobWearToggle(part){ const w=jobWear(); if(!(part in w)) return; w[part]=w[part]?0:1; jobWearDone(); }
+function jobWearDone(){
+  syncJobAv(); save(); queueSync(); try{ pushFarm(); }catch(e){}
+  Sound.sfx("cursor"); renderJobHall(); renderHUD(); try{ buildMap(); }catch(e){}
+  if(typeof curPlace!=="undefined"&&curPlace&&curPlace.id==="myhome") try{ renderPlace(); }catch(e){}
 }
 /* ---- 轉職殿堂畫面 ---- */
 function jobHallBadge(){
@@ -4952,7 +5065,7 @@ function priestLine(){
 }
 function renderJobHall(){
   const box=$("#jobHall"); if(!box) return;
-  jobS();
+  jobS(); try{ checkGuardianPet(); }catch(e){}
   const head=`<div class="nqtop jhtop"><span class="npcface" aria-hidden="true">${avatarSVG(PRIEST_AV)}</span><div><p class="mename">神殿祭司<span class="ahint">・轉職殿堂 ${helpBtn("job")}</span></p><p class="dbody">${esc(priestLine())}</p></div></div>`;
   let body="";
   if(!jobOn()) body=`<p class="empty-note">管理者暫停了轉職功能。已經學會的職業會保留，重新開放後就會恢復。</p>`;
@@ -4971,7 +5084,7 @@ function jobListHTML(locked){
   const cur=jobCur();
   return `<div class="jobgrid">${JOBS.map(j=>{
     const t=jobTier(j.id), home=jobHomeOf(j.id), info=JOB_INFO[j.id];
-    const look=Object.assign({},S.av||AV_DEFAULT,{job:j.id,jt:Math.max(1,t),jl:"full"});
+    const look=Object.assign({},S.av||AV_DEFAULT,{job:j.id,jt:Math.max(1,t),jo:1,jh:1,jc:1});
     const state=cur===j.id?`<span class="st st-gold">目前職業</span>`:t>=2?`<span class="st st-ok">已完成二轉</span>`:t?`<span class="st st-ok">已學會</span>`:"";
     return `<button type="button" class="jobcard${cur===j.id?" on":""}${locked?" locked":""}" style="--jc:${j.color}" data-jobopen="${j.id}">
       <span class="jctop">${jobMarkHTML(j.id,t)}${home?`<span class="jhome">本家</span>`:""}</span>
@@ -4982,6 +5095,7 @@ function jobListHTML(locked){
       ${state}
     </button>`;
   }).join("")}</div>
+  <p class="ahint jguard"><span class="pv" aria-hidden="true">${petSVG({type:"guardian",color:3,name:"石像守護者",wear:"none",wc:0},"adult")}</span>${S.petKinds&&S.petKinds.guardian?"已經把神殿的石像守護者帶回家了！":`學會全部 ${JOBS.length} 個職業（目前 ${jobLearned().length} / ${JOBS.length}），神殿的石像守護者就會成為你的寵物。`}</p>
   <p class="ahint">本家好處（選自己組別的職業）：轉職禮包加倍、名片上的「本家」標記、試煉守護者的血少 20%。轉職不影響任務進度、智慧存摺點數和結業。</p>`;
 }
 function jobMineHTML(){
@@ -4990,7 +5104,7 @@ function jobMineHTML(){
   const others=jobLearned().filter(x=>x.id!==id);
   const fd=jobFindsDone(), wd=jobWeaponsDone(), wt=jobWeaponList().length;
   return `<div class="jmine" style="--jc:${j.color}">
-    <span class="jmface" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,{job:id,jt:t,jl:J.look==="cape"?"cape":"full"}))}</span>
+    <span class="jmface" aria-hidden="true">${avatarSVG(S.av||AV_DEFAULT)}</span>
     <div class="jminfo">
       <p class="jmname">${jobMarkHTML(id,t)}<b>${esc(jobName(id,t))}</b>${jobHomeOf(id)?`<span class="jhome">本家</span>`:""}<span class="st st-info">${t>=2?"第二次轉職":"第一次轉職"}</span></p>
       <p class="ahint" style="margin:0">${esc(info.flavor)}</p>
@@ -4999,10 +5113,11 @@ function jobMineHTML(){
   </div>
   <div class="jrow">
     <span class="jlab">職業造型</span>
-    ${[["full","完整造型"],["cape","只穿披風"],["off","不顯示"]].map(([v,n])=>`<button type="button" class="themechip${(J.look||"full")===v?" on":""}" data-joblook="${v}" aria-pressed="${(J.look||"full")===v}">${n}</button>`).join("")}
+    ${[["out","👕 職業服裝"],["hat","🎩 職業頭飾"],["cape","🧣 披風"]].map(([v,n])=>{ const on=!!jobWear()[v]; return `<button type="button" class="themechip${on?" on":""}" data-jobwear="${v}" aria-pressed="${on}">${n}${on?"・穿著":""}</button>`; }).join("")}
+    <span class="ahint">點一下穿上或脫下。脫下職業服裝會換回衣櫃的衣服、脫下職業頭飾會換回原本的配件；衣櫃和「角色設定」裡也能直接選職業服裝、職業頭飾。</span>
   </div>
   ${jcOwned().length?`<div class="jrow"><span class="jlab">職業鼠標</span>${jcOwned().map(o=>`<button type="button" class="themechip jcchip${jcCur()===o.id?" on":""}" data-jobcursor="${o.id}" aria-pressed="${jcCur()===o.id}"><img src="${JOB_CURSOR[o.id][0]}" alt="" width="20" height="20">${esc(o.n2)}</button>`).join("")}<button type="button" class="themechip${jcCur()?"":" on"}" data-jobcursor="off" aria-pressed="${!jcCur()}">系統預設</button><span class="ahint">點畫面時會出現職業特效（手機也有）</span></div>`:""}
-  ${others.length?`<div class="jrow"><span class="jlab">換職</span>${others.map(o=>`<button type="button" class="act ghost" data-jobswap="${o.id}" ${jobSwapLeft()?"":"disabled"}>${jobMarkHTML(o.id,jobTier(o.id),true)}${esc(jobName(o.id,jobTier(o.id)))}</button>`).join("")}<span class="ahint">${jobSwapLeft()?"每天可以換 1 次，免費":"今天已經換過了"}</span></div>`:""}
+  ${others.length?`<div class="jrow"><label class="jlab" for="jobSwapSel">換職</label><select id="jobSwapSel" class="ainput jswsel" ${jobSwapLeft()?"":"disabled"}>${others.map(o=>`<option value="${o.id}">${esc(jobName(o.id,jobTier(o.id)))}（${esc(o.group)}）</option>`).join("")}</select><button type="button" class="act" data-jobswapgo ${jobSwapLeft()?"":"disabled"}>確定</button><span class="ahint">${jobSwapLeft()?"每天可以換 1 次，免費":"今天已經換過了，明天再來"}</span></div>`:""}
   <div class="jrow"><span class="jlab">每日祝福</span>${blessLeft()?`<button type="button" class="act" data-jobbless>✨ 抽今天的祝福${jb("support",2)?`（還有 ${blessLeft()} 次）`:""}</button>`:`<span class="ahint">今天的祝福領過了，明天再來</span>`}<span class="ahint">種子 5～20 顆、肥料或寵物零食</span></div>
   ${t<2?`<div class="j2box">
     <p class="dsec">第二次轉職：${esc(j.n2)}</p>
@@ -5033,8 +5148,8 @@ function openJobDetail(id){
     act=`<span class="ahint">${t>=2?"已完成第二次轉職":esc(r2||`第二次轉職：供品 ${JOB_COST[1]} 顆種子・今天還能挑戰 ${jobTriesLeft(2)} 次`)}</span>${swap}${t<2?`<button type="button" class="act" data-jobtrial="${id}|2" ${r2?"disabled":""}>挑戰第二次轉職</button>`:""}`;
   }
   $("#jdBody").innerHTML=`<div class="jdlooks">
-      <figure><span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},base,{job:id,jt:1,jl:"full"}))}</span><figcaption>${esc(j.n1)}</figcaption></figure>
-      <figure><span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},base,{job:id,jt:2,jl:"full"}))}</span><figcaption>${esc(j.n2)}<br><small>金邊披風・光環</small></figcaption></figure>
+      <figure><span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},base,{job:id,jt:1,jo:1,jh:1,jc:1}))}</span><figcaption>${esc(j.n1)}</figcaption></figure>
+      <figure><span class="pv" aria-hidden="true">${avatarSVG(Object.assign({},base,{job:id,jt:2,jo:1,jh:1,jc:1}))}</span><figcaption>${esc(j.n2)}<br><small>金邊披風・光環</small></figcaption></figure>
     </div>
     <p class="dbody">${esc(info.flavor)}</p>
     <p class="dsec">第一次轉職的加成</p><ul class="jbonus">${info.b1.map(b=>`<li>${esc(b)}</li>`).join("")}</ul>
@@ -5047,13 +5162,31 @@ function openJobDetail(id){
   Sound.sfx("open");
 }
 /* ---- 神殿試煉 ---- */
-const PET_SKILL={dog:["忠犬護主","block1"],cat:["貓的直覺","hint"],guinea:["囤糧","combo"],slime:["分裂","double"],chicken:["早起","opener"],sheep:["毛茸茸","wool"],horse:["衝鋒","charge"],rabbit:["跳躍","skip"],
+const PET_SKILL={guardian:["石像之盾","wool"],dog:["忠犬護主","block1"],cat:["貓的直覺","hint"],guinea:["囤糧","combo"],slime:["分裂","double"],chicken:["早起","opener"],sheep:["毛茸茸","wool"],horse:["衝鋒","charge"],rabbit:["跳躍","skip"],
   scruffy:["亂咬一通","chaos"],grumpy:["氣到爆炸","rage"],pom:["蓬蓬護盾","block1"],shiba:["倔強衝鋒","charge"],panda:["圓滾滾","wool"],duck:["呱呱提示","hint"],fireball:["燃燒","double"],bear:["熊掌開場","opener"],
   tiger:["猛虎連擊","combo"],caterpillar:["破繭","skip"],snowman:["冰凍護盾","block1"]};
-const SKILL_DESC={block1:"第一次答錯時擋下來，不扣心",hint:"每場 1 次，刪去 1 個錯誤選項（自己按）",combo:"連續答對時，從第 2 題起每題再 +3（最多 +9）",double:"答對時有一半機率再追加一次寵物攻擊",
-  opener:"開場先攻擊一次，守護者 −12",wool:"答錯時有一半機率擋下，不扣心",charge:"第一題答對時，傷害加倍",skip:"每場 1 次，跳過這題換一題（自己按）",chaos:"每次答對，寵物攻擊力隨機變成 0～2 倍",rage:"答錯之後的下一題答對，傷害加倍"};
+const SKV={block1:[1,2,3],hint:[1,2,3],skip:[1,2,3],combo:[[3,9],[4,12],[5,15]],double:[.5,.65,.8],opener:[12,20,30],wool:[.5,.6,.7],charge:[1,2,3],chaos:[[0,2],[.5,2],[1,2.5]],rage:[2,2.5,3]};
+const skv=(k,lv)=>(SKV[k]||[])[Math.max(1,Math.min(3,lv||1))-1];
+const SK_COST=[0,150,300], SK_STAR=[0,2,4];               // 升到 Lv2：150 點、★2；Lv3：300 點、★4
+function skillDesc(k,lv){
+  const v=skv(k,lv), pct=x=>Math.round(x*100)+"%";
+  switch(k){
+    case "block1": return v===1?"第一次答錯時擋下來，不扣心":`前 ${v} 次答錯都擋下來，不扣心`;
+    case "hint": return `每場 ${v} 次，刪去 1 個錯誤選項（自己按）`;
+    case "skip": return `每場 ${v} 次，跳過這題換一題（自己按）`;
+    case "combo": return `連續答對時，從第 2 題起每題再 +${v[0]}（最多 +${v[1]}）`;
+    case "double": return `答對時有 ${pct(v)} 機率再追加一次寵物攻擊`;
+    case "opener": return `開場先攻擊一次，守護者 −${v}`;
+    case "wool": return `答錯時有 ${pct(v)} 機率擋下，不扣心`;
+    case "charge": return v===1?"第一題答對時，傷害加倍":`前 ${v} 題答對時，傷害加倍`;
+    case "chaos": return `每次答對，寵物攻擊力隨機變成 ${v[0]}～${v[1]} 倍`;
+    case "rage": return `答錯之後的下一題答對，傷害 ×${v}`;
+  }
+  return "";
+}
+const SKILL_DESC=Object.fromEntries(Object.keys(SKV).map(k=>[k,skillDesc(k,1)]));
 const petSkill=t=>PET_SKILL[t]||["夥伴的守護","block1"];
-function petAtk(t){ const a=affOf(t); return (a>=100?10:a>=90?9:a>=60?7:a>=30?5:3)+(S.collarOK?2:0); }
+function petAtk(t){ const a=affOf(t); return (a>=100?10:a>=90?9:a>=60?7:a>=30?5:3)+(S.collarOK?2:0)+bondStars(t); }   // 羈絆每顆星 +1
 function trialPets(){ return Object.keys(PETS).filter(t=>petKindOK(t)&&(affOf(t)>0||(S.pet&&S.pet.type===t))); }
 function trialPetView(t){ return S.pet&&S.pet.type===t?petView(S.pet):{type:t,color:PETS[t].defColor||0,name:"",wear:"none",gear:""}; }
 const trialWeapons=()=>WEAPONS.filter(w=>weaponOwned(w.id)&&JOB_WDMG[w.tier]);
@@ -5093,8 +5226,10 @@ function startTrial(){
   save(); queueSync(true);
   const {wd,pd}=trialDmgParts();
   Object.assign(TR,{wd,pd,max:trialMaxHp(),hp:trialMaxHp(),hearts:trialMaxHearts(),maxHearts:trialMaxHearts(),skill:TR.pet?petSkill(TR.pet)[1]:"",
-    pool:trialPool(),n:0,streak:0,rage:false,blockUsed:false,hintUsed:false,skipUsed:false,log:[],paid:JOB_COST[TR.tier-1]});
-  if(TR.skill==="opener"){ TR.hp=Math.max(1,TR.hp-12); TR.log.push({c:"ok",t:`${petNameOf(trialPetView(TR.pet))||PETS[TR.pet].name}的「${petSkill(TR.pet)[0]}」：開場攻擊，守護者 −12`}); }
+    pool:trialPool(),n:0,streak:0,rage:false,log:[],paid:JOB_COST[TR.tier-1]});
+  TR.skLv=TR.pet?petSkLv(TR.pet):1;
+  TR.blockLeft=TR.skill==="block1"?skv("block1",TR.skLv):0; TR.hintLeft=TR.skill==="hint"?skv("hint",TR.skLv):0; TR.skipLeft=TR.skill==="skip"?skv("skip",TR.skLv):0;
+  if(TR.skill==="opener"){ const v=skv("opener",TR.skLv); TR.hp=Math.max(1,TR.hp-v); TR.log.push({c:"ok",t:`${petNameOf(trialPetView(TR.pet))||PETS[TR.pet].name}的「${petSkill(TR.pet)[0]}」：開場攻擊，守護者 −${v}`}); }
   trialNextQ(); Sound.sfx("levelup");
   renderTrial();
 }
@@ -5105,20 +5240,21 @@ function trialAnswer(i){
   const notes=[];
   if(ok){
     let p=TR.pd;
-    if(TR.skill==="chaos"){ p=Math.round(p*Math.random()*2); notes.push(`亂咬一通：寵物攻擊 ${p}`); }
-    if(TR.skill==="combo"&&TR.streak>=1){ const b=Math.min(9,3*TR.streak); p+=b; notes.push(`囤糧連擊 +${b}`); }
+    const SL=TR.skLv||1;
+    if(TR.skill==="chaos"){ const [lo,hi]=skv("chaos",SL); p=Math.round(p*(lo+Math.random()*(hi-lo))); notes.push(`亂咬一通：寵物攻擊 ${p}`); }
+    if(TR.skill==="combo"&&TR.streak>=1){ const [st,mx]=skv("combo",SL), b=Math.min(mx,st*TR.streak); p+=b; notes.push(`囤糧連擊 +${b}`); }
     let dmg=TR.wd+p;
-    if(TR.skill==="charge"&&TR.n===1){ dmg*=2; notes.push("衝鋒：傷害加倍"); }
-    if(TR.skill==="rage"&&TR.rage){ dmg*=2; TR.rage=false; notes.push("氣到爆炸：傷害加倍"); }
-    if(TR.skill==="double"&&TR.pd&&Math.random()<.5){ dmg+=p; notes.push(`${pn}追加攻擊 +${p}`); }
+    if(TR.skill==="charge"&&TR.n<=skv("charge",SL)){ dmg*=2; notes.push("衝鋒：傷害加倍"); }
+    if(TR.skill==="rage"&&TR.rage){ const m=skv("rage",SL); dmg=Math.round(dmg*m); TR.rage=false; notes.push(`氣到爆炸：傷害 ×${m}`); }
+    if(TR.skill==="double"&&TR.pd&&Math.random()<skv("double",SL)){ dmg+=p; notes.push(`${pn}追加攻擊 +${p}`); }
     TR.streak++; TR.hp=Math.max(0,TR.hp-dmg); TR.lastDmg=dmg; TR.lastW=TR.wd; TR.lastP=dmg-TR.wd;
     TR.log.push({c:"ok",t:`第 ${TR.n} 題 答對・守護者 −${dmg}${notes.length?`（${notes.join("、")}）`:""}`});
     Sound.sfx("achieve");
   }else{
     TR.streak=0; TR.lastDmg=0;
     let blocked="";
-    if(TR.skill==="block1"&&!TR.blockUsed){ TR.blockUsed=true; blocked=`${pn}擋住了！`; }
-    else if(TR.skill==="wool"&&Math.random()<.5) blocked=`${pn}用毛擋住了！`;
+    if(TR.skill==="block1"&&TR.blockLeft>0){ TR.blockLeft--; blocked=`${pn}擋住了！`; }
+    else if(TR.skill==="wool"&&Math.random()<skv("wool",TR.skLv||1)) blocked=`${pn}用毛擋住了！`;
     if(!blocked) TR.hearts--;
     if(TR.skill==="rage") TR.rage=true;
     TR.log.push({c:"ng",t:`第 ${TR.n} 題 答錯・${blocked||"你失去 1 顆心"}`});
@@ -5130,13 +5266,13 @@ function trialAnswer(i){
 }
 function trialSkill(kind){
   if(!TR||TR.phase!=="q") return;
-  if(kind==="hint"&&TR.skill==="hint"&&!TR.hintUsed){
+  if(kind==="hint"&&TR.skill==="hint"&&TR.hintLeft>0){
     const wrong=TR.q.opts.map((o,i)=>i).filter(i=>i!==TR.q.ans&&!TR.gone.includes(i));
     if(!wrong.length) return;
-    TR.gone.push(wrong[Math.floor(Math.random()*wrong.length)]); TR.hintUsed=true;
+    TR.gone.push(wrong[Math.floor(Math.random()*wrong.length)]); TR.hintLeft--;
     TR.log.push({c:"ok",t:`「${petSkill(TR.pet)[0]}」：刪去了一個錯誤選項`}); Sound.sfx("select");
-  }else if(kind==="skip"&&TR.skill==="skip"&&!TR.skipUsed){
-    TR.skipUsed=true; TR.log.push({c:"ok",t:`「${petSkill(TR.pet)[0]}」：跳過這題，換一題`}); trialNextQ(); Sound.sfx("select");
+  }else if(kind==="skip"&&TR.skill==="skip"&&TR.skipLeft>0){
+    TR.skipLeft--; TR.log.push({c:"ok",t:`「${petSkill(TR.pet)[0]}」：跳過這題，換一題`}); trialNextQ(); Sound.sfx("select");
   }
   renderTrial();
 }
@@ -5167,7 +5303,7 @@ function trialWin(){
   const id=TR.job, t=TR.tier, home=TR.home, J=jobS(), info=JOB_INFO[id];
   delete J.live;
   const first=!jobLearned().length;
-  J.have[id]=t; J.cur=id; J.at=J.at||{}; J.at[id+t]=Date.now(); if(!J.look||J.look==="off") J.look="full";
+  J.have[id]=t; J.cur=id; J.at=J.at||{}; J.at[id+t]=Date.now(); jobWearAll();      // 轉職完成：換上全套新造型
   giveSeedSpread(home?200:100);
   S.fert=S.fert||{}; S.fert.fz_basic=(S.fert.fz_basic||0)+(home?4:2);
   shopState(); S.shopOwned=S.shopOwned||{};
@@ -5180,7 +5316,11 @@ function trialWin(){
     if(JOB_CURSOR[id]){ J.cursor=id; got.push(`職業鼠標「${jobById(id).n2}」與點擊特效（已換上）`); }
     if(id==="plan") farmPlots();
   }
-  if(TR.pet){ S.aff=S.aff||{}; const b=affOf(TR.pet); S.aff[TR.pet]=Math.min(AFF_MAX,b+3); if(b<AFF_MAX&&S.aff[TR.pet]>=AFF_MAX&&S.pet&&S.pet.type===TR.pet) setTimeout(()=>affinityMax(TR.pet),400); }
+  if(jobLearned().length>=JOBS.length&&!(S.petKinds&&S.petKinds.guardian)){   // 10 個職業全部學會：隱藏版寵物
+    S.petKinds=S.petKinds||{}; S.petKinds.guardian=true; TR.newPet=true;
+    got.push("🗿 隱藏版寵物「石像守護者」（10 個職業全部學會）");
+  }
+  if(TR.pet){ if(affGain(TR.pet,3,true)&&S.pet&&S.pet.type===TR.pet) setTimeout(()=>affinityMax(TR.pet),400); }
   syncJobAv(); save(); queueSync(true); checkAch();
   lastPresence=0; try{ loungePresence(true,{card:true}); }catch(e){}
   TR.phase="cer"; TR.got=got; TR.first=first;
@@ -5190,15 +5330,30 @@ function trialWin(){
 function trialHeartsHTML(){
   return Array.from({length:TR.maxHearts},(_,i)=>`<svg class="theart${i<TR.hearts?"":" off"}" viewBox="0 0 10 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h3v1h2V0h3v1h1v4H9v1H8v1H7v1H6v1H4V8H3V7H2V6H1V5H0V1h1z"/></svg>`).join("");
 }
+async function offerGuardian(){                           // 拿到石像守護者：問要不要換成牠
+  if(S.pet&&S.pet.type==="guardian") return;
+  const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name);
+  if(!S.pet||await uiConfirm(`要把夥伴換成石像守護者嗎？${keep?`名字會維持「${keep}」，`:""}之後也能在寵物窩換回原本的樣子。`,"換成石像守護者")){
+    S.pet=Object.assign({},PET_DEFAULT,{type:"guardian",color:3,name:keep||"石像守護者",gear:(S.pet&&S.pet.gear)||""}); save(); queueSync(true); pushFarm(true);
+    toast(keep?`${keep}變成石像守護者了！`:"石像守護者成為你的夥伴了！"); renderHUD(); buildMap();
+    if(curPlace&&curPlace.id==="myhome") renderPlace();
+  }
+}
+function checkGuardianPet(){                              // 以前就學會全部職業的人：補發
+  if(!jobOn()||jobLearned().length<JOBS.length||(S.petKinds&&S.petKinds.guardian)) return;
+  S.petKinds=S.petKinds||{}; S.petKinds.guardian=true; save(); queueSync(true);
+  toast("🗿 10 個職業全部學會：隱藏版寵物「石像守護者」在寵物窩等你了");
+}
 function guardianSVG(t){
-  const pal=t>=2?Object.assign({},PAL,{A:"#F6D77A",I:"#D3A23A",Z:"#8A6420"}):PAL;
-  return `<svg viewBox="0 0 16 16" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(SPR.guardian,1,0,0,pal)}</svg>`;
+  const main=t>=2?"#E9C46A":"#A9B4C8";
+  const pal=Object.assign({},ACC_PAL,{k:"#231F20",P:main,Q:tint(main,-.28),d:tint(main,-.4),L:tint(main,.62),l:tint(main,.4),w:"#F7F7FB",n:"#231F20",y:t>=2?"#FFF4C2":"#F2C14E",r:"#D8434B",c:"#F4929A"});
+  return `<svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(t>=2?GUARD_CROWN:PETS.guardian.adult,1,0,0,pal)}</svg>`;
 }
 function renderTrial(){
   const box=$("#trialBody"), foot=$("#trialFoot"); if(!box||!TR) return;
-  const j=jobById(TR.job), tn=jobName(TR.job,TR.tier), gName=TR.tier>=2?"存摺大守護者":"石像守護者";
+  const j=jobById(TR.job), tn=jobName(TR.job,TR.tier), gName=TR.tier>=2?"智慧大守護者":"石像守護者";
   $("#trTitle").textContent=TR.phase==="cer"?"轉職儀式":`${tn}的試煉`;
-  $("#trDept").textContent=`存摺神殿・${TR.tier>=2?"第二次":"第一次"}轉職`;
+  $("#trDept").textContent=`智慧神殿・${TR.tier>=2?"第二次":"第一次"}轉職`;
   $("#trMark").innerHTML=jobMarkHTML(TR.job,TR.tier);
   if(TR.phase==="prep"){
     const pets=trialPets(), ws=trialWeapons(), {wd,pd}=trialDmgParts(), hp=trialMaxHp(), per=wd+pd, need=Math.ceil(hp/Math.max(1,per));
@@ -5211,8 +5366,8 @@ function renderTrial(){
       <p class="dsec">一同出戰的寵物</p>
       ${pets.length?`<div class="trpets" role="radiogroup" aria-label="一同出戰的寵物">${pets.map(t=>{ const sk=petSkill(t); return `<label class="trpet${TR.pet===t?" on":""}"><input type="radio" name="tr-pet" value="${t}" ${TR.pet===t?"checked":""}>
         <span class="pv" aria-hidden="true">${petSVG(trialPetView(t),"adult")}</span>
-        <span class="trpi"><b>${esc((S.pet&&S.pet.type===t&&S.pet.name)||PETS[t].name)}</b><small>親密度 ${affOf(t)}・攻擊 +${petAtk(t)}</small><small class="trsk">${esc(sk[0])}：${esc(SKILL_DESC[sk[1]])}</small></span></label>`; }).join("")}</div>
-        <p class="ahint">寵物攻擊力看親密度：1～29 +3、30～59 +5、60～89 +7、90～99 +9、滿 100 +10${S.collarOK?"；有友誼項圈再 +2（已含）":"；有友誼項圈再 +2"}。贏了之後，一同出戰的寵物親密度 +3。</p>`
+        <span class="trpi"><b>${esc((S.pet&&S.pet.type===t&&S.pet.name)||PETS[t].name)}</b><small>親密度 ${affOf(t)}${bondStars(t)?`・<span class="bstar">${"★".repeat(bondStars(t))}</span>`:""}・攻擊 +${petAtk(t)}</small><small class="trsk">${esc(sk[0])} Lv${petSkLv(t)}：${esc(skillDesc(sk[1],petSkLv(t)))}</small></span></label>`; }).join("")}</div>
+        <p class="ahint">寵物攻擊力看親密度：1～29 +3、30～59 +5、60～89 +7、90～99 +9、滿 100 +10${S.collarOK?"；有友誼項圈再 +2（已含）":"；有友誼項圈再 +2"}；羈絆每顆星再 +1。贏了之後，一同出戰的寵物親密度 +3。</p>`
         :`<p class="ahint">還沒有養過寵物，這次自己上場。</p>`}
       <p class="trest">每答對一題造成 <b>${per}</b> 傷害（武器 ${wd}${pd?` ＋ 寵物 ${pd}`:""}），大約答對 <b>${need}</b> 題就能通過。</p>
       <p class="ahint">供品 <b>${JOB_COST[TR.tier-1]} 顆種子</b>（持有 ${seedTotal()} 顆，從最多的種子開始扣）・今天還能挑戰 ${jobTriesLeft(TR.tier)} 次。開始之後中途放棄、關掉網頁，都算失敗，供品不退還。</p>
@@ -5229,30 +5384,33 @@ function renderTrial(){
       <p class="dsec">${TR.home?"轉職禮包（本家加倍）":"轉職禮包"}</p>
       <ul class="jbonus">${TR.got.map(g=>`<li>${esc(g)}</li>`).join("")}</ul>
       ${TR.pet?`<p class="ahint">${esc(petNameOf(trialPetView(TR.pet))||PETS[TR.pet].name)}陪你一起通過試煉，親密度 +3！</p>`:""}
-      <p class="ahint">職業造型可以在「轉職殿堂 → 我的職業」改成只穿披風或不顯示。</p>
+      ${TR.newPet?`<div class="trnewpet"><span class="pv" aria-hidden="true">${petSVG({type:"guardian",color:3,name:"石像守護者",wear:"none",wc:0},"adult")}</span><div><p class="dbody"><b>隱藏版寵物：石像守護者</b></p><p class="ahint">10 個職業全部學會了！神殿的石像守護者決定跟著你回家，之後在寵物窩或寵物交換所都能選到牠。</p></div></div>`:""}
+      <p class="ahint">職業服裝、頭飾和披風可以在「轉職殿堂 → 我的職業」分開穿脫。</p>
     </div>`;
     foot.innerHTML=`<span></span><button class="act" type="button" data-trial="done">完成</button>`;
     return;
   }
   const pv=TR.pet?trialPetView(TR.pet):null, w=weaponById(TR.weapon), q=TR.q;
+  const hitOK=TR.phase==="res"&&TR.picked===q.ans, hitNG=TR.phase==="res"&&TR.picked!==q.ans;   // 答對：角色衝上去攻擊；答錯：守護者反擊
   const arena=`<div class="trarena${TR.tier>=2?" t2":""}">
     <div class="trside">
       <div class="trhearts" aria-label="剩下 ${TR.hearts} 顆心，共 ${TR.maxHearts} 顆">${trialHeartsHTML()}</div>
-      <div class="trteam"><span class="trme" aria-hidden="true">${avatarSVG(S.av)}</span>${pv?`<span class="trpetf" aria-hidden="true">${petSVG(pv,"adult")}</span>`:""}</div>
-      <p class="trstat">${w?`${esc(w.name)} ${TR.wd}`:`徒手 ${TR.wd}`}${pv?`＋${esc(petNameOf(pv)||PETS[TR.pet].name)} ${TR.pd}`:""}${TR.skill?`<br><small>技能：${esc(petSkill(TR.pet)[0])}</small>`:""}</p>
+      <div class="trteam"><span class="trhero${hitOK?" atk":hitNG&&!TR.blocked?" hurt":""}" aria-hidden="true"><span class="trme">${avatarSVG(S.av)}</span>${w?`<span class="trwpn">${spriteSVG("w_"+w.id)}</span>`:""}${hitNG&&TR.blocked?`<span class="trshield"></span>`:""}</span>${pv?`<span class="trpetf${hitOK&&TR.pd?" atk":""}" aria-hidden="true">${petSVG(pv,"adult")}</span>`:""}</div>
+      <p class="trstat">${w?`${esc(w.name)} ${TR.wd}`:`徒手 ${TR.wd}`}${pv?`＋${esc(petNameOf(pv)||PETS[TR.pet].name)} ${TR.pd}`:""}${TR.skill?`<br><small>技能：${esc(petSkill(TR.pet)[0])} Lv${TR.skLv||1}</small>`:""}</p>
     </div>
     ${TR.phase==="res"?`<p class="trpop ${TR.picked===q.ans?"ok":"ng"}" aria-hidden="true">${TR.picked===q.ans?`−${TR.lastDmg}`:TR.blocked?"擋住了！":"−1 ♥"}</p>`:""}
     <div class="trside">
       <div class="trhp"><span>${gName}</span><b>${TR.hp} / ${TR.max}</b></div>
       <div class="trbar" role="img" aria-label="守護者剩下 ${TR.hp} 血"><i style="width:${Math.round(TR.hp/TR.max*100)}%"></i></div>
-      <span class="trg${TR.hp<=0?" down":""}" aria-hidden="true">${guardianSVG(TR.tier)}</span>
+      <span class="trg${hitOK?" hit":hitNG?" atk":""}${TR.hp<=0?" down":""}" aria-hidden="true">${guardianSVG(TR.tier)}${hitOK?'<i class="trslash"></i><i class="trslash b"></i>':""}</span>
     </div>
   </div>`;
   const opts=q.opts.map((o,i)=>{
     const cls=TR.phase==="res"?(i===q.ans?" right":i===TR.picked?" wrong":""):"";
     return `<button type="button" class="nqopt${cls}" data-trans="${i}" ${TR.phase!=="q"||TR.gone.includes(i)?"disabled":""}${TR.gone.includes(i)?' style="opacity:.3;text-decoration:line-through"':""}>${String.fromCharCode(65+i)}．${esc(o)}</button>`;
   }).join("");
-  const skills=TR.phase==="q"&&((TR.skill==="hint"&&!TR.hintUsed)||(TR.skill==="skip"&&!TR.skipUsed))?`<div class="trskills"><button type="button" class="act ghost" data-trial="${TR.skill}">🐾 ${esc(petSkill(TR.pet)[0])}：${TR.skill==="hint"?"刪去一個錯誤選項":"跳過這題"}</button></div>`:"";
+  const skLeft=TR.skill==="hint"?TR.hintLeft:TR.skill==="skip"?TR.skipLeft:0;
+  const skills=TR.phase==="q"&&skLeft>0&&(TR.skill!=="hint"||q.opts.some((o,i)=>i!==q.ans&&!TR.gone.includes(i)))?`<div class="trskills"><button type="button" class="act ghost" data-trial="${TR.skill}">🐾 ${esc(petSkill(TR.pet)[0])}：${TR.skill==="hint"?"刪去一個錯誤選項":"跳過這題"}（還有 ${skLeft} 次）</button></div>`:"";
   let res="";
   if(TR.phase==="res"){
     const ok=TR.picked===q.ans;
@@ -5280,6 +5438,9 @@ document.addEventListener("click",e=>{
   const tr=t.closest("[data-jobtrial]"); if(tr){ const [id,tt]=tr.dataset.jobtrial.split("|"); openTrialPrep(id,+tt); return; }
   const sw=t.closest("[data-jobswap]"); if(sw){ if($("#jobDlg").open) $("#jobDlg").close(); jobSwap(sw.dataset.jobswap); return; }
   const lk=t.closest("[data-joblook]"); if(lk){ jobSetLook(lk.dataset.joblook); return; }
+  const jw=t.closest("[data-jobwear]"); if(jw){ jobWearToggle(jw.dataset.jobwear); return; }
+  if(t.closest("[data-jobswapgo]")){ const sel=$("#jobSwapSel"); if(sel&&sel.value) jobSwap(sel.value,true); return; }
+  if(t.closest("[data-joboutfit]")){ if(jobCur()){ jobWear().out=1; jobWearDone(); toast(`換上了 ${jobName(jobCur(),jobTier(jobCur()))}的職業服裝`); Sound.sfx("get"); } return; }
   const jcb=t.closest("[data-jobcursor]"); if(jcb){ jobS().cursor=jcb.dataset.jobcursor; save(); queueSync(); applyJobCursor(); renderJobHall(); Sound.sfx("select"); return; }
   if(t.closest("[data-jobbless]")){ takeBless(); return; }
   const ta=t.closest("[data-trans]"); if(ta){ trialAnswer(+ta.dataset.trans); return; }
@@ -5291,7 +5452,7 @@ document.addEventListener("click",e=>{
     else if(a==="next") trialNext();
     else if(a==="hint"||a==="skip") trialSkill(a);
     else if(a==="again"){ const id=TR.job, tt=TR.tier; TR=null; $("#trialDlg").close(); openTrialPrep(id,tt); }
-    else if(a==="done"){ TR=null; $("#trialDlg").close(); renderJobHall(); if(curZone) renderZone(); }
+    else if(a==="done"){ const np=TR&&TR.newPet; TR=null; $("#trialDlg").close(); renderJobHall(); if(curZone) renderZone(); if(np) setTimeout(offerGuardian,250); }
   }
 });
 $("#trialDlg").addEventListener("change",e=>{
@@ -5309,7 +5470,7 @@ function jobInitCheck(){                                  // 上次的試煉中�
 }
 setTimeout(jobInitCheck,1200);
 
-/* ================= 寵物交換所（存摺神殿） ================= */
+/* ================= 寵物交換所（智慧神殿） ================= */
 let swapDraft=null;
 function renderPetSwap(){
   const box=$("#petSwap"); if(!box) return;
@@ -5403,6 +5564,7 @@ function openQuest(id,ctx){
   $("#qPrev").disabled=i<=0; $("#qNext").disabled=i<0||i>=listCtx.length-1;
   syncDoneBtn(); syncFavBtn();
   const dlg=$("#qDlg"); if(!dlg.open) dlg.showModal();
+  if(QUEST_NEW[id]) setTimeout(()=>{ if(curQ&&curQ.id===id) openUpdNote(id); },250);
 }
 function syncDoneBtn(){
   const d=!!S.done[curQ.id], b=$("#qDone");
@@ -5455,7 +5617,7 @@ function levelUp(lv){
   setTimeout(()=>Sound.sfx("levelup"),350);
   if(lv===3) setTimeout(()=>toast("🐾 解鎖：可以到「溫暖的家 → 寵物窩」領養寵物了！"),2600);
   if(lv===5) setTimeout(()=>toast("🧣 解鎖：可以幫寵物換衣服和配件了！"),2600);
-  if(lv===TITLES.length&&jobOn()&&!restricted()) setTimeout(()=>toast("⚔️ 解鎖：存摺神殿的「轉職殿堂」開放了，去選一條職業之路吧！"),5200);
+  if(lv===TITLES.length&&jobOn()&&!restricted()) setTimeout(()=>toast("⚔️ 解鎖：智慧神殿的「轉職殿堂」開放了，去選一條職業之路吧！"),5200);
   topHost();
   $("#luLv").textContent=`LEVEL ${lv}!`;
   $("#luTitle").textContent=`稱號獲得：${TITLES[lv-1]}`;
@@ -5783,7 +5945,7 @@ function openAward(){
   Sound.scene("fanfare");
   $("#rNext").focus();
   confetti();
-  typeInto($("#rSay"),`${dispName()}，恭喜你！新手村、情報酒館、行政塔、寶物庫和存摺神殿的任務全部完成，等級也升到最高了。請上前來吧！`);
+  typeInto($("#rSay"),`${dispName()}，恭喜你！新手村、情報酒館、行政塔、寶物庫和智慧神殿的任務全部完成，等級也升到最高了。請上前來吧！`);
 }
 $("#rNext").addEventListener("click",()=>{
   rPhase++;
@@ -6041,9 +6203,9 @@ function avRows(){ return [
  {key:"hair",label:"髮型",type:"thumb",list:Object.entries(HAIR).map(([v,o])=>[v,o.name])},
  {key:"hc",label:"髮色",type:"sw",list:HAIRC.map((c,i)=>[i,c[0],c[1]])},
  {key:"skin",label:"膚色",type:"sw",list:SKIN.map((c,i)=>[i,c[0],c[1]])},
- {key:"outfit",label:"服裝",type:"thumb",list:Object.entries(OUTFIT).filter(([v,o])=>!o.secret||outfitOK(v)).map(([v,o])=>[v,o.name,!!o.secret])},
+ {key:"outfit",label:"服裝",type:"thumb",list:(jobCur()?[["@job","職業服裝",true]]:[]).concat(Object.entries(OUTFIT).filter(([v,o])=>!o.secret||outfitOK(v)).map(([v,o])=>[v,o.name,!!o.secret]))},
  {key:"oc",label:"衣服顏色",type:"sw",list:CLOTH.map((c,i)=>[i,c[0],c[1]])},
- {key:"acc",label:"配件",type:"txt",list:Object.entries(ACC).filter(([v])=>accOK(v)).map(([v,o])=>[v,o.name])}
+ {key:"acc",label:"配件",type:"txt",list:Object.entries(ACC).filter(([v])=>accOK(v)).map(([v,o])=>[v,o.name]).concat(jobCur()?[["@job","⚔️ 職業頭飾"]]:[])}
 ];}
 let AV_ROWS=avRows();
 function buildAvOpts(){
@@ -6057,21 +6219,37 @@ function buildAvOpts(){
   }).join("")}</div></div>`).join("");
 }
 buildAvOpts();
+function edThumb(k,v){                                    // 角色設定的小預覽：職業服裝／頭飾跟一般衣服配件互換
+  if(v==="@job") return Object.assign({},draft,k==="outfit"?{jo:1}:{jh:1});
+  return Object.assign({},draft,{[k]:v},k==="outfit"?{jo:0}:(k==="acc"||k==="hair")?{jh:0}:{});   // 選髮型時先拿掉職業頭飾，看得到頭髮
+}
+function edVal(k){
+  if(draft.job&&k==="outfit"&&+draft.jo) return "@job";
+  if(draft.job&&k==="acc"&&+draft.jh) return "@job";
+  return draft[k];
+}
+function edJobInit(){                                     // 有職業時，草稿帶著職業造型的穿著狀態
+  const id=jobCur(); if(!id) return;
+  const w=jobWear(); Object.assign(draft,{job:id,jt:jobTier(id),jo:draft.jo!=null?+draft.jo:w.out,jh:draft.jh!=null?+draft.jh:w.hat,jc:w.cape}); delete draft.jl;
+}
 function drawEditor(){
   $("#avPreview").innerHTML=avatarSVG(draft);
-  document.querySelectorAll("#avOpts .th").forEach(el=>{el.innerHTML=avatarSVG(Object.assign({},draft,{[el.dataset.k]:el.dataset.v}));});
-  AV_ROWS.forEach(r=>document.querySelectorAll(`input[name="av-${r.key}"]`).forEach(i=>i.checked=String(draft[r.key])===i.value));
+  document.querySelectorAll("#avOpts .th").forEach(el=>{el.innerHTML=avatarSVG(edThumb(el.dataset.k,el.dataset.v));});
+  AV_ROWS.forEach(r=>document.querySelectorAll(`input[name="av-${r.key}"]`).forEach(i=>i.checked=String(edVal(r.key))===i.value));
 }
 $("#avOpts").addEventListener("change",e=>{
   Sound.sfx("cursor");
   const m=e.target.name&&e.target.name.match(/^av-(.+)$/); if(!m) return;
-  const k=m[1]; draft[k]=(k==="hc"||k==="skin"||k==="oc")?+e.target.value:e.target.value;
+  const k=m[1], v=e.target.value;
+  if(v==="@job"){ if(k==="outfit") draft.jo=1; else if(k==="acc") draft.jh=1; }
+  else{ draft[k]=(k==="hc"||k==="skin"||k==="oc")?+v:v; if(k==="outfit") draft.jo=0; if(k==="acc") draft.jh=0; }
   drawEditor();
 });
 $("#avRandom").addEventListener("click",()=>{
   const pick=a=>a[Math.floor(Math.random()*a.length)];
   draft={hair:pick(Object.keys(HAIR)),hc:Math.floor(Math.random()*HAIRC.length),skin:Math.floor(Math.random()*SKIN.length),
     outfit:pick(Object.keys(OUTFIT).filter(outfitOK)),oc:Math.floor(Math.random()*CLOTH.length),acc:Math.random()<.3?"glasses":"none"};
+  if(jobCur()){ draft.jo=0; draft.jh=0; edJobInit(); }
   drawEditor();
 });
 let CHAR_OB=false, cPage=1;
@@ -6127,7 +6305,7 @@ function openChar(opt){
   document.querySelectorAll("#cDlg .missing").forEach(el=>el.classList.remove("missing"));
   buildAvOpts();
   draft=Object.assign({},AV_DEFAULT,S.av||{});
-  if(draft.job&&draft.jl!=="cape") draft.jl="cape";       // 角色設定：看得到自己的衣服（職業造型先只顯示披風）
+  delete draft.jo; delete draft.jh; edJobInit();
   drawEditor();
   renderGroups();
   f.querySelectorAll('input[name="group"]').forEach(r=>r.checked=r.value===S.group||(touristLocked()&&r.value===TOURIST));
@@ -6170,7 +6348,7 @@ $("#cForm").addEventListener("submit",async e=>{
   if(!touristLocked()&&(isNew||S.name!==name||S.emp!==emp)) S.profAt=Date.now();   // 最後一次填寫或修改真實姓名、員工編號的時間（資料更新通知用）
   if(isNew&&!S.since) S.since=Date.now();             // 加入時間（種子補償「只給目前已加入的人」用）
   const outfitChg=!!(S.av&&draft.outfit!==S.av.outfit);
-  S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; S.av=Object.assign({},draft); S.group=grp; if(outfitChg) jobOutfitChanged(); save();
+  S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; S.av=Object.assign({},draft); S.group=grp; if(draft.job&&jobCur()){ const w=jobWear(); w.out=+draft.jo?1:0; w.hat=+draft.jh?1:0; } syncJobAv(); void outfitChg; save();
   if(isNew&&!touristLocked()){                          // 新人審核：新建立的角色先送出申請
     if(approvalNeeded()){ S.approval="pending"; S.applyAt=Date.now(); save(); sendApply(); }
     else { S.approval="approved"; save(); }
@@ -6521,11 +6699,100 @@ function markContentUpdates(){
     }));
   });
   S.seenContent=seen; S.seenQuests=qseen;
+  ZONES.forEach(z=>{ if(zoneQuestNew(z)) ZONE_NEW[z.id]=true; });
   if(changed) save();
-  const n=Object.keys(ZONE_NEW).length;
-  if(n&&!first) toast(`村長更新了 ${n} 個地點的任務內容，地圖上有「！」的地方去看看吧`);
+  try{ qSnapSync(); }catch(e){}
+  const n=Object.keys(ZONE_NEW).length, nq=Object.keys(QUEST_NEW).length;
+  if(nq&&!first) setTimeout(()=>updListAuto(),2500);
+  else if(n&&!first) toast(`村長更新了 ${n} 個地點的介紹，地圖上有「！」的地方去看看吧`);
   setTimeout(refreshBonus,0);
 }
+/* ---- 任務內容更新：比對舊版、跳出「改了哪裡」 ---- */
+var QSNAP_KEY="sino22-qsnap", UPD_SHOWN_KEY="sino22-upd-shown";   // var：開站時可能在這行之前就被呼叫
+function zoneQuestNew(z){ return (z.chapters||[]).some(ch=>(ch.quests||[]).some(q=>QUEST_NEW[q.id])); }
+function qText(html){                                     // 任務內容轉成一行一行的純文字（用來比對）
+  const src=String(html||"").replace(/<(br|\/p|\/li|\/h\d|\/tr|\/div|\/ol|\/ul|\/blockquote)\b[^>]*>/gi,"$&\n");
+  let txt=""; try{ txt=new DOMParser().parseFromString(src,"text/html").body.textContent||""; }catch(e){ txt=src.replace(/<[^>]+>/g,""); }
+  return txt.split(/\n+/).map(x=>x.replace(/\s+/g," ").trim()).filter(Boolean).slice(0,300);
+}
+function qSnapGet(){ try{ return JSON.parse(localStorage.getItem("sino22-qsnap")||"{}")||{}; }catch(e){ return {}; } }
+function qSnapPut(m){ try{ localStorage.setItem("sino22-qsnap",JSON.stringify(m)); }catch(e){} }
+function qSnapSync(){                                      // 已經看過的版本存一份，之後有修改才比對得出來
+  const snap=qSnapGet(), qseen=S.seenQuests||{}; let ch=false;
+  ALLQ.forEach(q=>{ const h=questHash(q); if(qseen[q.id]===h&&(!snap[q.id]||snap[q.id].h!==h)){ snap[q.id]={h,t:q.title,x:qText(q.body)}; ch=true; } });
+  if(ch) qSnapPut(snap);
+}
+function lineDiff(a,b){
+  const n=a.length, m=b.length, L=Array.from({length:n+1},()=>new Uint16Array(m+1));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]=a[i]===b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const out=[]; let i=0,j=0;
+  while(i<n&&j<m){ if(a[i]===b[j]){ out.push(["=",a[i]]); i++; j++; } else if(L[i+1][j]>=L[i][j+1]) out.push(["-",a[i++]]); else out.push(["+",b[j++]]); }
+  while(i<n) out.push(["-",a[i++]]); while(j<m) out.push(["+",b[j++]]);
+  return out;
+}
+function updInfo(id){
+  const q=ALLQ.find(x=>x.id===id); if(!q) return null;
+  const sn=qSnapGet()[id];
+  if(!sn||!Array.isArray(sn.x)) return {q,none:true,add:0,del:0};
+  const ops=lineDiff(sn.x,qText(q.body));
+  return {q,ops,oldTitle:sn.t&&sn.t!==q.title?sn.t:"",add:ops.filter(o=>o[0]==="+").length,del:ops.filter(o=>o[0]==="-").length};
+}
+function updDiffHTML(u){
+  if(!u) return "";
+  if(u.none) return `<p class="ahint">這項任務的內容有修改。這台裝置沒有存舊的版本，標不出改了哪裡，請把任務內容重新看一次。</p>`;
+  let html="", same=0;
+  const flush=()=>{ if(same){ html+=`<li class="same">⋯ 其他 ${same} 行沒有變</li>`; same=0; } };
+  u.ops.forEach(([t,x])=>{ if(t==="="){ same++; return; } flush(); const s=x.length>220?x.slice(0,220)+"…":x; html+=`<li class="${t==="+"?"add":"del"}"><b aria-hidden="true">${t==="+"?"＋":"－"}</b><span class="sr">${t==="+"?"新增：":"刪除："}</span>${esc(s)}</li>`; });
+  flush();
+  if(!u.add&&!u.del&&!u.oldTitle) html=`<li class="same">只有排版或連結調整，文字沒有變。</li>`;
+  return `${u.oldTitle?`<p class="dbody">標題：<s>${esc(u.oldTitle)}</s> → <b>${esc(u.q.title)}</b></p>`:""}<ul class="upddiff">${html}</ul>`;
+}
+function updCountHTML(u){ return u.none?`<span class="updcnt">內容有修改</span>`:`<span class="updcnt">${u.add?`<span class="a">＋${u.add} 行</span>`:""}${u.del?`<span class="d">－${u.del} 行</span>`:""}${!u.add&&!u.del?"小修改":""}</span>`; }
+function updConfirm(id){                                   // 看完了：消掉「更新」標籤
+  const q=ALLQ.find(x=>x.id===id); if(!q) return;
+  const qseen=S.seenQuests||(S.seenQuests={}), h=questHash(q);
+  qseen[id]=h; delete QUEST_NEW[id];
+  const snap=qSnapGet(); snap[id]={h,t:q.title,x:qText(q.body)}; qSnapPut(snap);
+  const z=q.zone&&ZONES.find(x=>x.id===q.zone.id);
+  if(z){ if(zoneQuestNew(z)) ZONE_NEW[z.id]=true; else delete ZONE_NEW[z.id]; }
+  save(); queueSync();
+  try{ refreshAll(); }catch(e){}
+}
+function openUpdNote(id){                                  // 單一任務：改了哪裡
+  const u=updInfo(id); if(!u) return;
+  $("#updDept").textContent=`任務內容更新｜${u.q.zone.name}`;
+  $("#updTitle").textContent=u.q.title;
+  $("#updBody").innerHTML=`<p class="dbody">📢 這項任務的內容修改過了${u.none?"。":`，下面是改動的地方：${updCountHTML(u)}`}</p>${updDiffHTML(u)}<p class="ahint">按「看完了」之後，這項任務的「更新」標籤就會消失。</p>`;
+  $("#updFoot").innerHTML=`<button class="act ghost" type="button" data-close>稍後再看</button><button class="act" type="button" data-updok="${esc(id)}">✓ 看完了</button>`;
+  const d=$("#updDlg"); if(!d.open) d.showModal(); Sound.sfx("open");
+}
+function openUpdList(){                                    // 全部更新的清單
+  const ids=Object.keys(QUEST_NEW).filter(id=>ALLQ.some(q=>q.id===id));
+  if(!ids.length){ const d=$("#updDlg"); if(d.open) d.close(); return; }
+  $("#updDept").textContent="任務內容更新";
+  $("#updTitle").textContent=`村長更新了 ${ids.length} 項任務`;
+  $("#updBody").innerHTML=`<p class="dbody">點每一項可以看改了哪裡，看完按「看完了」就會消掉「更新」標籤。</p>${ids.map(id=>{ const u=updInfo(id); return `<details class="upditem"><summary><b>${esc(u.q.title)}</b><span class="ahint">${esc(u.q.zone.name)}｜${esc(u.q.chapter||"")}</span>${updCountHTML(u)}</summary>${updDiffHTML(u)}<div class="updacts"><button class="act ghost" type="button" data-updopen="${esc(id)}">打開任務</button><button class="act" type="button" data-updok="${esc(id)}">✓ 看完了</button></div></details>`; }).join("")}`;
+  $("#updFoot").innerHTML=`<button class="act ghost" type="button" data-close>稍後再看</button><button class="act" type="button" data-updall>全部看完了</button>`;
+  $("#updDlg").dataset.mode="list";
+  const d=$("#updDlg"); if(!d.open) d.showModal();
+}
+function updListAuto(tries){                               // 開站時：有新的更新就跳出清單（同一批更新每天最多一次）
+  tries=tries||0;
+  const ids=Object.keys(QUEST_NEW).sort(); if(!ids.length||!S.group) return;
+  const key=hashStr(ids.map(id=>id+":"+((S.seenQuests||{})[id]||"")).join(","))+"|"+dayKey();
+  let shown=""; try{ shown=localStorage.getItem("sino22-upd-shown")||""; }catch(e){}
+  if(shown===key) return;
+  if(document.querySelector("dialog[open]")||TOUR){ if(tries<20) setTimeout(()=>updListAuto(tries+1),3000); return; }
+  try{ localStorage.setItem("sino22-upd-shown",key); }catch(e){}
+  openUpdList();
+}
+document.addEventListener("click",e=>{
+  const t=e.target, ok=t.closest("[data-updok]");
+  if(ok){ const id=ok.dataset.updok, list=$("#updDlg").dataset.mode==="list"; updConfirm(id); Sound.sfx("get"); toast("✓ 已經看完這項更新");
+    if(list&&Object.keys(QUEST_NEW).length) openUpdList(); else $("#updDlg").close(); return; }
+  if(t.closest("[data-updall]")){ Object.keys(QUEST_NEW).forEach(updConfirm); Sound.sfx("get"); toast("✓ 全部的更新都看完了"); $("#updDlg").close(); return; }
+  const op=t.closest("[data-updopen]"); if(op){ $("#updDlg").close(); openQuest(op.dataset.updopen); return; }
+});
 function refreshBonus(){
   if(!S.awarded||!ALLQ.length) return;
   const ids=ALLQ.map(q=>q.id);
@@ -6557,13 +6824,12 @@ function grantBonus(){
   Sound.sfx("levelup");
   setTimeout(()=>toast(`🎖 恭喜獲得第 ${S.bonusCerts.length} 張 Bonus 進修證書！到「溫暖的家 → 證書牆」查看`),400);
 }
-function clearZoneNew(id){
+function clearZoneNew(id){                                // 地點介紹看過了；任務的「更新」要點開看完才會消
   const z=ZONES.find(x=>x.id===id); if(!z) return;
-  const seen=S.seenContent||{}, qseen=S.seenQuests||{};
+  const seen=S.seenContent||{};
   seen[id]=contentHash(z);
-  (z.chapters||[]).forEach(ch=>(ch.quests||[]).forEach(q=>{ qseen[q.id]=questHash(q); delete QUEST_NEW[q.id]; }));
-  delete ZONE_NEW[id];
-  S.seenContent=seen; S.seenQuests=qseen; save();
+  if(zoneQuestNew(z)) ZONE_NEW[id]=true; else delete ZONE_NEW[id];
+  S.seenContent=seen; save();
 }
 function applyContent(data){
   const src=(data&&Array.isArray(data.zones))?data.zones:DEFAULT_CONTENT;
@@ -6643,6 +6909,7 @@ async function bootstrap(){
   if(!previewContent){
     if(feed&&feed.content&&Array.isArray(feed.content.zones)){ applyContent(feed.content); SOURCE.content="feed"; }
     else if(ct.status==="fulfilled"&&ct.value&&ct.value.length){ const c=contentFromRows(ct.value); if(c){ applyContent(c); SOURCE.content="sheet"; } }
+    if(SOURCE.content!=="feed"&&SOURCE.content!=="sheet") try{ const b4=JSON.stringify([ZONE_NEW,QUEST_NEW]); markContentUpdates(); if(JSON.stringify([ZONE_NEW,QUEST_NEW])!==b4) refreshAll(); }catch(e){}   // 後台沒有內容：用網站內建內容比對更新
   }
   refreshLive();
   const wanted=[sheetUrl("feed"),sheetUrl("settings"),sheetUrl("content")];
@@ -7716,7 +7983,7 @@ function runCheat(msg){
     setTimeout(()=>{ checkAch(); pushFarm(true); },300);
   }else if(c.kind==="acc"){
     S.accs=S.accs||{}; S.accs[c.acc]=true;
-    S.av=Object.assign({},S.av||AV_DEFAULT,{acc:c.acc});
+    S.av=Object.assign({},S.av||AV_DEFAULT,{acc:c.acc}); jobOutfitChanged("hat");
     gift=`<span class="pv">${avatarSVG(S.av)}</span><div><p class="dbody"><b>隱藏配件：${esc(ACC[c.acc].name)}</b></p><p class="ahint">已經幫你戴上了，在「角色設定」的配件可以拿下或換回其他配件。</p></div>`;
     setTimeout(()=>{ pushFarm(true); },300);
   }else if(c.kind==="deco"){
@@ -7752,12 +8019,13 @@ function runCheat(msg){
 }
 /* ---- 各功能的說明提示（點「?」顯示） ---- */
 const HELP={
-  job:"滿級（LV 10）之後可以在這裡轉職。職業可以自由選，選自己組別的職業有「本家」好處（禮包加倍、名片標記、守護者的血少 20%）。轉職要獻上種子並通過神殿試煉：答情境題打守護者，答對一題造成「武器傷害＋寵物攻擊力」，答錯扣 1 顆心；中途放棄或關掉網頁都算失敗，供品不退還。收集全部 20 種小物和 16 把武器（含請假卡）後，可以挑戰第二次轉職。學會的職業每天可以免費換 1 次，職業加成只套用目前的職業。第二次轉職還會拿到職業鼠標和點擊特效（手機點畫面也有），可以在「我的職業」切換或改回系統預設。",
+  job:"滿級（LV 10）之後可以在這裡轉職。職業可以自由選，選自己組別的職業有「本家」好處（禮包加倍、名片標記、守護者的血少 20%）。轉職要獻上種子並通過神殿試煉：答情境題打守護者，答對一題造成「武器傷害＋寵物攻擊力」，答錯扣 1 顆心；中途放棄或關掉網頁都算失敗，供品不退還。收集全部 20 種小物和 16 把武器（含請假卡）後，可以挑戰第二次轉職。學會的職業每天可以免費換 1 次（在「我的職業」選好再按確定），職業加成只套用目前的職業。職業服裝、職業頭飾、披風可以分開穿，也能跟衣櫃的衣服、角色設定的配件互換。10 個職業全部學會，神殿的石像守護者會成為你的隱藏版寵物。第二次轉職還會拿到職業鼠標和點擊特效（手機點畫面也有），可以在「我的職業」切換或改回系統預設。",
   map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝，或停下來聊兩句（有時會透露留言板的密技）；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
   zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
   places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。",
   notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題和內容。",
-  pet:"LV 3 可以領養寵物，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件。",
+  pet:"LV 3 可以領養寵物，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件；之後多出來的親密度會變成羈絆點。",
+  bond:"親密度滿 100 之後，多出來的親密度（餵最愛的菜、寵物零食、稀有作物、猜拳、試煉…）會變成羈絆點，每隻寵物分開計算，最多存 500 點。累積每 100 點升一顆星（最多 5 顆，花掉羈絆點不會掉星）：每顆星讓試煉寵物攻擊 +1、看守農場多 1 分鐘、每天叼小禮物回家的機率 +8%。羈絆點可以升級寵物技能（Lv2：150 點、需要 2 顆星；Lv3：300 點、需要 4 顆星），也能在羈絆商店換種子禮包和肥料。",
   trophy:"完成特定目標就會解鎖成就，標示 NEW 的是剛解鎖的。成就數量會顯示在結業證書和你的名片上。",
   cert:"完成全部任務並集滿智慧存摺點數後，村長會頒發結業證書。之後有新任務時，把新內容看完還能領 Bonus 進修證書。證書都可以下載成圖片。",
   collect:"查看任務文件、加入最愛時有機會撿到小物；拜訪村長的家、數位總合辦公室可能找到隱藏小物。點小物可以看說明和容易出現的地點。",
@@ -7920,7 +8188,7 @@ function startHomePlay(){
   homePlayTimer=setTimeout(play,5000+Math.random()*3000);
 }
 Object.assign(SPR,{f_splat:[".....X......", ".....R....X.", ".X.......R..", "..R.........", "....RFRR....", "...RXRRRRR..", "..RRRRXRR...", "....RRRR....", ".R........R.", "X..........X", "......R.....", ".......X...."]});
-const TOSS_KEY="sino22-toss", PET_FAV={rabbit:"carrot",horse:"carrot",snowman:"carrot",guinea:"bokchoy",sheep:"bokchoy",chicken:"corn",scruffy:"corn",dog:"pumpkin",tiger:"pumpkin",cat:"tomato",grumpy:"tomato",slime:"strawberry",caterpillar:"strawberry",pom:"bokchoy",shiba:"pumpkin",panda:"bokchoy",duck:"corn",fireball:"tomato",bear:"strawberry"};   // 每種蔬菜都有寵物愛吃（一般寵物 8 種就涵蓋全部 6 種蔬菜）
+const TOSS_KEY="sino22-toss", PET_FAV={guardian:"strawberry",rabbit:"carrot",horse:"carrot",snowman:"carrot",guinea:"bokchoy",sheep:"bokchoy",chicken:"corn",scruffy:"corn",dog:"pumpkin",tiger:"pumpkin",cat:"tomato",grumpy:"tomato",slime:"strawberry",caterpillar:"strawberry",pom:"bokchoy",shiba:"pumpkin",panda:"bokchoy",duck:"corn",fireball:"tomato",bear:"strawberry"};   // 每種蔬菜都有寵物愛吃（一般寵物 8 種就涵蓋全部 6 種蔬菜）
 /* 領取紀錄瘦身：交誼廳 60 天前的禮物／猜拳／串門子不再處理，所以 75 天前的領取紀錄可以安全刪掉 */
 const CLAIM_DAYS=60, CLAIM_KEEP=75;
 const dayNo=t=>Math.floor((t instanceof Date?t.getTime():(t||Date.now()))/864e5);
@@ -7962,9 +8230,10 @@ function feedPet(k){
   let reached=false;
   let ecoPlus=0;
   if(fav&&jb("eco",2)){ const J=jobS(); if(J.feedDay!==dayKey()){ J.feedDay=dayKey(); ecoPlus=2; } }      // 大地守護者：每天第一次餵最愛 +2
-  if(fav){ S.aff=S.aff||{}; const before=affOf(t); S.aff[t]=Math.min(AFF_MAX,before+1+ecoPlus); reached=before<AFF_MAX&&S.aff[t]>=AFF_MAX; }
+  const wasFull=affOf(t)>=AFF_MAX;
+  if(fav) reached=affGain(t,1+ecoPlus);
   save(); queueSync(); pushFarm(true);
-  if(fav&&!reached) setTimeout(()=>toast(`💗 ${pn}的親密度 +${1+ecoPlus}（${affOf(t)}/${AFF_MAX}）${ecoPlus?"・大地守護者的祝福":""}`),1300);
+  if(fav&&!reached&&!wasFull) setTimeout(()=>toast(`💗 ${pn}的親密度 +${1+ecoPlus}（${affOf(t)}/${AFF_MAX}）${ecoPlus?"・大地守護者的祝福":""}`),1300);
   if(reached) setTimeout(()=>affinityMax(t),900);
   Sound.sfx(fav?"achieve":"get");
   toast(fav?`${pn}最愛吃${CROPS[k].name}了！接下來 ${guardMs()/60000} 分鐘會認真看守農場`:`${pn}吃掉了${CROPS[k].name}，接下來 ${guardMs()/60000} 分鐘會幫你看守農場（餵最愛的${CROPS[PET_FAV[t]]?CROPS[PET_FAV[t]].name:"食物"}才會提升親密度）`);
@@ -7976,9 +8245,9 @@ function feedPet(k){
 const SEED_START=10;
 const SEED_WEIGHT={bokchoy:30,carrot:25,tomato:20,corn:12,pumpkin:8,strawberry:5};
 const SPLAT_PAL={tomato:["#E8453C","#F2726A"],carrot:["#FF9F43","#FFC68A"],pumpkin:["#F08A24","#FFB766"],corn:["#FFD23F","#FFF3B0"],bokchoy:["#57C35A","#9BE38E"],strawberry:["#E8453C","#FF8FB1"]};
-const PET_VOICE={pom:"汪汪！（毛蓬起來）",shiba:"汪！（尾巴捲得更緊了）",panda:"嚼嚼嚼……好吃",duck:"呱呱！",fireball:"轟～暖呼呼！",bear:"嗚嗷～再一口",dog:"汪！好好吃～",cat:"喵～還要！",guinea:"啾啾！",slime:"噗嚕噗嚕～",chicken:"咕咕咕！",sheep:"咩～",horse:"嘶～好吃！",rabbit:"嚼嚼嚼……",scruffy:"汪嗚～",grumpy:"……還不錯啦。",tiger:"吼～再來一份！",caterpillar:"沙沙沙……（開心地扭動）",snowman:"嘿咻～（雪花飄飄）"};
+const PET_VOICE={guardian:"咕嚕咕嚕……（開心地發出石頭摩擦的聲音）",pom:"汪汪！（毛蓬起來）",shiba:"汪！（尾巴捲得更緊了）",panda:"嚼嚼嚼……好吃",duck:"呱呱！",fireball:"轟～暖呼呼！",bear:"嗚嗷～再一口",dog:"汪！好好吃～",cat:"喵～還要！",guinea:"啾啾！",slime:"噗嚕噗嚕～",chicken:"咕咕咕！",sheep:"咩～",horse:"嘶～好吃！",rabbit:"嚼嚼嚼……",scruffy:"汪嗚～",grumpy:"……還不錯啦。",tiger:"吼～再來一份！",caterpillar:"沙沙沙……（開心地扭動）",snowman:"嘿咻～（雪花飄飄）"};
 const GUARD_MS=5*60*1000;
-const guardMs=()=>jb("eco")?10*60*1000:GUARD_MS;          // 永續德魯伊：看守 10 分鐘
+const guardMs=()=>(jb("eco")?10*60*1000:GUARD_MS)+(S.pet&&PETS[S.pet.type]?bondStars(S.pet.type):0)*60000;   // 羈絆每顆星多看守 1 分鐘          // 永續德魯伊：看守 10 分鐘
 function seeds(){
   if(!S.seeds){ S.seeds={}; Object.keys(CROPS).forEach(k=>S.seeds[k]=SEED_START); save(); }
   return S.seeds;
@@ -8141,7 +8410,7 @@ async function giveToNpc(id){
     $("#chTitle").textContent=id==="home"?`部門村長　${CFG.chief}`:`數位總合辦公室　${CFG.director}`;
     $("#chSay").textContent=id==="home"?`「謝謝你的${CROPS[k].name}！我家這隻小老虎一直想找個主人，就交給你照顧吧！」`:`「${CROPS[k].name}收到了！辦公室盆栽裡住了一隻毛毛蟲，跟你很有緣，帶牠回家吧。」`;
     const preview={type:g.pet,color:g.color,name:g.petName,wear:"none",wc:0};
-    $("#chGift").innerHTML=`<span class="pv">${petSVG(preview,"adult")}</span><div><p class="dbody"><b>隱藏版寵物：${esc(g.petName)}</b></p><p class="ahint">之後在寵物窩或存摺神殿的寵物交換所也能選到牠。</p></div>`;
+    $("#chGift").innerHTML=`<span class="pv">${petSVG(preview,"adult")}</span><div><p class="dbody"><b>隱藏版寵物：${esc(g.petName)}</b></p><p class="ahint">之後在寵物窩或智慧神殿的寵物交換所也能選到牠。</p></div>`;
     const d=$("#cheatDlg"); if(!d.open) d.showModal();
     d.addEventListener("close",async()=>{
       const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name);   // 換成新寵物時沿用原本的名字
@@ -8179,8 +8448,66 @@ function affinityHTML(pet){
     <div class="affrow"><span class="affheart">💗</span><div class="affbar"><i style="width:${a}%"></i></div><b>${a} / ${AFF_MAX}</b></div>
     <p class="ahint">${a>=AFF_MAX?`已經滿級！可以使用彩虹毛色和專屬配件「${esc(acc?acc.name:"")}」。`:`餵${esc(PETS[t].name)}最愛的${fav?esc(fav.name):"食物"}，每次親密度 +1；滿 ${AFF_MAX} 會解鎖彩虹毛色和專屬配件「${esc(acc?acc.name:"")}」。每種寵物的親密度分開計算。`}</p>
     ${a>=AFF_MAX&&acc?`<label class="chk"><input type="checkbox" name="pet-acc" ${pet.acc?"checked":""}> 戴上專屬配件：${esc(acc.name)}</label>`:""}
-    ${others.length?`<div class="afflist">${others.map(k=>`<span class="affchip">${esc(PETS[k].name)} 💗${affOf(k)}</span>`).join("")}</div>`:""}`;
+    ${a>=AFF_MAX?`<p class="ahint bondline">💞 羈絆 <span class="bstar">${starsTxt(bondStars(t))}</span>・羈絆點 <b>${bondPts(t)}</b> / ${BOND_MAX}　到上方「💞 羈絆」分頁使用</p>`:""}
+    ${others.length?`<div class="afflist">${others.map(k=>`<span class="affchip">${esc(PETS[k].name)} 💗${affOf(k)}${bondStars(k)?` <span class="bstar">${"★".repeat(bondStars(k))}</span>`:""}</span>`).join("")}</div>`:""}`;
 }
+const BOND_SHOP=[["seed","🌱 種子禮包","隨機兩種種子各 ×5",30],["fert","🧪 一般肥料 ×2","剩下的生長時間少 30 分鐘",40],["super","✨ 高級肥料 ×1","剩下的生長時間減半",60]];
+function bondHTML(pet){
+  const t=pet.type, pn=pet.name||PETS[t].name, a=affOf(t);
+  if(a<AFF_MAX) return `<section class="window pbox"><h3>羈絆 ${helpBtn("bond")}</h3><p class="empty-note">${esc(pn)}的親密度滿 ${AFF_MAX} 之後，多出來的親密度會變成「羈絆點」（目前 ${a} / ${AFF_MAX}）。</p>
+    <p class="ahint">羈絆點可以升星（試煉攻擊、看守時間變強）、升級寵物技能、換種子和肥料；星星越多，寵物越常叼小禮物回家。每隻寵物分開計算，最多存 ${BOND_MAX} 點。</p></section>`;
+  const b=bondS(t), st=bondStars(t), lv=petSkLv(t), sk=petSkill(t), nextE=st<5?(st+1)*100:0;
+  const canUp=lv<3&&b.p>=SK_COST[lv]&&st>=SK_STAR[lv];
+  return `<section class="window pbox"><h3>羈絆 ${helpBtn("bond")}</h3>
+    <div class="bondtop"><span class="petbig" aria-hidden="true">${petSVG(pet)}</span><div>
+      <p class="mename">${esc(pn)} <span class="bstar big">${starsTxt(st)}</span></p>
+      <p class="dbody">羈絆點 <b>${b.p}</b> / ${BOND_MAX}<span class="ahint">（可以花）</span></p>
+      <div class="affbar bondbar" aria-hidden="true"><i style="width:${b.e/BOND_MAX*100}%"></i></div>
+      <p class="ahint" style="margin:2px 0 0">累積羈絆 ${b.e} / ${BOND_MAX}${nextE?`，再 ${nextE-b.e} 點升到 ${st+1} 顆星`:"，已經是最高的 5 顆星"}（花掉羈絆點不會掉星）</p>
+    </div></div>
+    <p class="dsec">星級加成</p>
+    <ul class="jbonus"><li>試煉寵物攻擊 +${st}（每顆星 +1）</li><li>看守農場多 ${st} 分鐘（每顆星 +1 分鐘）</li><li>每天叼小禮物回家的機率 ${st*8}%（每顆星 8%）</li></ul>
+    <p class="dsec">寵物技能</p>
+    <div class="bondsk"><p class="dbody"><b>${esc(sk[0])} Lv${lv}</b>：${esc(skillDesc(sk[1],lv))}</p>
+      ${lv<3?`<p class="ahint">升到 Lv${lv+1}：${esc(skillDesc(sk[1],lv+1))}</p>
+      <div class="formfoot"><span class="ahint">需要 ${SK_COST[lv]} 羈絆點、${SK_STAR[lv]} 顆星${st<SK_STAR[lv]?`（目前 ${st} 顆）`:""}</span><button class="act" type="button" data-bondsk ${canUp?"":"disabled"}>升級技能（${SK_COST[lv]} 點）</button></div>`:`<p class="ahint">已經是最高等級 Lv3。</p>`}</div>
+    <p class="dsec">羈絆商店</p>
+    <div class="bondshop">${BOND_SHOP.map(([id,n,d,c])=>`<div class="bondit"><div><b>${n}</b><small>${d}</small></div><button class="act ghost" type="button" data-bondbuy="${id}" ${b.p>=c?"":"disabled"}>${c} 點</button></div>`).join("")}</div>
+    <p class="ahint">羈絆點用「${esc(pn)}」自己的；換成別的寵物時，用的是那隻寵物的羈絆點。</p>
+  </section>`;
+}
+function bondDone(msg){ save(); queueSync(); Sound.sfx("get"); toast(msg); if(typeof curPlace!=="undefined"&&curPlace&&curPlace.id==="myhome") renderPlace(); }
+function bondUpgrade(){
+  if(!S.pet) return; const t=S.pet.type, b=bondS(t), lv=b.sk;
+  if(lv>=3||b.p<SK_COST[lv]||bondStars(t)<SK_STAR[lv]) return;
+  b.p-=SK_COST[lv]; b.sk=lv+1;
+  bondDone(`🐾 ${(S.pet.name||PETS[t].name)}的「${petSkill(t)[0]}」升到 Lv${b.sk}！`);
+}
+function bondBuy(id){
+  if(!S.pet) return; const it=BOND_SHOP.find(x=>x[0]===id); if(!it) return;
+  const b=bondS(S.pet.type); if(b.p<it[3]) return;
+  b.p-=it[3]; let got="";
+  if(id==="seed"){ const ks=shuffleR(Object.keys(CROPS),Math.random).slice(0,2); ks.forEach(k=>{ seeds()[k]=(seeds()[k]||0)+5; }); got=ks.map(k=>`${CROPS[k].name}種子 ×5`).join("、"); }
+  else{ const f=id==="fert"?"fz_basic":"fz_super", n=id==="fert"?2:1; S.fert=S.fert||{}; S.fert[f]=(S.fert[f]||0)+n; got=`${id==="fert"?"一般肥料":"高級肥料"} ×${n}`; }
+  bondDone(`💞 用 ${it[3]} 羈絆點換到 ${got}`);
+}
+function bondDailyGift(){                                  // ⑤ 每天第一次打開網站：寵物有機會叼小禮物回家
+  if(!S.pet||!PETS[S.pet.type]||!S.group||touristLocked()) return;
+  const day=dayKey(); if(S.bondGift===day) return;
+  const st=bondStars(S.pet.type); if(!st) return;
+  S.bondGift=day; save();
+  if(Math.random()>=st*.08) return;
+  const pn=S.pet.name||PETS[S.pet.type].name, r=Math.random(); let got="";
+  if(st>=3&&r<.1){ S.fert=S.fert||{}; S.fert.fz_super=(S.fert.fz_super||0)+1; got="高級肥料 ×1"; }
+  else if(r<.35){ S.fert=S.fert||{}; S.fert.fz_basic=(S.fert.fz_basic||0)+1; got="一般肥料 ×1"; }
+  else{ const k=shuffleR(Object.keys(CROPS),Math.random)[0], n=2+st; seeds()[k]=(seeds()[k]||0)+n; got=`${CROPS[k].name}種子 ×${n}`; }
+  save(); queueSync(); Sound.sfx("get");
+  toast(`🎁 ${pn}叼回了一份小禮物：${got}！`);
+}
+document.addEventListener("click",e=>{
+  if(e.target.closest("[data-bondsk]")){ bondUpgrade(); return; }
+  const bb=e.target.closest("[data-bondbuy]"); if(bb){ bondBuy(bb.dataset.bondbuy); return; }
+});
 function renderVisitActions(p){
   const box=$("#vsAct"); if(!box) return;
   const barn=S.barn||{}, opts=Object.entries(CROPS).filter(([k])=>(barn[k]||0)>0);
@@ -8269,8 +8596,8 @@ function claimRps(){                                   // 主人這邊：寵物�
     const [r,c,id,t]=String(x.msg).split("|"); S.rpsClaimed[id]=dayNo();
     if(r==="w"&&CROPS[c]&&S.rpsDay.loss<RPS_HOST_LOSS&&(S.barn[c]||0)>0){ S.barn[c]--; S.rpsDay.loss++; lost[c]=(lost[c]||0)+1; }
     else if(r==="l"&&CROPS[c]&&PETS[t]&&S.rpsDay.aff<RPS_HOST_AFF){
-      const before=affOf(t); S.aff[t]=Math.min(AFF_MAX,before+1); S.rpsDay.aff++; ate[c]=(ate[c]||0)+1;
-      if(before<AFF_MAX&&S.aff[t]>=AFF_MAX&&S.pet&&S.pet.type===t) maxed=t;
+      if(affGain(t,1,true)&&S.pet&&S.pet.type===t) maxed=t;
+      S.rpsDay.aff++; ate[c]=(ate[c]||0)+1;
     }
   });
   save(); queueSync();
@@ -8627,7 +8954,7 @@ function renderPlaceInner(greet){
   $("#plHostFace").innerHTML=home?avatarSVG(CHIEF_AV):avatarSVG(DIRECTOR_AV);
   $("#plHostName").textContent=home?`部門村長　${CFG.chief}`:`數位總合辦公室　${CFG.director}`;
   if(greet){
-    const name=dispName();
+    const name=callName();
     const pending=INBOX.interviews.filter(x=>x.status==="待回覆").length;
     typeInto($("#plSay"),touristLocked()
       ?(home?`${name}，歡迎來園城部參觀！我是部門村長${CFG.chief}。泡杯茶坐坐，順便看看角落有沒有藏什麼好東西。`
@@ -8920,17 +9247,17 @@ function welcomePagesIntro(){
 function welcomePagesAfterChar(){
   const name=dispName();
   if(touristLocked()) return [
-    {text:`${name}，歡迎來參觀！地圖上的新手村、情報酒館、行政塔、寶物庫和存摺神殿，是新人要認識的公司制度，你也可以完成任務升等。`},
+    {text:`${name}，歡迎來參觀！地圖上的新手村、情報酒館、行政塔、寶物庫和智慧神殿，是新人要認識的公司制度，你也可以完成任務升等。`},
     {text:"交誼廳可以看看我們部門同事的名片和留言板，也能去同事家參觀；觀光客只能看，不能留言或送禮喔。",btn:"出發！",action:"go",goto:"village"}
   ];
   return [
-    {text:`${name}，歡迎加入${S.group}！地圖上的新手村、情報酒館、行政塔、寶物庫和存摺神殿，都有等你完成的任務。`},
+    {text:`${name}，歡迎加入${S.group}！地圖上的新手村、情報酒館、行政塔、寶物庫和智慧神殿，都有等你完成的任務。`},
     {text:()=>ivOn()?`需要找你面談時，我會把通知放在「村長的家」；部門平台或技術應用遇到問題，可以到「數位總合辦公室」找${CFG.director}幫忙。`:`有空可以來「村長的家」坐坐；部門平台或技術應用遇到問題，可以到「數位總合辦公室」找${CFG.director}幫忙。`},
     {text:"任務裡看到常用的資料，記得按「♥ 加入最愛」。回到「溫暖的家」打開筆記本，就能快速查到。先從新手村出發吧！",btn:"出發！",action:"go",goto:"village"}
   ];
 }
 function welcomePagesReturning(){
-  const name=dispName(), done=xp()/XP_PER, nz=nextZoneHint();
+  const name=callName(), done=xp()/XP_PER, nz=nextZoneHint();
   if(touristLocked()) return [
     {text:`${name}，歡迎再來參觀！目前完成 ${done}／${TOTAL} 個任務${nz&&done<TOTAL?`，可以到「${nz.name}」看看`:""}。`},
     {text:`提醒你：觀光客的進度只存在這台裝置，${TOURIST_DAYS} 天沒回來會自動清空。如果你是部門新人，可以按畫面上方的「正式加入」。`,btn:"出發！",action:"go",goto:done<TOTAL&&nz?nz.id:null}
@@ -9192,7 +9519,7 @@ function tourSteps(){
 function tourQuickSteps(){                              // 三分鐘上手：新人第一次的短版導覽（5 步）
   const name=dispName();
   return [
-    {zone:"village",text:`${name}，地圖上有五大分類：新手村、情報酒館、行政塔、寶物庫、存摺神殿，公司的制度都整理在裡面。建議先從新手村開始！`},
+    {zone:"village",text:`${name}，地圖上有五大分類：新手村、情報酒館、行政塔、寶物庫、智慧神殿，公司的制度都整理在裡面。建議先從新手村開始！`},
     {zone:"village",text:"點進建築會看到一則一則的任務。打開任務看說明，看完按「完成」就能拿 EXP 升等；升到 LV 3 還可以領養寵物！"},
     {place:"myhome",text:"任務裡看到常用的資料，按「♡ 加入最愛」就會收進筆記本。回到這裡「溫暖的家」打開筆記本，隨時查得到。"},
     {glow:"#search",text:"找不到答案時，在地圖上方的搜尋框輸入關鍵字，例如「名片」「加班」，所有任務會一起搜尋。"},
@@ -9412,9 +9739,7 @@ function seededRand(str){ let h=1779033703^str.length; for(let i=0;i<str.length;
   return ()=>{ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
 const shuffleR=(arr,r)=>{ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 /* ---- NPC 情報問答：出題規則 v2 ----
-   ① 數字題：整段挖空完整的數字（時間區間、時間、日期、分機、帶單位的數字），不挖項目編號
-   ② 名詞題：挖有意義的名詞（「」引號詞、粗體詞、○○系統／○○組／○○單…），答案不能出現在任務標題
-   ③ 歸屬題、④ 分類題：前兩種出不了時備用 */
+   題型只有兩種：情境題（內建＋管理者新增）、數字題（整段挖空完整的數字：時間區間、時間、日期、分機、帶單位的數字，不挖項目編號） */
 function htmlLines(html){
   return String(html||"").replace(/<table[\s\S]*?<\/table>/gi,"\n").replace(/<\s*(li|p|br|h3|h4|div|tr)\b[^>]*>/gi,"\n").replace(/<[^>]+>/g,"")
     .replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").split(/\n/);
@@ -9473,31 +9798,15 @@ function fakeNum(c,r){
   }
   return [...out];
 }
-const NOUN_SUF="系統|平台|網站|專區|中心|小組|組|部|處|室|申請單|單|表|卡|證|假|費|App|APP|信箱|櫃台|後門|大門|樓|機|網";
-const NOUN_STOP=/^[請到至於在向的和與及或由從用把將先再可要需依並及等如若其]+/;
-const VERBISH=/[按填撥請務辦更寫打帶找送交洽問看算拿去來]|一週|隔天|以[內外上下]|之[前後]|暫緩|^(?:若|如|需|應|可|要|先|再)/;
-function nounOK(w){ return w.length>=2&&w.length<=12&&!/\d/.test(w)&&!/[，。、：:；「」()（）]/.test(w)&&!VERBISH.test(w); }
-function nounTerms(q){                                 // 這則任務裡有意義的名詞
-  const terms=new Map();
-  const add=(w,src)=>{ w=String(w||"").trim(); if(nounOK(w)&&!terms.has(w)) terms.set(w,src); };
-  String(q.body||"").replace(/<table[\s\S]*?<\/table>/gi,"").replace(/<(b|strong)>([^<]{2,12})<\/\1>/gi,(m,t,w)=>{ add(w,"bold"); return m; });
-  questSentences(q).forEach(t=>{
-    t.replace(/「([^」]{2,12})」/g,(m,w)=>{ add(w,"quote"); return m; });
-    const lab=t.match(/^([^：:，、]{2,8})[：:]/); if(lab) add(lab[1],"label");
-  });
-  return terms;
-}
 const optKey=x=>String(x).normalize("NFKC").replace(/[\s　]+/g,"").replace(/[～〜~]/g,"~").replace(/[－–—]/g,"-").toLowerCase();   // 比對選項是否重複（忽略空白、全形半形）
 const quizOK=q=>!!q&&new Set(q.opts.map(optKey)).size===q.opts.length;
-const sufOf=w=>{ const m=w.match(new RegExp("("+NOUN_SUF+")$")); return m?m[1]:""; };
 /* ---- 題庫設定：停用的題目、停用的題型、自訂干擾選項（管理者在「題庫」分頁發布） ---- */
-const QZ_KINDS=["情境題","數字題","名詞題","歸屬題","分類題"];
+const QZ_KINDS=["情境題","數字題"];
 /* 情境判斷題（內建）：依任務內容設計，第一個選項是正確答案，出題時打亂順序；管理者可在「題庫」分頁修改、停用或新增 */
-const SCEN_DEFAULT=[{"id": "s01", "zone": "village", "quest": "v4", "q": "報到第一天還沒拿到員工證，到了公司門口要怎麼刷卡進去？", "opts": ["向櫃台借白卡（臨時證）刷卡，並在借用簿登記", "請同事用他的員工證幫你刷卡進門", "先不刷卡，之後到出勤系統補登上班時間", "到行政部臨時申請一張正式員工證"], "ans": 0, "explain": "沒有員工證時可以向櫃台借白卡刷卡：輸入員編、歸還白卡，並在借用簿註明刷卡人及時間。"}, {"id": "s02", "zone": "village", "quest": "v4", "q": "用借來的白卡刷卡進公司後，事後還要記得做什麼？", "opts": ["到出勤系統確認有沒有刷卡紀錄", "把白卡留在座位，下班時再一起還", "請主管在請假卡幫你補簽到", "不用做任何事，白卡會自動記錄"], "ans": 0, "explain": "借白卡刷卡後要歸還，事後記得到出勤系統確認是否有紀錄。"}, {"id": "s03", "zone": "village", "quest": "v5", "q": "還沒配發電腦，但今天想先上訂餐系統訂便當，怎麼做最快？", "opts": ["從公司官網［員工專區］＞［一般員工］登入", "等電腦配發後，才能登入訂餐系統", "請部門行政組用他的帳號幫你代訂", "先安裝中興行動 APP，再用手機訂"], "ans": 0, "explain": "只需要訂餐、出勤、E-learning 系統時，可以從公司官網的［員工專區］＞［一般員工］登入。"}, {"id": "s04", "zone": "village", "quest": "v2", "q": "想把薪水轉進自己的郵局帳戶，可以嗎？", "opts": ["可以，薪轉戶可選彰化銀行、遠東銀行或郵局", "不行，薪轉戶只能選公司一樓的遠東銀行", "不行，薪轉戶只能選隔壁大樓的彰化銀行", "可以，但要另外專案申請並經主管核准"], "ans": 0, "explain": "公司薪轉戶可以選擇彰化銀行、遠東銀行、郵局。"}, {"id": "s05", "zone": "village", "quest": "v6", "q": "報到後第 5 天，主管問你安全衛生的線上課程上完了沒。規定是什麼？", "opts": ["報到一週內在職安署數位學習平台上完 2 小時", "等每季的實體課程，再一起上完 3 小時", "報到一個月內在 E-learning 上完 1 小時", "新人第一年免上，第二年再補上就好"], "ans": 0, "explain": "一般安全衛生教育訓練共 3 小時：報到一週內完成 2 小時線上課程，每季實體課程 1 小時。"}, {"id": "s06", "zone": "village", "quest": "v6", "q": "新人教育訓練當天的筆試考了 70 分，接下來會怎樣？", "opts": ["要補考", "要補修整門課", "已經及格，不用處理", "下一季重新報名上課"], "ans": 0, "explain": "筆試未達 80 分要補考，未達 60 分要補修。"}, {"id": "s07", "zone": "village", "quest": "v7", "q": "人員履歷的欄位全部填好了，最後一步要做什麼？", "opts": ["點選［申請主管簽核］", "印出來交給行政部", "寄 Email 給人資", "按儲存就完成了"], "ans": 0, "explain": "全部欄位填好後，點選［申請主管簽核］。之後每年依工作資歷、新增證照更新一次。"}, {"id": "s08", "zone": "tavern", "quest": "t1", "q": "彈性上班到 8:30，你今天 8:40 才刷卡進公司，該怎麼處理？", "opts": ["請假 1 小時", "不用處理，還在彈性時間內", "請假半天", "當天加班補回來就好"], "ans": 0, "explain": "超過彈性上班範圍 30 分鐘內到達者，應請假 1 小時。"}, {"id": "s09", "zone": "tavern", "quest": "t1", "q": "加班到晚上 7 點才要離開公司，要從哪裡出去？", "opts": ["B1 後門", "正門", "請警衛開正門", "哪一個門都可以"], "ans": 0, "explain": "正門開放時間 7:00～18:00，18:00 後請從 B1 後門進出。"}, {"id": "s10", "zone": "tavern", "quest": "t1", "q": "你今天 8:20 刷卡上班，最早幾點可以下班？", "opts": ["17:20", "16:20", "16:30", "17:30"], "ans": 0, "explain": "以 8 小時計算，加上中午 1 小時午休，例如 8:15 上班就是 17:15 下班。"}, {"id": "s11", "zone": "tavern", "quest": "t3", "q": "今天下班後預計要加班，加班申請卡最晚要在什麼時候完成？", "opts": ["加班前、最晚 16:30 填好並經主管簽核", "加班結束後，隔天上班再補填並簽核", "當月 30 號前，和正常工作卡一起填", "下班前、最晚 17:30 填好並經主管簽核"], "ans": 0, "explain": "加班申請卡要在加班前、最晚 16:30 完成填寫並經主管簽核，也可以事先申請一週的加班。"}, {"id": "s12", "zone": "tavern", "quest": "t3", "q": "昨天實際加班了 2 小時，加班卡要什麼時候填？", "opts": ["隔天務必填寫", "月底再和工作卡一起填", "不用填，有加班申請卡就夠了", "下一週再一起補填"], "ans": 0, "explain": "加班卡依實際加班時數，隔天務必填寫，逾時未填會記點。"}, {"id": "s13", "zone": "tavern", "quest": "t3", "q": "這個月已經加班 44 小時，主管問你這個月還能再申請幾小時？", "opts": ["2 小時", "4 小時", "12 小時", "沒有上限"], "ans": 0, "explain": "加班一天最多 4 小時，週六日最多 12 小時，當月最多 46 小時。"}, {"id": "s14", "zone": "tavern", "quest": "t3", "q": "週日來公司加班，可以怎麼申請？", "opts": ["只能申請補休，而且要在 7 日內補休", "只能領加班費，不能申請補休", "加班費或補休擇一，年底前休完即可", "只能申請補休，年底前休完就好"], "ans": 0, "explain": "週日只能申請補休，依勞基法須於 7 日內補休；未工作滿 8 小時者，須以特休假或補休補足。"}, {"id": "s15", "zone": "tavern", "quest": "t3", "q": "想請 1 小時病假去看醫生，要在哪裡填？", "opts": ["請假卡，由主管核假", "正常工作卡，填在當天的時數裡", "加班卡，之後再用補休抵", "寄 Email 給行政部登記"], "ans": 0, "explain": "病假、公出、特休、加班補休等，都在［請假卡］填卡，由主管核假。"}, {"id": "s16", "zone": "tavern", "quest": "t3", "q": "今天是 18 號，中旬的正常工作卡還沒填，最晚要在幾號前完成？", "opts": ["20 號", "10 號", "30 號", "下個月 5 號"], "ans": 0, "explain": "正常工作卡每月 10 號（上旬卡）、20 號（中旬卡）、30 號（下旬卡）前完成，逾時未填會記點。"}, {"id": "s17", "zone": "tavern", "quest": "t4", "q": "你 3 月 1 日報到，到了 7 月 1 日，總共有幾天特休？", "opts": ["2 天", "4 天", "1 天", "第一年沒有特休"], "ans": 0, "explain": "新人第 1 年，每滿 2 個月給特別休假 1 天，滿 4 個月就是 2 天。"}, {"id": "s18", "zone": "tavern", "quest": "t4", "q": "到了年底，還有 2 天特休沒休完，會怎樣？", "opts": ["換算成薪資，隔年 1 月匯入薪資帳戶", "全部作廢，不能保留也不能換錢", "自動延到明年，3 月底前要休完", "換成加班補休，隔年再慢慢休"], "ans": 0, "explain": "特休每年 12/31 結算，未休完的換算薪資，於隔年 1 月匯入薪資帳戶。"}, {"id": "s19", "zone": "tavern", "quest": "t6", "q": "上午 10:00 才想到要訂便當，還來得及嗎？", "opts": ["來不及，訂餐和取消都要在 9:50 前", "可以，中午 12 點前都還能訂", "可以，打電話給便當店直接加訂", "可以，但要改用現金付款"], "ans": 0, "explain": "線上訂餐須於每日 9:50 前完成，要取消也請於 9:50 前辦理。"}, {"id": "s20", "zone": "tavern", "quest": "t6", "q": "在線上訂好的便當，中午要去哪裡拿？", "opts": ["電梯前的桌上，便當上標有姓名", "1 樓櫃台，報名字領取", "部門前方的冰箱裡", "行政部辦公室，簽名領取"], "ans": 0, "explain": "便當中午放在電梯前桌上，上面標有姓名，午休時領取。"}, {"id": "s21", "zone": "tavern", "quest": "t7", "q": "要用座位電話打給客戶的手機，該怎麼撥？", "opts": ["撥 5 給總機，由總機協助撥打", "按 9 再直接撥手機號碼", "撥 0 給總機，由總機協助撥打", "直接撥手機號碼就可以"], "ans": 0, "explain": "撥打手機要撥 5 給總機，由總機協助撥打（113/12/16 起由 0 改為 5）；按 9 是撥外線市話。"}, {"id": "s22", "zone": "tavern", "quest": "t7", "q": "隔壁同事不在，他的座位電話一直響，你要怎麼代接？", "opts": ["按 ＊ ＋ 7", "按轉接鍵", "按 9", "按 5"], "ans": 0, "explain": "代接其他座位電話：按 ＊ ＋ 7。"}, {"id": "s23", "zone": "tavern", "quest": "t10", "q": "要把一個大檔案傳給別組同事，放到 P 槽後要提醒對方什麼？", "opts": ["當天就要下載，P 槽每天 00:00 會自動刪除", "檔案會保留一個月，慢慢下載就好", "放在 P 槽只有自己看得到，要另外分享", "P 槽只限部門內部，別組同事打不開"], "ans": 0, "explain": "P 槽用來資料交換，上傳後所有人都能下載，每日 00:00 自動刪除，重要檔案請另外保存。"}, {"id": "s24", "zone": "tavern", "quest": "t11", "q": "上班時不小心扭傷腳踝，保健室可以幫你做什麼？", "opts": ["只能初步緊急處理，扭傷要到醫療院所治療", "可以幫你打止痛針，休息後再回去上班", "可以幫你包紮，並做完整的扭傷治療", "會直接幫你掛號、安排醫生看診"], "ans": 0, "explain": "保健室醫護人員僅作初步緊急處理及健康諮詢，不處理扭傷、挫傷、跌傷等持續性治療。"}, {"id": "s25", "zone": "tavern", "quest": "t12", "q": "出差時想用手機批閱表單，從外部登入員工專區需要什麼？", "opts": ["密碼加一次性密碼（OTP）", "員編和密碼就好，不用驗證", "要先連上公司的 VPN", "外部網路不能登入員工專區"], "ans": 0, "explain": "自 115/1/1 起，從外部網站登入員工專區需要「密碼＋一次性密碼」，手機要安裝 Google Authenticator。"}, {"id": "s26", "zone": "tavern", "quest": "t9", "q": "在電腦按了列印，要怎麼把文件印出來？", "opts": ["到影印機刷員工證，再按［釋放列印］", "送出後印表機就會自動印出來", "請行政組在後台幫你放行文件", "在影印機輸入員編密碼就會印出"], "ans": 0, "explain": "文件送出列印（選 Epson Printer）後，到影印機刷員工證，按［釋放列印］。"}, {"id": "s27", "zone": "tower", "quest": "w1", "q": "下週要去台中的業主那邊開會，應該辦什麼手續？", "opts": ["出差，出差前填「員工出差申請及報告單」", "公出，事後再報支交通費就好", "請特休，再自行報銷交通費", "不用申請，直接搭車前往"], "ans": 0, "explain": "公務地點距原工作地 80 公里以外（新竹以南）屬出差，出差前填「員工出差申請及報告單」陳核。"}, {"id": "s28", "zone": "tower", "quest": "w2", "q": "要去台北市區的業主辦公室開會，當天來回，離開公司時要做什麼？", "opts": ["以公出辦理，先按「公出」鍵再用識別證感應", "以出差辦理，先填出差申請及報告單", "請半天特休，再報銷交通費", "直接離開，回來再跟主管說"], "ans": 0, "explain": "80 公里以內（新竹以北）以公出辦理；經主管許可公出，離開公司時先按「公出」鍵，再以 IC 識別證感應。"}, {"id": "s29", "zone": "tower", "quest": "w1", "q": "出差搭高鐵，可以買商務車廂報銷嗎？", "opts": ["不行，以標準（經濟）等級為限", "可以，按實際票價報支", "主管同意就可以報商務車廂", "只有回程可以買商務車廂"], "ans": 0, "explain": "搭高鐵或飛機以標準（經濟）等級為限。"}, {"id": "s30", "zone": "tower", "quest": "w1", "q": "出差住宿用 Agoda 訂房，訂房網的收據可以核銷嗎？", "opts": ["不行，要直接向飯店訂房拿有統編的單據", "可以，附上訂房網的收據就能報", "可以，但只能報一半的住宿費", "可以，改填交通費報銷單後就能報"], "ans": 0, "explain": "核銷不能使用訂房網（如 Agoda）的收據，請直接向飯店訂房並索取有公司統編的單據。"}, {"id": "s31", "zone": "tower", "quest": "w1", "q": "出差到澎湖 2 天，膳雜費每天可以報多少？", "opts": ["550 元", "400 元", "3,000 元", "不能報膳雜費"], "ans": 0, "explain": "膳雜費每日 400 元；馬祖、金門、澎湖等離島每日 550 元。"}, {"id": "s32", "zone": "tower", "quest": "w3", "q": "搭 Uber 去業主那邊開會，車資要怎麼報銷？", "opts": ["附上有起訖地和金額的資料，經搭乘人和主管簽章", "一定要填交通費報銷單，附上信用卡帳單", "多元計程車沒有收據，所以不能報銷", "把車資畫面傳給行政組就好，不用簽章"], "ans": 0, "explain": "多元計程車檢附載有「搭乘起訖地及支付金額」的資料，經搭乘人、部門主管等簽章後即可報銷，不必再填交通費報銷單。"}, {"id": "s33", "zone": "tower", "quest": "w3", "q": "因公搭計程車，下車地點是自己家，報銷時要注意什麼？", "opts": ["要另外註明搭車的原因", "起訖點有自宅就不能報銷", "不用說明，照一般程序報銷", "只能用多元計程車才可以報"], "ans": 0, "explain": "只要起訖點其中一端是自宅，都仍須註明原因。"}, {"id": "s34", "zone": "tower", "quest": "w6", "q": "電腦突然開不了機，要怎麼報修？", "opts": ["到內網［資訊設備報修］填單，或打分機 11014", "撥 24 小時直撥專線 10011 報修", "把電腦搬到行政部請人檢查", "填［EF07102 電腦軟硬體申請表］換新的"], "ans": 0, "explain": "電腦或軟體壞掉：公司內網＞［服務專區］＞［資訊設備報修］，資訊設備問題請洽分機 11014–11017。"}, {"id": "s35", "zone": "tower", "quest": "w9", "q": "辦公室的冷氣不冷，要找誰報修？", "opts": ["撥 24 小時直撥專線 10011", "到［資訊設備報修］填單報修", "填［EF07102 電腦軟硬體申請表］", "到 2F 保健室旁的福委會反映"], "ans": 0, "explain": "水電、空調、電話及清潔等報修，請撥 24 小時直撥專線 10011。"}, {"id": "s36", "zone": "tower", "quest": "w5", "q": "工作需要安裝一套工程軟體，第一步要做什麼？", "opts": ["先和主管確認，再填電腦軟硬體申請表", "自己上網下載安裝，再登記到軟體清單", "向同事借帳號，先用他的軟體授權", "撥 10011，請資訊人員直接來安裝"], "ans": 0, "explain": "軟體要先和主管確認要安裝哪些，再到表單入口網填［EF07102 電腦軟硬體申請表］。"}, {"id": "s37", "zone": "chest", "quest": "c2", "q": "你還在試用期，報名了英文課，可以申請員工進修補助嗎？", "opts": ["不行，試用期間的新進員工不適用", "可以，每年補助 2,000 元", "可以，補助一半的學費", "可以，但要先經主管同意"], "ans": 0, "explain": "員工進修補助：試用期間的新進員工不適用。"}, {"id": "s38", "zone": "chest", "quest": "c2", "q": "今年上了一門 1,500 元的電腦課，也拿到結訓證明，可以申請進修補助嗎？", "opts": ["不行，進修費用累計要超過 2,000 元", "可以，按實際費用補助 1,500 元", "可以，固定補助 2,000 元", "可以，補助一半 750 元"], "ans": 0, "explain": "繳交的進修費用累計須超過 2,000 元，且有結訓證明，每人每年最多申請一次、補助 2,000 元。"}, {"id": "s39", "zone": "chest", "quest": "c3", "q": "到職已滿一年，請 2 天特休去花蓮玩，花了 7,000 元，自辦休假旅遊最多補助多少？", "opts": ["6,000 元", "7,000 元", "9,000 元", "3,000 元"], "ans": 0, "explain": "須請特休自辦或參加旅遊，每天最高補助 3,000 元（檢據報銷），每年合計以 3 天、9,000 元為限。"}, {"id": "s40", "zone": "chest", "quest": "c3", "q": "週末沒有請假，自己安排了兩天一夜的旅遊，可以申請自辦休假旅遊補助嗎？", "opts": ["不行，要請特休（或代休假）才有補助", "可以，每天補助 3,000 元", "可以，但只補助一天", "可以，週末旅遊補助加倍"], "ans": 0, "explain": "非特休（或代休假）日的旅遊不在補助範圍。"}, {"id": "s41", "zone": "chest", "quest": "c3", "q": "只請了 4 小時特休去旅遊，可以申請自辦休假旅遊補助嗎？", "opts": ["不行，每次請假不得少於 8 小時", "可以，按比例補助一半", "可以，一樣補助 3,000 元", "可以，但要先經主管同意"], "ans": 0, "explain": "每次請假不得少於 8 小時。"}, {"id": "s42", "zone": "chest", "quest": "c4", "q": "到職 8 個月，想申請公司補助的健康檢查，可以嗎？", "opts": ["還不行，到職滿 1 年後才能申請", "可以，到職後隨時都能申請", "可以，但費用要全部自費", "要等到滿 30 歲才能申請"], "ans": 0, "explain": "新進員工到職滿 1 年後才能申請，須在「健檢預約系統」申請並產生公假卡。"}, {"id": "s43", "zone": "chest", "quest": "c4", "q": "這次健檢費用是 12,000 元，可以給多少公假？", "opts": ["0.5 天", "1 天", "2 天", "不給公假"], "ans": 0, "explain": "當次金額未滿 15,000 元給 0.5 天公假，15,000 元（含）以上給 1 天。"}, {"id": "s44", "zone": "chest", "quest": "c4", "q": "自己找合法的健檢機構做完健檢，要在多久內報銷？", "opts": ["健檢後 1 個月內，檢附收據加會行政部", "當年度 12/31 前送出即可", "健檢後一週內，交給保健室", "不能報銷，只能去特約醫院"], "ans": 0, "explain": "自行找合法健檢機構者，健檢後 1 個月內檢附收據加會行政部報銷。"}, {"id": "s45", "zone": "chest", "quest": "c1", "q": "收到公司發的電子禮券，要怎麼使用？", "opts": ["下載 APP「Edenred」並完成綁定", "到行政部換成紙本的禮券使用", "在線上訂餐系統裡直接折抵餐費", "寄信給福委會，兌換成現金"], "ans": 0, "explain": "電子禮券需下載 APP「Edenred」並完成員工綁定。"}, {"id": "s46", "zone": "temple", "quest": "p1", "q": "主管說部門的智慧存摺年底要達標，這個目標是怎麼算的？", "opts": ["員工點數平均值加部門點數，要達 100 點", "每個人各自都要累積到 100 點", "部門所有人的點數加總達 100 點", "每一季都要達到 100 點"], "ans": 0, "explain": "目標值：部門以所屬員工點數平均值加計部門點數，年度應達 100 點。"}, {"id": "s47", "zone": "village", "quest": "v1", "q": "下面哪一份是報到「前」就要準備好的文件，而不是報到當天才填？", "opts": ["保密承諾書", "定期／不定期契約書", "團體保險資料", "參加社團資料"], "ans": 0, "explain": "報到前要依報到單準備員工登記表、發薪基本資料表、健保申請表、保密承諾書等；契約書、團體保險和社團資料是報到當天填寫。"}, {"id": "s48", "zone": "village", "quest": "v1", "q": "準備員工登記表時，要附上什麼照片？", "opts": ["近半年的 2 吋大頭貼", "近一年的 1 吋大頭貼", "近三個月的生活照", "不用附照片"], "ans": 0, "explain": "員工登記表要附近半年 2 吋大頭貼及人員履歷表。"}, {"id": "s49", "zone": "village", "quest": "v3", "q": "報到當天，下面哪一份是要在公司現場填寫的資料？", "opts": ["定期／不定期契約書", "健保申請表", "勞退提繳申報表", "發薪基本資料表"], "ans": 0, "explain": "報到當天要填寫報到單、定期／不定期契約書、團體保險資料、參加社團資料；健保、勞退、發薪資料表是報到前就要準備好的。"}, {"id": "s50", "zone": "tavern", "quest": "t5", "q": "第一次領薪水，什麼時候入帳、薪資單要去哪裡看？", "opts": ["每月 16 號匯款，薪資單用 Email 寄送", "每月 5 號匯款，薪資單紙本發放", "每月月底匯款，薪資單到內網下載", "每月 16 號匯款，薪資單到行政部領取"], "ans": 0, "explain": "薪資每月 16 號匯款，匯入整月薪資；薪資單以 Email 寄送。"}, {"id": "s51", "zone": "tavern", "quest": "t8", "q": "常常外出，想讓座位分機的來電轉到手機，要怎麼申請？", "opts": ["填 0309002 E-Call 申辦單上傳簽核", "撥 5 請總機幫你把來電轉到手機", "在座位電話按 ＊ ＋ 7 開啟來電轉接", "撥 10011 報修專線請人來設定"], "ans": 0, "explain": "到表單入口網下載 0309002 分機跟隨手機（E-Call）申辦單，填寫後另存 PDF，回到［簽核表單上傳］送出。"}, {"id": "s52", "zone": "tavern", "quest": "t10", "q": "部門同事之間要共用的專案資料，應該放在哪裡？", "opts": ["O 槽", "P 槽", "自己電腦的桌面", "寄 Email 附件給大家"], "ans": 0, "explain": "O 槽是部門內資料共用；P 槽是資料交換，每天 00:00 會自動刪除。"}, {"id": "s53", "zone": "tavern", "quest": "t11", "q": "中午 12:30 想去保健室量血壓，保健室開著嗎？", "opts": ["沒有，中午 12:00–13:00 休息", "有，保健室中午也有醫護人員值班", "有，保健室週一到週五全天開放", "沒有，保健室只在每天上午開放"], "ans": 0, "explain": "保健室位於 2F，服務時間週一至週五 8:00–12:00、13:00–17:00。"}, {"id": "s54", "zone": "tower", "quest": "w4", "q": "想申請公司的 Email 信箱，要去哪裡申請？", "opts": ["內網［員工專區］＞［Email帳號申請］", "表單入口網的印製名片申請單", "撥分機 11014 請資訊人員開通", "到行政部填紙本申請單"], "ans": 0, "explain": "Email 信箱：公司內網＞［員工專區］＞［Email帳號申請］＞［我要申請］，之後可在［我的帳號查詢］追蹤進度。"}, {"id": "s55", "zone": "tower", "quest": "w7", "q": "需要原子筆和筆記本，要怎麼領？", "opts": ["內網［辦公用品及其他］加入領物清單後送簽", "直接到行政部的倉庫自己拿", "填電腦軟硬體申請表一起申請", "請助理先買，再填黏貼憑證報帳"], "ans": 0, "explain": "公司內網＞［表單管理］＞［辦公用品及其他］，把物品加入領物清單後［送出（線上簽核）］。"}, {"id": "s56", "zone": "tower", "quest": "w8", "q": "想申請公司的機車車位，什麼時候辦理？", "opts": ["每年 5～6 月統計並抽籤", "報到當天就能登記", "每季開放一次登記", "隨時找行政部申請就有"], "ans": 0, "explain": "機車／自行車車位每年 5～6 月統計並抽籤，詳細辦法請看公司公告或洽行政部。"}, {"id": "s57", "zone": "chest", "quest": "c1", "q": "下個月要結婚，婚假最小可以請多少時間？", "opts": ["1 小時", "0.5 天", "1 天", "4 小時"], "ans": 0, "explain": "喪假、婚假自 113/9/27 起改以 1 小時為最小請假單位。"}, {"id": "s58", "zone": "chest", "quest": "c1", "q": "公司的大型員工旅遊是怎麼補助的？", "opts": ["上下半年分梯舉辦，每人 6,000 元", "每年辦一次，每人 9,000 元", "自行安排，3 天特休共 9,000 元", "上下半年各一次，每次 3,000 元"], "ans": 0, "explain": "大型員工旅遊上下半年分梯舉辦，每人 6,000 元；自行安排、3 天特休共 9,000 元的是「補助員工休假旅遊」。"}, {"id": "s59", "zone": "temple", "quest": "p1", "q": "想隨時對照自己的智慧存摺點數離 100 點還差多少，可以用網站的什麼功能？", "opts": ["存摺神殿頁面下方的集點卡", "溫暖的家的筆記本", "交誼廳的留言板", "種子商店的每日問答"], "ans": 0, "explain": "神殿頁面下方的集點卡可以記下你目前的點數，隨時對照離 100 點還差多少。"}, {"id": "s60", "zone": "temple", "quest": "p1", "q": "想了解智慧存摺目標值的詳細計算方式，要去哪裡看？", "opts": ["內網的「ISO 品質目標.pdf」", "存摺神殿的集點卡說明", "中興規章入口網的工作規則", "福委會網站的補助辦法"], "ans": 0, "explain": "詳細說明請參考 ISO 品質目標.pdf（需公司內網）。"}];
-const QUIZ_DEFAULT={v:1,scen:{},off:["q925r5l", "quypfzt", "q1czdq6t", "q1dlbeye", "q1e5svrg", "q1jzzl9n", "q1g660lm", "q1guwc28", "q1hgtj8x", "q1ja7j2r", "q30umr", "q1ozvpf7", "qh4s2xz", "q8gk4u2", "qlyuykl", "q1fzqezp", "q16jh7r9", "qz34uh1", "qap3ggk", "q5umxjo", "q16at0k4", "qw88q5w", "q1fbuwyk", "q1jy3j3j", "qnopsfk", "q1ia487k", "q1lk7134", "quz7lu0", "qc4164a", "q1bovqp", "q1xo42b6", "q1f6n6ep", "q3l2gmo", "qvn0egn", "q7pg9ti", "qataj4l", "q1jy50r8", "q1dfptjv", "qc6b0re", "q19oljj6", "q159y0gz", "qstyedl", "q1w36s05", "qtnviga", "q1m866zm", "q1gozwli", "q6o6o4l", "qoa1pxg", "q10wt38h", "q1h0trb4", "qh2a40z", "q1uzrd8i", "qhce82u", "qu5ygav", "qjhzzdf", "q1x9f2jv", "q1141x64", "q1wudgkf", "q15qcnoa"],types:{"數字題":false,"名詞題":false,"歸屬題":false,"分類題":false},wrong:{"qq3xcqr": ["基準值", "門檻值", "達成率"], "qn38n4h": ["1.5天", "2天", "3天"]}};   // 2026/10/12 題庫檢查的結果
+const SCEN_DEFAULT=[{"id": "s01", "zone": "village", "quest": "v4", "q": "報到第一天還沒拿到員工證，到了公司門口要怎麼刷卡進去？", "opts": ["向櫃台借白卡（臨時證）刷卡，並在借用簿登記", "請同事用他的員工證幫你刷卡進門", "先不刷卡，之後到出勤系統補登上班時間", "到行政部臨時申請一張正式員工證"], "ans": 0, "explain": "沒有員工證時可以向櫃台借白卡刷卡：輸入員編、歸還白卡，並在借用簿註明刷卡人及時間。"}, {"id": "s02", "zone": "village", "quest": "v4", "q": "用借來的白卡刷卡進公司後，事後還要記得做什麼？", "opts": ["到出勤系統確認有沒有刷卡紀錄", "把白卡留在座位，下班時再一起還", "請主管在請假卡幫你補簽到", "不用做任何事，白卡會自動記錄"], "ans": 0, "explain": "借白卡刷卡後要歸還，事後記得到出勤系統確認是否有紀錄。"}, {"id": "s03", "zone": "village", "quest": "v5", "q": "還沒配發電腦，但今天想先上訂餐系統訂便當，怎麼做最快？", "opts": ["從公司官網［員工專區］＞［一般員工］登入", "等電腦配發後，才能登入訂餐系統", "請部門行政組用他的帳號幫你代訂", "先安裝中興行動 APP，再用手機訂"], "ans": 0, "explain": "只需要訂餐、出勤、E-learning 系統時，可以從公司官網的［員工專區］＞［一般員工］登入。"}, {"id": "s04", "zone": "village", "quest": "v2", "q": "想把薪水轉進自己的郵局帳戶，可以嗎？", "opts": ["可以，薪轉戶可選彰化銀行、遠東銀行或郵局", "不行，薪轉戶只能選公司一樓的遠東銀行", "不行，薪轉戶只能選隔壁大樓的彰化銀行", "可以，但要另外專案申請並經主管核准"], "ans": 0, "explain": "公司薪轉戶可以選擇彰化銀行、遠東銀行、郵局。"}, {"id": "s05", "zone": "village", "quest": "v6", "q": "報到後第 5 天，主管問你安全衛生的線上課程上完了沒。規定是什麼？", "opts": ["報到一週內在職安署數位學習平台上完 2 小時", "等每季的實體課程，再一起上完 3 小時", "報到一個月內在 E-learning 上完 1 小時", "新人第一年免上，第二年再補上就好"], "ans": 0, "explain": "一般安全衛生教育訓練共 3 小時：報到一週內完成 2 小時線上課程，每季實體課程 1 小時。"}, {"id": "s06", "zone": "village", "quest": "v6", "q": "新人教育訓練當天的筆試考了 70 分，接下來會怎樣？", "opts": ["要補考", "要補修整門課", "已經及格，不用處理", "下一季重新報名上課"], "ans": 0, "explain": "筆試未達 80 分要補考，未達 60 分要補修。"}, {"id": "s07", "zone": "village", "quest": "v7", "q": "人員履歷的欄位全部填好了，最後一步要做什麼？", "opts": ["點選［申請主管簽核］", "印出來交給行政部", "寄 Email 給人資", "按儲存就完成了"], "ans": 0, "explain": "全部欄位填好後，點選［申請主管簽核］。之後每年依工作資歷、新增證照更新一次。"}, {"id": "s08", "zone": "tavern", "quest": "t1", "q": "彈性上班到 8:30，你今天 8:40 才刷卡進公司，該怎麼處理？", "opts": ["請假 1 小時", "不用處理，還在彈性時間內", "請假半天", "當天加班補回來就好"], "ans": 0, "explain": "超過彈性上班範圍 30 分鐘內到達者，應請假 1 小時。"}, {"id": "s09", "zone": "tavern", "quest": "t1", "q": "加班到晚上 7 點才要離開公司，要從哪裡出去？", "opts": ["B1 後門", "正門", "請警衛開正門", "哪一個門都可以"], "ans": 0, "explain": "正門開放時間 7:00～18:00，18:00 後請從 B1 後門進出。"}, {"id": "s10", "zone": "tavern", "quest": "t1", "q": "你今天 8:20 刷卡上班，最早幾點可以下班？", "opts": ["17:20", "16:20", "16:30", "17:30"], "ans": 0, "explain": "以 8 小時計算，加上中午 1 小時午休，例如 8:15 上班就是 17:15 下班。"}, {"id": "s11", "zone": "tavern", "quest": "t3", "q": "今天下班後預計要加班，加班申請卡最晚要在什麼時候完成？", "opts": ["加班前、最晚 16:30 填好並經主管簽核", "加班結束後，隔天上班再補填並簽核", "當月 30 號前，和正常工作卡一起填", "下班前、最晚 17:30 填好並經主管簽核"], "ans": 0, "explain": "加班申請卡要在加班前、最晚 16:30 完成填寫並經主管簽核，也可以事先申請一週的加班。"}, {"id": "s12", "zone": "tavern", "quest": "t3", "q": "昨天實際加班了 2 小時，加班卡要什麼時候填？", "opts": ["隔天務必填寫", "月底再和工作卡一起填", "不用填，有加班申請卡就夠了", "下一週再一起補填"], "ans": 0, "explain": "加班卡依實際加班時數，隔天務必填寫，逾時未填會記點。"}, {"id": "s13", "zone": "tavern", "quest": "t3", "q": "這個月已經加班 44 小時，主管問你這個月還能再申請幾小時？", "opts": ["2 小時", "4 小時", "12 小時", "沒有上限"], "ans": 0, "explain": "加班一天最多 4 小時，週六日最多 12 小時，當月最多 46 小時。"}, {"id": "s14", "zone": "tavern", "quest": "t3", "q": "週日來公司加班，可以怎麼申請？", "opts": ["只能申請補休，而且要在 7 日內補休", "只能領加班費，不能申請補休", "加班費或補休擇一，年底前休完即可", "只能申請補休，年底前休完就好"], "ans": 0, "explain": "週日只能申請補休，依勞基法須於 7 日內補休；未工作滿 8 小時者，須以特休假或補休補足。"}, {"id": "s15", "zone": "tavern", "quest": "t3", "q": "想請 1 小時病假去看醫生，要在哪裡填？", "opts": ["請假卡，由主管核假", "正常工作卡，填在當天的時數裡", "加班卡，之後再用補休抵", "寄 Email 給行政部登記"], "ans": 0, "explain": "病假、公出、特休、加班補休等，都在［請假卡］填卡，由主管核假。"}, {"id": "s16", "zone": "tavern", "quest": "t3", "q": "今天是 18 號，中旬的正常工作卡還沒填，最晚要在幾號前完成？", "opts": ["20 號", "10 號", "30 號", "下個月 5 號"], "ans": 0, "explain": "正常工作卡每月 10 號（上旬卡）、20 號（中旬卡）、30 號（下旬卡）前完成，逾時未填會記點。"}, {"id": "s17", "zone": "tavern", "quest": "t4", "q": "你 3 月 1 日報到，到了 7 月 1 日，總共有幾天特休？", "opts": ["2 天", "4 天", "1 天", "第一年沒有特休"], "ans": 0, "explain": "新人第 1 年，每滿 2 個月給特別休假 1 天，滿 4 個月就是 2 天。"}, {"id": "s18", "zone": "tavern", "quest": "t4", "q": "到了年底，還有 2 天特休沒休完，會怎樣？", "opts": ["換算成薪資，隔年 1 月匯入薪資帳戶", "全部作廢，不能保留也不能換錢", "自動延到明年，3 月底前要休完", "換成加班補休，隔年再慢慢休"], "ans": 0, "explain": "特休每年 12/31 結算，未休完的換算薪資，於隔年 1 月匯入薪資帳戶。"}, {"id": "s19", "zone": "tavern", "quest": "t6", "q": "上午 10:00 才想到要訂便當，還來得及嗎？", "opts": ["來不及，訂餐和取消都要在 9:50 前", "可以，中午 12 點前都還能訂", "可以，打電話給便當店直接加訂", "可以，但要改用現金付款"], "ans": 0, "explain": "線上訂餐須於每日 9:50 前完成，要取消也請於 9:50 前辦理。"}, {"id": "s20", "zone": "tavern", "quest": "t6", "q": "在線上訂好的便當，中午要去哪裡拿？", "opts": ["電梯前的桌上，便當上標有姓名", "1 樓櫃台，報名字領取", "部門前方的冰箱裡", "行政部辦公室，簽名領取"], "ans": 0, "explain": "便當中午放在電梯前桌上，上面標有姓名，午休時領取。"}, {"id": "s21", "zone": "tavern", "quest": "t7", "q": "要用座位電話打給客戶的手機，該怎麼撥？", "opts": ["撥 5 給總機，由總機協助撥打", "按 9 再直接撥手機號碼", "撥 0 給總機，由總機協助撥打", "直接撥手機號碼就可以"], "ans": 0, "explain": "撥打手機要撥 5 給總機，由總機協助撥打（113/12/16 起由 0 改為 5）；按 9 是撥外線市話。"}, {"id": "s22", "zone": "tavern", "quest": "t7", "q": "隔壁同事不在，他的座位電話一直響，你要怎麼代接？", "opts": ["按 ＊ ＋ 7", "按轉接鍵", "按 9", "按 5"], "ans": 0, "explain": "代接其他座位電話：按 ＊ ＋ 7。"}, {"id": "s23", "zone": "tavern", "quest": "t10", "q": "要把一個大檔案傳給別組同事，放到 P 槽後要提醒對方什麼？", "opts": ["當天就要下載，P 槽每天 00:00 會自動刪除", "檔案會保留一個月，慢慢下載就好", "放在 P 槽只有自己看得到，要另外分享", "P 槽只限部門內部，別組同事打不開"], "ans": 0, "explain": "P 槽用來資料交換，上傳後所有人都能下載，每日 00:00 自動刪除，重要檔案請另外保存。"}, {"id": "s24", "zone": "tavern", "quest": "t11", "q": "上班時不小心扭傷腳踝，保健室可以幫你做什麼？", "opts": ["只能初步緊急處理，扭傷要到醫療院所治療", "可以幫你打止痛針，休息後再回去上班", "可以幫你包紮，並做完整的扭傷治療", "會直接幫你掛號、安排醫生看診"], "ans": 0, "explain": "保健室醫護人員僅作初步緊急處理及健康諮詢，不處理扭傷、挫傷、跌傷等持續性治療。"}, {"id": "s25", "zone": "tavern", "quest": "t12", "q": "出差時想用手機批閱表單，從外部登入員工專區需要什麼？", "opts": ["密碼加一次性密碼（OTP）", "員編和密碼就好，不用驗證", "要先連上公司的 VPN", "外部網路不能登入員工專區"], "ans": 0, "explain": "自 115/1/1 起，從外部網站登入員工專區需要「密碼＋一次性密碼」，手機要安裝 Google Authenticator。"}, {"id": "s26", "zone": "tavern", "quest": "t9", "q": "在電腦按了列印，要怎麼把文件印出來？", "opts": ["到影印機刷員工證，再按［釋放列印］", "送出後印表機就會自動印出來", "請行政組在後台幫你放行文件", "在影印機輸入員編密碼就會印出"], "ans": 0, "explain": "文件送出列印（選 Epson Printer）後，到影印機刷員工證，按［釋放列印］。"}, {"id": "s27", "zone": "tower", "quest": "w1", "q": "下週要去台中的業主那邊開會，應該辦什麼手續？", "opts": ["出差，出差前填「員工出差申請及報告單」", "公出，事後再報支交通費就好", "請特休，再自行報銷交通費", "不用申請，直接搭車前往"], "ans": 0, "explain": "公務地點距原工作地 80 公里以外（新竹以南）屬出差，出差前填「員工出差申請及報告單」陳核。"}, {"id": "s28", "zone": "tower", "quest": "w2", "q": "要去台北市區的業主辦公室開會，當天來回，離開公司時要做什麼？", "opts": ["以公出辦理，先按「公出」鍵再用識別證感應", "以出差辦理，先填出差申請及報告單", "請半天特休，再報銷交通費", "直接離開，回來再跟主管說"], "ans": 0, "explain": "80 公里以內（新竹以北）以公出辦理；經主管許可公出，離開公司時先按「公出」鍵，再以 IC 識別證感應。"}, {"id": "s29", "zone": "tower", "quest": "w1", "q": "出差搭高鐵，可以買商務車廂報銷嗎？", "opts": ["不行，以標準（經濟）等級為限", "可以，按實際票價報支", "主管同意就可以報商務車廂", "只有回程可以買商務車廂"], "ans": 0, "explain": "搭高鐵或飛機以標準（經濟）等級為限。"}, {"id": "s30", "zone": "tower", "quest": "w1", "q": "出差住宿用 Agoda 訂房，訂房網的收據可以核銷嗎？", "opts": ["不行，要直接向飯店訂房拿有統編的單據", "可以，附上訂房網的收據就能報", "可以，但只能報一半的住宿費", "可以，改填交通費報銷單後就能報"], "ans": 0, "explain": "核銷不能使用訂房網（如 Agoda）的收據，請直接向飯店訂房並索取有公司統編的單據。"}, {"id": "s31", "zone": "tower", "quest": "w1", "q": "出差到澎湖 2 天，膳雜費每天可以報多少？", "opts": ["550 元", "400 元", "3,000 元", "不能報膳雜費"], "ans": 0, "explain": "膳雜費每日 400 元；馬祖、金門、澎湖等離島每日 550 元。"}, {"id": "s32", "zone": "tower", "quest": "w3", "q": "搭 Uber 去業主那邊開會，車資要怎麼報銷？", "opts": ["附上有起訖地和金額的資料，經搭乘人和主管簽章", "一定要填交通費報銷單，附上信用卡帳單", "多元計程車沒有收據，所以不能報銷", "把車資畫面傳給行政組就好，不用簽章"], "ans": 0, "explain": "多元計程車檢附載有「搭乘起訖地及支付金額」的資料，經搭乘人、部門主管等簽章後即可報銷，不必再填交通費報銷單。"}, {"id": "s33", "zone": "tower", "quest": "w3", "q": "因公搭計程車，下車地點是自己家，報銷時要注意什麼？", "opts": ["要另外註明搭車的原因", "起訖點有自宅就不能報銷", "不用說明，照一般程序報銷", "只能用多元計程車才可以報"], "ans": 0, "explain": "只要起訖點其中一端是自宅，都仍須註明原因。"}, {"id": "s34", "zone": "tower", "quest": "w6", "q": "電腦突然開不了機，要怎麼報修？", "opts": ["到內網［資訊設備報修］填單，或打分機 11014", "撥 24 小時直撥專線 10011 報修", "把電腦搬到行政部請人檢查", "填［EF07102 電腦軟硬體申請表］換新的"], "ans": 0, "explain": "電腦或軟體壞掉：公司內網＞［服務專區］＞［資訊設備報修］，資訊設備問題請洽分機 11014–11017。"}, {"id": "s35", "zone": "tower", "quest": "w9", "q": "辦公室的冷氣不冷，要找誰報修？", "opts": ["撥 24 小時直撥專線 10011", "到［資訊設備報修］填單報修", "填［EF07102 電腦軟硬體申請表］", "到 2F 保健室旁的福委會反映"], "ans": 0, "explain": "水電、空調、電話及清潔等報修，請撥 24 小時直撥專線 10011。"}, {"id": "s36", "zone": "tower", "quest": "w5", "q": "工作需要安裝一套工程軟體，第一步要做什麼？", "opts": ["先和主管確認，再填電腦軟硬體申請表", "自己上網下載安裝，再登記到軟體清單", "向同事借帳號，先用他的軟體授權", "撥 10011，請資訊人員直接來安裝"], "ans": 0, "explain": "軟體要先和主管確認要安裝哪些，再到表單入口網填［EF07102 電腦軟硬體申請表］。"}, {"id": "s37", "zone": "chest", "quest": "c2", "q": "你還在試用期，報名了英文課，可以申請員工進修補助嗎？", "opts": ["不行，試用期間的新進員工不適用", "可以，每年補助 2,000 元", "可以，補助一半的學費", "可以，但要先經主管同意"], "ans": 0, "explain": "員工進修補助：試用期間的新進員工不適用。"}, {"id": "s38", "zone": "chest", "quest": "c2", "q": "今年上了一門 1,500 元的電腦課，也拿到結訓證明，可以申請進修補助嗎？", "opts": ["不行，進修費用累計要超過 2,000 元", "可以，按實際費用補助 1,500 元", "可以，固定補助 2,000 元", "可以，補助一半 750 元"], "ans": 0, "explain": "繳交的進修費用累計須超過 2,000 元，且有結訓證明，每人每年最多申請一次、補助 2,000 元。"}, {"id": "s39", "zone": "chest", "quest": "c3", "q": "到職已滿一年，請 2 天特休去花蓮玩，花了 7,000 元，自辦休假旅遊最多補助多少？", "opts": ["6,000 元", "7,000 元", "9,000 元", "3,000 元"], "ans": 0, "explain": "須請特休自辦或參加旅遊，每天最高補助 3,000 元（檢據報銷），每年合計以 3 天、9,000 元為限。"}, {"id": "s40", "zone": "chest", "quest": "c3", "q": "週末沒有請假，自己安排了兩天一夜的旅遊，可以申請自辦休假旅遊補助嗎？", "opts": ["不行，要請特休（或代休假）才有補助", "可以，每天補助 3,000 元", "可以，但只補助一天", "可以，週末旅遊補助加倍"], "ans": 0, "explain": "非特休（或代休假）日的旅遊不在補助範圍。"}, {"id": "s41", "zone": "chest", "quest": "c3", "q": "只請了 4 小時特休去旅遊，可以申請自辦休假旅遊補助嗎？", "opts": ["不行，每次請假不得少於 8 小時", "可以，按比例補助一半", "可以，一樣補助 3,000 元", "可以，但要先經主管同意"], "ans": 0, "explain": "每次請假不得少於 8 小時。"}, {"id": "s42", "zone": "chest", "quest": "c4", "q": "到職 8 個月，想申請公司補助的健康檢查，可以嗎？", "opts": ["還不行，到職滿 1 年後才能申請", "可以，到職後隨時都能申請", "可以，但費用要全部自費", "要等到滿 30 歲才能申請"], "ans": 0, "explain": "新進員工到職滿 1 年後才能申請，須在「健檢預約系統」申請並產生公假卡。"}, {"id": "s43", "zone": "chest", "quest": "c4", "q": "這次健檢費用是 12,000 元，可以給多少公假？", "opts": ["0.5 天", "1 天", "2 天", "不給公假"], "ans": 0, "explain": "當次金額未滿 15,000 元給 0.5 天公假，15,000 元（含）以上給 1 天。"}, {"id": "s44", "zone": "chest", "quest": "c4", "q": "自己找合法的健檢機構做完健檢，要在多久內報銷？", "opts": ["健檢後 1 個月內，檢附收據加會行政部", "當年度 12/31 前送出即可", "健檢後一週內，交給保健室", "不能報銷，只能去特約醫院"], "ans": 0, "explain": "自行找合法健檢機構者，健檢後 1 個月內檢附收據加會行政部報銷。"}, {"id": "s45", "zone": "chest", "quest": "c1", "q": "收到公司發的電子禮券，要怎麼使用？", "opts": ["下載 APP「Edenred」並完成綁定", "到行政部換成紙本的禮券使用", "在線上訂餐系統裡直接折抵餐費", "寄信給福委會，兌換成現金"], "ans": 0, "explain": "電子禮券需下載 APP「Edenred」並完成員工綁定。"}, {"id": "s46", "zone": "temple", "quest": "p1", "q": "主管說部門的智慧存摺年底要達標，這個目標是怎麼算的？", "opts": ["員工點數平均值加部門點數，要達 100 點", "每個人各自都要累積到 100 點", "部門所有人的點數加總達 100 點", "每一季都要達到 100 點"], "ans": 0, "explain": "目標值：部門以所屬員工點數平均值加計部門點數，年度應達 100 點。"}, {"id": "s47", "zone": "village", "quest": "v1", "q": "下面哪一份是報到「前」就要準備好的文件，而不是報到當天才填？", "opts": ["保密承諾書", "定期／不定期契約書", "團體保險資料", "參加社團資料"], "ans": 0, "explain": "報到前要依報到單準備員工登記表、發薪基本資料表、健保申請表、保密承諾書等；契約書、團體保險和社團資料是報到當天填寫。"}, {"id": "s48", "zone": "village", "quest": "v1", "q": "準備員工登記表時，要附上什麼照片？", "opts": ["近半年的 2 吋大頭貼", "近一年的 1 吋大頭貼", "近三個月的生活照", "不用附照片"], "ans": 0, "explain": "員工登記表要附近半年 2 吋大頭貼及人員履歷表。"}, {"id": "s49", "zone": "village", "quest": "v3", "q": "報到當天，下面哪一份是要在公司現場填寫的資料？", "opts": ["定期／不定期契約書", "健保申請表", "勞退提繳申報表", "發薪基本資料表"], "ans": 0, "explain": "報到當天要填寫報到單、定期／不定期契約書、團體保險資料、參加社團資料；健保、勞退、發薪資料表是報到前就要準備好的。"}, {"id": "s50", "zone": "tavern", "quest": "t5", "q": "第一次領薪水，什麼時候入帳、薪資單要去哪裡看？", "opts": ["每月 16 號匯款，薪資單用 Email 寄送", "每月 5 號匯款，薪資單紙本發放", "每月月底匯款，薪資單到內網下載", "每月 16 號匯款，薪資單到行政部領取"], "ans": 0, "explain": "薪資每月 16 號匯款，匯入整月薪資；薪資單以 Email 寄送。"}, {"id": "s51", "zone": "tavern", "quest": "t8", "q": "常常外出，想讓座位分機的來電轉到手機，要怎麼申請？", "opts": ["填 0309002 E-Call 申辦單上傳簽核", "撥 5 請總機幫你把來電轉到手機", "在座位電話按 ＊ ＋ 7 開啟來電轉接", "撥 10011 報修專線請人來設定"], "ans": 0, "explain": "到表單入口網下載 0309002 分機跟隨手機（E-Call）申辦單，填寫後另存 PDF，回到［簽核表單上傳］送出。"}, {"id": "s52", "zone": "tavern", "quest": "t10", "q": "部門同事之間要共用的專案資料，應該放在哪裡？", "opts": ["O 槽", "P 槽", "自己電腦的桌面", "寄 Email 附件給大家"], "ans": 0, "explain": "O 槽是部門內資料共用；P 槽是資料交換，每天 00:00 會自動刪除。"}, {"id": "s53", "zone": "tavern", "quest": "t11", "q": "中午 12:30 想去保健室量血壓，保健室開著嗎？", "opts": ["沒有，中午 12:00–13:00 休息", "有，保健室中午也有醫護人員值班", "有，保健室週一到週五全天開放", "沒有，保健室只在每天上午開放"], "ans": 0, "explain": "保健室位於 2F，服務時間週一至週五 8:00–12:00、13:00–17:00。"}, {"id": "s54", "zone": "tower", "quest": "w4", "q": "想申請公司的 Email 信箱，要去哪裡申請？", "opts": ["內網［員工專區］＞［Email帳號申請］", "表單入口網的印製名片申請單", "撥分機 11014 請資訊人員開通", "到行政部填紙本申請單"], "ans": 0, "explain": "Email 信箱：公司內網＞［員工專區］＞［Email帳號申請］＞［我要申請］，之後可在［我的帳號查詢］追蹤進度。"}, {"id": "s55", "zone": "tower", "quest": "w7", "q": "需要原子筆和筆記本，要怎麼領？", "opts": ["內網［辦公用品及其他］加入領物清單後送簽", "直接到行政部的倉庫自己拿", "填電腦軟硬體申請表一起申請", "請助理先買，再填黏貼憑證報帳"], "ans": 0, "explain": "公司內網＞［表單管理］＞［辦公用品及其他］，把物品加入領物清單後［送出（線上簽核）］。"}, {"id": "s56", "zone": "tower", "quest": "w8", "q": "想申請公司的機車車位，什麼時候辦理？", "opts": ["每年 5～6 月統計並抽籤", "報到當天就能登記", "每季開放一次登記", "隨時找行政部申請就有"], "ans": 0, "explain": "機車／自行車車位每年 5～6 月統計並抽籤，詳細辦法請看公司公告或洽行政部。"}, {"id": "s57", "zone": "chest", "quest": "c1", "q": "下個月要結婚，婚假最小可以請多少時間？", "opts": ["1 小時", "0.5 天", "1 天", "4 小時"], "ans": 0, "explain": "喪假、婚假自 113/9/27 起改以 1 小時為最小請假單位。"}, {"id": "s58", "zone": "chest", "quest": "c1", "q": "公司的大型員工旅遊是怎麼補助的？", "opts": ["上下半年分梯舉辦，每人 6,000 元", "每年辦一次，每人 9,000 元", "自行安排，3 天特休共 9,000 元", "上下半年各一次，每次 3,000 元"], "ans": 0, "explain": "大型員工旅遊上下半年分梯舉辦，每人 6,000 元；自行安排、3 天特休共 9,000 元的是「補助員工休假旅遊」。"}, {"id": "s59", "zone": "temple", "quest": "p1", "q": "想隨時對照自己的智慧存摺點數離 100 點還差多少，可以用網站的什麼功能？", "opts": ["智慧神殿頁面下方的集點卡", "溫暖的家的筆記本", "交誼廳的留言板", "種子商店的每日問答"], "ans": 0, "explain": "神殿頁面下方的集點卡可以記下你目前的點數，隨時對照離 100 點還差多少。"}, {"id": "s60", "zone": "temple", "quest": "p1", "q": "想了解智慧存摺目標值的詳細計算方式，要去哪裡看？", "opts": ["內網的「ISO 品質目標.pdf」", "智慧神殿的集點卡說明", "中興規章入口網的工作規則", "福委會網站的補助辦法"], "ans": 0, "explain": "詳細說明請參考 ISO 品質目標.pdf（需公司內網）。"}];
+const QUIZ_DEFAULT={v:1,scen:{},off:["q925r5l", "quypfzt", "q1czdq6t", "q1dlbeye", "q1e5svrg", "q1jzzl9n", "q1g660lm", "q1guwc28", "q1hgtj8x", "q1ja7j2r", "q30umr", "q1ozvpf7", "qh4s2xz", "q8gk4u2", "qlyuykl", "q1fzqezp", "q16jh7r9", "qz34uh1", "qap3ggk", "q5umxjo", "q16at0k4", "qw88q5w", "q1fbuwyk", "q1jy3j3j", "qnopsfk", "q1ia487k", "q1lk7134", "quz7lu0", "qc4164a", "q1bovqp", "q1xo42b6", "q1f6n6ep", "q3l2gmo", "qvn0egn", "q7pg9ti", "qataj4l", "q1jy50r8", "q1dfptjv", "qc6b0re", "q19oljj6", "q159y0gz", "qstyedl", "q1w36s05", "qtnviga", "q1m866zm", "q1gozwli", "q6o6o4l", "qoa1pxg", "q10wt38h", "q1h0trb4", "qh2a40z", "q1uzrd8i", "qhce82u", "qu5ygav", "qjhzzdf", "q1x9f2jv", "q1141x64", "q1wudgkf", "q15qcnoa"],types:{"數字題":false},wrong:{"qq3xcqr": ["基準值", "門檻值", "達成率"], "qn38n4h": ["1.5天", "2天", "3天"]}};   // 2026/10/12 題庫檢查的結果
 const quizCfg=()=>(FEED&&FEED.quiz&&FEED.quiz.v)?FEED.quiz:QUIZ_DEFAULT;
 const qzKey=(kind,qid,stem,ans)=>"q"+hashStr(kind+"|"+qid+"|"+stem+"|"+ans);
-const belKey=(z,q)=>qzKey("歸屬題",q.id,z.id,q.title);
 const scenKey=x=>"s:"+x.id;
 function scenList(cfg){                                 // 內建情境題（套用管理者修改）＋管理者新增的情境題
   cfg=cfg||quizCfg(); const ov=cfg.scen||{}, out=[];
@@ -9509,29 +9818,20 @@ function buildScenQuiz(x,r){
   const order=shuffleR(x.opts.map((o,i)=>i),r), opts=order.map(i=>String(x.opts[i]));
   return {kind:"情境題",text:`情境題：\n${x.q}`,opts,ans:order.indexOf(+x.ans),quest:QIDS.has(x.quest)?x.quest:"",explain:x.explain||"",key:scenKey(x)};
 }
-const clsKey=q=>qzKey("分類題",q.id,"",q.chapter);
 function qzOn(key,kind,cfg){ cfg=cfg||quizCfg(); if(cfg.types&&cfg.types[kind]===false) return false; return !(cfg.off||[]).includes(key); }
 function qzWrong(key,cfg){ cfg=cfg||quizCfg(); const w=cfg.wrong&&cfg.wrong[key]; return Array.isArray(w)&&w.length>=3?w.slice(0,3).map(String):null; }
 const qzNumAns=tok=>String(tok).replace(/(\d)\s+(?=[^\d\s:～~\-–至到])/g,"$1");
 const numsIn=x=>(String(x).match(/\d[\d,]*(?:\.\d+)?/g)||[]).map(v=>parseFloat(v.replace(/,/g,"")));
-function quizCands(z,ALLQ){                             // 這個地點所有可能出的數字題、名詞題
+function quizCands(z,ALLQ){                             // 這個地點所有可能出的數字題
   const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id);
-  const numC=[], nounC=[], zoneNumToks=[];
-  qs.forEach(q=>{ const terms=nounTerms(q); questSentences(q).forEach(t=>{
+  const numC=[], zoneNumToks=[];
+  qs.forEach(q=>{ questSentences(q).forEach(t=>{
     numTokens(t).forEach(c=>{ zoneNumToks.push(c);
       if(t.indexOf(c.tok)===t.lastIndexOf(c.tok)&&t.replace(c.tok,"").replace(/\s/g,"").length>=8){
         const stem=t.slice(0,c.s)+"＿＿＿＿"+t.slice(c.e), ans=qzNumAns(c.tok);
         numC.push(Object.assign({q,t,stem,ans,key:qzKey("數字題",q.id,stem,ans)},c)); } });
-    terms.forEach((src,w)=>{ const i=t.indexOf(w);
-      if(i<0||t.indexOf(w,i+1)>=0) return;               // 句子裡要剛好出現一次
-      if(src==="label"&&i===0&&t.length-w.length<10) return;
-      if(q.title.includes(w)) return;                    // 答案不能寫在題目的任務標題裡
-      if(t.length-w.length<8) return;                    // 挖空後還要有足夠的線索
-      const stem=t.slice(0,i)+"＿＿＿＿"+t.slice(i+w.length);
-      nounC.push({q,t,w,src,s:i,e:i+w.length,stem,ans:w,key:qzKey("名詞題",q.id,stem,w)});
-    });
   }); });
-  return {qs,numC,nounC,zoneNumToks};
+  return {qs,numC,zoneNumToks};
 }
 function buildNumQuiz(c,r,zoneNumToks,cfg){
   const unit=unitOf(c.tok), ansTxt=c.ans, ansK=optKey(ansTxt), tK=optKey(c.t);
@@ -9561,79 +9861,32 @@ function buildNumQuiz(c,r,zoneNumToks,cfg){
   const opts=shuffleR([ansTxt].concat(wrong),r);
   return {kind:"數字題",text:`根據「${c.q.title}」：\n${c.stem}`,opts,ans:opts.indexOf(ansTxt),quest:c.q.id,explain:c.t,key:c.key};
 }
-function quizNounPool(ALLQ){ const m=new Map(); ALLQ.forEach(q=>nounTerms(q).forEach((src,w)=>{ if(!m.has(w)) m.set(w,src); })); return m; }
-function buildNounQuiz(c,r,allNouns,cfg){
-  let wrong=qzWrong(c.key,cfg);
-  if(!wrong){
-    const pool=[...allNouns.keys()].filter(w=>w!==c.w&&!c.t.includes(w)&&!c.w.includes(w)&&!w.includes(c.w));
-    const suf=sufOf(c.w);
-    wrong=suf?shuffleR(pool.filter(w=>sufOf(w)===suf),r):[];
-    if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>allNouns.get(w)===c.src&&Math.abs(w.length-c.w.length)<=3),r));
-    if(wrong.length<3) wrong=wrong.concat(shuffleR(pool.filter(w=>Math.abs(w.length-c.w.length)<=2),r));
-    wrong=wrong.filter((x,i,a)=>a.findIndex(y=>optKey(y)===optKey(x))===i&&optKey(x)!==optKey(c.w)).slice(0,3);
-    if(wrong.length<3) return null;
-  }
-  const opts=shuffleR([c.w].concat(wrong),r);
-  return {kind:"名詞題",text:`根據「${c.q.title}」：\n${c.stem}`,opts,ans:opts.indexOf(c.w),quest:c.q.id,explain:c.t,key:c.key};
-}
-function buildBelongQuiz(z,right,r,ALLQ){
-  const others=ALLQ.filter(q=>q.zone&&q.zone.id!==z.id); if(others.length<3) return null;
-  const wrong=shuffleR(others,r).filter((q,i,a)=>optKey(q.title)!==optKey(right.title)&&a.findIndex(y=>optKey(y.title)===optKey(q.title))===i).slice(0,3);
-  if(wrong.length<3) return null;
-  const opts=shuffleR([right].concat(wrong),r);
-  return {kind:"歸屬題",text:`下列哪一項，是在「${z.name}」可以查到的情報？`,opts:opts.map(q=>q.title),ans:opts.indexOf(right),quest:right.id,
-    explain:`「${right.title}」在${z.name}的「${right.chapter}」裡。`,key:belKey(z,right)};
-}
-function buildClassQuiz(z,right,qs,r){
-  const chs=[...new Set(qs.map(q=>q.chapter))]; if(chs.length<2) return null;
-  const opts=shuffleR(chs,r).slice(0,4);
-  if(!opts.includes(right.chapter)) opts[0]=right.chapter;
-  const o2=shuffleR(opts,r);
-  return {kind:"分類題",text:`「${right.title}」屬於${z.name}的哪個分類？`,opts:o2,ans:o2.indexOf(right.chapter),quest:right.id,explain:`它在「${right.chapter}」分類裡。`,key:clsKey(right)};
-}
-function makeNpcQuizV2(n,today,ZONES,ALLQ,cfg){
+function makeNpcQuizV2(n,today,ZONES,ALLQ,cfg){          // 數字題
   cfg=cfg||quizCfg();
   const r=seededRand(n.id+"|"+today+"|"+(n.zone||""));
   const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
-  const {qs,numC,nounC,zoneNumToks}=quizCands(z,ALLQ); if(!qs.length) return null;
-  const allNouns=quizNounPool(ALLQ);                     // 全站名詞庫（干擾選項用）
-  const okNum=numC.filter(c=>qzOn(c.key,"數字題",cfg)), okNoun=nounC.filter(c=>qzOn(c.key,"名詞題",cfg));
-  const pickNum=()=>{ for(const c of shuffleR(okNum,r)){ const q=buildNumQuiz(c,r,zoneNumToks,cfg); if(q) return q; } return null; };
-  const pickNoun=()=>{
-    const pri=x=>x.src==="quote"||x.src==="bold"?0:1;
-    for(const c of shuffleR(okNoun,r).sort((a,b)=>pri(a)-pri(b))){ const q=buildNounQuiz(c,r,allNouns,cfg); if(q) return q; }
-    return null;
-  };
-  const roll=r();
-  const first=roll<.5?pickNoun:pickNum, second=roll<.5?pickNum:pickNoun;
-  return first()||second()||null;
+  const {qs,numC,zoneNumToks}=quizCands(z,ALLQ); if(!qs.length) return null;
+  for(const c of shuffleR(numC.filter(c=>qzOn(c.key,"數字題",cfg)),r)){ const q=buildNumQuiz(c,r,zoneNumToks,cfg); if(q) return q; }
+  return null;
 }
 function makeNpcQuiz(n){
   const today=npcToday(), r=seededRand(n.id+"|"+today+"|"+(n.zone||"")+"|mix");
   const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
-  const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id); if(!qs.length) return null;
-  const cfg=quizCfg(), chs=[...new Set(qs.map(q=>q.chapter))];
-  const v2=()=>makeNpcQuizV2(n,today,ZONES,ALLQ,cfg);
-  const bel=()=>{ const ok=qs.filter(q=>qzOn(belKey(z,q),"歸屬題",cfg)); return ok.length?buildBelongQuiz(z,ok[Math.floor(r()*ok.length)],r,ALLQ):null; };   // ② 歸屬題：哪一項可以在這裡查到
-  const cls=()=>{ const ok=qs.filter(q=>qzOn(clsKey(q),"分類題",cfg)); return ok.length?buildClassQuiz(z,ok[Math.floor(r()*ok.length)],qs,r):null; };   // ③ 分類題：屬於哪個分類
+  const cfg=quizCfg();
+  const num=()=>makeNpcQuizV2(n,today,ZONES,ALLQ,cfg);
   const scs=scenList(cfg).filter(x=>x.zone===z.id&&qzOn(scenKey(x),"情境題",cfg));
-  const sc=()=>scs.length?buildScenQuiz(scs[Math.floor(r()*scs.length)],r):null;   // ⓪ 情境題
-  const a=r(), b=r(), c=r();
-  const seq=(c<.35?[sc]:[]).concat(a<.75?[v2]:[],[b<.6||chs.length<2?bel:cls],[v2,sc,bel,cls]);   // 抽到的題型被停用或出不了題，就換下一種
+  const sc=()=>scs.length?buildScenQuiz(scs[Math.floor(r()*scs.length)],r):null;
+  const seq=r()<.5?[sc,num]:[num,sc];                     // 抽到的題型被停用或出不了題，就換另一種
   for(const f of seq){ const q=f(); if(quizOK(q)&&q.ans>=0) return q; }
   return null;
 }
 function quizBank(cfg){                                 // 管理者「題庫」分頁：列出目前任務內容會出的每一題
   cfg=cfg||quizCfg();
-  const allNouns=quizNounPool(ALLQ), out=[];
+  const out=[];
   ZONES.forEach(z=>{
-    const {qs,numC,nounC,zoneNumToks}=quizCands(z,ALLQ); if(!qs.length) return;
-    const chs=[...new Set(qs.map(q=>q.chapter))];
+    const {qs,numC,zoneNumToks}=quizCands(z,ALLQ); if(!qs.length) return;
     const rows=[];
     numC.forEach(c=>{ const smp=buildNumQuiz(c,seededRand(c.key),zoneNumToks,cfg); rows.push({key:c.key,kind:"數字題",q:c.q,stem:c.stem,ans:c.ans,opts:smp&&smp.opts,backup:false}); });
-    nounC.forEach(c=>{ const smp=buildNounQuiz(c,seededRand(c.key),allNouns,cfg); rows.push({key:c.key,kind:"名詞題",q:c.q,stem:c.stem,ans:c.ans,opts:smp&&smp.opts,backup:!(c.src==="quote"||c.src==="bold")}); });
-    qs.forEach(q=>{ const smp=buildBelongQuiz(z,q,seededRand(belKey(z,q)),ALLQ); rows.push({key:belKey(z,q),kind:"歸屬題",q,stem:`下列哪一項，是在「${z.name}」可以查到的情報？`,ans:q.title,opts:smp&&smp.opts,backup:false}); });
-    if(chs.length>=2) qs.forEach(q=>{ const smp=buildClassQuiz(z,q,qs,seededRand(clsKey(q))); rows.push({key:clsKey(q),kind:"分類題",q,stem:`「${q.title}」屬於${z.name}的哪個分類？`,ans:q.chapter,opts:smp&&smp.opts,backup:false}); });
     scenList(cfg).filter(x=>x.zone===z.id).forEach(x=>{ const smp=buildScenQuiz(x,seededRand(scenKey(x)));
       rows.push({key:scenKey(x),kind:"情境題",q:ALLQ.find(q=>q.id===x.quest)||{id:"",title:"（沒有指定任務）"},stem:x.q,ans:String(x.opts[x.ans]),opts:smp.opts,backup:false,scen:x}); });
     const seen=new Set();
@@ -9782,9 +10035,9 @@ function renderQuizAdmin(){
     out.push(`<section class="qbzone"><h4>${esc(z.name)}（${zr.length}）</h4>`);
     const groups=new Map();
     zr.filter(x=>x.kind==="情境題").forEach(x=>{ if(!groups.has("#情境題")) groups.set("#情境題",[]); groups.get("#情境題").push(x); });
-    zr.filter(x=>x.kind!=="情境題").forEach(x=>{ const g=x.kind==="歸屬題"||x.kind==="分類題"?"#"+x.kind:x.q.id; if(!groups.has(g)) groups.set(g,[]); groups.get(g).push(x); });
+    zr.filter(x=>x.kind!=="情境題").forEach(x=>{ const g=x.q.id; if(!groups.has(g)) groups.set(g,[]); groups.get(g).push(x); });
     groups.forEach((list,g)=>{
-      const head=g[0]==="#"?`${g.slice(1)}<span>${g==="#歸屬題"?"問「哪一項可以在這裡查到」，答案是任務標題":g==="#情境題"?`遇到這種情況該怎麼辦？（${list.length} 題）`:"問任務屬於哪個分類"}</span>`:`${esc(list[0].q.title)}<span>${list.length} 題</span>`;
+      const head=g[0]==="#"?`${g.slice(1)}<span>遇到這種情況該怎麼辦？（${list.length} 題）</span>`:`${esc(list[0].q.title)}<span>${list.length} 題</span>`;
       out.push(`<div class="qbquest"><p>${head}</p>${list.map(qbRowHTML).join("")}</div>`);
     });
     out.push(`</section>`);
@@ -9794,16 +10047,15 @@ function renderQuizAdmin(){
 function qbRowHTML(x){
   const st=x.st;
   const stem=x.kind==="情境題"?`${esc(x.stem)}<span class="qbtag${x.scen.builtin?(x.scen.edited?" edit":""):" new"}">${x.scen.builtin?(x.scen.edited?"內建・已修改":"內建"):"自訂"}</span>`
-    :x.kind==="歸屬題"?`答案：<b>${esc(x.ans)}</b>`:x.kind==="分類題"?`「${esc(x.q.title)}」→ <b>${esc(x.ans)}</b>`:esc(x.stem).replace("＿＿＿＿",'<span class="blank">＿＿＿＿</span>')+`　→ <b>${esc(x.ans)}</b>`;
+    :esc(x.stem).replace("＿＿＿＿",'<span class="blank">＿＿＿＿</span>')+`　→ <b>${esc(x.ans)}</b>`;
   const opts=x.opts?`<ul class="qbopts" aria-label="選項範例">${x.opts.map(o=>`<li class="${o===x.ans?"ans":""}">${esc(o)}${o===x.ans?" ✓":""}</li>`).join("")}</ul>`:"";
   const notes=[];
   if(st.typeOff) notes.push("整個題型已停用");
   if(!x.opts&&!st.typeOff&&!st.off) notes.push("<b>選項不足，目前不會出題</b>（可以自訂選項）");
   if(st.custom) notes.push("<b>使用自訂選項</b>");
-  if(x.backup) notes.push("備用題：同一地點其他名詞題都出不了時才會出現");
   if(st.dirty) notes.push("<b>未發布</b>");
   if(x.kind==="情境題"){ if(x.q.id) notes.unshift(`相關任務：${esc(x.q.title)}`); else notes.unshift("沒有指定相關任務"); }
-  const canEdit=x.kind==="數字題"||x.kind==="名詞題";
+  const canEdit=x.kind==="數字題";
   const scenBtns=x.kind==="情境題"?`<button class="mini-btn" type="button" data-qbse="${esc(x.scen.id)}">編輯</button>${x.scen.builtin?(x.scen.edited?`<button class="mini-btn" type="button" data-qbsereset="${esc(x.scen.id)}">還原預設</button>`:""):`<button class="mini-btn" type="button" data-qbsedel="${esc(x.scen.id)}">刪除</button>`}`:"";
   const expl=x.kind==="情境題"&&x.scen.explain?`<p class="qbexp">解說：${esc(x.scen.explain)}</p>`:"";
   const edit=QB_EDIT===x.key?`<div class="qbedit"><input class="ainput" id="qbWrong" value="${esc((QB_DRAFT.wrong[x.key]||[]).join("、"))}" placeholder="3 個錯誤選項，用「、」隔開" aria-label="自訂錯誤選項">
@@ -10413,7 +10665,7 @@ function showcaseLists(){
 }
 function outfitDisplaySVG(k,av){
   const o=OUTFIT[k]; if(!o) return "";
-  const {pal}=avatarParts32(Object.assign({},av||S.av||AV_DEFAULT,{outfit:k,jl:"cape"}));
+  const {pal}=avatarParts32(Object.assign({},av||S.av||AV_DEFAULT,{outfit:k,jo:0}));
   // 只畫衣服：加上外框後放大、補布料層次
   const bare=o.rows.map(r=>r.replace(/h/g,".").replace(/s/g,"."));
   const g=bare.map(r=>r.split(""));
@@ -10829,7 +11081,7 @@ function shopPreview(cat,id){
   if(cat==="paper") return `<span class="shopsw showroom ${id}" aria-hidden="true"></span>`;
   if(cat==="ground") return `<span class="shopsw flsw" aria-hidden="true"><i class="sr-floor ${id}"></i></span>`;
   if(cat==="rug") return `<span class="shopsw rugsw" aria-hidden="true">${decoSVG(id)}</span>`;
-  if(cat==="wear"||cat==="avacc") return `<span class="shopic avpv" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,cat==="wear"?{outfit:id,jl:"cape"}:{acc:id,jl:"cape"}))}</span>`;
+  if(cat==="wear"||cat==="avacc") return `<span class="shopic avpv" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,cat==="wear"?{outfit:id,jo:0}:{acc:id,jh:0}))}</span>`;
   if(cat==="pets"){ const t=shopPetType(id); return `<span class="shopic petpv" aria-hidden="true">${petSVG({type:t,color:PETS[t].defColor||0,name:"",wear:"none",gear:S.pet&&S.pet.gear||""},"adult")}</span>`; }
   if(cat==="petgear") return `<span class="shopic petpv" aria-hidden="true">${petSVG(Object.assign({},S.pet||{type:"dog",color:0,name:""},{gear:id}),S.pet?undefined:"adult")}</span>`;
   return `<span class="shopic" aria-hidden="true">${decoSVG(id)}</span>`;
@@ -10890,9 +11142,7 @@ function renderShop(panel){
 }
 function petAffAdd(n){                                 // 目前寵物的親密度 +n，回傳是否剛好滿級
   if(!S.pet) return false;
-  const t=S.pet.type; S.aff=S.aff||{};
-  const before=affOf(t); S.aff[t]=Math.min(AFF_MAX,before+n);
-  return before<AFF_MAX&&S.aff[t]>=AFF_MAX;
+  return affGain(S.pet.type,n);
 }
 function petEatFx(line,big){
   const el=$("#roomPet");
@@ -11129,7 +11379,7 @@ async function adoptShopPet(id,ask){                  // 換成商店買的寵�
   const t=shopPetType(id); if(!t||!petUnlocked()) return false;
   if(S.pet&&S.pet.type===t) return false;
   const keep=S.pet&&(S.pet.name||PETS[S.pet.type].name);
-  if(ask&&S.pet&&!(await uiConfirm(`要把夥伴換成${PETS[t].name}嗎？名字會維持「${keep}」，之後在存摺神殿的寵物交換所也能換回來。`,"換成"+PETS[t].name))) return false;
+  if(ask&&S.pet&&!(await uiConfirm(`要把夥伴換成${PETS[t].name}嗎？名字會維持「${keep}」，之後在智慧神殿的寵物交換所也能換回來。`,"換成"+PETS[t].name))) return false;
   S.pet=Object.assign({},PET_DEFAULT,{type:t,color:PETS[t].defColor||0,name:keep||PETS[t].name,gear:(S.pet&&S.pet.gear)||""});
   save(); queueSync(true); pushFarm(true);
   toast(keep?`${keep}變成${PETS[t].name}了，名字沒有改喔！`:`${PETS[t].name}成為你的夥伴了！`);
@@ -11137,7 +11387,7 @@ async function adoptShopPet(id,ask){                  // 換成商店買的寵�
 }
 function wearShopItem(cat,id){                            // 換上／拿下商店服裝與配件
   if(cat==="wear"&&OUTFIT[id]){ S.av=Object.assign({},S.av||AV_DEFAULT,{outfit:id}); jobOutfitChanged(); }
-  else if(cat==="avacc") S.av=Object.assign({},S.av||AV_DEFAULT,{acc:ACC[id]?id:"none"});
+  else if(cat==="avacc"){ S.av=Object.assign({},S.av||AV_DEFAULT,{acc:ACC[id]?id:"none"}); if(ACC[id]&&id!=="none") jobOutfitChanged("hat"); }
   else if(cat==="petgear"&&S.pet) S.pet.gear=PET_GEAR[id]?id:"";
 }
 function shopUse(cat,id){
@@ -11229,7 +11479,7 @@ function grantSnowman(viaRare){                      // 稀有作物圖鑑集滿
   S.petKinds.snowman=true; save(); queueSync(true);
   if(viaRare) return true;
   Sound.sfx("levelup");
-  $("#chDept").textContent="稀有作物圖鑑 集滿"; $("#chFoot").textContent="之後在寵物窩或存摺神殿的寵物交換所也能選到牠。";
+  $("#chDept").textContent="稀有作物圖鑑 集滿"; $("#chFoot").textContent="之後在寵物窩或智慧神殿的寵物交換所也能選到牠。";
   $("#chFace").innerHTML=avatarSVG(CHIEF_AV); $("#chTitle").textContent=`部門村長　${CFG.chief}`;
   $("#chSay").textContent="六種稀有作物都種出來了！田裡堆起了一個小雪人，好像想跟你回家。";
   $("#chGift").innerHTML=`<span class="pv">${petSVG({type:"snowman",color:8,name:"雪人",wear:"none",wc:0},"adult")}</span><div><p class="dbody"><b>隱藏版寵物：雪人</b></p><p class="ahint">最愛吃紅蘿蔔（當鼻子剛剛好）。</p></div>`;
@@ -11287,7 +11537,7 @@ function feedRare(k){
 const FRIEND_LV=[[1,"認識"],[5,"好朋友"],[15,"麻吉"],[30,"最佳拍檔"]];
 const FRIEND_ACH=10;
 Object.assign(SPR,{friendbook:["............",".KKKKKKKKKK.",".KEPPPPPPPK.",".KEPRRPRRPK.",".KEPRRRRRPK.",".KEPPRRRPPK.",".KEPPPRPPPK.",".KEPPPPPPPK.",".KEPPPPPPPK.",".KEWWWWWWWK.",".KKKKKKKKKK.","............"]});
-const PET_PLAY={pom:"汪！我是毛球，滾過來囉～",shiba:"汪！我才不會乖乖給你抱",panda:"翻滾～翻滾～",duck:"呱！一起去散步！",fireball:"咻咻～小心別燙到！",bear:"嗷！來抱抱！",dog:"汪汪！來追我～",cat:"喵！抓到你了！",guinea:"啾啾啾～一起滾！",slime:"噗嚕！彈彈彈～",chicken:"咕咕！一起散步！",sheep:"咩～好開心！",horse:"嘶～來賽跑吧！",rabbit:"跳跳跳～",scruffy:"汪嗚！",grumpy:"……好啦，陪你玩一下。",tiger:"吼～來玩摔角！",caterpillar:"沙沙～一起曬太陽",snowman:"來打雪仗吧！"};
+const PET_PLAY={guardian:"咚、咚、咚！（踏著小碎步跟過來）",pom:"汪！我是毛球，滾過來囉～",shiba:"汪！我才不會乖乖給你抱",panda:"翻滾～翻滾～",duck:"呱！一起去散步！",fireball:"咻咻～小心別燙到！",bear:"嗷！來抱抱！",dog:"汪汪！來追我～",cat:"喵！抓到你了！",guinea:"啾啾啾～一起滾！",slime:"噗嚕！彈彈彈～",chicken:"咕咕！一起散步！",sheep:"咩～好開心！",horse:"嘶～來賽跑吧！",rabbit:"跳跳跳～",scruffy:"汪嗚！",grumpy:"……好啦，陪你玩一下。",tiger:"吼～來玩摔角！",caterpillar:"沙沙～一起曬太陽",snowman:"來打雪仗吧！"};
 const dayKey=d=>{ const x=d instanceof Date&&!isNaN(d)?d:new Date(); return `${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`; };
 function friends(){ if(!S.friends||typeof S.friends!=="object") S.friends={}; return S.friends; }
 function friendLv(n){ let i=-1; FRIEND_LV.forEach(([m],k)=>{ if(n>=m) i=k; }); return i; }
@@ -11320,7 +11570,7 @@ function photoHTML(ph){
 }
 /* 友誼項圈：心形墜子，每種寵物掛的位置不同 */
 const COLLAR_ROWS=["Y.......Y",".Y.....Y.","..WR.RR..","..RRRRR..","...RRR...","....R...."];
-const PET_COLLAR={dog:{adult:[11,18],baby:[11,19]},cat:{adult:[11,18],baby:[11,22]},guinea:{adult:[11,22],baby:[11,23]},
+const PET_COLLAR={guardian:{adult:[11,19],baby:[11,19]},dog:{adult:[11,18],baby:[11,19]},cat:{adult:[11,18],baby:[11,22]},guinea:{adult:[11,22],baby:[11,23]},
   slime:{adult:[11,21],baby:[11,20]},chicken:{adult:[11,18],baby:[11,19]},sheep:{adult:[11,20],baby:[11,22]},
   horse:{adult:[11,18],baby:[11,19]},rabbit:{adult:[11,22],baby:[11,22]},tiger:{adult:[11,17],baby:[11,20]},
   pom:{adult:[11,18],baby:[11,21]},shiba:{adult:[11,19],baby:[11,21]},panda:{adult:[11,20],baby:[11,22]},duck:{adult:[10,17],baby:[10,20]},fireball:{adult:[11,26],baby:[11,27]},bear:{adult:[11,20],baby:[11,22]},
@@ -11676,7 +11926,7 @@ function renderWardrobe(panel){
   </section>`}])}`;
 }
 
-const FIND_SPOTS={冒險:"新手村、情報酒館",都市計畫:"行政塔",土木工程:"寶物庫",程式開發:"存摺神殿",隱藏:"村長的家、數位總合辦公室"};
+const FIND_SPOTS={冒險:"新手村、情報酒館",都市計畫:"行政塔",土木工程:"寶物庫",程式開發:"智慧神殿",隱藏:"村長的家、數位總合辦公室"};
 function openFind(id){
   const f=findById(id); if(!f) return;
   const cnt=(S.finds||{})[id]||0, c=findSeen(id)?Math.max(cnt,1):0;
@@ -11700,7 +11950,7 @@ function renderCollection(panel){
   const got=S.finds||{}, total=FINDS.length, n=findCount();
   panel.innerHTML=`<section class="window pbox">
     <div class="abar"><h3>蒐藏箱 ${helpBtn("collect")}</h3><span class="ahint">已收集 ${n} / ${total} 種</span></div>
-    <p class="ahint">滑鼠移到圖示上可以看說明。在各區域查看任務文件，或把任務「♡ 加入最愛」時，有機會發現小物：新手村、情報酒館偏<b>冒險</b>，行政塔偏<b>都市計畫</b>，寶物庫偏<b>土木工程</b>，存摺神殿偏<b>程式開發</b>。拜訪村長的家或數位總合辦公室，還可能找到<b>隱藏</b>小物。同一種小物收集到 30 個，可以到「相簿」兌換隱藏畫框。</p>
+    <p class="ahint">滑鼠移到圖示上可以看說明。在各區域查看任務文件，或把任務「♡ 加入最愛」時，有機會發現小物：新手村、情報酒館偏<b>冒險</b>，行政塔偏<b>都市計畫</b>，寶物庫偏<b>土木工程</b>，智慧神殿偏<b>程式開發</b>。拜訪村長的家或數位總合辦公室，還可能找到<b>隱藏</b>小物。同一種小物收集到 30 個，可以到「相簿」兌換隱藏畫框。</p>
     ${tabsHTML("collect",FIND_CATS.map(cat=>{
       const list=FINDS.filter(f=>f.cat===cat);
       const mine=list.filter(f=>findSeen(f.id)).length;
@@ -11830,7 +12080,7 @@ function renderPetPanel(panel){
       <div class="orow" role="radiogroup" aria-label="寵物顏色"><span class="olab" aria-hidden="true">顏色</span><div class="ochoices">
         ${PETC.map((c,i)=>petColorOK(i)?`<label class="opt sw${i>=PETC_SPECIAL?" rare":""}" title="${esc(c[0])}"><input type="radio" name="pet-color-home" value="${i}" ${+pet.color===i?"checked":""}><i style="background:${petSwatch(i)}"></i></label>`:"").join("")}
       </div></div>
-      <p class="ahint" style="margin:10px 0 0">想換夥伴嗎？到「存摺神殿」的寵物交換所，智慧存摺點數滿 ${PET_SWAP_MIN} 點就能更換。</p>
+      <p class="ahint" style="margin:10px 0 0">想換夥伴嗎？到「智慧神殿」的寵物交換所，智慧存摺點數滿 ${PET_SWAP_MIN} 點就能更換。</p>
     </section>`},{id:"wear",label:"🎀 衣服與配件",html:`<section class="window pbox form">
       <h3>衣服與配件 ${wearLocked&&!petNoWear(pet.type)?`<span class="st st-off">LV 5 解鎖</span>`:""}</h3>
       ${petNoWear(pet.type)?`<p class="empty-note">${PETS[pet.type].shop?"商店寵物":"隱藏版寵物"}不能換基本款衣服，但可以戴下方「種子商店配件」。</p>`:wearLocked?`<p class="empty-note">升到 <b>LV 5</b> 就能幫牠換衣服和配件，還差 ${tasksToLevel(5)} 個任務。</p>
@@ -11842,7 +12092,7 @@ function renderPetPanel(panel){
           ${CLOTH.map((c,i)=>`<label class="opt sw" title="${c[0]}"><input type="radio" name="pet-wc" value="${i}" ${+pet.wc===i?"checked":""}><i style="background:${c[1]}"></i></label>`).join("")}
         </div></div>`}
       ${petGearHTML(pet)}
-    </section>`}])}`;
+    </section>`},{id:"bond",label:"💞 羈絆",badge:affOf(pet.type)>=AFF_MAX?starsTxt(bondStars(pet.type)).replace(/☆/g,""):"",html:bondHTML(pet)}])}`;
 }
 function petGearHTML(pet){
   const own=Object.keys(PET_GEAR).filter(k=>S.shopOwned&&S.shopOwned[k]);
@@ -11927,37 +12177,42 @@ function outfitSilhouetteSVG(k){
 function closetGroupOf(k){ return CLOSET_GROUPS.find(g=>g.test(k))||CLOSET_GROUPS[0]; }
 function renderCloset(panel){
   panel.dataset.kind="closet";
-  const total=Object.keys(OUTFIT).length, got=outfitOwnedCount(), wear=(S.av||AV_DEFAULT).outfit;
+  const total=Object.keys(OUTFIT).length, got=outfitOwnedCount(), wear=(S.av||AV_DEFAULT).outfit, jid=jobCur(), jOn=!!(jid&&jobWear().out);
   panel.innerHTML=`<section class="window pbox">
     <div class="abar"><h3>衣櫃 ${helpBtn("closet")}</h3><span class="ahint">已收集 ${got} / ${total} 套</span></div>
-    <p class="dbody">目前穿著：<b>${esc((OUTFIT[wear]||{}).name||"—")}</b>　點衣服可以預覽並換上；暗色剪影是還沒拿到的秘密服裝。</p>
+    <p class="dbody">目前穿著：<b>${jOn?esc(jobName(jid,jobTier(jid)))+"的職業服裝":esc((OUTFIT[wear]||{}).name||"—")}</b>　點衣服可以預覽並換上；暗色剪影是還沒拿到的秘密服裝。</p>
     <div class="orow" role="radiogroup" aria-label="衣服顏色"><span class="olab">衣服顏色</span><div class="ochoices">
       ${CLOTH.map((c,i)=>`<label class="opt sw" title="${esc(c[0])}"><input type="radio" name="closet-oc" value="${i}" ${+((S.av||AV_DEFAULT).oc)===i?"checked":""}><i style="background:${c[1]}"></i></label>`).join("")}
     </div></div>
     <p class="ahint" style="margin-top:4px">部分秘密服裝（例如雨衣、實驗白袍、公司藍色運動外套、梅傑德白袍）有固定配色，不受顏色影響。</p>
-    ${tabsHTML("closet",CLOSET_GROUPS.map(g=>{
+    ${tabsHTML("closet",(jid?[{id:"job",label:"⚔️ 職業",html:`<div class="catblock"><p class="cattitle">職業服裝<span class="ahint">轉職取得，可以跟其他衣服互換</span></p><div class="armgrid">
+        <button type="button" class="armcard closetcard${jOn?" on":""}" data-joboutfit title="職業服裝">
+          <span class="armicon clicon" aria-hidden="true">${avatarSVG(Object.assign({},S.av||AV_DEFAULT,{job:jid,jt:jobTier(jid),jo:1,jh:0,jc:0}))}</span>
+          <span class="armname">${esc(jobName(jid,jobTier(jid)))}</span>
+          <span class="armmeta">${jOn?'<span class="st st-gold">穿著中</span>':"點一下換上"}</span>
+        </button></div><p class="ahint">職業頭飾和披風在「智慧神殿 → 轉職殿堂 → 我的職業」或「角色設定」切換。</p></div>`}]:[]).concat(CLOSET_GROUPS.map(g=>{
       const list=Object.keys(OUTFIT).filter(g.test); if(!list.length) return "";
       const mine=list.filter(outfitOK).length;
       return {id:g.id||g.name,label:esc(g.name),badge:`${mine}/${list.length}`,html:`<div class="catblock">
         <p class="cattitle">${esc(g.name)}${g.who?`<span class="ahint">秘密服裝</span>`:g.id==="商店"?`<span class="ahint">用種子購買</span>`:""}<span class="ahint">${mine}/${list.length}</span></p>
         <div class="armgrid">${list.map(k=>{
-          const own=outfitOK(k), on=wear===k;
+          const own=outfitOK(k), on=wear===k&&!jOn;
           return `<button type="button" class="armcard closetcard${own?"":" alock"}${on?" on":""}" data-outfit="${esc(k)}" title="${esc(own?OUTFIT[k].name:"還沒取得")}">
             <span class="armicon clicon" aria-hidden="true">${own?outfitDisplaySVG(k):outfitSilhouetteSVG(k)}</span>
             <span class="armname">${own?esc(OUTFIT[k].name):"？？？"}</span>
             <span class="armmeta">${on?'<span class="st st-gold">穿著中</span>':own?"已取得":"未取得"}</span>
           </button>`;
         }).join("")}</div></div>`};
-    }),{def:(CLOSET_GROUPS.find(g=>g.test(wear))||{}).id||(CLOSET_GROUPS.find(g=>g.test(wear))||{}).name})}
+    })),{def:jOn?"job":(CLOSET_GROUPS.find(g=>g.test(wear))||{}).id||(CLOSET_GROUPS.find(g=>g.test(wear))||{}).name})}
   </section>`;
 }
 function openOutfit(k){
   const o=OUTFIT[k]; if(!o) return;
-  const own=outfitOK(k), on=(S.av||AV_DEFAULT).outfit===k, g=closetGroupOf(k);
+  const own=outfitOK(k), on=(S.av||AV_DEFAULT).outfit===k&&!(jobCur()&&jobWear().out), g=closetGroupOf(k);
   $("#wpDept").textContent=`衣櫃｜${g.name}${g.who?"主題":""}`;
   $("#wpTitle").textContent=own?o.name:"還沒取得的秘密服裝";
   const icon=$("#wpIcon"); icon.className="fdicon"+(own?"":" clsil");
-  icon.innerHTML=own?avatarSVG(Object.assign({},S.av||AV_DEFAULT,{outfit:k,jl:"cape"})):outfitSilhouetteSVG(k);
+  icon.innerHTML=own?avatarSVG(Object.assign({},S.av||AV_DEFAULT,{outfit:k,jo:0})):outfitSilhouetteSVG(k);
   $("#wpMeta").innerHTML=`<span class="st st-info">${esc(g.name)}</span>${own?'<span class="st st-ok">已取得</span>':'<span class="st st-off">未取得</span>'}${on?'<span class="st st-gold">穿著中</span>':""}`;
   $("#wpDesc").textContent=own?(g.who?`${g.who}送的${g.name}主題秘密服裝。左邊是你穿上的樣子，衣服顏色可以在衣櫃上方調整。`:"基本款服裝，隨時可以換上。左邊是你穿上的樣子。"):"拿到之後，這裡會顯示它的樣子。";
   $("#wpWhere").innerHTML=!g.who?"一開始就有，不用蒐集。"
@@ -13306,7 +13561,8 @@ bootstrap().then(()=>{
     try{ localStorage.setItem("sino22-card-check",dayKey()); }catch(e){}
     if(!LOUNGE.at) loadLounge(false).catch(()=>{});
   },20000);   // 每次開站都讓大家看到自己在線上
-  try{ if(!S.seenContent||!Object.keys(S.seenContent).length) markContentUpdates(); else refreshBonus(); }catch(e){}
+  try{ if(!S.seenContent||!Object.keys(S.seenContent).length||!HAS_SHEETS) markContentUpdates(); else refreshBonus(); }catch(e){}
+  setTimeout(()=>{ try{ bondDailyGift(); }catch(e){} },6000);   // 寵物叼小禮物
   if(S.group){
     setTimeout(()=>loadInbox(),1500);
     try{ if(!sessionStorage.getItem("sino22-reported")){ sessionStorage.setItem("sino22-reported","1"); queueSync(true); } }catch(e){}

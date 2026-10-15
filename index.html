@@ -1443,6 +1443,23 @@ body.tour-lock .mapframe{z-index:41}
 .bondshop{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
 .bondit{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border:2px solid rgba(255,255,255,.2);border-radius:6px}
 .bondit small{display:block;color:#B9C0F0}
+.partyrow{display:grid;gap:10px}
+.pslot{display:flex;align-items:center;gap:12px;padding:10px 12px;border:2px solid rgba(255,255,255,.25);border-radius:6px;flex-wrap:wrap}
+.pslot .pv{width:56px;height:56px;flex:none;background:#8FD3F0;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.pslot .pv.dim{background:#2B2550;color:#B9C0F0}
+.pslot small{display:block;color:#B9C0F0}
+.pslot.lead{border-color:var(--gold)}
+.pslot.lock{opacity:.75}
+.pslot .afilters,.pslot.empty .act{margin-left:auto}
+.pslot.edit{align-items:flex-start}
+.pedit{flex:1;min-width:0}
+.pkinds .opt small{display:block;font-size:11px;color:#B9C0F0}
+.feedto{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0}
+.feedto .fdpv{display:inline-block;width:20px;height:20px;vertical-align:middle;margin-right:4px}
+.lfol{width:30px!important;height:30px!important;bottom:-8px!important;padding:1px!important;border-width:2px!important}
+.lfol.f0{right:30px!important}.lfol.f1{right:58px!important}
+.lrc .lfol{width:20px!important;height:20px!important}.lrc .lfol.f0{right:18px!important}.lrc .lfol.f1{right:36px!important}
+.roompet.folpet .rp-body{transform:scale(.82);transform-origin:50% 100%}
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -3187,6 +3204,7 @@ const GUARD_CROWN=[".............k.yy.k.............","...........k.y....y.k....
 const PETC=[["棕","#A9713F"],["奶油","#F0E0C0"],["白","#F2F2F7"],["灰","#A9ADC6"],["黑","#3A3A45"],["金","#E0B24A"],["粉","#E58FB0"],["綠","#5FA35A"],["藍","#6FA8DE"],
   ["銀色","#DCE3F0"],["黃金","#F6C744"]];
 const PETC_SPECIAL=9;
+const petColorName=i=>{ const n=(PETC[i]||PETC[0])[0]; return /色$/.test(n)?n:n+"色"; };   // 棕→棕色、銀色→銀色
 const RAINBOW=11;
 PETC[RAINBOW]=PETC[RAINBOW]||["彩虹","#E8453C"];
 const AFF_MAX=100;
@@ -4678,7 +4696,7 @@ function buildMap(){
     </g>`;
   });
   // hero
-  s+=`<g id="hero" aria-hidden="true"><g transform="translate(-9,-31)">${(()=>{const a=avatarParts32(S.av);return spriteRects(a.rows,0.575,0,0,a.pal)+avMaskSVG(S.av,0.575);})()}</g>${starActive()?`<g class="herostars">${[[-14,-30],[12,-36],[-16,-6],[14,-10]].map(([x,y])=>`<g transform="translate(${x},${y})"><rect x="1" y="0" width="1" height="3" fill="#FFF3B0"/><rect x="0" y="1" width="3" height="1" fill="#FFD23F"/></g>`).join("")}</g>`:""}${IS_CHAMP?`<g transform="translate(-6,-40)">${spriteRects(SPR.crown,0.85,0,0)}</g>`:""}${S.weapon&&SPR["w_"+S.weapon]?`<g transform="translate(6,-25)">${spriteRects(SPR["w_"+S.weapon],0.95*12/(SPR["w_"+S.weapon].length||12)*1.1,0,0)}</g>`:""}${S.pet?`<g transform="translate(-26,-16)">${(()=>{const q=petParts(S.pet),sc=petStage()==="adult"?1:0.85;return q.img?petImgTag(q.type,16*sc,"adult",0,0,q.color):spriteRects(q.rows,sc*16/(q.rows.length||16),0,0,q.pal);})()}</g>`:""}</g>`;
+  s+=`<g id="hero" aria-hidden="true"><g transform="translate(-9,-31)">${(()=>{const a=avatarParts32(S.av);return spriteRects(a.rows,0.575,0,0,a.pal)+avMaskSVG(S.av,0.575);})()}</g>${starActive()?`<g class="herostars">${[[-14,-30],[12,-36],[-16,-6],[14,-10]].map(([x,y])=>`<g transform="translate(${x},${y})"><rect x="1" y="0" width="1" height="3" fill="#FFF3B0"/><rect x="0" y="1" width="3" height="1" fill="#FFD23F"/></g>`).join("")}</g>`:""}${IS_CHAMP?`<g transform="translate(-6,-40)">${spriteRects(SPR.crown,0.85,0,0)}</g>`:""}${S.weapon&&SPR["w_"+S.weapon]?`<g transform="translate(6,-25)">${spriteRects(SPR["w_"+S.weapon],0.95*12/(SPR["w_"+S.weapon].length||12)*1.1,0,0)}</g>`:""}${S.pet?`<g transform="translate(-26,-16)">${(()=>{const q=petParts(S.pet),sc=petStage()==="adult"?1:0.85;return q.img?petImgTag(q.type,16*sc,"adult",0,0,q.color):spriteRects(q.rows,sc*16/(q.rows.length||16),0,0,q.pal);})()}</g>`:""}${partyList().map((f,i)=>`<g class="hfol f${i}" transform="translate(${-40-i*13},${-13+i})">${(()=>{const q=petParts(f),sc=.8;return q.img?petImgTag(q.type,16*sc,"adult",0,0,q.color):spriteRects(q.rows,sc*16/(q.rows.length||16),0,0,q.pal);})()}</g>`).join("")}</g>`;
   $("#map").innerHTML=s;
   if(heroPos) moveHero(heroPos.x,heroPos.y,{instant:true}); else placeHero(S.loc,true);
 }
@@ -4706,6 +4724,7 @@ function moveHero(x,y,opt){
   hero.classList.toggle("swim",sea);
   if(walk&&sea) setTimeout(()=>{ if(heroPos&&inSea(heroPos.x,heroPos.y)&&!trySeaMonster()) trySeaTreasure(); },fast?320:740);
   else if(walk) setTimeout(()=>{ if(heroPos&&!inSea(heroPos.x,heroPos.y)&&!tryNpcMeet()) tryNpcChat(); },fast?320:740);
+  if(walk) try{ partyWalkDaily(); }catch(e){}
 }
 function footprint(x,y){                               // 國道聖騎士：走過的地方留下疾行腳印
   const hero=$("#hero"); if(!hero||!hero.parentNode) return;
@@ -5488,7 +5507,7 @@ function renderPetSwap(){
   }
   const cur=`<div class="me"><span class="petbig" aria-hidden="true">${petSVG(S.pet)}</span><div>
       <p class="mename">${esc(S.pet.name||PETS[S.pet.type].name)}</p>
-      <p class="ahint" style="margin:0">目前的夥伴：${esc(PETS[S.pet.type].name)}・${esc((PETC[S.pet.color]||PETC[0])[0])}色</p></div></div>`;
+      <p class="ahint" style="margin:0">目前的夥伴：${esc(PETS[S.pet.type].name)}・${esc(petColorName(S.pet.color))}</p></div></div>`;
   if(!canSwapPet()){
     box.dataset.open="";
     const pts=S.points||0;
@@ -7649,10 +7668,10 @@ function loungeData(){
   if(S.group){
     people[me]=Object.assign({},people[me]||{},{code:me,name:dispName(),group:S.group,
       level:String(myLv()),av:Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||""}),
-      pet:S.pet||null,msg:S.loungeMsg||"",at:(people[me]&&people[me].at)||new Date()});
+      pet:petWithParty(),msg:S.loungeMsg||"",at:(people[me]&&people[me].at)||new Date()});
   }
   const mine=people[me];
-  if(!mine&&S.group) people[me]={code:me,name:dispName(),group:S.group,level:String(myLv()),av:S.av,pet:S.pet,msg:S.loungeMsg||"",at:new Date()};
+  if(!mine&&S.group) people[me]={code:me,name:dispName(),group:S.group,level:String(myLv()),av:S.av,pet:petWithParty(),msg:S.loungeMsg||"",at:new Date()};
   const list=Object.values(people).filter(p=>!p.friendOnly).map(p=>Object.assign({},p,{
     likes:(likes[p.code]||new Set()).size,
     online:!!(p.at&&Date.now()-p.at.getTime()<LOUNGE_ONLINE_MS)
@@ -7675,7 +7694,7 @@ const CARD_KEY="sino22-card-key", CARD_AT="sino22-card-at", HERE_MS=4*60*1000;
 let lastHere=0;
 function cardPayload(){
   return {type:"presence",code:myCode(),name:dispName(),group:S.group||"",
-    level:String(myLv()),av:JSON.stringify(Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||"",home:myHomeSnapshot()})),pet:S.pet?JSON.stringify(S.pet):"",msg:S.loungeMsg||""};
+    level:String(myLv()),av:JSON.stringify(Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||"",home:myHomeSnapshot()})),pet:S.pet?JSON.stringify(petWithParty()):"",msg:S.loungeMsg||""};
 }
 async function loungePresence(force,opt){
   opt=opt||{};
@@ -7915,7 +7934,7 @@ function loungeCardInner(p,champion){
     ${crown?`<span class="crown" aria-label="人氣王">${spriteSVG("crown")}</span>`:""}
     <div class="lface" role="button" tabindex="0" data-visit="${esc(p.code)}" title="${me?"回到自己的家":"拜訪"+esc(p.name||"")+"的家"}">
       <span class="lav" aria-hidden="true">${avatarSVG(p.av||AV_DEFAULT)}</span>
-      ${p.pet?`<span class="lpet" aria-hidden="true">${petSVG(p.pet,(+p.level||1)>=4?"adult":"baby")}</span>`:""}
+      ${p.pet?`<span class="lpet" aria-hidden="true">${petSVG(p.pet,(+p.level||1)>=4?"adult":"baby")}</span>`+`${p.pet&&Array.isArray(p.pet.party)?p.pet.party.filter(f=>f&&PETS[f.type]).slice(0,PARTY_MAX).map((f,i)=>`<span class="lpet lfol f${i}" aria-hidden="true">${petSVG({type:f.type,color:+f.color||0},"adult")}</span>`).join(""):""}`:""}
       ${p.av&&p.av.weapon&&SPR["w_"+p.av.weapon]?`<span class="lwep" title="${esc((weaponById(p.av.weapon)||{}).name||"")}" aria-hidden="true">${spriteSVG("w_"+p.av.weapon)}</span>`:""}
     </div>
     <p class="lname">${esc(p.name||"新人冒險者")}${me?`<span class="st st-info">你</span>`:""}${crown?`<span class="st st-gold">人氣王獎章</span>`:""}</p>
@@ -8025,6 +8044,7 @@ const HELP={
   places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。",
   notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題和內容。",
   pet:"LV 3 可以領養寵物，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件；之後多出來的親密度會變成羈絆點。",
+  party:"出遊隊伍：隊長是你目前的寵物，另外可以帶最多 2 隻跟班。第 1 隻跟班的位置在任一寵物親密度滿 100 時解鎖，第 2 隻在任一寵物羈絆 ★3 或完成第二次轉職時解鎖。跟班會跟著你在地圖上散步、在家裡走來走去，同事拜訪你家、看你的名片也看得到。每天第一次在地圖上散步，每隻跟班親密度 +1；倉庫上方可以選「餵給」哪一隻（餵跟班一樣會看守農場）。試煉、看守、猜拳、羈絆加成都還是看隊長。",
   bond:"親密度滿 100 之後，多出來的親密度（餵最愛的菜、寵物零食、稀有作物、猜拳、試煉…）會變成羈絆點，每隻寵物分開計算，最多存 500 點。累積每 100 點升一顆星（最多 5 顆，花掉羈絆點不會掉星）：每顆星讓試煉寵物攻擊 +1、看守農場多 1 分鐘、每天叼小禮物回家的機率 +8%。羈絆點可以升級寵物技能（Lv2：150 點、需要 2 顆星；Lv3：300 點、需要 4 顆星），也能在羈絆商店換種子禮包和肥料。",
   trophy:"完成特定目標就會解鎖成就，標示 NEW 的是剛解鎖的。成就數量會顯示在結業證書和你的名片上。",
   cert:"完成全部任務並集滿智慧存摺點數後，村長會頒發結業證書。之後有新任務時，把新內容看完還能領 Bonus 進修證書。證書都可以下載成圖片。",
@@ -8096,7 +8116,7 @@ function renderVisit(){
   $("#vsDept").textContent=`拜訪 ${p.group||""}`;
   $("#vsTitle").textContent=`${p.name||"冒險者"} 的溫暖的家`;
   stabGo("visit",["farm","act","book"].includes(STAB.visit)?STAB.visit:"farm");
-  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.nocard?"":(p.name||"屋主"),hostId:"visitHost",label:`${p.name}的溫暖的家`});
+  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,party:p.pet&&Array.isArray(p.pet.party)?p.pet.party:[],petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.nocard?"":(p.name||"屋主"),hostId:"visitHost",label:`${p.name}的溫暖的家`});
   startRoomPet("#visitPet",true);
   startPlaydate();
   const hostEl=$("#visitHost");
@@ -8226,7 +8246,7 @@ function claimGifts(){
 function feedPet(k){
   if(!S.pet||!CROPS[k]||!((S.barn||{})[k]>0)) return;
   S.barn[k]--; S.petFed=(S.petFed||0)+1; S.guardUntil=Date.now()+guardMs();
-  const pn=S.pet.name||PETS[S.pet.type].name, fav=PET_FAV[S.pet.type]===k, t=S.pet.type;
+  const P=feedTarget(), pn=petNameOf(P), fav=PET_FAV[P.type]===k, t=P.type;
   let reached=false;
   let ecoPlus=0;
   if(fav&&jb("eco",2)){ const J=jobS(); if(J.feedDay!==dayKey()){ J.feedDay=dayKey(); ecoPlus=2; } }      // 大地守護者：每天第一次餵最愛 +2
@@ -8234,11 +8254,13 @@ function feedPet(k){
   if(fav) reached=affGain(t,1+ecoPlus);
   save(); queueSync(); pushFarm(true);
   if(fav&&!reached&&!wasFull) setTimeout(()=>toast(`💗 ${pn}的親密度 +${1+ecoPlus}（${affOf(t)}/${AFF_MAX}）${ecoPlus?"・大地守護者的祝福":""}`),1300);
-  if(reached) setTimeout(()=>affinityMax(t),900);
+  if(reached&&P===S.pet) setTimeout(()=>affinityMax(t),900);
+  else if(reached) setTimeout(()=>{ Sound.sfx("levelup"); toast(`💗 ${pn}的親密度滿 ${AFF_MAX} 了！彩虹毛色可以在「寵物窩 → 出遊隊伍」換上`); },900);
   Sound.sfx(fav?"achieve":"get");
   toast(fav?`${pn}最愛吃${CROPS[k].name}了！接下來 ${guardMs()/60000} 分鐘會認真看守農場`:`${pn}吃掉了${CROPS[k].name}，接下來 ${guardMs()/60000} 分鐘會幫你看守農場（餵最愛的${CROPS[PET_FAV[t]]?CROPS[PET_FAV[t]].name:"食物"}才會提升親密度）`);
   const el=$("#roomPet");
-  if(el){ sayAt(el,fav?`${CROPS[k].name}！最喜歡這個了！`:(PET_VOICE[S.pet.type]||"好吃！")); heartAt(el); if(fav) setTimeout(()=>heartAt(el),400); }
+  const el2=P!==S.pet?$("#roomPetF"+(partyList().findIndex(f=>f.type===t))):null, eF=el2||el;
+  if(eF){ sayAt(eF,fav?`${CROPS[k].name}！最喜歡這個了！`:(PET_VOICE[t]||"好吃！")); heartAt(eF); if(fav) setTimeout(()=>heartAt(eF),400); }
   const hb=$("#homeBarn"); if(hb) hb.innerHTML=barnHTML();
 }
 /* ---- 開心農場：種子、蔬菜互動、看守、送菜給村長／總長 ---- */
@@ -8309,7 +8331,8 @@ function barnHTML(got){
   return `<div class="homebarn">
     <div class="abar"><b class="hb-title">倉庫 ${helpBtn("barn")}</b><span class="ahint">共 ${total} 份${pn?`・點「餵」看${esc(pn)}的反應`:""}</span>
       ${g?`<span class="st st-gold">🐾 ${esc(pn)}看守中 ${fmtLeft(left)}</span>`:""}</div>
-    <div class="barn">${Object.entries(CROPS).map(([k,c])=>`<div class="barnitem${barn[k]?"":" none"}${got[k]?" got":""}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}${S.pet&&PET_FAV[S.pet.type]===k?' <span title="寵物最愛">♥</span>':""}</b><span>${barn[k]||0} ${esc(c.unit)}</span>${got[k]?`<span class="gotplus">+${got[k]}</span>`:""}${S.pet&&barn[k]?`<button class="mini-btn" type="button" data-feed="${k}" title="拿來餵寵物">餵</button>`:""}</div>`).join("")}</div>
+    ${partyList().length?`<div class="feedto" role="radiogroup" aria-label="餵給哪一隻"><span class="ahint">餵給：</span>${[S.pet].concat(partyList()).map((p,i)=>`<button type="button" class="themechip${(partyList()[FEED_TO-1]?FEED_TO:0)===i?" on":""}" data-feedto="${i}" aria-pressed="${(partyList()[FEED_TO-1]?FEED_TO:0)===i}"><span class="fdpv" aria-hidden="true">${petSVG(i?p:S.pet,"adult")}</span>${esc(petNameOf(p))}${i?"":"（隊長）"}</button>`).join("")}</div>`:""}
+    <div class="barn">${Object.entries(CROPS).map(([k,c])=>`<div class="barnitem${barn[k]?"":" none"}${got[k]?" got":""}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}${S.pet&&PET_FAV[feedTarget().type]===k?' <span title="寵物最愛">♥</span>':""}</b><span>${barn[k]||0} ${esc(c.unit)}</span>${got[k]?`<span class="gotplus">+${got[k]}</span>`:""}${S.pet&&barn[k]?`<button class="mini-btn" type="button" data-feed="${k}" title="拿來餵寵物">餵</button>`:""}</div>`).join("")}</div>
     ${Object.keys(RARE).some(k=>(S.rare||{})[k]>0)?`<div class="barn rarebarn">${Object.entries(RARE).filter(([k])=>(S.rare||{})[k]>0).map(([k,R])=>`<div class="barnitem rareitem"><span class="seedicon" aria-hidden="true">${spriteSVG(R.id)}</span><b>${esc(R.name)}</b><span>${S.rare[k]} ${esc(CROPS[k].unit)}</span>${S.pet?`<button class="mini-btn" type="button" data-rarefeed="${k}" title="拿來餵寵物（親密度 +${RARE_FEED}）">餵</button>`:""}</div>`).join("")}</div>`:""}
     <p class="ahint" style="margin:8px 0 0">${pn?`餵完 5 分鐘內，${esc(pn)}會更專心看守農場，小偷更容易被抓到。`:""}蔬菜也可以帶去別人家送禮或砸過去，去村長家和總長辦公室送菜還有驚喜。</p>
     ${log.length?`<details class="ixlog"><summary>互動紀錄（${log.length}）</summary>${log.map(x=>{ const c=CROPS[x.crop]||{name:"蔬菜",unit:"份"};
@@ -8476,6 +8499,62 @@ function bondHTML(pet){
     <p class="ahint">羈絆點用「${esc(pn)}」自己的；換成別的寵物時，用的是那隻寵物的羈絆點。</p>
   </section>`;
 }
+function partyEditHTML(i,f){
+  const L=partyList(), used=new Set([S.pet.type].concat(L.filter((x,j)=>j!==i).map(x=>x.type)));
+  const kinds=Object.keys(PETS).filter(k=>petKindOK(k)&&!used.has(k));
+  const d=PARTY_DRAFT&&PARTY_DRAFT.i===i?PARTY_DRAFT:(PARTY_DRAFT={i,type:f?f.type:kinds[0],color:f?f.color:(PETS[kinds[0]]&&PETS[kinds[0]].defColor)||0,name:f?f.name:""});
+  if(!kinds.includes(d.type)) d.type=kinds[0];
+  if(!petColorOK(+d.color,d.type)) d.color=(PETS[d.type]&&PETS[d.type].defColor)||0;
+  return `<div class="pslot edit"><span class="pv">${petSVG({type:d.type,color:d.color},"adult")}</span>
+    <div class="pedit">
+      <p class="dsec">跟班 ${i+1}：選一隻</p>
+      <div class="ochoices pkinds" role="radiogroup" aria-label="跟班種類">${kinds.map(k=>`<label class="opt" title="${esc(PETS[k].name)}"><input type="radio" name="party-type" value="${k}" ${d.type===k?"checked":""}><span class="th">${petSVG({type:k,color:PETS[k].defColor||0},"adult")}</span>${esc(PETS[k].name)}<small>💗${affOf(k)}</small></label>`).join("")}</div>
+      <div class="ochoices" role="radiogroup" aria-label="毛色">${PETC.map((c,ci)=>petColorOK(ci,d.type)?`<label class="opt sw${ci>=PETC_SPECIAL?" rare":""}" title="${esc(c[0])}"><input type="radio" name="party-color" value="${ci}" ${+d.color===ci?"checked":""}><i style="background:${petSwatch(ci)}"></i></label>`:"").join("")}</div>
+      <label class="sr" for="partyName">跟班名字</label><input id="partyName" class="ainput" maxlength="8" value="${esc(d.name||"")}" placeholder="名字（留白就叫${esc(PETS[d.type].name)}）">
+      <div class="formfoot"><span></span><span class="afilters">${f||L.length>i?`<button class="act ghost" type="button" data-partycancel>取消</button>`:`<button class="act ghost" type="button" data-partycancel>取消</button>`}<button class="act" type="button" data-partysave="${i}">帶出門</button></span></div>
+    </div></div>`;
+}
+function partyHTML(){
+  if(!S.pet) return "";
+  const slots=partySlots(), L=partyList();
+  const cond=["任一寵物親密度滿 100","任一寵物羈絆 ★3，或完成第二次轉職"];
+  return `<section class="window pbox form"><h3>出遊隊伍 ${helpBtn("party")}</h3>
+    <p class="ahint">隊長就是你目前的寵物（試煉、看守、猜拳都是隊長負責）。跟班會跟著你在地圖上散步、在家裡走來走去，同事拜訪你家、看你的名片也看得到。每天第一次在地圖上散步，每隻跟班親密度 +1；倉庫也可以選要餵哪一隻。</p>
+    <div class="partyrow">
+      <div class="pslot lead"><span class="pv">${petSVG(S.pet)}</span><div><b>${esc(petNameOf(S.pet))}</b><small>隊長・${esc(PETS[S.pet.type].name)}・💗${affOf(S.pet.type)}</small></div></div>
+      ${[0,1].map(i=>{
+        if(i>=slots) return `<div class="pslot lock"><span class="pv dim" aria-hidden="true">🔒</span><div><b>跟班 ${i+1}</b><small>解鎖條件：${cond[i]}</small></div></div>`;
+        const f=L[i];
+        if(PARTY_EDIT===i) return partyEditHTML(i,f);
+        if(!f) return i>L.length?"":`<div class="pslot empty"><span class="pv dim" aria-hidden="true">＋</span><div><b>跟班 ${i+1}</b><small>位置已解鎖</small></div><button class="act" type="button" data-partyedit="${i}">帶一隻跟班</button></div>`;
+        return `<div class="pslot"><span class="pv">${petSVG(f,"adult")}</span><div><b>${esc(petNameOf(f))}</b><small>跟班 ${i+1}・${esc(PETS[f.type].name)}・💗${affOf(f.type)}</small></div><span class="afilters"><button class="mini-btn" type="button" data-partyedit="${i}">更換</button><button class="mini-btn" type="button" data-partydel="${i}">放回家</button></span></div>`;
+      }).join("")}
+    </div></section>`;
+}
+function partyDone(msg){
+  PARTY_EDIT=-1; PARTY_DRAFT=null; FEED_TO=0;
+  save(); queueSync(true); try{ pushFarm(true); }catch(e){}
+  lastPresence=0; try{ loungePresence(true,{card:true}); }catch(e){}
+  if(msg){ toast(msg); Sound.sfx("get"); }
+  try{ buildMap(); }catch(e){}
+  if(curPlace&&curPlace.id==="myhome") renderPlace();
+}
+document.addEventListener("click",e=>{
+  const t=e.target;
+  const pe=t.closest("[data-partyedit]"); if(pe){ PARTY_EDIT=+pe.dataset.partyedit; PARTY_DRAFT=null; Sound.sfx("select"); renderPlace(); return; }
+  if(t.closest("[data-partycancel]")){ PARTY_EDIT=-1; PARTY_DRAFT=null; renderPlace(); return; }
+  const ps=t.closest("[data-partysave]"); if(ps&&PARTY_DRAFT){
+    const i=+ps.dataset.partysave, L=partyCard(), nm=cleanText(($("#partyName")||{}).value||"",8);
+    L[i]={type:PARTY_DRAFT.type,color:+PARTY_DRAFT.color||0,name:nm};
+    S.party=L.filter(Boolean); partyDone(`🐾 ${nm||PETS[PARTY_DRAFT.type].name}加入出遊隊伍了！`); return; }
+  const pd=t.closest("[data-partydel]"); if(pd){ const L=partyCard(), f=L[+pd.dataset.partydel]; L.splice(+pd.dataset.partydel,1); S.party=L; partyDone(f?`${f.name||PETS[f.type].name}先回家休息了`:""); return; }
+  const ft=t.closest("[data-feedto]"); if(ft){ FEED_TO=+ft.dataset.feedto; Sound.sfx("cursor"); const hb=$("#homeBarn"); if(hb) hb.innerHTML=barnHTML(); return; }
+});
+document.addEventListener("change",e=>{
+  const n=e.target.name; if(!PARTY_DRAFT) return;
+  if(n==="party-type"){ PARTY_DRAFT.type=e.target.value; PARTY_DRAFT.color=(PETS[e.target.value]&&PETS[e.target.value].defColor)||0; const nm=$("#partyName"); if(nm) PARTY_DRAFT.name=nm.value; renderPlace(); }
+  else if(n==="party-color"){ PARTY_DRAFT.color=+e.target.value; const nm=$("#partyName"); if(nm) PARTY_DRAFT.name=nm.value; renderPlace(); }
+});
 function bondDone(msg){ save(); queueSync(); Sound.sfx("get"); toast(msg); if(typeof curPlace!=="undefined"&&curPlace&&curPlace.id==="myhome") renderPlace(); }
 function bondUpgrade(){
   if(!S.pet) return; const t=S.pet.type, b=bondS(t), lv=b.sk;
@@ -8743,9 +8822,11 @@ async function openVisit(code){
 $("#vsSend").addEventListener("click",async()=>{
   if(touristBlock("訪客簿留言")) return;
   const msg=cleanText($("#vsMsg").value,40); if(!msg){ toast("請先寫一句話"); return; }
+  const vsRaw=$("#vsMsg").value; $("#vsMsg").value="";      // 先清空，失敗再放回去
   const btn=$("#vsSend"); btn.disabled=true;
   const payload={type:"visit",code:myCode(),name:dispName(),target:visitHost,msg};
   const ok=await loungeSend(payload); btn.disabled=false;
+  if(!ok&&!$("#vsMsg").value) $("#vsMsg").value=vsRaw;
   if(ok){ addPending(payload); $("#vsMsg").value=""; Sound.sfx("get"); toast("留言完成，主人最慢約 5 分鐘後看得到"); renderVisit(); }
   else toast("留言失敗，請稍後再試");
 });
@@ -8810,7 +8891,7 @@ function loungeRow(p,champion){
     return `<article class="lrc${crown?" champ":""}${p.online?" on":""}${p.nocard?" nocard":""}">
       <div class="lface" role="button" tabindex="0" data-visit="${esc(p.code)}" title="${me?"回到自己的家":"拜訪"+esc(p.name||"")+"的家"}">
         <span class="lav" aria-hidden="true">${avatarSVG(p.nocard?AV_DEFAULT:(p.av||AV_DEFAULT))}</span>
-        ${!p.nocard&&p.pet?`<span class="lpet" aria-hidden="true">${petSVG(p.pet,(+p.level||1)>=4?"adult":"baby")}</span>`:""}
+        ${!p.nocard&&p.pet?`<span class="lpet" aria-hidden="true">${petSVG(p.pet,(+p.level||1)>=4?"adult":"baby")}</span>`+`${p.pet&&Array.isArray(p.pet.party)?p.pet.party.filter(f=>f&&PETS[f.type]).slice(0,PARTY_MAX).map((f,i)=>`<span class="lpet lfol f${i}" aria-hidden="true">${petSVG({type:f.type,color:+f.color||0},"adult")}</span>`).join(""):""}`:""}
       </div>
       <div style="min-width:0">
         <p class="lname">${crown?"👑 ":""}${esc(p.name||"新人冒險者")}${me?`<span class="st st-info">你</span>`:""}</p>
@@ -9106,7 +9187,7 @@ $("#placeBody").addEventListener("click",async e=>{
       S.loungeMsg=cleanText($("#lgMsg").value,30); save();
       lg.disabled=true; lastPresence=0; await loungePresence(true,{card:true}); await loadLounge(true); lg.disabled=false;
       addPending({type:"presence",code:myCode(),name:dispName(),group:S.group||"",level:String(myLv()),
-        av:Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||""}),pet:S.pet||null,msg:S.loungeMsg||""});
+        av:Object.assign({},S.av||AV_DEFAULT,{weapon:S.weapon||""}),pet:petWithParty(),msg:S.loungeMsg||""});
       toast("名片已更新"); renderLounge($("#placeBody"),true); return;
     }
     if(act==="post"){
@@ -9115,10 +9196,12 @@ $("#placeBody").addEventListener("click",async e=>{
       if(runCheat(msg)){ $("#lgPost").value=""; renderLounge($("#placeBody"),true); return; }
       if(touristBlock("留言板張貼")) return;
       lg.disabled=true;
+      const raw=$("#lgPost").value; $("#lgPost").value="";      // 先清空：送出中畫面重畫也不會把文字放回去
       const id="P-"+randChars(6);
       const payload={type:"post",code:myCode(),name:dispName(),msg,target:id};
       const ok=await loungeSend(payload);
       lg.disabled=false;
+      if(!ok){ const p=$("#lgPost"); if(p&&!p.value) p.value=raw; }     // 失敗：把文字放回去
       if(ok){
         addPending(payload); $("#lgPost").value="";
         Sound.sfx("get"); toast("留言完成，其他人最慢約 5 分鐘後看得到");
@@ -9135,11 +9218,14 @@ $("#placeBody").addEventListener("click",async e=>{
       if(!msg){ toast("請先輸入回應內容"); return; }
       if(touristBlock("回應留言")) return;
       lg.disabled=true;
+      const raw=inp?inp.value:"", curIn=()=>document.querySelector(`[data-replyfor="${CSS.escape(id)}"]`);
+      if(inp) inp.value=""; delete LG_RDRAFT[id];                 // 先清空：送出中畫面重畫也不會把文字放回去
       const payload={type:"reply",code:myCode(),name:dispName(),msg,target:id};
       const ok=await loungeSend(payload);
       lg.disabled=false;
+      if(!ok){ const c=curIn(); if(c&&!c.value){ c.value=raw; LG_RDRAFT[id]=raw; } }   // 失敗：把文字放回去
       if(ok){
-        addPending(payload); if(inp) inp.value=""; delete LG_RDRAFT[id]; LG_OPEN.add(id);
+        addPending(payload); if(inp) inp.value=""; { const c=curIn(); if(c) c.value=""; } delete LG_RDRAFT[id]; LG_OPEN.add(id);
         Sound.sfx("get"); toast("已回應，其他人最慢約 5 分鐘後看得到");
         setTimeout(boardFrame,900);
         renderLounge($("#placeBody"),true);
@@ -10733,6 +10819,7 @@ function roomHTML(h,opt){
     ${out?`<div class="sr-outfit" title="${esc(OUTFIT[out].name)}"><span class="sr-hook"></span><span class="sr-cloth">${outfitDisplaySVG(out,av)}</span><span class="sr-pole"></span><span class="sr-base"></span><span class="sr-tag">${esc(OUTFIT[out].name)}</span></div>`:""}
     ${opt.host?`<button type="button" class="roomhost" id="${opt.hostId||"roomHost"}" title="跟${esc(opt.host)}打招呼"><span class="rh-body">${avatarSVG(av)}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
     ${h.pet&&PETS[h.pet.type]?`<button type="button" class="roompet" id="${pid}" data-pt="${esc(h.pet.type)}" title="摸摸${esc(h.pet.name||PETS[h.pet.type].name)}"><span class="rp-body">${petSVG(h.pet,h.petStage)}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
+    ${h.pet&&PETS[h.pet.type]&&Array.isArray(h.party)?h.party.filter(f=>f&&PETS[f.type]&&f.type!==h.pet.type).slice(0,PARTY_MAX).map((f,i)=>`<button type="button" class="roompet folpet" id="${pid}F${i}" data-pt="${esc(f.type)}" title="摸摸${esc(petNameOf(f))}"><span class="rp-body">${petSVG({type:f.type,color:+f.color||0,name:f.name},"adult")}</span><span class="rh-say" aria-live="polite"></span></button>`).join(""):""}
     ${opt.guestPet&&PETS[opt.guestPet.type]?`<button type="button" class="roompet guestpet" id="visitGuestPet" title="你的${esc(petNameOf(opt.guestPet))}"><span class="rp-body">${petSVG(opt.guestPet,petStage())}</span><span class="rp-name">${esc(petNameOf(opt.guestPet))}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
   </div>`;
 }
@@ -10741,7 +10828,7 @@ function showroomHTML(){
   const sel=(key,label,list)=>`<label class="srsel"><span>${label}</span><select class="ainput" name="sc-${key}">
       <option value="">不展示</option>${list.map(([v,n])=>`<option value="${esc(v)}" ${sc[key]===v?"selected":""}>${esc(n)}</option>`).join("")}</select></label>`;
   const mySplatList=splatList(myCode(),S.cleanedAt), mySplats=mySplatList.length;
-  return roomHTML(Object.assign({},myHomeSnapshot(),{pet:S.pet,petStage:petStage(),av:S.av,splats:mySplatList}),{host:dispName(),hostId:"homeHost"})+`
+  return roomHTML(Object.assign({},myHomeSnapshot(),{pet:S.pet,party:partyList(),petStage:petStage(),av:S.av,splats:mySplatList}),{host:dispName(),hostId:"homeHost"})+`
   <div class="srbar" aria-label="展示品設定">
     <span class="srbar-t">展示品 ${helpBtn("showroom")}</span>
     ${sel("outfit","服裝",L.outfit)}${sel("item","小物",L.item)}${sel("weapon","武器",L.weapon)}
@@ -10819,6 +10906,11 @@ function bedNapBonus(){                                 // 寵物在自己的專
 function startRoomPet(sel,isVisit){
   const el=$(sel||"#roomPet"); if(!el) return;
   startWalker(el,(isVisit?"visit":"home")+":pet");
+  if(el.parentElement) el.parentElement.querySelectorAll(".roompet.folpet").forEach((f,i)=>{   // 跟班
+    startWalker(f,(isVisit?"visit":"home")+":fol"+i,{speed:60});
+    f.onclick=()=>{ f.classList.remove("hop"); void f.offsetWidth; f.classList.add("hop");
+      const h=document.createElement("span"); h.className="rp-heart"; h.textContent="♥"; f.appendChild(h); setTimeout(()=>h.remove(),900); Sound.sfx("get"); };
+  });
   el.onclick=()=>{
     if(el.classList.contains("nap")){ el.classList.remove("nap"); const say=el.querySelector(".rh-say"); if(say) say.textContent=""; }
     el.classList.remove("hop"); void el.offsetWidth; el.classList.add("hop");
@@ -11139,6 +11231,38 @@ function renderShop(panel){
       }));
     })()}
   </section>`;
+}
+/* ---- 出遊隊伍：隊長＋最多 2 隻跟班 ---- */
+const PARTY_MAX=2;
+let PARTY_EDIT=-1, PARTY_DRAFT=null, FEED_TO=0;
+function partySlots(){                                     // 解鎖幾個跟班位置
+  if(!S.pet) return 0;
+  const ks=Object.keys(PETS);
+  if(!ks.some(k=>affOf(k)>=AFF_MAX)) return 0;
+  return ks.some(k=>bondStars(k)>=3)||JOBS.some(j=>jobTier(j.id)>=2)?2:1;
+}
+function partyList(){                                      // 整理過的跟班（不重複、不跟隊長同種、可以用的毛色）
+  if(!S.pet||!Array.isArray(S.party)) return [];
+  const seen=new Set([S.pet.type]), out=[];
+  S.party.forEach(p=>{
+    if(!p||!PETS[p.type]||seen.has(p.type)||!petKindOK(p.type)) return; seen.add(p.type);
+    const c=+p.color, color=Number.isInteger(c)&&PETC[c]&&petColorOK(c,p.type)?c:(PETS[p.type].defColor||0);
+    out.push({type:p.type,color,name:cleanText(p.name||"",8),wear:"none",wc:1});
+  });
+  return out.slice(0,partySlots());
+}
+const partyCard=()=>partyList().map(f=>({type:f.type,color:f.color,name:f.name}));   // 名片、拜訪用（精簡）
+const petWithParty=()=>S.pet?Object.assign({},S.pet,partyList().length?{party:partyCard()}:{}):null;
+function feedTarget(){ const L=partyList(); return FEED_TO>0&&L[FEED_TO-1]?L[FEED_TO-1]:S.pet; }
+function partyWalkDaily(){                                 // 每天第一次在地圖上散步：每隻跟班親密度 +1
+  const L=partyList(); if(!L.length) return;
+  const d=dayKey(); if(S.partyWalk===d) return;
+  S.partyWalk=d;
+  const full=[];
+  L.forEach(f=>{ if(affGain(f.type,1,true)) full.push(petNameOf(f)); });
+  save(); queueSync();
+  setTimeout(()=>{ toast(`🐾 ${L.map(petNameOf).join("、")}陪你散步，親密度 +1`); Sound.sfx("get"); },900);
+  if(full.length) setTimeout(()=>{ Sound.sfx("levelup"); toast(`💗 ${full.join("、")}的親密度滿 ${AFF_MAX} 了！彩虹毛色可以在「寵物窩 → 出遊隊伍」換上`); },3200);
 }
 function petAffAdd(n){                                 // 目前寵物的親密度 +n，回傳是否剛好滿級
   if(!S.pet) return false;
@@ -12068,7 +12192,7 @@ function renderPetPanel(panel){
         <span class="petbig" aria-hidden="true">${petSVG(pet)}</span>
         <div>
           <p class="mename">${esc(pet.name||PETS[pet.type].name)}</p>
-          <p class="ahint" style="margin:0">${esc(PETS[pet.type].name)}${petIsImg(pet.type)?"・隱藏版":""}・${esc((PETC[pet.color]||PETC[0])[0])}色${!wearLocked&&pet.wear&&pet.wear!=="none"?`・${esc(PET_WEAR[pet.wear].name)}`:""}</p>
+          <p class="ahint" style="margin:0">${esc(PETS[pet.type].name)}${petIsImg(pet.type)?"・隱藏版":""}・${esc(petColorName(pet.color))}${!wearLocked&&pet.wear&&pet.wear!=="none"?`・${esc(PET_WEAR[pet.wear].name)}`:""}</p>
           <p class="ahint" style="margin:6px 0 0">牠會跟著你在地圖上散步，也會出現在結業證書上。</p>
         </div>
       </div>
@@ -12092,7 +12216,7 @@ function renderPetPanel(panel){
           ${CLOTH.map((c,i)=>`<label class="opt sw" title="${c[0]}"><input type="radio" name="pet-wc" value="${i}" ${+pet.wc===i?"checked":""}><i style="background:${c[1]}"></i></label>`).join("")}
         </div></div>`}
       ${petGearHTML(pet)}
-    </section>`},{id:"bond",label:"💞 羈絆",badge:affOf(pet.type)>=AFF_MAX?starsTxt(bondStars(pet.type)).replace(/☆/g,""):"",html:bondHTML(pet)}])}`;
+    </section>`},{id:"bond",label:"💞 羈絆",badge:affOf(pet.type)>=AFF_MAX?starsTxt(bondStars(pet.type)).replace(/☆/g,""):"",html:bondHTML(pet)},{id:"party",label:"🐾 出遊隊伍",badge:partySlots()?`${partyList().length}/${partySlots()}`:"🔒",html:partyHTML()}])}`;
 }
 function petGearHTML(pet){
   const own=Object.keys(PET_GEAR).filter(k=>S.shopOwned&&S.shopOwned[k]);

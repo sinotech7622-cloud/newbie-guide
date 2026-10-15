@@ -1456,7 +1456,9 @@ body.tour-lock .mapframe{z-index:41}
 .pkinds .opt small{display:block;font-size:11px;color:#B9C0F0}
 .feedto{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0}
 .feedto .fdpv{display:inline-block;width:20px;height:20px;vertical-align:middle;margin-right:4px}
-.roompet.folpet .rp-body{transform:scale(.82);transform-origin:50% 100%}
+.roompet.folpet{width:54px;height:54px}
+@media (max-width:640px){.roompet.folpet{width:46px;height:46px}}
+.roompet .rp-name{top:calc(100% + 1px)}
 .pdress{margin:8px 0;border:2px solid rgba(255,255,255,.2);border-radius:6px;padding:6px 10px}
 .pdress summary{cursor:pointer;font-weight:700}
 .gwho{display:block;font-size:11px;color:#FFB27A}
@@ -10848,8 +10850,8 @@ function roomHTML(h,opt){
     ${item?`<div class="sr-item" title="${esc(findById(item).name)}"><span class="sr-case">${spriteSVG("i_"+item)}</span><span class="sr-stand"></span><span class="sr-tag">${esc(findById(item).name)}</span></div>`:""}
     ${out?`<div class="sr-outfit" title="${esc(OUTFIT[out].name)}"><span class="sr-hook"></span><span class="sr-cloth">${outfitDisplaySVG(out,av)}</span><span class="sr-pole"></span><span class="sr-base"></span><span class="sr-tag">${esc(OUTFIT[out].name)}</span></div>`:""}
     ${opt.host?`<button type="button" class="roomhost" id="${opt.hostId||"roomHost"}" title="跟${esc(opt.host)}打招呼"><span class="rh-body">${avatarSVG(av)}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
-    ${h.pet&&PETS[h.pet.type]?`<button type="button" class="roompet" id="${pid}" data-pt="${esc(h.pet.type)}" title="摸摸${esc(h.pet.name||PETS[h.pet.type].name)}"><span class="rp-body">${petSVG(h.pet,h.petStage)}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
-    ${h.pet&&PETS[h.pet.type]&&Array.isArray(h.party)?h.party.filter(f=>f&&PETS[f.type]&&f.type!==h.pet.type).slice(0,PARTY_MAX).map((f,i)=>`<button type="button" class="roompet folpet" id="${pid}F${i}" data-pt="${esc(f.type)}" title="摸摸${esc(petNameOf(f))}"><span class="rp-body">${petSVG({type:f.type,color:+f.color||0,name:f.name,wear:PET_WEAR[f.wear]?f.wear:"none",wc:+f.wc||1,gear:PET_GEAR[f.gear]?f.gear:"",acc:!!f.acc,collar:!!f.collar},"adult")}</span><span class="rh-say" aria-live="polite"></span></button>`).join(""):""}
+    ${h.pet&&PETS[h.pet.type]?`<button type="button" class="roompet" id="${pid}" data-pt="${esc(h.pet.type)}" title="摸摸${esc(h.pet.name||PETS[h.pet.type].name)}"><span class="rp-body">${petSVG(h.pet,h.petStage)}</span><span class="rp-name">${esc(h.pet.name||PETS[h.pet.type].name)}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
+    ${h.pet&&PETS[h.pet.type]&&Array.isArray(h.party)?h.party.filter(f=>f&&PETS[f.type]&&f.type!==h.pet.type).slice(0,PARTY_MAX).map((f,i)=>`<button type="button" class="roompet folpet" id="${pid}F${i}" data-pt="${esc(f.type)}" title="摸摸${esc(petNameOf(f))}"><span class="rp-body">${petSVG({type:f.type,color:+f.color||0,name:f.name,wear:PET_WEAR[f.wear]?f.wear:"none",wc:+f.wc||1,gear:PET_GEAR[f.gear]?f.gear:"",acc:!!f.acc,collar:!!f.collar},"adult")}</span><span class="rp-name">${esc(petNameOf(f))}</span><span class="rh-say" aria-live="polite"></span></button>`).join(""):""}
     ${opt.guestPet&&PETS[opt.guestPet.type]?`<button type="button" class="roompet guestpet" id="visitGuestPet" title="你的${esc(petNameOf(opt.guestPet))}"><span class="rp-body">${petSVG(opt.guestPet,petStage())}</span><span class="rp-name">${esc(petNameOf(opt.guestPet))}</span><span class="rh-say" aria-live="polite"></span></button>`:""}
   </div>`;
 }

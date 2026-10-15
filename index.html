@@ -5042,12 +5042,12 @@ function takeBless(){
   renderJobHall(); renderMenu(); try{ if(!$("#viewMap").hidden) buildMap(); }catch(e){}
 }
 /* ---- 換職、造型 ---- */
-function jobSwapLeft(){ const J=jobS(); return J.swapDay===dayKey()?0:1; }
+function jobSwapLeft(){ return 1; }                       // 學會的職業隨時可以換，不限次數
 async function jobSwap(id,direct){
   if(touristBlock("換職")) return;
   if(!jobTier(id)||jobCur()===id) return;
   if(!jobSwapLeft()){ toast("今天已經換過職業了，明天再換"); Sound.sfx("error"); return; }
-  if(!direct&&!(await uiConfirm(`要換成「${jobName(id,jobTier(id))}」嗎？今天就不能再換了。`,"換職"))) return;
+  if(!direct&&!(await uiConfirm(`要換成「${jobName(id,jobTier(id))}」嗎？`,"換職"))) return;
   const J=jobS(); J.cur=id; J.swapDay=dayKey(); { const w=jobWear(); if(!w.out&&!w.hat&&!w.cape) jobWearAll(); }
   syncJobAv(); save(); queueSync(true); Sound.sfx("levelup");
   toast(`⚔️ 換成「${jobName(id,jobTier(id))}」了！`);
@@ -5136,7 +5136,7 @@ function jobMineHTML(){
     <span class="ahint">點一下穿上或脫下。脫下職業服裝會換回衣櫃的衣服、脫下職業頭飾會換回原本的配件；衣櫃和「角色設定」裡也能直接選職業服裝、職業頭飾。</span>
   </div>
   ${jcOwned().length?`<div class="jrow"><span class="jlab">職業鼠標</span>${jcOwned().map(o=>`<button type="button" class="themechip jcchip${jcCur()===o.id?" on":""}" data-jobcursor="${o.id}" aria-pressed="${jcCur()===o.id}"><img src="${JOB_CURSOR[o.id][0]}" alt="" width="20" height="20">${esc(o.n2)}</button>`).join("")}<button type="button" class="themechip${jcCur()?"":" on"}" data-jobcursor="off" aria-pressed="${!jcCur()}">系統預設</button><span class="ahint">點畫面時會出現職業特效（手機也有）</span></div>`:""}
-  ${others.length?`<div class="jrow"><label class="jlab" for="jobSwapSel">換職</label><select id="jobSwapSel" class="ainput jswsel" ${jobSwapLeft()?"":"disabled"}>${others.map(o=>`<option value="${o.id}">${esc(jobName(o.id,jobTier(o.id)))}（${esc(o.group)}）</option>`).join("")}</select><button type="button" class="act" data-jobswapgo ${jobSwapLeft()?"":"disabled"}>確定</button><span class="ahint">${jobSwapLeft()?"每天可以換 1 次，免費":"今天已經換過了，明天再來"}</span></div>`:""}
+  ${others.length?`<div class="jrow"><label class="jlab" for="jobSwapSel">換職</label><select id="jobSwapSel" class="ainput jswsel" ${jobSwapLeft()?"":"disabled"}>${others.map(o=>`<option value="${o.id}">${esc(jobName(o.id,jobTier(o.id)))}（${esc(o.group)}）</option>`).join("")}</select><button type="button" class="act" data-jobswapgo ${jobSwapLeft()?"":"disabled"}>確定</button><span class="ahint">學會的職業隨時可以換，不限次數</span></div>`:""}
   <div class="jrow"><span class="jlab">每日祝福</span>${blessLeft()?`<button type="button" class="act" data-jobbless>✨ 抽今天的祝福${jb("support",2)?`（還有 ${blessLeft()} 次）`:""}</button>`:`<span class="ahint">今天的祝福領過了，明天再來</span>`}<span class="ahint">種子 5～20 顆、肥料或寵物零食</span></div>
   ${t<2?`<div class="j2box">
     <p class="dsec">第二次轉職：${esc(j.n2)}</p>
@@ -8045,7 +8045,7 @@ function runCheat(msg){
 }
 /* ---- 各功能的說明提示（點「?」顯示） ---- */
 const HELP={
-  job:"滿級（LV 10）之後可以在這裡轉職。職業可以自由選，選自己組別的職業有「本家」好處（禮包加倍、名片標記、守護者的血少 20%）。轉職要獻上種子並通過神殿試煉：答情境題打守護者，答對一題造成「武器傷害＋寵物攻擊力」，答錯扣 1 顆心；中途放棄或關掉網頁都算失敗，供品不退還。收集全部 20 種小物和 16 把武器（含請假卡）後，可以挑戰第二次轉職。學會的職業每天可以免費換 1 次（在「我的職業」選好再按確定），職業加成只套用目前的職業。職業服裝、職業頭飾、披風可以分開穿，也能跟衣櫃的衣服、角色設定的配件互換。10 個職業全部學會，神殿的石像守護者會成為你的隱藏版寵物。第二次轉職還會拿到職業鼠標和點擊特效（手機點畫面也有），可以在「我的職業」切換或改回系統預設。",
+  job:"滿級（LV 10）之後可以在這裡轉職。職業可以自由選，選自己組別的職業有「本家」好處（禮包加倍、名片標記、守護者的血少 20%）。轉職要獻上種子並通過神殿試煉：答情境題打守護者，答對一題造成「武器傷害＋寵物攻擊力」，答錯扣 1 顆心；中途放棄或關掉網頁都算失敗，供品不退還。收集全部 20 種小物和 16 把武器（含請假卡）後，可以挑戰第二次轉職。學會的職業隨時可以換、不限次數（在「我的職業」選好再按確定），職業加成只套用目前的職業。職業服裝、職業頭飾、披風可以分開穿，也能跟衣櫃的衣服、角色設定的配件互換。10 個職業全部學會，神殿的石像守護者會成為你的隱藏版寵物。第二次轉職還會拿到職業鼠標和點擊特效（手機點畫面也有），可以在「我的職業」切換或改回系統預設。",
   map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝，或停下來聊兩句（有時會透露留言板的密技）；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
   zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
   places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。",

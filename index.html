@@ -1147,6 +1147,10 @@ body.tour-lock .mapframe{z-index:41}
 .kgic{display:block;width:64px;height:64px;background:#E9D9B8;border:2px solid #fff;border-radius:4px;overflow:hidden}.kgic svg,.kgic img{display:block;width:100%;height:100%;image-rendering:pixelated}
 .kgsil{filter:brightness(0) opacity(.28)}.kgq{display:flex;align-items:center;justify-content:center;height:100%;font-size:30px;color:#9A8FB8;font-weight:400}
 .kgname{font-size:13px}.kgtag{font-size:11px;color:var(--win-muted);white-space:nowrap}.kgcard.r .kgtag{color:#F2C14E}.kgcard.h .kgtag{color:#FF9FD0}
+.kgtix{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0}.kgtix b{color:var(--gold);font-weight:400}
+.kgtixwin{text-align:center;padding:10px 0}.kgtixwin .kgbig{animation:kgbob 1.6s ease-in-out infinite}
+.kgchamps{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:4px 0 8px;padding:6px 10px;border:2px dashed #F2C14E;border-radius:5px;background:rgba(242,193,78,.08)}
+.kgchamps p{margin:0;color:var(--gold)}.kgchamp{font-size:13px}.kgchamp b{font-weight:400;color:#fff}
 .kgoff{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 0}.kgdone{color:#F2C14E;margin:10px 0 0}
 #kgDlg{max-width:min(620px,calc(100vw - 24px))}
 .kgopen{text-align:center;padding:24px 0}.kgbig{display:inline-block;font-size:72px;animation:kgshake .9s ease-in-out}
@@ -7768,6 +7772,7 @@ async function loadLounge(force){
     try{ checkBoardFrame(); }catch(e){}
     try{ checkCaught(); newFramesCheck(); }catch(e){}
     try{ checkNpcMilestones(); }catch(e){}
+    try{ kgClaimTickets(); }catch(e){}
     try{ ensureCard(); }catch(e){}
     const champ=loungeData().champion===myCode().toUpperCase();
     if(champ!==IS_CHAMP){
@@ -9406,10 +9411,11 @@ function lgRankHTML(d){
     :`<p class="empty-note">${LG_RANK.p==="week"?"本週":"目前"}還沒有人上榜。到${G.place==="home"?"村長的家":"數位總合辦公室"}玩一場「${esc(G.name)}」，你就是第一名！</p>`;
   return `<section class="window pbox lgrank">
     <div class="abar"><h3>🏆 小遊戲排名</h3><span class="ahint">${LG_RANK.p==="week"?`本週（${mgWeek().replace(/^\d+-/,"").replace("-","/")} 起）`:"歷史最高"}・共 ${L.length} 人</span></div>
+    ${kgChampsHTML()}
     <div class="lgchips" role="group" aria-label="選擇遊戲">${Object.keys(MG).map(k=>`<button type="button" class="lgchip" data-lounge="rankg" data-v="${k}" aria-pressed="${k===LG_RANK.g}">${MG[k].icon} ${esc(MG[k].name)}</button>`).join("")}</div>
     <div class="lgchips rkper" role="group" aria-label="排名期間"><button type="button" class="lgchip" data-lounge="rankp" data-v="week" aria-pressed="${LG_RANK.p==="week"}">本週</button><button type="button" class="lgchip" data-lounge="rankp" data-v="all" aria-pressed="${LG_RANK.p==="all"}">歷史最高</button></div>
     ${body}
-    <p class="ahint">玩小遊戲打破自己本週紀錄時，成績會自動送到這裡（約 5 分鐘後大家都看得到）。每週一重新開始。</p>
+    <p class="ahint">玩小遊戲打破自己本週紀錄時，成績會自動送到這裡（約 5 分鐘後大家都看得到）。每週一重新開始。<b>每週第一名可以拿到生肖盲盒十連抽券</b>，第 2、3 名單抽券（至少 3 人上榜才發）。</p>
   </section>`;
 }
 let LG_TAB="cards", LG_FILTER="recent", LG_Q="", LG_SHOW=LG_PAGE, LG_POSTS=LG_POST_PAGE, LG_SEEN_BASE=null, LG_BOARD_SEEN=false, LG_D=null;
@@ -11850,7 +11856,7 @@ Object.entries({"paper":[["wp_lny","春節燈籠牆紙",70],["wp_shoji","障子�
 Object.assign(SHOP_THEME,{"wp_lny":"lny","fl_lny":"lny","rug_lny":"lny","d_fuwin":"lny","d_redlantern":"lny","d_cnknot":"lny","d_goatscroll":"lny","d_moneytree":"lny","d_plumlantern":"lny","d_candybox":"lny","d_fluffsheep":"lny","sh_lion":"lny","sh_goat":"lny","sa_lionhd":"lny","sa_lionhd2":"lny","sa_goathood":"lny","pg_lion":"lny","pg_hongbao":"lny","wp_shoji":"jpny","wp_seigaiha":"jpny","fl_tatami":"jpny","rug_sheep":"jpny","rug_cloudsheep":"jpny","d_ema":"jpny","d_shimekazari":"jpny","d_fujiscroll":"jpny","d_chochin":"jpny","d_kadomatsu":"jpny","d_kagamimochi":"jpny","d_sheepcart":"jpny","d_bonsai":"jpny","d_plushsheep":"jpny","sh_miko":"jpny","sh_furisode":"jpny","sa_kanzashi":"jpny","sa_sheepband":"jpny","pg_sheephat":"jpny","pg_bellcollar":"jpny"});
 
 /* ---- 🎁 生肖盲盒（2027 羊年） ---- */
-const KG_PRICE=50, KG_PRICE10=450, KG_W={n:75/8,r:5.5,h:3};      // 一般 8 種共 75%、稀有 4 種共 22%、隱藏 3%
+const KG_PRICE=50, KG_DAY_MAX=2, KG_W={n:75/8,r:5.5,h:3};      // 一般 8 種共 75%、稀有 4 種共 22%、隱藏 3%；用種子每天最多抽 2 盒
 ALBUM.push({id:"zd_all",name:"生肖大集合",rule:true,img:"data:image/png;base64,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"});
 const kgS=()=>{ S.kg=S.kg||{own:{},frag:0,n:0}; S.kg.own=S.kg.own||{}; return S.kg; };
 const kgOwn=id=>(+(kgS().own[id])||0)>0;
@@ -11869,19 +11875,87 @@ function kgGain(list){                                     // 放進收藏冊：
   if(!wasDone&&kgDone()){ K.doneAt=Date.now(); kgSyncAv(); setTimeout(()=>{ toast("🏮 集滿十二生肖！獲得稱號「十二生肖收藏家」"); try{ newFramesCheck(); }catch(e){} },1800); }
   return res;
 }
-async function kgDraw(times){
+const kgLeft=()=>{ const K=kgS(); return K.day===dayKey()?Math.max(0,KG_DAY_MAX-(+K.dn||0)):KG_DAY_MAX; };
+async function kgDraw(src){                                // src：pay（種子單抽，每天 2 盒）、t10（十連抽券）、t1（單抽券）
   if(touristBlock("抽生肖盲盒")) return;
-  const price=times>=10?KG_PRICE10:KG_PRICE, used=planPay(price);
-  if(!used){ toast(`種子不夠，還差 ${price-seedTotal()} 顆`); Sound.sfx("error"); return; }
-  if(!(await uiConfirm(`要用 ${price} 顆種子${times>=10?"十連抽（保證至少 1 隻稀有款）":"抽 1 個生肖盲盒"}嗎？\n會用掉：${usedText(used)}`,times>=10?"十連抽":"抽一個"))) return;
-  paySeeds(used);
+  const K=kgS(); let times=1;
+  if(src==="t10"){ if(!(+K.t10>0)) return; K.t10--; times=10; }
+  else if(src==="t1"){ if(!(+K.t1>0)) return; K.t1--; }
+  else{
+    if(kgLeft()<=0){ toast(`今天的 ${KG_DAY_MAX} 盒已經抽完了，明天再來！（抽獎券不受限制）`); Sound.sfx("error"); return; }
+    const used=planPay(KG_PRICE);
+    if(!used){ toast(`種子不夠，還差 ${KG_PRICE-seedTotal()} 顆`); Sound.sfx("error"); return; }
+    if(!(await uiConfirm(`要用 ${KG_PRICE} 顆種子抽 1 個生肖盲盒嗎？（今天還可以抽 ${kgLeft()} 盒）\n會用掉：${usedText(used)}`,"抽一個"))) return;
+    if(kgLeft()<=0) return;
+    paySeeds(used); const d=dayKey(); if(K.day!==d){ K.day=d; K.dn=0; } K.dn=(+K.dn||0)+1;
+    const wasVip=isVip(); S.shopBuys=shopBuysCount()+1; if(!wasVip&&isVip()) setTimeout(vipCongrats,2600);
+  }
   const all=KIGU.filter(Boolean), out=[];
   for(let i=0;i<times;i++) out.push(kgPick(all));
   if(times>=10&&!out.some(k=>k.rar!=="n")) out[Math.floor(Math.random()*out.length)]=kgPick(KIGU.filter(k=>k.rar==="r"));
-  const K=kgS(); K.n=(+K.n||0)+times;
-  const wasVip=isVip(); S.shopBuys=shopBuysCount()+times; if(!wasVip&&isVip()) setTimeout(vipCongrats,2600);
+  K.n=(+K.n||0)+times;
   const res=kgGain(out); save(); queueSync(true);
-  kgShow(res,times>=10?"十連抽":"生肖盲盒"); kgRefresh();
+  kgShow(res,src==="t10"?"🎟 十連抽券":src==="t1"?"🎫 單抽券":"生肖盲盒"); kgRefresh();
+}
+/* ---- 小遊戲週冠軍：十連抽券（第 2、3 名單抽券） ---- */
+const kgWeekStart=n=>{ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-(d.getDay()+6)%7-7*(n||0)); return d; };
+function kgRanksWk(g,wk){                                  // 只看已經進試算表的成績（不含送出中的）
+  const HID=hiddenCodes(), best={};
+  (LOUNGE.rows||[]).forEach(r=>{
+    if(r.type!=="mgscore"||HID.has(r.code)) return;
+    const [gg,sc,w]=String(r.msg||"").split("|"); if(gg!==g||w!==wk) return;
+    const v=Math.min(9999,Math.max(0,parseInt(sc,10)||0)); if(!v) return;
+    const c=String(r.code||"").toUpperCase(), at=r.at?+new Date(r.at):0;
+    if(!best[c]||v>best[c].v||(v===best[c].v&&at<best[c].at)) best[c]={code:c,v,name:r.name||"",at};
+  });
+  return Object.values(best).sort((a,b)=>b.v-a.v||a.at-b.at);
+}
+function kgAwards(wk){                                     // 每個遊戲第 1 名十連抽券（每人每週最多 1 張，重複就順延），接下來 2 位單抽券；至少 3 人上榜才發
+  const ten={}, one={}, champs=[], used=new Set();
+  Object.keys(MG).forEach(g=>{
+    const L=kgRanksWk(g,wk); if(L.length<3) return;
+    const i=L.findIndex(x=>!used.has(x.code)); if(i<0) return;
+    const w=L[i]; used.add(w.code); (ten[w.code]=ten[w.code]||[]).push(g); champs.push({g,code:w.code,name:w.name,v:w.v});
+    L.filter((x,j)=>j!==i).slice(0,2).forEach(x=>{ (one[x.code]=one[x.code]||[]).push(g); });
+  });
+  return {ten,one,champs};
+}
+function kgClaimTickets(){
+  if(!S.group||restricted()||!LOUNGE.at||LOUNGE.err) return;
+  if(Date.now()-kgWeekStart(0).getTime()<15*60*1000) return;          // 換週後等 15 分鐘，讓週日晚上的成績進到試算表
+  const K=kgS(), me=myCode().toUpperCase(); K.wk=K.wk||{};
+  const got=[];
+  [1,2].forEach(n=>{ const wk=dayKey(kgWeekStart(n)); if(K.wk[wk]) return; K.wk[wk]=1;
+    const A=kgAwards(wk), t=(A.ten[me]||[]).length, o=(A.one[me]||[]).length;
+    if(t){ K.t10=(+K.t10||0)+t; got.push(`${wk.replace(/^\d+-/,"").replace("-","/")} 那週「${A.ten[me].map(g=>MG[g].name).join("、")}」第一名：🎟 十連抽券 ×${t}`); }
+    if(o){ K.t1=(+K.t1||0)+o; got.push(`${wk.replace(/^\d+-/,"").replace("-","/")} 那週「${A.one[me].map(g=>MG[g].name).join("、")}」前三名：🎫 單抽券 ×${o}`); }
+  });
+  Object.keys(K.wk).sort().slice(0,-8).forEach(k=>delete K.wk[k]);   // 只留最近幾週的紀錄
+  save(); if(!got.length) return;
+  queueSync(true); setTimeout(()=>kgTicketDlg(got),1200);
+}
+function kgDlgEnsure(){
+  let d=$("#kgDlg");
+  if(!d){ document.body.insertAdjacentHTML("beforeend",`<dialog id="kgDlg" aria-labelledby="kgTitle"><div class="window dlg kgwrap"><div class="head"><div><p class="dept">種子商店</p><h3 id="kgTitle">生肖盲盒</h3></div><button class="x" type="button" data-close aria-label="關閉">✕</button></div><div class="body" id="kgBody"></div></div></dialog>`); d=$("#kgDlg");
+    d.addEventListener("click",e=>{ const b=e.target.closest("[data-kg]"); if(b){ kgAct(b); return; } if(e.target.closest("[data-close]")) d.close(); }); }
+  return d;
+}
+function kgTicketDlg(lines){
+  if(document.querySelector("dialog[open]")){ clearTimeout(kgTicketDlg.t); kgTicketDlg.t=setTimeout(()=>kgTicketDlg(lines),3000); return; }
+  const d=kgDlgEnsure(), K=kgS();
+  $("#kgTitle").textContent="🏆 小遊戲週冠軍獎勵";
+  $("#kgBody").innerHTML=`<div class="kgtixwin"><span class="kgbig" aria-hidden="true">🎟</span>
+    ${lines.map(l=>`<p class="dbody">${esc(l)}</p>`).join("")}
+    <p class="ahint">抽獎券可以在種子商店「🎁 生肖盲盒」或衣櫃「🎁 盲盒開箱」使用，不佔每天 ${KG_DAY_MAX} 盒的上限。</p></div>
+    <div class="kgdbtns">${+K.t10>0?`<button class="act" type="button" data-kg="t10">🎟 立刻十連抽</button>`:""}${+K.t1>0?`<button class="act ghost" type="button" data-kg="t1">🎫 用單抽券</button>`:""}<button class="act ghost" type="button" data-close>之後再用</button></div>`;
+  d.showModal(); Sound.sfx("achieve");
+}
+function kgChampsHTML(){                                   // 交誼廳排名：上週冠軍
+  try{
+    const wk=dayKey(kgWeekStart(1)), A=kgAwards(wk);
+    const L=A.champs.map(c=>`<span class="kgchamp">${MG[c.g].icon} ${esc(MG[c.g].name)}：<b>${esc(c.name||"冒險者")}</b>（${c.v} ${esc(MG[c.g].unit)}）</span>`);
+    return `<div class="kgchamps"><p>🎟 上週冠軍${L.length?"":`：<span class="ahint">上週沒有遊戲達到 3 人上榜</span>`}</p>${L.join("")}</div>`;
+  }catch(e){ return ""; }
 }
 function kgFragDraw(){                                     // 5 片碎片重抽：保證抽到還沒有的
   if(touristBlock("抽生肖盲盒")) return;
@@ -11906,7 +11980,7 @@ function kgWear(id){
 const KG_RAR={n:["一般款",""],r:["稀有款","r"],h:["隱藏款","h"]};
 function kgFace(id){ return avatarSVG(Object.assign({},S.av||AV_DEFAULT,{kigu:id})); }
 function kgPanelHTML(mode){
-  const K=kgS(), frag=+K.frag||0, miss=KIGU.filter(k=>!kgOwn(k.id)), wear=(S.av||{}).kigu, tot=seedTotal(), lock=restricted();
+  const K=kgS(), frag=+K.frag||0, miss=KIGU.filter(k=>!kgOwn(k.id)), wear=(S.av||{}).kigu, tot=seedTotal(), lock=restricted(), left=kgLeft(), t10=+K.t10||0, t1=+K.t1||0;
   const card=k=>{ const own=kgOwn(k.id), on=wear===k.id, R=KG_RAR[k.rar];
     if(!own) return `<div class="kgcard kglock ${R[1]}" title="還沒抽到"><span class="kgic" aria-hidden="true">${k.rar==="h"?`<b class="kgq">？</b>`:`<img src="${k.img}" alt="" class="kgsil">`}</span><span class="kgname">？？？</span><span class="kgtag">${R[0]}</span></div>`;
     return `<button type="button" class="kgcard ${R[1]}${on?" on":""}" data-kg="${on?"off":"wear"}" data-id="${k.id}" title="${on?"脫下":"換上"}${esc(k.name)}"><span class="kgic" aria-hidden="true">${kgFace(k.id)}</span><span class="kgname">${esc(k.name)}</span><span class="kgtag">${on?"穿著中":R[0]}${(+K.own[k.id]||0)>1?`・×${K.own[k.id]}`:""}</span></button>`; };
@@ -11916,9 +11990,11 @@ function kgPanelHTML(mode){
     <div class="kgtop"><span class="kgbox" aria-hidden="true">🎁</span><div>
       <p class="dbody">每盒隨機一套十二生肖<b>寶寶全身裝</b>，還有隱藏款！穿上後只露出臉，頭、手腳和尾巴都是可愛的動物。</p>
       <p class="ahint">機率：一般款 8 種共 75%、稀有款（龍、虎、羊、雞）共 22%、隱藏款 3%。抽到重複的會變成「生肖碎片」，5 片可以重抽一次，保證抽到還沒有的。</p></div></div>
-    <div class="kgbtns"><button class="act" type="button" data-kg="draw1" ${lock?"":tot>=KG_PRICE?"":"disabled"}>單抽（${KG_PRICE} 顆）</button>
-      <button class="act" type="button" data-kg="draw10" ${lock?"":tot>=KG_PRICE10?"":"disabled"}>十連抽（${KG_PRICE10} 顆・保證稀有）</button>
-      <span class="ahint">持有 ${tot} 顆種子</span></div>
+    <div class="kgbtns"><button class="act" type="button" data-kg="draw1" ${lock?"":tot>=KG_PRICE&&left>0?"":"disabled"}>${left>0?`單抽（${KG_PRICE} 顆）`:"今天抽完了"}</button>
+      <span class="ahint">今天還可以抽 <b>${left}</b>/${KG_DAY_MAX} 盒・持有 ${tot} 顆種子</span></div>
+    <div class="kgtix"><span>🎟 十連抽券 <b>${t10}</b></span><button class="act" type="button" data-kg="t10" ${t10>0?"":"disabled"}>用券十連抽</button>
+      <span>🎫 單抽券 <b>${t1}</b></span><button class="act ghost" type="button" data-kg="t1" ${t1>0?"":"disabled"}>用券抽 1 盒</button></div>
+    <p class="ahint">🏆 交誼廳「遊戲排名」每週第一名（疊疊樂、排水接管、抓 Bug 各 1 位）得到十連抽券（保證稀有），接下來 2 位各得 1 張單抽券；那個遊戲至少 3 人上榜才發，每人每週最多 1 張十連抽券。用券不佔每天 ${KG_DAY_MAX} 盒的上限。</p>
     <div class="kgfrag"><span>🧩 生肖碎片 <b>${frag}</b>/5</span><span class="kgbar" aria-hidden="true"><i style="width:${Math.min(100,frag/5*100)}%"></i></span>
       ${miss.length?`<button class="act ghost" type="button" data-kg="frag" ${frag>=5?"":"disabled"}>碎片重抽（保證新的）</button>`:frag>=5?`<button class="act ghost" type="button" data-kg="fragseed">5 片換 ${KG_PRICE} 顆種子</button>`:`<span class="ahint">全部收齊了！碎片集滿 5 片可以換種子</span>`}</div>
     <div class="kggrid">${KIGU.map(card).join("")}</div>
@@ -11928,23 +12004,22 @@ function kgPanelHTML(mode){
 }
 function kgRefresh(){ document.querySelectorAll(".kgpanel").forEach(p=>{ p.outerHTML=kgPanelHTML(p.dataset.kgmode); }); }
 function kgShow(res,title){
-  let d=$("#kgDlg");
-  if(!d){ document.body.insertAdjacentHTML("beforeend",`<dialog id="kgDlg" aria-labelledby="kgTitle"><div class="window dlg kgwrap"><div class="head"><div><p class="dept">種子商店</p><h3 id="kgTitle">生肖盲盒</h3></div><button class="x" type="button" data-close aria-label="關閉">✕</button></div><div class="body" id="kgBody"></div></div></dialog>`); d=$("#kgDlg");
-    d.addEventListener("click",e=>{ const b=e.target.closest("[data-kg]"); if(b){ kgAct(b); return; } if(e.target.closest("[data-close]")) d.close(); }); }
+  const d=kgDlgEnsure();
   const best=res.some(x=>x.k.rar==="h")?"h":res.some(x=>x.k.rar==="r")?"r":"n", news=res.filter(x=>x.isNew), frag=res.length-news.length;
   $("#kgTitle").textContent=title;
   $("#kgBody").innerHTML=`<div class="kgopen ${best}"><span class="kgbig" aria-hidden="true">🎁</span><p class="ahint">開箱中……</p></div>
     <div class="kgres${res.length>1?" ten":""}" hidden>${res.map((x,i)=>`<div class="kgrc ${KG_RAR[x.k.rar][1]}" style="animation-delay:${i*.12}s"><span class="kgic" aria-hidden="true">${kgFace(x.k.id)}</span><span class="kgname">${esc(x.k.name)}</span><span class="kgtag">${x.isNew?`<b class="kgnew">NEW</b>・${KG_RAR[x.k.rar][0]}`:"🧩 碎片 +1"}</span></div>`).join("")}</div>
     <p class="kgsum" hidden>${news.length?`新收藏 ${news.length} 隻`:"全部都是重複的"}${frag?`，生肖碎片 +${frag}（現在 ${+kgS().frag||0} 片）`:""}。收藏冊 ${kgCount()}/12${kgOwn("zd_panda")?"＋熊貓":""}</p>
-    <div class="kgdbtns" hidden>${news.length===1?`<button class="act" type="button" data-kg="wear" data-id="${news[0].k.id}">換上${esc(news[0].k.name)}</button>`:""}<button class="act ghost" type="button" data-kg="again1">再抽一個（${KG_PRICE}）</button><button class="act ghost" type="button" data-kg="again10">十連抽（${KG_PRICE10}）</button></div>`;
+    <div class="kgdbtns" hidden>${news.length===1?`<button class="act" type="button" data-kg="wear" data-id="${news[0].k.id}">換上${esc(news[0].k.name)}</button>`:""}${kgLeft()>0?`<button class="act ghost" type="button" data-kg="again1">再抽一個（${KG_PRICE}・今天還可 ${kgLeft()} 盒）</button>`:`<span class="ahint">今天的 ${KG_DAY_MAX} 盒抽完了</span>`}${+kgS().t10>0?`<button class="act ghost" type="button" data-kg="t10">🎟 十連抽券（${kgS().t10}）</button>`:""}${+kgS().t1>0?`<button class="act ghost" type="button" data-kg="t1">🎫 單抽券（${kgS().t1}）</button>`:""}</div>`;
   if(!d.open) d.showModal(); Sound.sfx("open");
   setTimeout(()=>{ const b=$("#kgBody"); if(!b) return; b.querySelector(".kgopen").hidden=true; ["kgres","kgsum","kgdbtns"].forEach(c=>{ const el=b.querySelector("."+c); if(el) el.hidden=false; });
     Sound.sfx(best==="n"?"get":"achieve"); },1100);
 }
 async function kgAct(b){
   const a=b.dataset.kg;
-  if(a==="draw1"||a==="again1") return kgDraw(1);
-  if(a==="draw10"||a==="again10") return kgDraw(10);
+  if(a==="draw1"||a==="again1") return kgDraw("pay");
+  if(a==="t10") return kgDraw("t10");
+  if(a==="t1") return kgDraw("t1");
   if(a==="frag") return kgFragDraw();
   if(a==="fragseed") return kgFragSeed();
   if(a==="wear") return kgWear(b.dataset.id);
@@ -12200,7 +12275,7 @@ function renderSeedShop(body){
   body.innerHTML=tabsHTML("seedshop",[{id:"shop",label:"🛒 商店",html:`<details class="window pbox shoproom"${SHOP_ROOM_OPEN?" open":""}><summary>🏠 看看我家的展示空間<span class="ahint">買了家具、換了衣服，可以馬上看到效果</span></summary>
       ${roomHTML(Object.assign({},snap,{pet:S.pet,petStage:petStage(),av:S.av,splats:[]}),{host:dispName(),hostId:"shopHost",petId:"shopPet",label:"我家"})}</details>
     <div id="shopPanel"></div>`},
-    {id:"kg",label:"🎁 生肖盲盒",badge:kgBoost()?"羊年加碼":(+kgS().frag||0)>=5&&KIGU.some(k=>!kgOwn(k.id))?"可重抽":"",html:kgPanelHTML("shop")},
+    {id:"kg",label:"🎁 生肖盲盒",badge:(+kgS().t10||0)+(+kgS().t1||0)>0?"有抽獎券":kgBoost()?"羊年加碼":(+kgS().frag||0)>=5&&KIGU.some(k=>!kgOwn(k.id))?"可重抽":"",html:kgPanelHTML("shop")},
     {id:"quiz",label:"❓ 每日問答",badge:bst==="new"?"可挑戰":bst==="pick"?"種子待領":"",html:bossBoxHTML()},
     {id:"buy",label:"🧳 小物收購",badge:spare?`可賣 ${spare}`:"",html:buybackHTML()}],{def:bst==="new"||bst==="pick"?"quiz":"shop"});
   renderShop($("#shopPanel"));

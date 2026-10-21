@@ -8641,13 +8641,14 @@ const mgGame=(()=>{
   const prot=m=>((m<<1)|(m>>3))&15, prand=n=>Math.floor(Math.random()*n);
   const pshuf=a=>{ for(let i=a.length-1;i>0;i--){ const j=prand(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
   let P=null, PL=null;
-  function pPath(n,r0,r1){
+  function pPath(n,r0,r1){                                // 水只往上、下、右（下游）流，不會繞回頭；路線長度有上限
+    const maxLen=n+Math.abs(r1-r0)+(n>=6?4:n>=5?3:2);
     for(let tries=0;tries<400;tries++){
       const seen=new Set([`0,${r0}`]), path=[[0,r0]]; let ok=false, steps=0;
       (function dfs(x,y){ if(ok||++steps>3000) return;
         if(x===n-1&&y===r1){ if(path.length>=n+1) ok=true; return; }
-        if(path.length>n*n*.55) return;
-        for(const [,dx,dy] of pshuf(PD.slice())){ const nx=x+dx, ny=y+dy, k=`${nx},${ny}`;
+        if(path.length>=maxLen) return;
+        for(const [,dx,dy] of pshuf(PD.filter(([d])=>d!==PW))){ const nx=x+dx, ny=y+dy, k=`${nx},${ny}`;
           if(nx<0||ny<0||nx>=n||ny>=n||seen.has(k)) continue;
           seen.add(k); path.push([nx,ny]); dfs(nx,ny); if(ok) return; path.pop(); seen.delete(k); } })(0,r0);
       if(ok) return path;
@@ -8672,7 +8673,7 @@ const mgGame=(()=>{
   }
   function pipeSVG(m,wet){
     const R=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
-    let s=R(0,0,16,16,"#24305A")+R(1,1,14,14,"#2A3866")+R(3,3,1,1,"#33437A")+R(12,11,1,1,"#33437A")+R(10,2,1,1,"#33437A");
+    let s=R(0,0,16,16,"#141C40")+R(1,1,14,14,"#2C3B70")+R(3,3,1,1,"#36478A")+R(12,11,1,1,"#36478A")+R(10,2,1,1,"#36478A");   // 每格有深色邊框，看得出格子
     const arms=(w,c)=>{ const a=(16-w)/2; let o=R(a,a,w,w,c); if(m&PN) o+=R(a,0,w,a+w,c); if(m&PS) o+=R(a,a,w,16-a,c); if(m&PW) o+=R(0,a,a+w,w,c); if(m&PE) o+=R(a,a,16-a,w,c); return o; };
     s+=arms(8,"#141A33")+arms(6,wet?"#8FC8F0":"#B9C0D8")+arms(2,wet?"#3FA9F5":"#4A5478"); if(wet) s+=arms(1,"#BFE6FF");
     return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${s}</svg>`;

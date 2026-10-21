@@ -1519,9 +1519,14 @@ body.tour-lock .mapframe{z-index:41}
 .mgtile.spin svg{animation:mgspin .14s ease-out}
 @keyframes mgspin{from{transform:rotate(-90deg)}to{transform:rotate(0)}}
 .mgedge{aspect-ratio:1}
-.mgrain{position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(105deg,transparent 0 14px,rgba(191,230,245,.16) 14px 15px);background-size:40px 40px;animation:mgrainf .5s linear infinite;opacity:.7}
+.mgrain{position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(105deg,transparent 0 14px,rgba(191,230,245,.16) 14px 15px);background-size:40px 40px;animation:mgrainf .5s linear infinite;opacity:.35}
 @keyframes mgrainf{to{background-position:-10px 40px}}
-.mgflood{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,rgba(63,169,245,.32),rgba(30,90,180,.5));pointer-events:none;transition:height .3s linear;border-top:2px solid rgba(191,230,245,.8)}
+.mgwater{display:flex;align-items:center;gap:8px;padding:4px 8px;background:#0B1030;border-top:2px solid #3D4A96;font-size:12px;color:var(--win-muted)}
+.mgwater i{flex:1;height:8px;background:#1A2448;border:1px solid #3D4A96;border-radius:2px;overflow:hidden;font-style:normal}
+.mgwater i span{display:block;height:100%;width:0;background:linear-gradient(90deg,#3FA9F5,#2E62C8);transition:width .3s linear}
+/* 遊戲進行中，提示訊息改到畫面上方，不要擋住遊戲 */
+#mgDlg #toast{top:calc(env(safe-area-inset-top,0px) + 8px);bottom:auto}
+#mgDlg #toast .window{font-size:14px;padding:5px 12px}
 .mghud .warn b{color:var(--red)}
 @media (prefers-reduced-motion:reduce){.mgfloat,.mgcell svg,.mgtile.spin svg,.mgrain{animation:none}}
 /* ---------- lounge ---------- */
@@ -8696,14 +8701,14 @@ const mgGame=(()=>{
     if(!$("#mgDlg").open){ pStop(); return; }
     const now=performance.now(), dt=(now-P.last)/1000; P.last=now; if(!P.busy) P.time=Math.max(0,P.time-dt);
     $("#mgTime").textContent=Math.ceil(P.time); const tb=$("#mgTimeBox"); if(tb) tb.classList.toggle("warn",P.time<=10);
-    P.max=Math.max(P.max,P.time); const fl=$("#mgFlood"); if(fl) fl.style.height=`${Math.max(0,Math.min(100,(1-P.time/P.max)*100))*.3}%`;
-    if(P.time<=0){ P.on=false; if(fl) fl.style.height="100%"; sfx("error"); setTimeout(()=>finish(P.score),700); return; }
+    P.max=Math.max(P.max,P.time); const fl=$("#mgFlood"); if(fl) fl.style.width=`${Math.max(0,Math.min(100,(1-P.time/P.max)*100))}%`;
+    if(P.time<=0){ P.on=false; if(fl) fl.style.width="100%"; sfx("error"); setTimeout(()=>finish(P.score),700); return; }
     requestAnimationFrame(pTick);
   }
   function pStart(){
     const t0=60+(jb("drain")?10:0);
     P={on:true,busy:false,score:0,time:t0,max:t0,last:performance.now()};
-    $("#mgPipeOv").hidden=true; $("#mgScore").textContent="0"; const fl=$("#mgFlood"); if(fl) fl.style.height="0";
+    $("#mgPipeOv").hidden=true; $("#mgScore").textContent="0"; const fl=$("#mgFlood"); if(fl) fl.style.width="0";
     $("#mgSay").textContent="下雨了！先找進水口旁邊的水管開始接。"; sfx("open"); pNext(); requestAnimationFrame(pTick);
   }
   function pStop(){ if(P) P.on=false; }
@@ -8723,7 +8728,7 @@ const mgGame=(()=>{
     const screen=isT?`<div class="mgscreen" id="mgTower"><canvas id="mgTowerCv" width="${CW}" height="${CH}" aria-label="疊疊樂遊戲畫面"></canvas>
           <div class="mgov" id="mgTowerOv"><h4>疊疊樂蓋大樓</h4><p>看你能幫村長蓋幾層樓！</p><button class="act" type="button" data-mgagain>開始</button></div></div>
         <button class="act ghost" type="button" id="mgDrop" disabled>⬇ 放下</button>`
-      :isP?`<div class="mgscreen" id="mgPipe"><div class="mgfield" id="mgField" aria-label="排水接管盤面"></div><div class="mgrain" aria-hidden="true"></div><div class="mgflood" id="mgFlood" aria-hidden="true"></div>
+      :isP?`<div class="mgscreen" id="mgPipe"><div class="mgfield" id="mgField" aria-label="排水接管盤面"></div><div class="mgrain" aria-hidden="true"></div><div class="mgwater" aria-hidden="true">💧水位<i><span id="mgFlood"></span></i></div>
           <div class="mgov" id="mgPipeOv"><h4>排水接管</h4><p>雷陣雨快來了，幫村長把排水管接好！</p><button class="act" type="button" data-mgagain>開始</button></div></div>`
       :`<div class="mgscreen" id="mgBug"><div class="mgboard" id="mgBoard" aria-label="抓 Bug 遊戲畫面">${Array.from({length:16},(_,i)=>`<button type="button" class="mgcell" data-mgcell="${i}" aria-label="第 ${i+1} 格"></button>`).join("")}</div>
           <div class="mgov" id="mgBugOv"><h4>抓 Bug</h4><p>總長的系統出狀況了，準備好就開始！</p><button class="act" type="button" data-mgagain>開始</button></div></div>`;

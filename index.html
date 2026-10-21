@@ -1531,7 +1531,10 @@ body.tour-lock .mapframe{z-index:41}
 .mghud .mgstop{margin-left:auto;font-size:14px;padding:2px 10px}
 @media (prefers-reduced-motion:reduce){.mgfloat,.mgcell svg,.mgtile.spin svg,.mgrain{animation:none}}
 /* ---------- lounge ---------- */
-.lounge{display:grid;gap:22px}
+.lounge{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+.qtybox{display:inline-flex;align-items:stretch;gap:4px;flex:none}
+.qtybox .qty{width:64px;height:42px;box-sizing:border-box;padding:4px 6px;text-align:center}
+.qtybox .qbtn{height:42px;box-sizing:border-box;min-width:42px;padding:0 10px;font-size:15px;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
 .lrow .ainput{flex:1;min-width:180px}
 .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px;margin-top:12px}
@@ -1582,7 +1585,11 @@ body.tour-lock .mapframe{z-index:41}
 .rkgap{text-align:center;color:var(--win-muted);line-height:1}
 .mgranked{color:#5FE39A!important;font-size:13px!important}
 @media (max-width:480px){.rkrow{grid-template-columns:30px 38px minmax(0,1fr) auto;gap:8px;padding:4px 8px}.rkav{width:38px;height:38px}}
-.lg2 .lgcols{display:grid;gap:16px}
+.lg2 .lgcols{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.lgcols>section,.lg2>section{min-width:0}
+.lpost,.lphead,.lptext,.lreplies,.lreplies p,.lprev,.lmsg{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.lg2 .lrow{min-width:0}.lg2 .lrow .ainput{min-width:0}
+.lgtabs button{min-width:0}
 .lgchips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0 4px}
 .lgchip{font-size:14px;padding:5px 11px;border:2px solid var(--line);border-radius:999px;background:#1B2466;color:#D9DEF8;cursor:pointer;white-space:nowrap}
 .lgchip b{font-weight:400;opacity:.75;margin-left:3px}
@@ -1608,6 +1615,9 @@ body.tour-lock .mapframe{z-index:41}
 .lpfoot .linkbtn{font-size:14px}
 .lprev{font-size:14px;color:#AEB6E4;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
 .lpost.new{border-color:#E0565B}
+.lgtabs button{white-space:nowrap;overflow:hidden}
+@media (max-width:420px){.lgtabs{gap:5px}.lgtabs button{font-size:14px;padding:8px 3px;gap:3px;border-width:2px}.lgtabs .lgcnt{font-size:11px}.lgtabs .lnew{font-size:11px;padding:0 3px}}
+@media (max-width:360px){.lgtabs button{font-size:13px;padding:7px 2px;gap:2px}.lgtabs .lgcnt{display:none}}
 @media (max-width:480px){.lgchips{gap:4px}.lgchip{font-size:13px;padding:4px 6px}.lgchip b{margin-left:2px}.lgtabs button{font-size:15px;padding:9px 6px}}
 .lpost .lphead{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin:0 0 4px}.lpost .lphead .retract{margin-left:auto}
 
@@ -7739,7 +7749,8 @@ function loungeData(){
     }else if(r.type==="post"&&r.target){
       if(!posts.some(x=>x.id===r.target)) posts.push({id:r.target,code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
     }else if(r.type==="npcgift"&&r.target){
-      (npcgifts[r.target]=npcgifts[r.target]||[]).push({code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
+      const q=Math.max(1,Math.min(50,parseInt(String(r.msg||"").split("|")[2],10)||1)), arr=(npcgifts[r.target]=npcgifts[r.target]||[]);
+      for(let i=0;i<q;i++) arr.push({code:r.code,name:r.name,msg:r.msg,at:r.at,pending:r.pending});
     }else if(r.type==="playdate"&&r.target){
       (playdates[String(r.target).toUpperCase()]=playdates[String(r.target).toUpperCase()]||[]).push({code:r.code,name:r.name,level:r.level,pet:r.pet,msg:r.msg,at:r.at,pending:r.pending});
     }else if(r.type==="toss"&&r.target){
@@ -8490,6 +8501,7 @@ function npcGiftHTML(id){
     <p class="dbody">${got?`${g.who}已經送過你${esc(g.petName)}了。`:`把自己種的蔬菜送給${g.who}，說不定會有<b>意想不到的回禮</b>喔！`}
       ${(()=>{ const nx=npcNextFrame(id); return got?(nx?`再送 <b>${nx.left}</b> 次，${g.who}會送你一幅畫框「${esc(nx.frame.name)}」。`:`${g.who}的畫框都送給你了，再送蔬菜會回送種子。`):""; })()}</p>
     <div class="vsactrow"><select class="ainput" id="npcGiftSel" ${opts.length?"":"disabled"}>${opts.length?opts.map(([k,c])=>`<option value="${k}">${esc(c.name)}（${barn[k]}）</option>`).join(""):`<option>倉庫是空的</option>`}</select>
+      ${opts.length?`<span class="qtybox"><button class="act ghost qbtn" type="button" data-gqty="-1" aria-label="少送一份">−</button><input id="npcGiftQty" class="ainput qty" type="number" inputmode="numeric" min="1" max="${Math.min(NPC_GIFT_MAX,barn[opts[0][0]])}" value="1" aria-label="要送幾份"><button class="act ghost qbtn" type="button" data-gqty="1" aria-label="多送一份">＋</button><button class="act ghost qbtn" type="button" data-gqty="max">全部</button></span>`:""}
       <button class="act" type="button" data-npcgift="${id}" ${opts.length?"":"disabled"}>🎁 送給${g.who}</button></div>
     ${opts.length?"":`<p class="ahint">倉庫還沒有蔬菜，先到「溫暖的家 → 開心農場」種一些吧！</p>`}
   </section>`;
@@ -8550,7 +8562,7 @@ function injectMiniGame(){
   if(ref) ref.insertAdjacentHTML("afterend",mgCardHTML(gs)); else body.insertAdjacentHTML("afterbegin",mgCardHTML(gs));
 }
 const mgGame=(()=>{
-  let kind="", T=null, B=null, raf=0, cv=null, cx=null;
+  let kind="", T=null, B=null, raf=0, cv=null, cx=null, paused=false;
   const sfx=(n,o)=>{ try{ Sound.sfx(n,o); }catch(e){} };
   function floatText(txt){ const sc=$({tower:"#mgTower",bug:"#mgBug",pipe:"#mgPipe"}[kind]); if(!sc) return; const el=document.createElement("div"); el.className="mgfloat"; el.textContent=txt; sc.appendChild(el); setTimeout(()=>el.remove(),900); }
   const tiersHTML=(g,hit)=>MG[g].tiers.slice().reverse().map(([n,r])=>`<tr class="${hit===n?"hit":""}"><td>${n} ${MG[g].unit}+</td><td>${esc(mgRwText(r))}</td></tr>`).join("");
@@ -8560,7 +8572,7 @@ const mgGame=(()=>{
     $("#mgLeft").textContent=restricted()?"試玩":`${mgLeft(kind)}/${MG_PLAYS}`;
   }
   function finish(score){
-    const st=$("#mgStop"); if(st) st.hidden=true;
+    paused=false; const st=$("#mgPause"); if(st) st.hidden=true; const po=$("#mgPauseOv"); if(po) po.hidden=true;
     const G=MG[kind], m=mgS(), t=G.tiers.find(([n])=>score>=n)||null, canRw=mgLeft(kind)>0;
     const isBest=score>(+m.best[kind]||0); if(isBest) m.best[kind]=score;
     const ranked=mgSubmit(kind,score);
@@ -8594,7 +8606,7 @@ const mgGame=(()=>{
   function tSpawn(){ const top=T.blocks[T.blocks.length-1], n=T.blocks.length; T.dir=n%2?1:-1; T.cur={x:T.dir>0?-top.w:CW,w:top.w,pal:n%PALS.length}; T.speed=Math.min(3.2,1.1+n*.07); }
   const shieldHUD=()=>{ const el=$("#mgShield"); if(el) el.textContent=T&&T.shield?"🛡 鋼骨保險 1":""; };
   function tDrop(){
-    if(!T||T.over||!T.cur) return;
+    if(!T||T.over||!T.cur||paused) return;
     const top=T.blocks[T.blocks.length-1], c=T.cur, L=Math.max(c.x,top.x), R=Math.min(c.x+c.w,top.x+top.w), ov=R-L, lv=T.blocks.length;
     if(ov<=0&&T.shield){ T.shield=false; T.falling.push({x:c.x,w:c.w,y:lv,vy:0,pal:c.pal}); floatText("鋼骨保險！再來一次"); sfx("error",{soft:true}); shieldHUD();
       $("#mgSay").textContent="差點倒了！還好有鋼骨保險，這層重來。"; tSpawn(); return; }
@@ -8632,16 +8644,24 @@ const mgGame=(()=>{
   }
   function tLoop(){
     if(!$("#mgDlg").open||kind!=="tower"){ raf=0; return; }
-    if(T&&!T.over&&T.cur){ T.cur.x+=T.dir*T.speed; if(T.cur.x>CW-T.cur.w*.25&&T.dir>0) T.dir=-1; if(T.cur.x<-T.cur.w*.75&&T.dir<0) T.dir=1; }
+    if(T&&!T.over&&T.cur&&!paused){ T.cur.x+=T.dir*T.speed; if(T.cur.x>CW-T.cur.w*.25&&T.dir>0) T.dir=-1; if(T.cur.x<-T.cur.w*.75&&T.dir<0) T.dir=1; }
     if(T){ T.falling.forEach(f=>f.vy+=.35); T.falling=T.falling.filter(f=>f.vy<30); }
     tRender(); raf=requestAnimationFrame(tLoop);
   }
-  function stopNow(){                                     // 停止：這一局直接結束，用目前的成績結算
-    if(kind==="tower"){ if(!T||T.over) return; T.over=true; T.cur=null; $("#mgDrop").disabled=true; finish(T.score); }
-    else if(kind==="bug"){ if(!B||!B.running) return; bStop(); finish(B.score); }
-    else if(kind==="pipe"){ if(!P||!P.on) return; P.on=false; finish(P.score); }
+  const running=()=>kind==="tower"?!!(T&&!T.over):kind==="bug"?!!(B&&B.running):!!(P&&P.on);
+  function setPaused(on){                                 // 暫停：時間和畫面都停住，按「繼續」接著玩
+    if(on===paused||(on&&!running())) return;
+    paused=on;
+    const bt=$("#mgPause"); if(bt) bt.textContent=on?"▶ 繼續":"⏸ 暫停";
+    const po=$("#mgPauseOv"); if(po) po.hidden=!on;
+    if(kind==="tower"){ const dr=$("#mgDrop"); if(dr&&T&&!T.over) dr.disabled=on; }
+    else if(kind==="bug"&&B){
+      if(on){ B.pauseAt=performance.now(); clearTimeout(B.spawnT); clearInterval(B.tick); B.items.forEach(it=>clearTimeout(it.t)); B.items.clear(); cells().forEach(c=>{ c.innerHTML=""; }); }
+      else{ B.start+=performance.now()-B.pauseAt; B.tick=setInterval(bTick,100); bSpawn(); }
+    }else if(kind==="pipe"&&P&&!on){ P.last=performance.now(); requestAnimationFrame(pTick); }
+    sfx(on?"back":"open");
   }
-  const showStop=()=>{ const st=$("#mgStop"); if(st) st.hidden=false; };
+  const showStop=()=>{ paused=false; const st=$("#mgPause"); if(st){ st.hidden=false; st.textContent="⏸ 暫停"; } const po=$("#mgPauseOv"); if(po) po.hidden=true; };
   function tStart(){ tReset(); showStop(); $("#mgTowerOv").hidden=true; $("#mgScore").textContent="0"; $("#mgDrop").disabled=false; $("#mgSay").textContent="地基打好了，第一層來囉！"; shieldHUD(); sfx("open"); if(!raf) raf=requestAnimationFrame(tLoop); }
   /* ---------------- 抓 Bug ---------------- */
   const px=(rows,pal)=>{ let o=""; rows.forEach((r,y)=>[...r].forEach((c,x)=>{ if(c!==".") o+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${pal[c]}"/>`; })); return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges" aria-hidden="true">${o}</svg>`; };
@@ -8665,20 +8685,23 @@ const mgGame=(()=>{
     const gap=Math.max(430,800-B.elapsed*15); B.spawnT=setTimeout(bSpawn,gap*(.7+Math.random()*.6));
   }
   function bHit(i){
-    if(!B||!B.running) return; const it=B.items.get(i); if(!it) return; const c=cells()[i];
+    if(!B||!B.running||paused) return; const it=B.items.get(i); if(!it) return; const c=cells()[i];
     const flash=cls=>{ c.classList.add(cls); setTimeout(()=>c.classList.remove(cls),180); };
     if(it.kind==="ok"){ B.score=Math.max(0,B.score-1); B.combo=0; flash("oops"); sfx("error",{soft:true}); floatText("−1"); }
     else{ const add=it.kind==="gold"?3:1; B.combo++; const bonus=B.combo%5===0?1:0; B.score+=add+bonus; flash("hit");
       sfx(it.kind==="gold"?"get":"cursor",{soft:true}); if(it.kind==="gold") floatText("金色 Bug +3"); else if(bonus) floatText(`${B.combo} 連擊 +1`); }
     bClear(i); bCombo(); $("#mgScore").textContent=B.score;
   }
+  function bTick(){
+    if(!B||!B.running) return; if(!$("#mgDlg").open){ bStop(); return; }
+    B.elapsed=(performance.now()-B.start)/1000; const left=Math.max(0,B.total-B.elapsed); $("#mgTime").textContent=left.toFixed(1);
+    if(left<=0){ bStop(); finish(B.score); }
+  }
   function bStart(){
     bStop(); const total=20+(jb("digital")?10:0);
     B={score:0,combo:0,items:new Map(),running:true,elapsed:0,total,start:performance.now()};
     showStop(); $("#mgBugOv").hidden=true; $("#mgScore").textContent="0"; bCombo(); $("#mgSay").textContent="開始了！看到紅色的就抓！"; sfx("open");
-    B.tick=setInterval(()=>{ if(!$("#mgDlg").open){ bStop(); return; }
-      B.elapsed=(performance.now()-B.start)/1000; const left=Math.max(0,B.total-B.elapsed); $("#mgTime").textContent=left.toFixed(1);
-      if(left<=0){ bStop(); finish(B.score); } },100);
+    B.tick=setInterval(bTick,100);
     bSpawn();
   }
   /* ---------------- 排水接管 ---------------- */
@@ -8737,13 +8760,13 @@ const mgGame=(()=>{
   const pSize=k=>k<2?4:k<5?5:6;
   function pNext(){ PL=pLevel(pSize(P.score)); P.busy=false; pRender(); }
   function pTap(i){
-    if(!P||!P.on||P.busy) return; const n=PL.n, x=i%n, y=(i/n)|0; PL.g[y][x]=prot(PL.g[y][x]); sfx("blip",{soft:true});
+    if(!P||!P.on||P.busy||paused) return; const n=PL.n, x=i%n, y=(i/n)|0; PL.g[y][x]=prot(PL.g[y][x]); sfx("blip",{soft:true});
     if(pRender(i)){ P.busy=true; P.score++; P.time+=12; $("#mgScore").textContent=P.score; floatText("接通！+12 秒"); sfx("get");
       const says=["通了！水嘩啦啦地流進排水溝。","漂亮！這一段不會淹水了。","手腳真快，下一段交給你！","有你在，村子不怕颱風天。"]; $("#mgSay").textContent=says[prand(says.length)];
       setTimeout(()=>{ if(P&&P.on) pNext(); },750); }
   }
   function pTick(){
-    if(!P||!P.on) return;
+    if(!P||!P.on||paused) return;
     if(!$("#mgDlg").open){ pStop(); return; }
     const now=performance.now(), dt=(now-P.last)/1000; P.last=now; if(!P.busy) P.time=Math.max(0,P.time-dt);
     $("#mgTime").textContent=Math.ceil(P.time); const tb=$("#mgTimeBox"); if(tb) tb.classList.toggle("warn",P.time<=10);
@@ -8780,11 +8803,12 @@ const mgGame=(()=>{
           <div class="mgov" id="mgBugOv"><h4>抓 Bug</h4><p>總長的系統出狀況了，準備好就開始！</p><button class="act" type="button" data-mgagain>開始</button></div></div>`;
     $("#mgDept").textContent=G.dept; $("#mgTitle").textContent=`${G.icon} ${G.name}`;
     $("#mgBody").innerHTML=`<div class="mghost"><span class="face" aria-hidden="true">${avatarSVG(host)}</span><p class="say" id="mgSay" title="${esc(who)}">${say0}</p></div>
-      <div class="mghud"><span class="big">${isT?"樓層":isP?"接通":"分數"} <b id="mgScore">0</b></span>${hudX}<span>最高 <b id="mgBest">0</b></span><span>今日獎勵 <b id="mgLeft"></b></span><button class="act ghost mgstop" type="button" id="mgStop" hidden>⏹ 停止</button></div>
+      <div class="mghud"><span class="big">${isT?"樓層":isP?"接通":"分數"} <b id="mgScore">0</b></span>${hudX}<span>最高 <b id="mgBest">0</b></span><span>今日獎勵 <b id="mgLeft"></b></span><button class="act ghost mgstop" type="button" id="mgPause" hidden>⏸ 暫停</button></div>
       ${screen}
-      <details class="mgrules"><summary>怎麼玩・獎勵（每天前 ${MG_PLAYS} 次）</summary><ul>${rules.map(r=>`<li>${esc(r)}</li>`).join("")}<li>玩到一半想結束，可以按右上的「⏹ 停止」，會用目前的成績結算。</li><li>${esc(bonus)}</li>${restricted()?"<li>觀光客可以試玩，但沒有獎勵。</li>":""}</ul>
+      <details class="mgrules"><summary>怎麼玩・獎勵（每天前 ${MG_PLAYS} 次）</summary><ul>${rules.map(r=>`<li>${esc(r)}</li>`).join("")}<li>玩到一半可以按「⏸ 暫停」休息，暫停時時間不會跑；按「▶ 繼續」接著玩。切換到別的視窗也會自動暫停。</li><li>${esc(bonus)}</li>${restricted()?"<li>觀光客可以試玩，但沒有獎勵。</li>":""}</ul>
         <table class="mgtiers" id="mgTiers">${tiersHTML(g)}</table></details>`;
-    hud();
+    hud(); paused=false;
+    const sc=$("#mgBody .mgscreen"); if(sc) sc.insertAdjacentHTML("beforeend",`<div class="mgov mgpause" id="mgPauseOv" hidden><h4>⏸ 暫停中</h4><p>休息一下，準備好再繼續。</p><button class="act" type="button" data-mgresume>▶ 繼續</button></div>`);
     const d=$("#mgDlg"); if(!d.open) d.showModal();
     if(isT){ cv=$("#mgTowerCv"); cx=cv.getContext("2d"); T=null; tRender(); shieldHUD();
       cv.addEventListener("pointerdown",e=>{ e.preventDefault(); tDrop(); }); $("#mgDrop").addEventListener("click",tDrop); }
@@ -8795,11 +8819,13 @@ const mgGame=(()=>{
   }
   document.addEventListener("click",e=>{
     const o=e.target.closest("[data-mgopen]"); if(o){ open(o.dataset.mgopen); return; }
-    if(e.target.closest("#mgStop")){ stopNow(); return; }
+    if(e.target.closest("#mgPause")){ setPaused(!paused); return; }
+    if(e.target.closest("[data-mgresume]")){ setPaused(false); return; }
     if(e.target.closest("[data-mgagain]")){ if(kind==="tower") tStart(); else if(kind==="pipe") pStart(); else bStart(); }
   });
   document.addEventListener("keydown",e=>{ if(e.code==="Space"&&kind==="tower"&&$("#mgDlg").open&&T&&!T.over){ e.preventDefault(); tDrop(); } });
-  document.getElementById("mgDlg").addEventListener("close",()=>{ if(T&&!T.over) T.over=true; bStop(); pStop(); cancelAnimationFrame(raf); raf=0; });
+  document.getElementById("mgDlg").addEventListener("close",()=>{ paused=false; if(T&&!T.over) T.over=true; bStop(); pStop(); cancelAnimationFrame(raf); raf=0; });
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden&&$("#mgDlg").open) setPaused(true); });   // 切到別的視窗自動暫停
   return {open};
 })();
 function injectNpcGift(){
@@ -8810,24 +8836,41 @@ function injectNpcGift(){
   body.insertAdjacentHTML("afterbegin",html);
   if(loungeReady()&&!LOUNGE.at&&!LOUNGE.busy) loadLounge(false).then(()=>{ if(curPlace&&curPlace.id===pl.id) injectNpcGift(); });
 }
+const NPC_GIFT_MAX=50;                                   // 一次最多送 50 份
+function npcQtyClamp(){ const sel=$("#npcGiftSel"), q=$("#npcGiftQty"); if(!sel||!q) return 1;
+  const max=Math.max(1,Math.min(NPC_GIFT_MAX,(S.barn||{})[sel.value]||0)); q.max=max;
+  const v=Math.max(1,Math.min(max,parseInt(q.value,10)||1)); q.value=v; return v; }
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-gqty]"); if(!b) return; const q=$("#npcGiftQty"); if(!q) return;
+  const v=b.dataset.gqty; q.value=v==="max"?q.max:(parseInt(q.value,10)||1)+(+v); npcQtyClamp(); Sound.sfx("cursor"); });
+document.addEventListener("change",e=>{ if(e.target.id==="npcGiftSel"||e.target.id==="npcGiftQty") npcQtyClamp(); });
+function npcSeedBack(units){                             // 一般回禮：每份回送 2～3 顆隨機種子
+  const keys=Object.keys(CROPS), got={};
+  for(let i=0;i<units;i++){ const k=keys[Math.floor(Math.random()*keys.length)], n=2+Math.floor(Math.random()*2); got[k]=(got[k]||0)+n; seeds()[k]=(seeds()[k]||0)+n; }
+  return Object.entries(got).map(([k,n])=>`${n} 顆${CROPS[k].name}`).join("、");
+}
 async function giveToNpc(id){
-  const g=NPC_GIFT[id], k=($("#npcGiftSel")||{}).value;
-  if(!g||!CROPS[k]||!((S.barn||{})[k]>0)) return;
-  S.barn[k]--; S.npcGifts=S.npcGifts||{}; S.npcGifts[id]=(S.npcGifts[id]||0)+1; save();
+  const g=NPC_GIFT[id], k=($("#npcGiftSel")||{}).value, have=(S.barn||{})[k]||0;
+  if(!g||!CROPS[k]||!(have>0)) return;
+  const qty=Math.max(1,Math.min(have,NPC_GIFT_MAX,npcQtyClamp()));
+  S.barn[k]-=qty; S.npcGifts=S.npcGifts||{}; const before=S.npcGifts[id]||0; S.npcGifts[id]=before+qty; save();
   if(loungeReady()&&S.group){                          // 全站共用計數：每第 100 份有 30 顆自選種子
-    const payload={type:"npcgift",code:myCode(),name:dispName(),target:npcTarget(id),msg:`${k}|${randChars(6)}`};
+    const payload={type:"npcgift",code:myCode(),name:dispName(),target:npcTarget(id),msg:qty>1?`${k}|${randChars(6)}|${qty}`:`${k}|${randChars(6)}`};
     loungeSend(payload).then(ok=>{ if(!ok) return; addPending(payload);
-      const L=npcGiftList(id,true);
-      if(L&&L.length%NPC_MILESTONE===0) setTimeout(()=>toast(`🎯 你可能剛好送出第 ${L.length} 份！試算表同步後（約 5 分鐘）確認就會收到 ${NPC_MILESTONE_SEEDS} 顆自選種子`),2500);
+      const L=npcGiftList(id,true), hit=L?Math.floor(L.length/NPC_MILESTONE)*NPC_MILESTONE:0;
+      if(L&&hit>0&&hit>L.length-qty) setTimeout(()=>toast(`🎯 你可能剛好送出第 ${hit} 份！試算表同步後（約 5 分鐘）確認就會收到 ${NPC_MILESTONE_SEEDS} 顆自選種子`),2500);
       injectNpcGift();
     });
   }
   S.petKinds=S.petKinds||{};
-  const frameId=(NPC_FRAMES[id]||{})[S.npcGifts[id]];
+  const crossed=Object.keys(NPC_FRAMES[id]||{}).map(Number).sort((a,b)=>a-b).filter(t=>t>before&&t<=S.npcGifts[id]).map(t=>NPC_FRAMES[id][t]).filter(f=>!(S.album&&S.album[f]));
+  const frameId=crossed[0];
+  const grantMore=list=>list.forEach(f=>{ S.album=S.album||{}; S.album[f]=true; if(!S.frame) S.frame=f; });   // 一次送很多份時，跨過的畫框都給
+  const restSeeds=()=>{ if(qty<2) return; const t=npcSeedBack(qty-1); setTimeout(()=>toast(`${g.who}另外回送你 ${t}種子！`),2600); };   // 有特別回禮時，其餘幾份照樣回送種子
   if(S.petKinds[g.pet]&&frameId&&!(S.album&&S.album[frameId])){
     const a=ALBUM.find(x=>x.id===frameId);
     S.album=S.album||{}; S.album[frameId]=true; if(!S.frame) S.frame=frameId;
-    save(); queueSync(true); Sound.sfx("achieve");
+    if(crossed.length>1){ grantMore(crossed.slice(1)); setTimeout(()=>toast(`還有一幅畫框「${crossed.slice(1).map(f=>(ALBUM.find(a=>a.id===f)||{}).name).join("、")}」也放進相簿了！`),1500); }
+    restSeeds(); save(); queueSync(true); Sound.sfx("achieve");
     $("#chDept").textContent=`${g.who}的回禮`; $("#chFoot").textContent="到「溫暖的家 → 相簿」可以把它掛到牆上。";
     $("#chFace").innerHTML=avatarSVG(id==="home"?CHIEF_AV:DIRECTOR_AV);
     $("#chTitle").textContent=id==="home"?`部門村長　${CFG.chief}`:`數位總合辦公室　${CFG.director}`;
@@ -8837,7 +8880,10 @@ async function giveToNpc(id){
     injectNpcGift(); return;
   }
   if(!S.petKinds[g.pet]){
-    S.petKinds[g.pet]=true; save(); queueSync(true);
+    S.petKinds[g.pet]=true;
+    const later=crossed.filter(f=>f);                    // 第一次就送很多份：小老虎／毛毛蟲之外，跨過的畫框也一起給
+    if(later.length){ grantMore(later); setTimeout(()=>toast(`${g.who}還送你畫框「${later.map(f=>(ALBUM.find(a=>a.id===f)||{}).name).join("、")}」，已放進相簿！`),1800); }
+    restSeeds(); save(); queueSync(true);
     Sound.sfx("levelup");
     $("#chDept").textContent=`${g.who}的回禮`; $("#chFoot").textContent="之後在寵物窩可以幫牠換毛色。";
     $("#chFace").innerHTML=avatarSVG(id==="home"?CHIEF_AV:DIRECTOR_AV);
@@ -8855,10 +8901,9 @@ async function giveToNpc(id){
       }
     },{once:true});
   }else{
-    const n=2+Math.floor(Math.random()*2), keys=Object.keys(CROPS), s2=keys[Math.floor(Math.random()*keys.length)];
-    seeds()[s2]=(seeds()[s2]||0)+n; save(); queueSync();
+    const txt=npcSeedBack(qty); save(); queueSync();
     Sound.sfx("get");
-    toast(`${g.who}：「${g.thanks[Math.floor(Math.random()*g.thanks.length)]}」回送你 ${n} 顆${CROPS[s2].name}種子！`);
+    toast(`${g.who}：「${g.thanks[Math.floor(Math.random()*g.thanks.length)]}」${qty>1?`收下 ${qty} 份${CROPS[k].name}，`:""}回送你 ${txt}種子！`);
   }
   injectNpcGift();
 }

@@ -1567,7 +1567,20 @@ body.tour-lock .mapframe{z-index:41}
 .lgtabs .lgcnt{font-size:12px;opacity:.8}
 .lnew{display:inline-block;background:#E0565B;color:#fff;font-family:var(--pixel);font-size:11px;line-height:1.5;padding:0 6px;border-radius:3px;font-weight:400;vertical-align:1px}
 .lg-wide .lgtabs{max-width:560px}
-.lg2[data-tab="cards"] .lgboard,.lg2[data-tab="board"] .lgcards{display:none}
+.lg2[data-tab="cards"] .lgboard,.lg2[data-tab="board"] .lgcards,.lg2[data-tab="cards"] .lgrank,.lg2[data-tab="board"] .lgrank,.lg2[data-tab="rank"] .lgcards,.lg2[data-tab="rank"] .lgboard{display:none}
+.lgrank .rkper{margin-top:6px}
+.rklist{list-style:none;margin:10px 0 6px;padding:0;display:flex;flex-direction:column;gap:6px}
+.rkrow{display:grid;grid-template-columns:40px 44px minmax(0,1fr) auto;gap:10px;align-items:center;background:rgba(11,16,48,.55);border:2px solid #3D4A96;border-radius:5px;padding:5px 10px}
+.rkrow:nth-child(1){border-color:#F2C14E;background:rgba(242,193,78,.14)}.rkrow:nth-child(2){border-color:#C4CAD8}.rkrow:nth-child(3){border-color:#C8873A}
+.rkrow.me{box-shadow:0 0 0 2px #5FE39A}
+.rkno{font-family:var(--digits);font-size:14px;text-align:center}
+.rkav{width:44px;height:44px;background:#8FB0FF;border:2px solid #fff;border-radius:4px;overflow:hidden}.rkav svg{width:100%;height:100%;display:block}
+.rkname{min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}.rkname b{font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.rkname small{color:var(--win-muted);font-size:12px;width:100%}.rkname em{font-style:normal;font-size:11px;background:#2E9A5A;border-radius:3px;padding:0 5px}
+.rkval{font-size:13px;color:var(--win-muted);white-space:nowrap}.rkval b{font-family:var(--digits);font-size:16px;color:var(--gold);font-weight:400}
+.rkgap{text-align:center;color:var(--win-muted);line-height:1}
+.mgranked{color:#5FE39A!important;font-size:13px!important}
+@media (max-width:480px){.rkrow{grid-template-columns:30px 38px minmax(0,1fr) auto;gap:8px;padding:4px 8px}.rkav{width:38px;height:38px}}
 .lg2 .lgcols{display:grid;gap:16px}
 .lgchips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0 4px}
 .lgchip{font-size:14px;padding:5px 11px;border:2px solid var(--line);border-radius:999px;background:#1B2466;color:#D9DEF8;cursor:pointer;white-space:nowrap}
@@ -8130,7 +8143,7 @@ const HELP={
   job:"滿級（LV 10）之後可以在這裡轉職。職業可以自由選，選自己組別的職業有「本家」好處（禮包加倍、名片標記、守護者的血少 20%）。轉職要獻上種子並通過神殿試煉：答情境題打守護者，答對一題造成「武器傷害＋寵物攻擊力」，答錯扣 1 顆心；中途放棄或關掉網頁都算失敗，供品不退還。收集全部 20 種小物和 16 把武器（含請假卡）後，可以挑戰第二次轉職。學會的職業隨時可以換、不限次數（在「我的職業」選好再按確定），職業加成只套用目前的職業。職業服裝、職業頭飾、披風可以分開穿，也能跟衣櫃的衣服、角色設定的配件互換。10 個職業全部學會，神殿的石像守護者會成為你的隱藏版寵物。第二次轉職還會拿到職業鼠標和點擊特效（手機點畫面也有），可以在「我的職業」切換或改回系統預設。",
   map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝，或停下來聊兩句（有時會透露留言板的密技）；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
   zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
-  places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏，還有小遊戲（村長的家：疊疊樂、排水接管；數位總合辦公室：抓 Bug）。",
+  places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏，還有小遊戲（村長的家：疊疊樂、排水接管；數位總合辦公室：抓 Bug），成績排名在交誼廳的「🏆 遊戲排名」。",
   notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題和內容。",
   pet:"LV 3 可以領養寵物，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件；之後多出來的親密度會變成羈絆點。",
   party:"出遊隊伍：隊長是你目前的寵物，另外可以帶最多 2 隻跟班。第 1 隻跟班的位置在任一寵物親密度滿 100 時解鎖，第 2 隻在任一寵物羈絆 ★3 或完成第二次轉職時解鎖。跟班會跟著你在地圖上散步、在家裡走來走去，同事拜訪你家也看得到。每天第一次在地圖上散步，每隻跟班親密度 +1；倉庫上方可以選「餵給」哪一隻（餵跟班一樣會看守農場）。跟班也能裝扮：基本衣服（LV 5）、商店配件、親密度滿級的專屬配件、友誼項圈；商店配件一次只能給一隻戴（隊長或其中一隻跟班）。試煉、看守、猜拳、羈絆加成都還是看隊長。",
@@ -8493,6 +8506,28 @@ const MG={
     tiers:[[30,{seed:20,fert:2,aff:2}],[22,{seed:20,fert:2}],[15,{seed:10,fert:1}],[8,{seed:5}]],
     say:[[30,"系統穩如泰山！你可以來數位總合辦公室上班了。"],[22,"抓得又快又準，Bug 都怕你了。"],[15,"不錯！這次上線應該不會出包了。"],[8,"有抓到一些，剩下的我來處理。"],[0,"Bug 有點多…別點到正常程式喔！"]]}
 };
+const mgWeek=()=>{ const d=new Date(); d.setDate(d.getDate()-(d.getDay()+6)%7); return dayKey(d); };   // 本週一的日期
+function mgSubmit(g,score){                                // 打破自己本週紀錄時，送一筆成績到交誼廳
+  if(!score||restricted()||!S.group||!loungeReady()) return false;
+  const m=mgS(), wk=mgWeek(); if(!m.wk||m.wk.k!==wk) m.wk={k:wk,best:{}};
+  if(score<=(+m.wk.best[g]||0)) return false;
+  m.wk.best[g]=score; save();
+  const p={type:"mgscore",code:myCode(),name:dispName(),group:S.group||"",target:"",msg:`${g}|${score}|${wk}|${randChars(4)}`};
+  loungeSend(p).then(ok=>{ if(ok) addPending(p); });
+  return true;
+}
+function mgRanks(g,period){                                // 每個人只取最好成績
+  const HID=hiddenCodes(), wk=mgWeek(), best={};
+  LOUNGE.rows.concat(pendingRows()).forEach(r=>{
+    if(r.type!=="mgscore"||HID.has(r.code)) return;
+    const [gg,sc,w]=String(r.msg||"").split("|"); if(gg!==g) return;
+    const v=Math.min(9999,Math.max(0,parseInt(sc,10)||0)); if(!v) return;
+    if(period==="week"&&w!==wk) return;
+    const c=String(r.code||"").toUpperCase(), at=r.at?+new Date(r.at):0;
+    if(!best[c]||v>best[c].v||(v===best[c].v&&at<best[c].at)) best[c]={code:c,v,name:r.name||"",group:r.group||"",at};
+  });
+  return Object.values(best).sort((a,b)=>b.v-a.v||a.at-b.at);
+}
 function mgS(){ S.mg=S.mg&&typeof S.mg==="object"?S.mg:{}; const m=S.mg; if(m.day!==dayKey()){ m.day=dayKey(); m.n={}; } m.n=m.n||{}; m.best=m.best||{}; return m; }
 const mgLeft=g=>restricted()?0:Math.max(0,MG_PLAYS-(+mgS().n[g]||0));
 const mgRwText=r=>[r.seed?`種子 ×${r.seed}`:"",r.fert?`一般肥料 ×${r.fert}`:"",r.aff?`寵物親密度 +${r.aff}`:""].filter(Boolean).join("、");
@@ -8526,6 +8561,7 @@ const mgGame=(()=>{
   function finish(score){
     const G=MG[kind], m=mgS(), t=G.tiers.find(([n])=>score>=n)||null, canRw=mgLeft(kind)>0;
     const isBest=score>(+m.best[kind]||0); if(isBest) m.best[kind]=score;
+    const ranked=mgSubmit(kind,score);
     let line;
     if(!t) line="還沒達到第一級獎勵，再試一次！";
     else if(restricted()) line=`可以拿到：${mgRwText(t[1])}（觀光客試玩，沒有獎勵）`;
@@ -8543,6 +8579,7 @@ const mgGame=(()=>{
     const ov=$({tower:"#mgTowerOv",bug:"#mgBugOv",pipe:"#mgPipeOv"}[kind]);
     ov.innerHTML=`<h4>${score} ${G.unit}${isBest&&score>0?"・新紀錄！":""}</h4><p class="mgrw">${esc(line)}</p>
       <p>${restricted()?"":mgLeft(kind)?`今天還有 ${mgLeft(kind)} 次獎勵`:"明天會重置成 3 次"}</p><button class="act" type="button" data-mgagain>再玩一次</button>`;
+    if(ranked) ov.insertAdjacentHTML("beforeend",`<p class="mgranked">🏆 本週新紀錄，已登上交誼廳的遊戲排名</p>`);
     ov.hidden=false; hud();
     $("#mgSay").textContent=G.say.find(([n])=>score>=n)[1];
     if(t&&canRw&&!restricted()) toast(`${G.icon} ${G.name} ${score} ${G.unit}：${mgRwText(t[1])}`);
@@ -9243,6 +9280,26 @@ function restoreDrafts(box,d){
 }
 /* 交誼廳版面狀態：每次走進交誼廳重設（手機先看名片、名片先看最近 7 天） */
 const LG_WIDE_Q="(min-width:900px)", LG_PAGE=24, LG_POST_PAGE=10, LG_WEEK=7*864e5, LG_SEEN_KEY="sino22-lounge-seen";
+let LG_RANK={g:"tower",p:"week"};
+function lgRankHTML(d){
+  const G=MG[LG_RANK.g]||MG.tower, me=myCode().toUpperCase(), L=mgRanks(LG_RANK.g,LG_RANK.p);
+  const ppl={}; ((d&&d.list)||[]).forEach(p=>{ ppl[String(p.code||"").toUpperCase()]=p; });
+  const row=(x,i)=>{ const p=ppl[x.code], av=p&&p.av&&typeof p.av==="object"?p.av:null, mine=x.code===me;
+    return `<li class="rkrow${mine?" me":""}"><span class="rkno">${i<3?["🥇","🥈","🥉"][i]:i+1}</span>
+      <span class="rkav" aria-hidden="true">${av?avatarSVG(av):""}</span>
+      <span class="rkname"><b>${esc((p&&p.name)||x.name||"冒險者")}</b>${mine?`<em>我</em>`:""}<small>${esc((p&&p.group)||x.group||"")}</small></span>
+      <span class="rkval"><b>${x.v}</b> ${esc(G.unit)}</span></li>`; };
+  const top=L.slice(0,10), myI=L.findIndex(x=>x.code===me);
+  const body=L.length?`<ol class="rklist">${top.map(row).join("")}${myI>=10?`<li class="rkgap" aria-hidden="true">⋯</li>${row(L[myI],myI)}`:""}</ol>`
+    :`<p class="empty-note">${LG_RANK.p==="week"?"本週":"目前"}還沒有人上榜。到${G.place==="home"?"村長的家":"數位總合辦公室"}玩一場「${esc(G.name)}」，你就是第一名！</p>`;
+  return `<section class="window pbox lgrank">
+    <div class="abar"><h3>🏆 小遊戲排名</h3><span class="ahint">${LG_RANK.p==="week"?`本週（${mgWeek().replace(/^\d+-/,"").replace("-","/")} 起）`:"歷史最高"}・共 ${L.length} 人</span></div>
+    <div class="lgchips" role="group" aria-label="選擇遊戲">${Object.keys(MG).map(k=>`<button type="button" class="lgchip" data-lounge="rankg" data-v="${k}" aria-pressed="${k===LG_RANK.g}">${MG[k].icon} ${esc(MG[k].name)}</button>`).join("")}</div>
+    <div class="lgchips rkper" role="group" aria-label="排名期間"><button type="button" class="lgchip" data-lounge="rankp" data-v="week" aria-pressed="${LG_RANK.p==="week"}">本週</button><button type="button" class="lgchip" data-lounge="rankp" data-v="all" aria-pressed="${LG_RANK.p==="all"}">歷史最高</button></div>
+    ${body}
+    <p class="ahint">玩小遊戲打破自己本週紀錄時，成績會自動送到這裡（約 5 分鐘後大家都看得到）。每週一重新開始。</p>
+  </section>`;
+}
 let LG_TAB="cards", LG_FILTER="recent", LG_Q="", LG_SHOW=LG_PAGE, LG_POSTS=LG_POST_PAGE, LG_SEEN_BASE=null, LG_BOARD_SEEN=false, LG_D=null;
 const LG_OPEN=new Set(), LG_RDRAFT={};
 const lgWide=()=>{ try{ return matchMedia(LG_WIDE_Q).matches; }catch(e){ return true; } };
@@ -9338,6 +9395,7 @@ function renderLoungeInner(box){
     </section>
     <div class="lgtabs" role="tablist" aria-label="交誼廳分頁">
       <button type="button" role="tab" aria-selected="${LG_TAB==="cards"}" data-lounge="tab" data-v="cards">🪪 名片 <span class="lgcnt">${d.list.length}</span></button>
+      <button type="button" role="tab" aria-selected="${LG_TAB==="rank"}" data-lounge="tab" data-v="rank">🏆 遊戲排名</button>
       <button type="button" role="tab" aria-selected="${LG_TAB==="board"}" data-lounge="tab" data-v="board">💬 留言板 ${newN&&!LG_BOARD_SEEN?`<span class="lnew">${newN} 新</span>`:`<span class="lgcnt">${d.posts.length}</span>`}</button>
     </div>
     <div class="lgcols">
@@ -9358,6 +9416,7 @@ function renderLoungeInner(box){
         <div class="lboard">${posts.length?posts.map(x=>lgPostHTML(x,d)).join(""):`<p class="empty-note">還沒有人留言，當第一個吧！</p>`}</div>
         ${d.posts.length>posts.length?`<button class="act ghost lgmore" type="button" data-lounge="moreposts">載入更早的留言（還有 ${d.posts.length-posts.length} 則）</button>`:""}
       </section>
+      ${lgRankHTML(d)}
     </div>
   </div>`;
 }
@@ -9555,8 +9614,12 @@ $("#placeBody").addEventListener("click",async e=>{
   const lg=t.closest("[data-lounge]");
   if(lg){
     const act=lg.dataset.lounge, box=$("#placeBody");
+    if(act==="rankg"||act==="rankp"){
+      if(act==="rankg"&&MG[lg.dataset.v]) LG_RANK.g=lg.dataset.v; if(act==="rankp") LG_RANK.p=lg.dataset.v==="all"?"all":"week";
+      const sec=box.querySelector(".lgrank"); if(sec) sec.outerHTML=lgRankHTML(LG_D); Sound.sfx("cursor"); return;
+    }
     if(act==="tab"){
-      LG_TAB=lg.dataset.v==="board"?"board":"cards"; renderLounge(box,true); Sound.sfx("cursor");
+      LG_TAB=["board","rank"].includes(lg.dataset.v)?lg.dataset.v:"cards"; renderLounge(box,true); Sound.sfx("cursor");
       const tb=box.querySelector(".lgtabs"); if(tb&&tb.getBoundingClientRect().top<0) tb.scrollIntoView({block:"start"});
       return;
     }

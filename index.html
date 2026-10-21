@@ -1528,6 +1528,7 @@ body.tour-lock .mapframe{z-index:41}
 #mgDlg #toast{top:calc(env(safe-area-inset-top,0px) + 8px);bottom:auto}
 #mgDlg #toast .window{font-size:14px;padding:5px 12px}
 .mghud .warn b{color:var(--red)}
+.mghud .mgstop{margin-left:auto;font-size:14px;padding:2px 10px}
 @media (prefers-reduced-motion:reduce){.mgfloat,.mgcell svg,.mgtile.spin svg,.mgrain{animation:none}}
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
@@ -8559,6 +8560,7 @@ const mgGame=(()=>{
     $("#mgLeft").textContent=restricted()?"試玩":`${mgLeft(kind)}/${MG_PLAYS}`;
   }
   function finish(score){
+    const st=$("#mgStop"); if(st) st.hidden=true;
     const G=MG[kind], m=mgS(), t=G.tiers.find(([n])=>score>=n)||null, canRw=mgLeft(kind)>0;
     const isBest=score>(+m.best[kind]||0); if(isBest) m.best[kind]=score;
     const ranked=mgSubmit(kind,score);
@@ -8634,7 +8636,13 @@ const mgGame=(()=>{
     if(T){ T.falling.forEach(f=>f.vy+=.35); T.falling=T.falling.filter(f=>f.vy<30); }
     tRender(); raf=requestAnimationFrame(tLoop);
   }
-  function tStart(){ tReset(); $("#mgTowerOv").hidden=true; $("#mgScore").textContent="0"; $("#mgDrop").disabled=false; $("#mgSay").textContent="地基打好了，第一層來囉！"; shieldHUD(); sfx("open"); if(!raf) raf=requestAnimationFrame(tLoop); }
+  function stopNow(){                                     // 停止：這一局直接結束，用目前的成績結算
+    if(kind==="tower"){ if(!T||T.over) return; T.over=true; T.cur=null; $("#mgDrop").disabled=true; finish(T.score); }
+    else if(kind==="bug"){ if(!B||!B.running) return; bStop(); finish(B.score); }
+    else if(kind==="pipe"){ if(!P||!P.on) return; P.on=false; finish(P.score); }
+  }
+  const showStop=()=>{ const st=$("#mgStop"); if(st) st.hidden=false; };
+  function tStart(){ tReset(); showStop(); $("#mgTowerOv").hidden=true; $("#mgScore").textContent="0"; $("#mgDrop").disabled=false; $("#mgSay").textContent="地基打好了，第一層來囉！"; shieldHUD(); sfx("open"); if(!raf) raf=requestAnimationFrame(tLoop); }
   /* ---------------- 抓 Bug ---------------- */
   const px=(rows,pal)=>{ let o=""; rows.forEach((r,y)=>[...r].forEach((c,x)=>{ if(c!==".") o+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${pal[c]}"/>`; })); return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges" aria-hidden="true">${o}</svg>`; };
   const BUGR=["..a......a..","...k....k...","....k..k....","..kkkkkkkk..",".kLLLLLLLLk.","kHwwHHHHwwHk","kHwnHHHHwnHk","kHccHHHHccHk","kHHHHmmHHHHk",".kHHHHHHHHk.","..kkkkkkkk..","..k.k..k.k.."];
@@ -8667,7 +8675,7 @@ const mgGame=(()=>{
   function bStart(){
     bStop(); const total=20+(jb("digital")?10:0);
     B={score:0,combo:0,items:new Map(),running:true,elapsed:0,total,start:performance.now()};
-    $("#mgBugOv").hidden=true; $("#mgScore").textContent="0"; bCombo(); $("#mgSay").textContent="開始了！看到紅色的就抓！"; sfx("open");
+    showStop(); $("#mgBugOv").hidden=true; $("#mgScore").textContent="0"; bCombo(); $("#mgSay").textContent="開始了！看到紅色的就抓！"; sfx("open");
     B.tick=setInterval(()=>{ if(!$("#mgDlg").open){ bStop(); return; }
       B.elapsed=(performance.now()-B.start)/1000; const left=Math.max(0,B.total-B.elapsed); $("#mgTime").textContent=left.toFixed(1);
       if(left<=0){ bStop(); finish(B.score); } },100);
@@ -8746,7 +8754,7 @@ const mgGame=(()=>{
   function pStart(){
     const t0=60+(jb("drain")?10:0);
     P={on:true,busy:false,score:0,time:t0,max:t0,last:performance.now()};
-    $("#mgPipeOv").hidden=true; $("#mgScore").textContent="0"; const fl=$("#mgFlood"); if(fl) fl.style.width="0";
+    showStop(); $("#mgPipeOv").hidden=true; $("#mgScore").textContent="0"; const fl=$("#mgFlood"); if(fl) fl.style.width="0";
     $("#mgSay").textContent="下雨了！先找進水口旁邊的水管開始接。"; sfx("open"); pNext(); requestAnimationFrame(pTick);
   }
   function pStop(){ if(P) P.on=false; }
@@ -8772,9 +8780,9 @@ const mgGame=(()=>{
           <div class="mgov" id="mgBugOv"><h4>抓 Bug</h4><p>總長的系統出狀況了，準備好就開始！</p><button class="act" type="button" data-mgagain>開始</button></div></div>`;
     $("#mgDept").textContent=G.dept; $("#mgTitle").textContent=`${G.icon} ${G.name}`;
     $("#mgBody").innerHTML=`<div class="mghost"><span class="face" aria-hidden="true">${avatarSVG(host)}</span><p class="say" id="mgSay" title="${esc(who)}">${say0}</p></div>
-      <div class="mghud"><span class="big">${isT?"樓層":isP?"接通":"分數"} <b id="mgScore">0</b></span>${hudX}<span>最高 <b id="mgBest">0</b></span><span>今日獎勵 <b id="mgLeft"></b></span></div>
+      <div class="mghud"><span class="big">${isT?"樓層":isP?"接通":"分數"} <b id="mgScore">0</b></span>${hudX}<span>最高 <b id="mgBest">0</b></span><span>今日獎勵 <b id="mgLeft"></b></span><button class="act ghost mgstop" type="button" id="mgStop" hidden>⏹ 停止</button></div>
       ${screen}
-      <details class="mgrules"><summary>怎麼玩・獎勵（每天前 ${MG_PLAYS} 次）</summary><ul>${rules.map(r=>`<li>${esc(r)}</li>`).join("")}<li>${esc(bonus)}</li>${restricted()?"<li>觀光客可以試玩，但沒有獎勵。</li>":""}</ul>
+      <details class="mgrules"><summary>怎麼玩・獎勵（每天前 ${MG_PLAYS} 次）</summary><ul>${rules.map(r=>`<li>${esc(r)}</li>`).join("")}<li>玩到一半想結束，可以按右上的「⏹ 停止」，會用目前的成績結算。</li><li>${esc(bonus)}</li>${restricted()?"<li>觀光客可以試玩，但沒有獎勵。</li>":""}</ul>
         <table class="mgtiers" id="mgTiers">${tiersHTML(g)}</table></details>`;
     hud();
     const d=$("#mgDlg"); if(!d.open) d.showModal();
@@ -8787,6 +8795,7 @@ const mgGame=(()=>{
   }
   document.addEventListener("click",e=>{
     const o=e.target.closest("[data-mgopen]"); if(o){ open(o.dataset.mgopen); return; }
+    if(e.target.closest("#mgStop")){ stopNow(); return; }
     if(e.target.closest("[data-mgagain]")){ if(kind==="tower") tStart(); else if(kind==="pipe") pStart(); else bStart(); }
   });
   document.addEventListener("keydown",e=>{ if(e.code==="Space"&&kind==="tower"&&$("#mgDlg").open&&T&&!T.over){ e.preventDefault(); tDrop(); } });

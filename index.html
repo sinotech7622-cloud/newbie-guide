@@ -1471,6 +1471,59 @@ body.tour-lock .mapframe{z-index:41}
 .pdress{margin:8px 0;border:2px solid rgba(255,255,255,.2);border-radius:6px;padding:6px 10px}
 .pdress summary{cursor:pointer;font-weight:700}
 .gwho{display:block;font-size:11px;color:#FFB27A}
+/* ---------- 小遊戲 ---------- */
+.mgwrap{max-width:min(560px,calc(100vw - 20px))}
+.mgwrap .body{padding:12px 18px 16px;line-height:1.6;display:flex;flex-direction:column;gap:10px}
+.mghost{display:flex;gap:10px;align-items:center}
+.mghost .face{flex:none;width:56px;height:56px;background:#8FB0FF;border:2px solid #fff;border-radius:4px;overflow:hidden}
+.mghost .face svg{width:100%;height:100%;display:block}
+.mghost .say{margin:0!important;flex:1;min-width:0;background:#0B1030;border:2px solid #3D4A96;border-radius:4px;padding:6px 10px;font-size:15px;min-height:2.6em}
+.mghud{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center;font-size:14px;color:var(--win-muted)}
+.mghud b{font-family:var(--digits);font-size:13px;color:var(--win-text);font-weight:400}
+.mghud .big b{font-size:18px;color:var(--gold)}
+.mghud .mgcombo{font-family:var(--digits);font-size:11px;color:#5FE39A}
+.mgscreen{position:relative;border:3px solid #fff;border-radius:4px;box-shadow:0 0 0 3px #0B1030;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;margin-inline:auto}
+.mgwrap{--fit:min(calc(100vh - 330px),460px)}
+@supports (height:100dvh){.mgwrap{--fit:min(calc(100dvh - 330px),460px)}}
+#mgTower,#mgDrop{width:min(100%,calc(var(--fit) * 2 / 3));margin-inline:auto}
+#mgTowerCv{display:block;width:100%;height:auto;aspect-ratio:2/3;image-rendering:pixelated;background:#8FD3F0;cursor:pointer}
+#mgBug{width:min(100%,calc(var(--fit) * .95),440px)}
+.mgov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(5,7,26,.74);text-align:center;padding:14px}
+.mgov h4{margin:0!important;font-family:var(--pixel);font-weight:400;font-size:21px;color:var(--gold)}
+.mgov p{margin:0!important;font-size:14px;max-width:30ch}
+.mgov .mgrw{background:#0B1030;border:2px solid var(--gold);border-radius:4px;padding:5px 10px;font-size:14px}
+.mgfloat{position:absolute;left:50%;top:22%;transform:translateX(-50%);font-family:var(--digits);font-size:13px;color:var(--gold);text-shadow:2px 2px 0 #000;pointer-events:none;animation:mgup .9s ease-out forwards;white-space:nowrap}
+@keyframes mgup{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-26px)}}
+.mgboard{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:9px;background:#0A1230;aspect-ratio:1}
+.mgcell{position:relative;border:2px solid #2B3F7A;border-radius:4px;background:#101B44;padding:0;cursor:pointer;overflow:hidden;font:inherit;color:inherit;touch-action:manipulation}
+.mgcell::before{content:"";position:absolute;inset:14% 12% auto;height:6%;background:#22356E;box-shadow:0 10px 0 #22356E,0 20px 0 #1C2D60,0 30px 0 #22356E}
+.mgcell svg{position:absolute;inset:10%;width:80%;height:80%;image-rendering:pixelated;animation:mgpop .12s ease-out,mgwig .5s ease-in-out .12s infinite alternate}
+.mgcell.hit{background:#1E5A3A;border-color:#5FE39A}.mgcell.oops{background:#5A1E2A;border-color:var(--red)}
+@keyframes mgpop{from{transform:scale(.4)}to{transform:scale(1)}}
+@keyframes mgwig{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+.mgrules summary{cursor:pointer;color:var(--gold);font-size:14px}
+.mgrules ul{margin:6px 0!important;font-size:14px;color:var(--win-muted)}
+.mgtiers{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+.mgtiers td{padding:2px 4px;border-bottom:1px dashed #3D4A96}
+.mgtiers td:first-child{font-family:var(--digits);font-size:10px;color:var(--gold);white-space:nowrap}
+.mgtiers tr.hit td{background:rgba(242,193,78,.18)}
+#mgDrop{display:block}
+.mgcard .vsactrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.mgrow{display:flex;flex-direction:column;gap:2px}
+.mgrow+.mgrow{border-top:1px dashed rgba(255,255,255,.25);padding-top:10px;margin-top:8px}
+.mgrow .dbody{margin:0!important}
+#mgPipe{width:min(100%,calc(var(--fit) * 1.25),460px);background:#1A2448}
+.mgfield{position:relative;display:grid;gap:0;padding:10px 4px;align-content:center}
+.mgtile{position:relative;border:0;padding:0;margin:0;background:none;cursor:pointer;aspect-ratio:1;touch-action:manipulation}
+.mgtile svg,.mgedge svg{width:100%;height:100%;display:block;image-rendering:pixelated}
+.mgtile.spin svg{animation:mgspin .14s ease-out}
+@keyframes mgspin{from{transform:rotate(-90deg)}to{transform:rotate(0)}}
+.mgedge{aspect-ratio:1}
+.mgrain{position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(105deg,transparent 0 14px,rgba(191,230,245,.16) 14px 15px);background-size:40px 40px;animation:mgrainf .5s linear infinite;opacity:.7}
+@keyframes mgrainf{to{background-position:-10px 40px}}
+.mgflood{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,rgba(63,169,245,.32),rgba(30,90,180,.5));pointer-events:none;transition:height .3s linear;border-top:2px solid rgba(191,230,245,.8)}
+.mghud .warn b{color:var(--red)}
+@media (prefers-reduced-motion:reduce){.mgfloat,.mgcell svg,.mgtile.spin svg,.mgrain{animation:none}}
 /* ---------- lounge ---------- */
 .lounge{display:grid;gap:22px}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
@@ -2787,6 +2840,15 @@ footer.site p{margin:4px 0}
   </div>
 </dialog>
 
+<dialog id="mgDlg" aria-labelledby="mgTitle">
+  <div class="window dlg mgwrap">
+    <div class="head">
+      <div><p class="dept" id="mgDept">小遊戲</p><h3 id="mgTitle">小遊戲</h3></div>
+      <button class="x" type="button" data-close aria-label="關閉">✕</button>
+    </div>
+    <div class="body" id="mgBody"></div>
+  </div>
+</dialog>
 <dialog id="cheatDlg" aria-labelledby="chTitle">
   <div class="window dlg form seawrap">
     <div class="head">
@@ -8063,7 +8125,7 @@ const HELP={
   job:"滿級（LV 10）之後可以在這裡轉職。職業可以自由選，選自己組別的職業有「本家」好處（禮包加倍、名片標記、守護者的血少 20%）。轉職要獻上種子並通過神殿試煉：答情境題打守護者，答對一題造成「武器傷害＋寵物攻擊力」，答錯扣 1 顆心；中途放棄或關掉網頁都算失敗，供品不退還。收集全部 20 種小物和 16 把武器（含請假卡）後，可以挑戰第二次轉職。學會的職業隨時可以換、不限次數（在「我的職業」選好再按確定），職業加成只套用目前的職業。職業服裝、職業頭飾、披風可以分開穿，也能跟衣櫃的衣服、角色設定的配件互換。10 個職業全部學會，神殿的石像守護者會成為你的隱藏版寵物。第二次轉職還會拿到職業鼠標和點擊特效（手機點畫面也有），可以在「我的職業」切換或改回系統預設。",
   map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝，或停下來聊兩句（有時會透露留言板的密技）；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
   zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
-  places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。",
+  places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏，還有小遊戲（村長的家：疊疊樂、排水接管；數位總合辦公室：抓 Bug）。",
   notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題和內容。",
   pet:"LV 3 可以領養寵物，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件；之後多出來的親密度會變成羈絆點。",
   party:"出遊隊伍：隊長是你目前的寵物，另外可以帶最多 2 隻跟班。第 1 隻跟班的位置在任一寵物親密度滿 100 時解鎖，第 2 隻在任一寵物羈絆 ★3 或完成第二次轉職時解鎖。跟班會跟著你在地圖上散步、在家裡走來走去，同事拜訪你家也看得到。每天第一次在地圖上散步，每隻跟班親密度 +1；倉庫上方可以選「餵給」哪一隻（餵跟班一樣會看守農場）。跟班也能裝扮：基本衣服（LV 5）、商店配件、親密度滿級的專屬配件、友誼項圈；商店配件一次只能給一隻戴（隊長或其中一隻跟班）。試煉、看守、猜拳、羈絆加成都還是看隊長。",
@@ -8413,6 +8475,281 @@ function npcGiftHTML(id){
     ${opts.length?"":`<p class="ahint">倉庫還沒有蔬菜，先到「溫暖的家 → 開心農場」種一些吧！</p>`}
   </section>`;
 }
+/* ================= 小遊戲：疊疊樂、排水接管（村長的家）、抓 Bug（數位總合辦公室） ================= */
+const MG_PLAYS=3;
+const MG={
+  tower:{place:"home",name:"疊疊樂",unit:"層",icon:"🏗️",dept:"村長的家・小遊戲",
+    tiers:[[30,{seed:20,fert:2,aff:2}],[20,{seed:20,fert:2}],[10,{seed:10,fert:1}],[5,{seed:5}]],
+    say:[[30,"太厲害了，這棟可以當部門的新總部！"],[20,"了不起！村子多了一座地標。"],[10,"不錯喔，蓋得又高又穩。"],[5,"有模有樣，再練練就能蓋更高！"],[0,"地基要穩，慢慢來沒關係。"]]},
+  pipe:{place:"home",name:"排水接管",unit:"處",icon:"🚰",dept:"村長的家・小遊戲",
+    tiers:[[8,{seed:20,fert:2,aff:2}],[6,{seed:20,fert:2}],[4,{seed:10,fert:1}],[2,{seed:5}]],
+    say:[[8,"排水系統完美運作，村子安全度過暴雨！"],[6,"了不起，大部分的雨水都排掉了。"],[4,"不錯！主要道路都沒淹水。"],[2,"有接通幾段，下次再快一點！"],[0,"淹水了…別急，先找從進水口出發的那根水管。"]]},
+  bug:{place:"digital",name:"抓 Bug",unit:"分",icon:"🐛",dept:"數位總合辦公室・小遊戲",
+    tiers:[[30,{seed:20,fert:2,aff:2}],[22,{seed:20,fert:2}],[15,{seed:10,fert:1}],[8,{seed:5}]],
+    say:[[30,"系統穩如泰山！你可以來數位總合辦公室上班了。"],[22,"抓得又快又準，Bug 都怕你了。"],[15,"不錯！這次上線應該不會出包了。"],[8,"有抓到一些，剩下的我來處理。"],[0,"Bug 有點多…別點到正常程式喔！"]]}
+};
+function mgS(){ S.mg=S.mg&&typeof S.mg==="object"?S.mg:{}; const m=S.mg; if(m.day!==dayKey()){ m.day=dayKey(); m.n={}; } m.n=m.n||{}; m.best=m.best||{}; return m; }
+const mgLeft=g=>restricted()?0:Math.max(0,MG_PLAYS-(+mgS().n[g]||0));
+const mgRwText=r=>[r.seed?`種子 ×${r.seed}`:"",r.fert?`一般肥料 ×${r.fert}`:"",r.aff?`寵物親密度 +${r.aff}`:""].filter(Boolean).join("、");
+const MG_DESC={tower:"幫村長蓋一棟新大樓！樓層左右移動，對準下面那層再放下，看你能蓋幾層。",
+  pipe:"午後雷陣雨要來了！轉動水管，把雨水從進水口接到排水溝，看你能接通幾處。",
+  bug:"總長的系統跑出一堆 Bug 了！20 秒內點越多越好，小心別點到正常程式。"};
+function mgCardHTML(gs){
+  const m=mgS();
+  return `<section class="window pbox mgcard" id="mgCard"><h3>🎮 小遊戲</h3>${gs.map(g=>{ const G=MG[g], best=+m.best[g]||0;
+    return `<div class="mgrow"><p class="dbody"><b>${G.icon} ${esc(G.name)}</b>　${MG_DESC[g]}</p>
+      <div class="vsactrow"><button class="act" type="button" data-mgopen="${g}">開始玩</button>
+        <span class="ahint">${restricted()?"觀光客可以試玩，但沒有獎勵":`今天還有 <b>${mgLeft(g)}</b> 次獎勵`}${best?`・最高 ${best} ${G.unit}`:""}</span></div></div>`; }).join("")}</section>`;
+}
+function injectMiniGame(){
+  const pl=curPlace, gs=pl?Object.keys(MG).filter(k=>MG[k].place===pl.id):[]; if(!gs.length) return;
+  const body=$("#placeBody"); if(!body) return;
+  const old=$("#mgCard"); if(old) old.remove();
+  const ref=$("#npcGift");
+  if(ref) ref.insertAdjacentHTML("afterend",mgCardHTML(gs)); else body.insertAdjacentHTML("afterbegin",mgCardHTML(gs));
+}
+const mgGame=(()=>{
+  let kind="", T=null, B=null, raf=0, cv=null, cx=null;
+  const sfx=(n,o)=>{ try{ Sound.sfx(n,o); }catch(e){} };
+  function floatText(txt){ const sc=$({tower:"#mgTower",bug:"#mgBug",pipe:"#mgPipe"}[kind]); if(!sc) return; const el=document.createElement("div"); el.className="mgfloat"; el.textContent=txt; sc.appendChild(el); setTimeout(()=>el.remove(),900); }
+  const tiersHTML=(g,hit)=>MG[g].tiers.slice().reverse().map(([n,r])=>`<tr class="${hit===n?"hit":""}"><td>${n} ${MG[g].unit}+</td><td>${esc(mgRwText(r))}</td></tr>`).join("");
+  function hud(){
+    const m=mgS(), G=MG[kind];
+    $("#mgBest").textContent=+m.best[kind]||0;
+    $("#mgLeft").textContent=restricted()?"試玩":`${mgLeft(kind)}/${MG_PLAYS}`;
+  }
+  function finish(score){
+    const G=MG[kind], m=mgS(), t=G.tiers.find(([n])=>score>=n)||null, canRw=mgLeft(kind)>0;
+    const isBest=score>(+m.best[kind]||0); if(isBest) m.best[kind]=score;
+    let line;
+    if(!t) line="還沒達到第一級獎勵，再試一次！";
+    else if(restricted()) line=`可以拿到：${mgRwText(t[1])}（觀光客試玩，沒有獎勵）`;
+    else if(canRw){
+      m.n[kind]=(+m.n[kind]||0)+1;
+      const r=t[1]; if(r.seed) giveSeedSpread(r.seed);
+      if(r.fert){ S.fert=S.fert||{}; S.fert.fz_basic=(S.fert.fz_basic||0)+r.fert; }
+      if(r.aff&&S.pet&&PETS[S.pet.type]){ try{ if(affGain(S.pet.type,r.aff,true)) setTimeout(()=>affinityMax(S.pet.type),600); }catch(e){} }
+      line=`獲得：${mgRwText(r)}`;
+    }else line=`可以拿到：${mgRwText(t[1])}（今天的獎勵次數用完了，現在是練習）`;
+    // 沒達到第一級門檻不扣獎勵次數
+    save(); queueSync();
+    sfx(isBest&&score>0?"levelup":t?"achieve":"error");
+    $("#mgTiers").innerHTML=tiersHTML(kind,t&&t[0]);
+    const ov=$({tower:"#mgTowerOv",bug:"#mgBugOv",pipe:"#mgPipeOv"}[kind]);
+    ov.innerHTML=`<h4>${score} ${G.unit}${isBest&&score>0?"・新紀錄！":""}</h4><p class="mgrw">${esc(line)}</p>
+      <p>${restricted()?"":mgLeft(kind)?`今天還有 ${mgLeft(kind)} 次獎勵`:"明天會重置成 3 次"}</p><button class="act" type="button" data-mgagain>再玩一次</button>`;
+    ov.hidden=false; hud();
+    $("#mgSay").textContent=G.say.find(([n])=>score>=n)[1];
+    if(t&&canRw&&!restricted()) toast(`${G.icon} ${G.name} ${score} ${G.unit}：${mgRwText(t[1])}`);
+    if(curPlace&&curPlace.id===G.place) try{ injectMiniGame(); }catch(e){}
+  }
+  /* ---------------- 疊疊樂 ---------------- */
+  const CW=160, CH=240, FH=10, BASEW=64;
+  const PALS=[["#E8857A","#C8655A"],["#7FB0E8","#5A8CC8"],["#F2C96E","#D2A94E"],["#8FD39A","#6AB37A"],["#C9A0E8","#A980C8"],["#F4F1E8","#CFCAB8"]];
+  function tReset(){ T={blocks:[{x:(CW-BASEW)/2,w:BASEW,pal:0}],cur:null,dir:1,speed:1.1,cam:0,camTo:0,falling:[],perfect:0,over:false,shield:jb("civil"),score:0}; tSpawn(); }
+  function tSpawn(){ const top=T.blocks[T.blocks.length-1], n=T.blocks.length; T.dir=n%2?1:-1; T.cur={x:T.dir>0?-top.w:CW,w:top.w,pal:n%PALS.length}; T.speed=Math.min(3.2,1.1+n*.07); }
+  const shieldHUD=()=>{ const el=$("#mgShield"); if(el) el.textContent=T&&T.shield?"🛡 鋼骨保險 1":""; };
+  function tDrop(){
+    if(!T||T.over||!T.cur) return;
+    const top=T.blocks[T.blocks.length-1], c=T.cur, L=Math.max(c.x,top.x), R=Math.min(c.x+c.w,top.x+top.w), ov=R-L, lv=T.blocks.length;
+    if(ov<=0&&T.shield){ T.shield=false; T.falling.push({x:c.x,w:c.w,y:lv,vy:0,pal:c.pal}); floatText("鋼骨保險！再來一次"); sfx("error",{soft:true}); shieldHUD();
+      $("#mgSay").textContent="差點倒了！還好有鋼骨保險，這層重來。"; tSpawn(); return; }
+    if(ov<=0){ T.falling.push({x:c.x,w:c.w,y:lv,vy:0,pal:c.pal}); T.cur=null; T.over=true; $("#mgDrop").disabled=true; sfx("error"); setTimeout(()=>finish(T.score),700); return; }
+    let perfect=Math.abs(c.x-top.x)<=2;
+    if(perfect){
+      T.perfect++; let w=top.w;
+      if(T.perfect>=3&&w<BASEW){ w=Math.min(BASEW,w+6); T.perfect=0; floatText("變寬了！"); } else floatText("完美！");
+      T.blocks.push({x:top.x-(w-top.w)/2,w,pal:c.pal}); sfx("get",{soft:true});
+    }else{
+      T.perfect=0; T.blocks.push({x:L,w:ov,pal:c.pal});
+      const cut=c.x<L?{x:c.x,w:L-c.x}:{x:R,w:c.x+c.w-R}; T.falling.push(Object.assign(cut,{y:lv,vy:0,pal:c.pal})); sfx("blip",{soft:true});
+    }
+    T.score=T.blocks.length-1; $("#mgScore").textContent=T.score; shieldHUD();
+    if(T.score===10) $("#mgSay").textContent="10 層了！村子的天際線變得好不一樣。"; else if(T.score===20) $("#mgSay").textContent="20 層！這已經是地標等級了！";
+    T.camTo=Math.max(0,(T.blocks.length-14)*FH); tSpawn();
+  }
+  function sky(h){ const st=[[0,[143,211,240]],[12,[255,190,140]],[22,[90,70,150]],[32,[20,24,60]]]; let a=st[0],b=st[st.length-1];
+    for(let i=0;i<st.length-1;i++){ if(h>=st[i][0]&&h<=st[i+1][0]){ a=st[i]; b=st[i+1]; break; } }
+    const t=b[0]===a[0]?1:Math.min(1,Math.max(0,(h-a[0])/(b[0]-a[0]))); return `rgb(${a[1].map((v,i)=>Math.round(v+(b[1][i]-v)*t)).join(",")})`; }
+  function floor(x,y,w,pal,top){ x=Math.round(x); w=Math.round(w); const [c1,c2]=PALS[pal];
+    cx.fillStyle="#1E2345"; cx.fillRect(x-1,y-1,w+2,FH+1); cx.fillStyle=c1; cx.fillRect(x,y,w,FH); cx.fillStyle=c2; cx.fillRect(x+w-3,y,3,FH); cx.fillRect(x,y+FH-2,w,2);
+    cx.fillStyle="#FFF6C8"; for(let wx=x+3;wx<x+w-5;wx+=6) cx.fillRect(wx,y+3,3,3);
+    if(top){ cx.fillStyle="#C8282E"; cx.fillRect(x+2,y-3,Math.max(1,w-4),2); } }
+  function tRender(){
+    const h=T?T.blocks.length:1; if(T) T.cam+=(T.camTo-T.cam)*.15; const cam=T?T.cam:0;
+    cx.fillStyle=sky(h); cx.fillRect(0,0,CW,CH);
+    if(h>24){ cx.fillStyle="#FFFFFF"; for(let i=0;i<24;i++) cx.fillRect((i*37+(i*i)%11)%CW,(i*53)%140,1,1); }
+    const g=CH-24+cam; cx.fillStyle="#7CC85E"; cx.fillRect(0,g,CW,CH); cx.fillStyle="#5E8F3E"; cx.fillRect(0,g,CW,2);
+    cx.fillStyle="#4A7A8A"; [[6,18,14],[24,12,22],[120,16,18],[140,10,26]].forEach(([x,w,hh])=>cx.fillRect(x,g-hh,w,hh));
+    if(!T){ floor((CW-BASEW)/2,g-FH,BASEW,0,true); return; }
+    T.blocks.forEach((b,i)=>floor(b.x,g-FH*(i+1),b.w,b.pal,i===T.blocks.length-1&&!T.cur));
+    if(T.cur) floor(T.cur.x,g-FH*(T.blocks.length+1),T.cur.w,T.cur.pal,true);
+    T.falling.forEach(f=>floor(f.x,g-FH*(f.y+1)+f.vy*f.vy*.5,f.w,f.pal,false));
+  }
+  function tLoop(){
+    if(!$("#mgDlg").open||kind!=="tower"){ raf=0; return; }
+    if(T&&!T.over&&T.cur){ T.cur.x+=T.dir*T.speed; if(T.cur.x>CW-T.cur.w*.25&&T.dir>0) T.dir=-1; if(T.cur.x<-T.cur.w*.75&&T.dir<0) T.dir=1; }
+    if(T){ T.falling.forEach(f=>f.vy+=.35); T.falling=T.falling.filter(f=>f.vy<30); }
+    tRender(); raf=requestAnimationFrame(tLoop);
+  }
+  function tStart(){ tReset(); $("#mgTowerOv").hidden=true; $("#mgScore").textContent="0"; $("#mgDrop").disabled=false; $("#mgSay").textContent="地基打好了，第一層來囉！"; shieldHUD(); sfx("open"); if(!raf) raf=requestAnimationFrame(tLoop); }
+  /* ---------------- 抓 Bug ---------------- */
+  const px=(rows,pal)=>{ let o=""; rows.forEach((r,y)=>[...r].forEach((c,x)=>{ if(c!==".") o+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${pal[c]}"/>`; })); return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges" aria-hidden="true">${o}</svg>`; };
+  const BUGR=["..a......a..","...k....k...","....k..k....","..kkkkkkkk..",".kLLLLLLLLk.","kHwwHHHHwwHk","kHwnHHHHwnHk","kHccHHHHccHk","kHHHHmmHHHHk",".kHHHHHHHHk.","..kkkkkkkk..","..k.k..k.k.."];
+  const SV_BUG=px(BUGR,{a:"#FF9EC4",k:"#3A2433",L:"#FFB3A8",H:"#FF8A7A",w:"#FFFFFF",n:"#2A1A26",c:"#FF5A86",m:"#9E2A3A"});
+  const SV_GOLD=px(BUGR,{a:"#FFF6C8",k:"#6B4A0A",L:"#FFF1A0",H:"#FFD23F",w:"#FFFFFF",n:"#4A3008",c:"#FF9F43",m:"#8A5A10"});
+  const SV_OK=px(["..........",".kkkkkk...",".kWWWWkk..",".kWWWWWWk.",".kWWWWWgk.",".kWWWWggk.",".kWgWggWk.",".kWWgWWWk.",".kWWWWWWk.",".kkkkkkkk."],{k:"#14402A",W:"#E8FFF0",g:"#2EAE5E"});
+  const cells=()=>[...document.querySelectorAll("#mgBoard .mgcell")];
+  function bStop(){ if(!B) return; clearTimeout(B.spawnT); clearInterval(B.tick); B.items.forEach(it=>clearTimeout(it.t)); B.running=false; cells().forEach(c=>{ c.innerHTML=""; c.classList.remove("hit","oops"); }); }
+  const bCombo=()=>{ $("#mgCombo").textContent=B.combo>=2?`連擊 ×${B.combo}`:""; };
+  function bClear(i){ const it=B&&B.items.get(i); if(it){ clearTimeout(it.t); B.items.delete(i); } const c=cells()[i]; if(c) c.innerHTML=""; }
+  function bSpawn(){
+    if(!B||!B.running) return;
+    const C=cells(), free=C.map((c,i)=>i).filter(i=>!B.items.has(i));
+    if(free.length){
+      const i=free[Math.floor(Math.random()*free.length)], r=Math.random(), k=r<.1?"gold":r<.25?"ok":"bug";
+      C[i].innerHTML=k==="gold"?SV_GOLD:k==="ok"?SV_OK:SV_BUG;
+      const life=Math.max(850,1350-B.elapsed*20);
+      B.items.set(i,{kind:k,t:setTimeout(()=>{ if(k!=="ok"&&B.combo){ B.combo=0; bCombo(); } bClear(i); },life)});
+    }
+    const gap=Math.max(430,800-B.elapsed*15); B.spawnT=setTimeout(bSpawn,gap*(.7+Math.random()*.6));
+  }
+  function bHit(i){
+    if(!B||!B.running) return; const it=B.items.get(i); if(!it) return; const c=cells()[i];
+    const flash=cls=>{ c.classList.add(cls); setTimeout(()=>c.classList.remove(cls),180); };
+    if(it.kind==="ok"){ B.score=Math.max(0,B.score-1); B.combo=0; flash("oops"); sfx("error",{soft:true}); floatText("−1"); }
+    else{ const add=it.kind==="gold"?3:1; B.combo++; const bonus=B.combo%5===0?1:0; B.score+=add+bonus; flash("hit");
+      sfx(it.kind==="gold"?"get":"cursor",{soft:true}); if(it.kind==="gold") floatText("金色 Bug +3"); else if(bonus) floatText(`${B.combo} 連擊 +1`); }
+    bClear(i); bCombo(); $("#mgScore").textContent=B.score;
+  }
+  function bStart(){
+    bStop(); const total=20+(jb("digital")?10:0);
+    B={score:0,combo:0,items:new Map(),running:true,elapsed:0,total,start:performance.now()};
+    $("#mgBugOv").hidden=true; $("#mgScore").textContent="0"; bCombo(); $("#mgSay").textContent="開始了！看到紅色的就抓！"; sfx("open");
+    B.tick=setInterval(()=>{ if(!$("#mgDlg").open){ bStop(); return; }
+      B.elapsed=(performance.now()-B.start)/1000; const left=Math.max(0,B.total-B.elapsed); $("#mgTime").textContent=left.toFixed(1);
+      if(left<=0){ bStop(); finish(B.score); } },100);
+    bSpawn();
+  }
+  /* ---------------- 排水接管 ---------------- */
+  const PN=1,PE=2,PS=4,PW=8, PD=[[PN,0,-1,PS],[PE,1,0,PW],[PS,0,1,PN],[PW,-1,0,PE]];
+  const prot=m=>((m<<1)|(m>>3))&15, prand=n=>Math.floor(Math.random()*n);
+  const pshuf=a=>{ for(let i=a.length-1;i>0;i--){ const j=prand(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  let P=null, PL=null;
+  function pPath(n,r0,r1){
+    for(let tries=0;tries<400;tries++){
+      const seen=new Set([`0,${r0}`]), path=[[0,r0]]; let ok=false, steps=0;
+      (function dfs(x,y){ if(ok||++steps>3000) return;
+        if(x===n-1&&y===r1){ if(path.length>=n+1) ok=true; return; }
+        if(path.length>n*n*.55) return;
+        for(const [,dx,dy] of pshuf(PD.slice())){ const nx=x+dx, ny=y+dy, k=`${nx},${ny}`;
+          if(nx<0||ny<0||nx>=n||ny>=n||seen.has(k)) continue;
+          seen.add(k); path.push([nx,ny]); dfs(nx,ny); if(ok) return; path.pop(); seen.delete(k); } })(0,r0);
+      if(ok) return path;
+    }
+    const p=[]; for(let x=0;x<n;x++) p.push([x,r0]); for(let y=r0;y!==r1;y+=r1>r0?1:-1) p.push([n-1,y+(r1>r0?1:-1)]); return p;
+  }
+  function pLevel(n){
+    const r0=prand(n), r1=prand(n), path=pPath(n,r0,r1), g=Array.from({length:n},()=>Array(n).fill(0));
+    const dirTo=(a,b)=>PD.find(([,dx,dy])=>a[0]+dx===b[0]&&a[1]+dy===b[1])[0];
+    path.forEach(([x,y],i)=>{ g[y][x]=(i===0?PW:dirTo([x,y],path[i-1]))|(i===path.length-1?PE:dirTo([x,y],path[i+1])); });
+    const on=new Set(path.map(([x,y])=>`${x},${y}`));
+    for(let y=0;y<n;y++) for(let x=0;x<n;x++){ if(on.has(`${x},${y}`)) continue; const r=Math.random(); let m=r<.35?(PN|PS):r<.82?(PN|PE):(PN|PE|PS); for(let k=prand(4);k>0;k--) m=prot(m); g[y][x]=m; }
+    for(let y=0;y<n;y++) for(let x=0;x<n;x++) for(let k=prand(4);k>0;k--) g[y][x]=prot(g[y][x]);
+    const L={n,r0,r1,g}; if(pFlow(L).done){ const [x,y]=path[0]; g[y][x]=prot(g[y][x]); } return L;
+  }
+  function pFlow(L){
+    const {n,r0,r1,g}=L, wet=new Set(), q=[];
+    if(g[r0][0]&PW){ wet.add(`0,${r0}`); q.push([0,r0]); }
+    while(q.length){ const [x,y]=q.shift(), m=g[y][x];
+      for(const [d,dx,dy,op] of PD){ if(!(m&d)) continue; const nx=x+dx, ny=y+dy; if(nx<0||ny<0||nx>=n||ny>=n||!(g[ny][nx]&op)) continue; const k=`${nx},${ny}`; if(wet.has(k)) continue; wet.add(k); q.push([nx,ny]); } }
+    return {wet,done:wet.has(`${n-1},${r1}`)&&!!(g[r1][n-1]&PE)};
+  }
+  function pipeSVG(m,wet){
+    const R=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
+    let s=R(0,0,16,16,"#24305A")+R(1,1,14,14,"#2A3866")+R(3,3,1,1,"#33437A")+R(12,11,1,1,"#33437A")+R(10,2,1,1,"#33437A");
+    const arms=(w,c)=>{ const a=(16-w)/2; let o=R(a,a,w,w,c); if(m&PN) o+=R(a,0,w,a+w,c); if(m&PS) o+=R(a,a,w,16-a,c); if(m&PW) o+=R(0,a,a+w,w,c); if(m&PE) o+=R(a,a,16-a,w,c); return o; };
+    s+=arms(8,"#141A33")+arms(6,wet?"#8FC8F0":"#B9C0D8")+arms(2,wet?"#3FA9F5":"#4A5478"); if(wet) s+=arms(1,"#BFE6FF");
+    return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${s}</svg>`;
+  }
+  const P_IN=`<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="2" width="9" height="4" fill="#E6ECFF"/><rect x="3" y="1" width="5" height="1" fill="#E6ECFF"/><rect x="2" y="7" width="1" height="2" fill="#3FA9F5"/><rect x="5" y="8" width="1" height="2" fill="#3FA9F5"/><rect x="8" y="7" width="1" height="2" fill="#3FA9F5"/><rect x="4" y="5" width="12" height="6" fill="#141A33"/><rect x="5" y="6" width="11" height="4" fill="#B9C0D8"/><rect x="5" y="7" width="11" height="2" fill="#3FA9F5"/></svg>`;
+  const P_OUT=w=>`<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="5" width="6" height="6" fill="#141A33"/><rect x="0" y="6" width="6" height="4" fill="#B9C0D8"/><rect x="0" y="7" width="6" height="2" fill="${w?"#3FA9F5":"#4A5478"}"/><rect x="5" y="3" width="10" height="10" fill="#141A33"/><rect x="6" y="4" width="8" height="8" fill="${w?"#2E7FC8":"#5A6380"}"/>${[6,8,10,12].map(x=>`<rect x="${x}" y="4" width="1" height="8" fill="#141A33"/>`).join("")}</svg>`;
+  function pRender(spinI){
+    const L=PL, n=L.n, f=$("#mgField"); if(!f) return false; const {wet,done}=pFlow(L);
+    f.style.gridTemplateColumns=`repeat(${n+2},minmax(0,1fr))`;
+    let h="";
+    for(let y=0;y<n;y++){ h+=`<div class="mgedge">${y===L.r0?P_IN:""}</div>`;
+      for(let x=0;x<n;x++){ const i=y*n+x; h+=`<button type="button" class="mgtile${spinI===i?" spin":""}" data-mgtile="${i}" aria-label="第 ${y+1} 列第 ${x+1} 格水管，點一下轉向">${pipeSVG(L.g[y][x],wet.has(`${x},${y}`))}</button>`; }
+      h+=`<div class="mgedge">${y===L.r1?P_OUT(done):""}</div>`; }
+    f.innerHTML=h; $("#mgSize").textContent=`${n}×${n}`; return done;
+  }
+  const pSize=k=>k<2?4:k<5?5:6;
+  function pNext(){ PL=pLevel(pSize(P.score)); P.busy=false; pRender(); }
+  function pTap(i){
+    if(!P||!P.on||P.busy) return; const n=PL.n, x=i%n, y=(i/n)|0; PL.g[y][x]=prot(PL.g[y][x]); sfx("blip",{soft:true});
+    if(pRender(i)){ P.busy=true; P.score++; P.time+=12; $("#mgScore").textContent=P.score; floatText("接通！+12 秒"); sfx("get");
+      const says=["通了！水嘩啦啦地流進排水溝。","漂亮！這一段不會淹水了。","手腳真快，下一段交給你！","有你在，村子不怕颱風天。"]; $("#mgSay").textContent=says[prand(says.length)];
+      setTimeout(()=>{ if(P&&P.on) pNext(); },750); }
+  }
+  function pTick(){
+    if(!P||!P.on) return;
+    if(!$("#mgDlg").open){ pStop(); return; }
+    const now=performance.now(), dt=(now-P.last)/1000; P.last=now; if(!P.busy) P.time=Math.max(0,P.time-dt);
+    $("#mgTime").textContent=Math.ceil(P.time); const tb=$("#mgTimeBox"); if(tb) tb.classList.toggle("warn",P.time<=10);
+    P.max=Math.max(P.max,P.time); const fl=$("#mgFlood"); if(fl) fl.style.height=`${Math.max(0,Math.min(100,(1-P.time/P.max)*100))*.3}%`;
+    if(P.time<=0){ P.on=false; if(fl) fl.style.height="100%"; sfx("error"); setTimeout(()=>finish(P.score),700); return; }
+    requestAnimationFrame(pTick);
+  }
+  function pStart(){
+    const t0=60+(jb("drain")?10:0);
+    P={on:true,busy:false,score:0,time:t0,max:t0,last:performance.now()};
+    $("#mgPipeOv").hidden=true; $("#mgScore").textContent="0"; const fl=$("#mgFlood"); if(fl) fl.style.height="0";
+    $("#mgSay").textContent="下雨了！先找進水口旁邊的水管開始接。"; sfx("open"); pNext(); requestAnimationFrame(pTick);
+  }
+  function pStop(){ if(P) P.on=false; }
+  /* ---------------- 開啟 ---------------- */
+  function open(g){
+    const G=MG[g]; if(!G) return; kind=g;
+    const isT=g==="tower", isP=g==="pipe", isB=g==="bug", host=isB?DIRECTOR_AV:CHIEF_AV, who=isB?`數位總合辦公室　${CFG.director}`:`部門村長　${CFG.chief}`;
+    const bonus=isT?(jb("civil")?"🛡 你的重裝騎士加成：每場一次「鋼骨保險」，完全沒疊到時可以再來一次，不會結束。":"重裝騎士玩這個遊戲有「鋼骨保險」：完全沒疊到時可以再來一次。")
+               :isP?(jb("drain")?"⏱ 你的治水術士加成：開場時間多 10 秒。":"治水術士玩這個遊戲開場時間多 10 秒。")
+               :(jb("digital")?"⏱ 你的數位魔導士加成：時間多 10 秒。":"數位魔導士玩這個遊戲時間多 10 秒。");
+    const rules=isT?["點畫面、按空白鍵或「放下」都可以放下樓層。","沒對準的部分會被切掉，樓層越蓋越窄。","完全對準是「完美」，連續 3 次完美，樓層會變寬一點。","完全沒疊到就倒了，遊戲結束。"]
+               :isP?["點一下水管就會順時針轉 90 度。","從左邊的進水口接到右邊的排水溝，接通的水管會變藍。","每接通一處就換下一個地段，時間 +12 秒，地段會越來越大。","時間到水就淹上來，遊戲結束；不一定每根水管都要用到。"]
+               :["點冒出來的 Bug 得 1 分，金色 Bug 得 3 分。","綠色勾勾是正常程式，點到扣 1 分。","連續抓到 5 隻多加 1 分；讓 Bug 跑掉或點錯，連擊就中斷。","越到後面 Bug 冒得稍微快一點，但都會停留一下子。"];
+    const say0=isT?"來幫村子蓋一棟新大樓吧！樓層移到正上方時點一下放下去。":isP?"午後雷陣雨要來了！快把水管接好，讓雨水從進水口流到排水溝。":"系統裡又跑出一堆 Bug 了，20 秒內幫我抓越多越好！";
+    const hudX=isT?`<span id="mgShield"></span>`:isP?`<span id="mgTimeBox">時間 <b id="mgTime">${60+(jb("drain")?10:0)}</b></span><span>地段 <b id="mgSize">4×4</b></span>`
+               :`<span>時間 <b id="mgTime">${(20+(jb("digital")?10:0)).toFixed(1)}</b></span><span class="mgcombo" id="mgCombo"></span>`;
+    const screen=isT?`<div class="mgscreen" id="mgTower"><canvas id="mgTowerCv" width="${CW}" height="${CH}" aria-label="疊疊樂遊戲畫面"></canvas>
+          <div class="mgov" id="mgTowerOv"><h4>疊疊樂蓋大樓</h4><p>看你能幫村長蓋幾層樓！</p><button class="act" type="button" data-mgagain>開始</button></div></div>
+        <button class="act ghost" type="button" id="mgDrop" disabled>⬇ 放下</button>`
+      :isP?`<div class="mgscreen" id="mgPipe"><div class="mgfield" id="mgField" aria-label="排水接管盤面"></div><div class="mgrain" aria-hidden="true"></div><div class="mgflood" id="mgFlood" aria-hidden="true"></div>
+          <div class="mgov" id="mgPipeOv"><h4>排水接管</h4><p>雷陣雨快來了，幫村長把排水管接好！</p><button class="act" type="button" data-mgagain>開始</button></div></div>`
+      :`<div class="mgscreen" id="mgBug"><div class="mgboard" id="mgBoard" aria-label="抓 Bug 遊戲畫面">${Array.from({length:16},(_,i)=>`<button type="button" class="mgcell" data-mgcell="${i}" aria-label="第 ${i+1} 格"></button>`).join("")}</div>
+          <div class="mgov" id="mgBugOv"><h4>抓 Bug</h4><p>總長的系統出狀況了，準備好就開始！</p><button class="act" type="button" data-mgagain>開始</button></div></div>`;
+    $("#mgDept").textContent=G.dept; $("#mgTitle").textContent=`${G.icon} ${G.name}`;
+    $("#mgBody").innerHTML=`<div class="mghost"><span class="face" aria-hidden="true">${avatarSVG(host)}</span><p class="say" id="mgSay" title="${esc(who)}">${say0}</p></div>
+      <div class="mghud"><span class="big">${isT?"樓層":isP?"接通":"分數"} <b id="mgScore">0</b></span>${hudX}<span>最高 <b id="mgBest">0</b></span><span>今日獎勵 <b id="mgLeft"></b></span></div>
+      ${screen}
+      <details class="mgrules"><summary>怎麼玩・獎勵（每天前 ${MG_PLAYS} 次）</summary><ul>${rules.map(r=>`<li>${esc(r)}</li>`).join("")}<li>${esc(bonus)}</li>${restricted()?"<li>觀光客可以試玩，但沒有獎勵。</li>":""}</ul>
+        <table class="mgtiers" id="mgTiers">${tiersHTML(g)}</table></details>`;
+    hud();
+    const d=$("#mgDlg"); if(!d.open) d.showModal();
+    if(isT){ cv=$("#mgTowerCv"); cx=cv.getContext("2d"); T=null; tRender(); shieldHUD();
+      cv.addEventListener("pointerdown",e=>{ e.preventDefault(); tDrop(); }); $("#mgDrop").addEventListener("click",tDrop); }
+    else if(isP){ P=null; PL=pLevel(4); pRender();
+      $("#mgField").addEventListener("pointerdown",e=>{ const t=e.target.closest("[data-mgtile]"); if(!t) return; e.preventDefault(); pTap(+t.dataset.mgtile); });
+      $("#mgField").addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ const t=e.target.closest("[data-mgtile]"); if(t){ e.preventDefault(); pTap(+t.dataset.mgtile); } } }); }
+    else{ $("#mgBoard").addEventListener("pointerdown",e=>{ const c=e.target.closest("[data-mgcell]"); if(!c) return; e.preventDefault(); bHit(+c.dataset.mgcell); }); }
+  }
+  document.addEventListener("click",e=>{
+    const o=e.target.closest("[data-mgopen]"); if(o){ open(o.dataset.mgopen); return; }
+    if(e.target.closest("[data-mgagain]")){ if(kind==="tower") tStart(); else if(kind==="pipe") pStart(); else bStart(); }
+  });
+  document.addEventListener("keydown",e=>{ if(e.code==="Space"&&kind==="tower"&&$("#mgDlg").open&&T&&!T.over){ e.preventDefault(); tDrop(); } });
+  document.getElementById("mgDlg").addEventListener("close",()=>{ if(T&&!T.over) T.over=true; bStop(); pStop(); cancelAnimationFrame(raf); raf=0; });
+  return {open};
+})();
 function injectNpcGift(){
   const pl=curPlace; if(!pl||!NPC_GIFT[pl.id]) return;
   const body=$("#placeBody"); if(!body) return;
@@ -9026,7 +9363,7 @@ $("#placeBody").addEventListener("input",e=>{
 });
 $("#placeBody").addEventListener("input",e=>{ const id=e.target.dataset&&e.target.dataset.replyfor; if(id) LG_RDRAFT[id]=e.target.value; });
 try{ matchMedia(LG_WIDE_Q).addEventListener("change",()=>{ if(curPlace&&curPlace.id==="lounge") renderLounge($("#placeBody"),true); }); }catch(e){}
-function renderPlace(greet){ renderPlaceInner(greet); try{ injectNpcGift(); }catch(e){} }
+function renderPlace(greet){ renderPlaceInner(greet); try{ injectNpcGift(); }catch(e){} try{ injectMiniGame(); }catch(e){} }
 $("#placeBody").addEventListener("focusout",()=>{
   if(!LOUNGE_DEFER) return;
   setTimeout(()=>{

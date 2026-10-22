@@ -1041,6 +1041,12 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .cshead b{font-size:16px}
 .csdetail{white-space:pre-wrap;margin:6px 0 0;padding:8px 10px;background:#0B1030;border-radius:4px;font-size:14px}
 .csreply{margin:6px 0 0;font-size:14px;color:#BFE6F5}
+.csthread{display:flex;flex-direction:column;gap:6px;margin:8px 0 2px}
+.csmsg{margin:0;padding:6px 10px;border-radius:4px;font-size:14px;white-space:pre-wrap}
+.csmsg b{display:block;font-weight:400;font-size:12px;opacity:.85}
+.csmsg.d{background:rgba(242,193,78,.12);border-left:4px solid var(--gold)}
+.csmsg.u{background:rgba(111,160,255,.14);border-left:4px solid #6FA0FF}
+.csmsg.s{font-size:12px;opacity:.75;padding:2px 10px}
 [data-csf][aria-pressed="true"]{background:var(--gold);color:#2B1B00}
 
 .mapframe{position:relative}
@@ -1723,6 +1729,12 @@ details.legacy summary{cursor:pointer;font-family:var(--pixel);color:var(--win-m
 .icard dd{margin:0}
 .icard .txt{white-space:pre-line;margin:8px 0;font-size:15px;line-height:1.8}
 .icard .answer{background:rgba(242,193,78,.12);border-left:4px solid var(--gold);padding:6px 10px;margin:8px 0 0;white-space:pre-line;font-size:15px}
+.icard .answer.mine{background:rgba(111,160,255,.14);border-left-color:#6FA0FF}
+.icard .answer.mine b{color:#9CC0FF}
+.icard .cssys{margin:8px 0 0;font-size:13px;color:var(--win-muted)}
+.icard .cssys.csend{color:var(--gold)}
+.csreplybox textarea{margin-top:10px}
+.csreplybox .acts{margin-top:6px}
 .icard .answer.upd{background:rgba(242,193,78,.2);border-left-color:#FF9F43}
 .icard .answer b{font-family:var(--pixel);font-weight:400;color:var(--gold);display:block;font-size:13px}
 .icard .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
@@ -2145,7 +2157,7 @@ footer.site p{margin:4px 0}
         </section>
         <section class="window abox">
           <h3>試算表公式</h3>
-          <p class="ahint">「後台資料」工作表的 A1（會自動排除密碼欄，這個工作表要發布到網路）：</p>
+          <p class="ahint">「後台資料」工作表的 A1（會自動排除密碼欄，這個工作表要發布到網路；技術諮詢的回覆只公開最近 90 天，新人看過的回覆會存在自己的存檔裡）：</p>
           <pre class="code" id="fxFeed"></pre>
           <button class="mini-btn" type="button" data-copy="fxFeed">複製公式</button>
           <p class="ahint" style="margin-top:12px">「諮詢資料」工作表的 A1（給後台「諮詢回覆」列出收到的申請，不含聯絡方式，這個工作表要發布，選填）：</p>
@@ -2302,7 +2314,7 @@ footer.site p{margin:4px 0}
       </section>
       <section class="window abox form" id="hcBox">
         <h3>回覆技術諮詢</h3>
-        <p class="ahint">在上方「收到的諮詢」按「回覆」，申請編號會自動帶入；也可以自己輸入編號。聯絡方式只在試算表的「技術諮詢」工作表看得到。同一個申請編號再次發布時，會以最新的一次為準。</p>
+        <p class="ahint">在上方「收到的諮詢」按「回覆」，申請編號會自動帶入；也可以自己輸入編號。聯絡方式只在試算表的「技術諮詢」工作表看得到。每次發布都會在對話裡<b>新增一則</b>回覆，新人可以再回覆，來回到結案為止；狀態選「已完成」或「無法受理」就是結案（可以不寫回覆，只改狀態）。要修改已發布的某一則，請在下方「已發布的回覆」按「修改」。</p>
         <div class="two">
           <div><label for="hcNo">申請編號</label><input id="hcNo" class="ainput wide" maxlength="30" placeholder="例如：CS-260917-AB3K"></div>
           <div><label for="hcStatus">狀態</label><select id="hcStatus" class="ainput wide"><option>已排定</option><option>已完成</option><option>無法受理</option><option>待處理</option></select></div>
@@ -6768,7 +6780,7 @@ async function unpackPayload(str){
   return JSON.parse(t.startsWith("j:")?t.slice(2):t);
 }
 async function parseFeed(rows){
-  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map(),approve:new Map(),profreq:new Map(),quiz:new Map()};
+  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map(),approve:new Map(),profreq:new Map(),quiz:new Map()}, RLOG_RAW={};
   rows.forEach((r,i)=>{
     const ts=String(r[0]||""), type=String(r[1]||"").trim(), id=String(r[2]||"").trim(), part=String(r[3]||"").trim(), data=String(r[4]||""), by=String(r[5]||"");
     if(!type||!id) return;
@@ -6778,7 +6790,7 @@ async function parseFeed(rows){
       let b=batches.get(key);
       if(!b){ b={type,id,n:+m[2],parts:{},row:i,ts,by}; batches.set(key,b); }
       b.parts[+m[1]]=data; b.row=i; b.ts=ts;
-    }else if(recs[type]) recs[type].set(id,{row:i,data,ts,by});
+    }else if(recs[type]){ recs[type].set(id,{row:i,data,ts,by}); if(type==="reply") (RLOG_RAW[id]=RLOG_RAW[id]||[]).push({row:i,data,ts,by}); }
   });
   const complete=[...batches.values()].filter(b=>Object.keys(b.parts).length>=b.n);
   const out={content:null,settings:null,meta:{},interviews:[],replies:{},pings:new Set(recs.ping.keys()),batchIds:new Set(complete.map(b=>b.id)),count:rows.length};
@@ -6791,6 +6803,19 @@ async function parseFeed(rows){
   for(const [id,rec] of recs.interview){ try{ out.interviews.push(Object.assign({},await unpackPayload(rec.data),{id,row:rec.row,ts:rec.ts,by:rec.by})); }catch(e){} }
   out.interviews.sort((a,b)=>a.row-b.row);
   for(const [id,rec] of recs.reply){ try{ out.replies[id]=Object.assign({},await unpackPayload(rec.data),{row:rec.row,ts:rec.ts,by:rec.by}); }catch(e){} }
+  out.replyLog={};                                     // 技術諮詢對話：每則回覆（mid 相同＝修改同一則；舊版沒有 mid 的視為同一則）
+  for(const [id,list] of Object.entries(RLOG_RAW)){
+    const by=new Map();
+    for(const rec of list){
+      let x; try{ x=await unpackPayload(rec.data); }catch(e){ continue; }
+      const mid=String(x.mid||"legacy"), prev=by.get(mid);
+      by.set(mid,{mid,status:String(x.status||"").trim(),reply:String(x.reply||""),at:String(x.at||""),row:prev?prev.row:rec.row,last:rec.row,ts:prev?prev.ts:rec.ts,lastTs:rec.ts,by:rec.by,edited:!!prev});
+    }
+    const msgs=[...by.values()].sort((a,b)=>a.row-b.row); if(!msgs.length) continue;
+    out.replyLog[id]=msgs;
+    const latest=msgs.reduce((a,b)=>b.last>a.last?b:a), said=msgs.filter(m=>m.reply), lastMsg=said[said.length-1]||latest;
+    out.replies[id]=Object.assign({},out.replies[id]||{},{status:latest.status,reply:lastMsg.reply,at:lastMsg.at,row:latest.last,n:said.length,lastMid:lastMsg.mid});
+  }
   out.comps=[];
   for(const [id,rec] of recs.comp){ try{ out.comps.push(Object.assign({},await unpackPayload(rec.data),{id,row:rec.row,ts:rec.ts,by:rec.by})); }catch(e){} }
   out.comps.sort((a,b)=>a.row-b.row);
@@ -7989,24 +8014,44 @@ const DIRECTOR_AV={hair:"bob",hc:0,skin:1,outfit:"trench",oc:6,acc:"glasses"};
 const CHIEF_AV={hair:"slick",hc:0,skin:1,outfit:"jacket",oc:4,acc:"none"};
 const CS_STATUSES=["待處理","已排定","已完成","無法受理"];
 
+const CS_CLOSED=new Set(["已完成","無法受理","已撤回"]), CS_MAX_FOLLOW=10, CS_MSG_MAX=500;
+const csTime=t=>{ const d=parseSheetTs(t)||(t?new Date(t):null); return d&&!isNaN(d)?d.getTime():0; };
 function buildConsults(replyMap){
   const me=normCode(myCode()).replace(/-/g,"");
   const known=new Set((S.consults||[]).map(c=>c.no));
   const orphans=Object.keys(replyMap||{}).filter(no=>!known.has(no)&&me&&no.indexOf("CS-"+me+"-")===0)
     .map(no=>({no,topic:"技術諮詢（在其他裝置送出）",category:"—",detail:"",createdAt:(replyMap[no]&&replyMap[no].at)||"",status:"待處理",fromReply:true}));
-  return (S.consults||[]).concat(orphans).map(c=>{
-    const r=replyMap&&replyMap[c.no];
-    let status=r&&r.status?r.status:(c.status||"待處理");
-    if(c.withdrawn&&(!r||!r.status||r.status==="待處理")) status="已撤回";
-    const reply=r?r.reply:"";
-    return Object.assign({},c,{id:c.no,status,reply,repliedAt:r?r.at:"",ver:hashStr((r?r.status:"")+"|"+reply)});
+  let dirty=false;
+  const out=(S.consults||[]).concat(orphans).map(c=>{
+    const r=replyMap&&replyMap[c.no], log=REPLOG[c.no];
+    if(log&&log.length&&!c.fromReply){                 // 收到的回覆存進自己的存檔（公開資料只留最近 90 天）
+      const keep=log.map(m=>({m:m.mid,s:m.status,t:String(m.reply||"").slice(0,1000),at:m.at})).slice(-20);
+      if(JSON.stringify(keep)!==JSON.stringify(c.rep||[])){ c.rep=keep; dirty=true; }
+    }
+    const rep=log&&log.length?log.map(m=>({m:m.mid,s:m.status,t:m.reply,at:m.at,ed:m.edited}))
+      :c.rep&&c.rep.length?c.rep:(r&&(r.reply||r.status)?[{m:"legacy",s:r.status,t:r.reply,at:r.at}]:[]);
+    const lastS=rep.length?rep[rep.length-1].s:"";
+    let status=(r&&r.status)||lastS||c.status||"待處理";
+    if(c.withdrawn&&(!status||status==="待處理")) status="已撤回";
+    const said=rep.filter(m=>m.t), last=said[said.length-1];
+    const reply=last?last.t:"", mine=c.msgs||[];
+    const thread=rep.map((m,i)=>({who:"d",text:m.t,at:m.at,s:m.s,ed:m.ed,k:csTime(m.at),o:i}))
+      .concat(mine.map((m,i)=>({who:"u",text:m.t,at:m.at,k:csTime(m.at),o:1000+i}))).sort((a,b)=>a.k-b.k||a.o-b.o);
+    const closed=CS_CLOSED.has(status), lastWho=thread.length?thread[thread.length-1].who:"";
+    const ver=said.length<=1?hashStr((r?r.status:lastS)+"|"+reply):hashStr(status+"|"+reply+"|"+said.length);
+    return Object.assign({},c,{id:c.no,status,reply,repliedAt:last?last.at:"",ver,thread,closed,left:CS_MAX_FOLLOW-mine.length,
+      canReply:!closed&&!c.fromReply&&rep.length>0&&lastWho==="d"&&mine.length<CS_MAX_FOLLOW,
+      waiting:!closed&&lastWho==="u"});
   });
+  if(dirty) save();
+  return out;
 }
 function placeEditing(){
   const b=$("#placeBody");
-  return [...b.querySelectorAll(".resched:not([hidden]) textarea")].some(t=>t.value.trim())||!!b.querySelector(".resched:not([hidden]) textarea:focus");
+  return [...b.querySelectorAll(".resched:not([hidden]) textarea")].some(t=>t.value.trim())||!!b.querySelector(".resched:not([hidden]) textarea:focus")
+    ||!!b.querySelector(".csreplybox textarea:focus");
 }
-let replyCache=null;
+let replyCache=null, REPLOG={}, CS_DRAFT={};
 async function loadInbox(notify,force){
   if(!S.group||inboxBusy) return false;
   inboxBusy=true;
@@ -8037,6 +8082,7 @@ async function loadInbox(notify,force){
       replyCache={};
       if(rpR.status==="fulfilled"&&rpR.value) rpR.value.forEach(r=>{ const no=String(r[0]||"").trim(); if(no) replyCache[no]={status:String(r[1]||"").trim(),reply:String(r[2]||""),at:String(r[3]||"")}; });
       if(feed) Object.entries(feed.replies).forEach(([no,x])=>{ replyCache[no]={status:String(x.status||"").trim(),reply:String(x.reply||""),at:String(x.at||"")}; });
+      if(feed) REPLOG=feed.replyLog||{};
     }
     INBOX.consults=buildConsults(replyCache);
     if(feed) checkComp(feed);
@@ -8257,7 +8303,7 @@ const HELP={
   visitBook:"進門會自動留下拜訪紀錄，也可以留一句話給屋主。",
   npcGift:"把自己種的蔬菜送給村長或總長：第 1 次會拿到隱藏版寵物，第 3、6 次各拿到一幅畫框，其他時候會回送種子。",
   consult:"部門平台或技術應用有問題，可以在這裡申請技術諮詢；總長回覆後會顯示在「我的申請」，最慢約 5 分鐘。",
-  myConsult:"送出過的技術諮詢都在這裡，可以看處理進度和總長的回覆，也能撤回還沒處理的申請。"
+  myConsult:"送出過的技術諮詢都在這裡，可以看處理進度和總長的回覆。總長回覆後可以直接在下面回覆，來回討論到結案為止（每件最多回覆 10 次）；還沒處理的申請可以撤回。"
 };
 const helpBtn=k=>HELP[k]?`<button type="button" class="help" data-help="${esc(HELP[k])}" aria-label="說明" title="說明">?</button>`:"";
 let helpPop=null;
@@ -9678,6 +9724,22 @@ function renderHome(body){
   if(inboxLoaded){ list.forEach(x=>{SEEN.iv[x.id]=x.ver;}); saveSeen(); renderMenu(); }
 }
 
+function csThreadHTML(x){
+  return (x.thread||[]).map(m=>m.who==="u"
+    ?`<p class="answer mine"><b>我的回覆${m.at?"・"+esc(m.at):""}</b>${esc(m.text)}</p>`
+    :m.text?`<p class="answer"><b>${esc(CFG.director)}的回覆${m.at?"・"+esc(m.at):""}${m.ed?"（已修改）":""}</b>${esc(m.text)}</p>`
+    :`<p class="cssys">${esc(CFG.director)}把狀態改為「${esc(m.s||"")}」${m.at?"・"+esc(m.at):""}</p>`).join("");
+}
+function csReplyBoxHTML(x){
+  if(x.closed) return x.status==="已撤回"?"":`<p class="cssys csend">🔒 這件諮詢已結案。如果還有問題，請重新申請。</p>`;
+  if(x.canReply) return `<div class="csreplybox">
+      <textarea class="ainput wide" rows="3" maxlength="${CS_MSG_MAX}" data-csmsg placeholder="還有問題或想補充，可以直接回覆${esc(CFG.director)}（最多 ${CS_MSG_MAX} 字，會公開發布，請勿寫入個人資料）">${esc(CS_DRAFT[x.id]||"")}</textarea>
+      <div class="acts"><span class="cerr cserr" role="alert"></span><span class="ahint" style="margin:0 auto 0 0">還可以回覆 ${x.left} 次</span><button class="act" type="button" data-csre>回覆</button></div>
+    </div>`;
+  if(x.waiting) return `<p class="cssys">已送出你的回覆，等${esc(CFG.director)}回覆後可以再回覆。</p>`;
+  if(!x.closed&&x.left<=0) return `<p class="cssys">這件已經來回 ${CS_MAX_FOLLOW} 次，請等${esc(CFG.director)}結案，或重新申請一件。</p>`;
+  return "";
+}
 function renderDigital(body){
   if(body.dataset.kind!=="digital"){
     body.dataset.kind="digital";
@@ -9712,8 +9774,9 @@ function renderDigital(body){
       <h4><span>${esc(x.topic)}</span>${stTag(x.status)}</h4>
       <dl><dt>申請編號</dt><dd>${esc(x.no)}</dd><dt>類別</dt><dd>${esc(x.category)}</dd><dt>申請時間</dt><dd>${fmtDate(x.createdAt)}</dd>${x.preferred?`<dt>希望時段</dt><dd>${esc(x.preferred)}</dd>`:""}</dl>
       <p class="txt">${esc(x.detail)}</p>
-      ${x.reply?`<p class="answer"><b>${esc(CFG.director)}的回覆${x.repliedAt?"・"+esc(x.repliedAt):""}</b>${esc(x.reply)}</p>`:""}
-      ${x.status==="待處理"?`<div class="acts"><button class="act ghost" type="button" data-csdraw>撤回申請</button></div>`:""}
+      ${csThreadHTML(x)}
+      ${x.status==="待處理"&&!x.thread.some(m=>m.who==="d")?`<div class="acts"><button class="act ghost" type="button" data-csdraw>撤回申請</button></div>`:""}
+      ${csReplyBoxHTML(x)}
     </article>`).join(""):`<p class="empty-note">還沒有申請紀錄。</p>`;
   list.forEach(x=>{ if(x.reply) SEEN.cs[x.id]=x.ver; }); saveSeen(); renderMenu();
 }
@@ -9877,6 +9940,26 @@ $("#placeBody").addEventListener("click",async e=>{
     finally{ btn.disabled=false; btn.textContent="送出申請"; }
     return;
   }
+  const csr=t.closest("[data-csre]");
+  if(csr){
+    const art=csr.closest("[data-cs]"), no=art&&art.dataset.cs;
+    const c=(S.consults||[]).find(v=>v.no===no), x=INBOX.consults.find(v=>v.id===no);
+    const ta=art.querySelector("[data-csmsg]"), er=art.querySelector(".cserr"), msg=String(ta&&ta.value||"").trim();
+    if(touristBlock("技術諮詢")) return;
+    const bad=!c||!x||!x.canReply?"這件諮詢目前不能回覆":msg.length<2?"請輸入回覆內容":msg.length>CS_MSG_MAX?`回覆最多 ${CS_MSG_MAX} 字`:
+      Date.now()-lastConsultAt<30000?"剛剛才送出，請稍等 30 秒再送":"";
+    if(bad){ if(er) er.textContent=bad; Sound.sfx("error"); return; }
+    csr.disabled=true; csr.textContent="送出中…";
+    try{
+      await sendForm("consult",{no:c.no,code:myCode(),name:S.name||"新人冒險者",empno:S.emp||"",group:S.group,category:"追問",topic:"【追問】"+c.topic,detail:msg,preferred:"",contact:""});
+      lastConsultAt=Date.now();
+      c.msgs=(c.msgs||[]).concat([{t:msg,at:nowText()}]).slice(-CS_MAX_FOLLOW);
+      delete CS_DRAFT[no]; save(); queueSync(true);
+      INBOX.consults=buildConsults(replyCache);
+      Sound.sfx("mail"); toast(`已送出回覆，${CFG.director}會盡快回覆`); renderPlace();
+    }catch(err){ if(er) er.textContent="送出失敗，請檢查網路後再試"; Sound.sfx("error"); csr.disabled=false; csr.textContent="回覆"; }
+    return;
+  }
   const cs=t.closest("[data-cs]");
   if(cs&&t.closest("[data-csdraw]")){
     const c=(S.consults||[]).find(v=>v.no===cs.dataset.cs); if(!c) return;
@@ -9889,7 +9972,11 @@ $("#placeBody").addEventListener("click",async e=>{
     }catch(err){ toast("撤回失敗，請檢查網路後再試"); }
   }
 });
-$("#placeBody").addEventListener("input",e=>{ if(e.target.closest("#csDetail,#csTopic,#csContact")) $("#csErr").textContent=""; });
+$("#placeBody").addEventListener("input",e=>{
+  if(e.target.closest("#csDetail,#csTopic,#csContact")) $("#csErr").textContent="";
+  const m=e.target.closest("[data-csmsg]");
+  if(m){ const art=m.closest("[data-cs]"); CS_DRAFT[art.dataset.cs]=m.value; const er=art.querySelector(".cserr"); if(er) er.textContent=""; }
+});
 
 /* ================= welcome dialog ================= */
 const WELCOME_KEY="sino22-welcomed";
@@ -13592,7 +13679,7 @@ function openAdminView(){
   $("#viewMap").hidden=true; $("#viewZone").hidden=true; $("#viewPlace").hidden=true; $("#viewAdmin").hidden=false;
   curZone=null; curPlace=null;
   $("#adminNpc").innerHTML=avatarSVG(CHIEF_AV);
-  $("#fxFeed").textContent=`=QUERY('後台更新'!A:G, "select A, C, D, E, F, G where C is not null", 1)`;
+  $("#fxFeed").textContent=`=QUERY('後台更新'!A:G, "select A, C, D, E, F, G where C is not null and (C <> 'reply' or A >= datetime '"&TEXT(TODAY()-90,"yyyy-mm-dd")&" 00:00:00')", 1)`;
   $("#fxConsultPub").textContent=`={"時間戳記","申請編號","新人代碼","名字","組別","類別","主題","內容","希望時間";QUERY('技術諮詢'!A2:I, "select A, B, C, D, E, F, G, H, I where B is not null order by A desc", 0)}`;
   $("#fxRosterPub").textContent=`={"時間戳記","新人代碼","名字","組別","等級","進度","結業";QUERY(SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE), "select Col1, Col2, Col3, Col4, Col5, Col6, Col7 where Col2 is not null", 0)}`;
   $("#fxSaveIndex").textContent=`=LET(s,SORTN(SORT(FILTER('進度存檔'!A2:C,'進度存檔'!B2:B<>""),1,FALSE),9^9,2,2,TRUE),{INDEX(s,0,2),RIGHT(INDEX(s,0,3),16)})`;
@@ -13697,7 +13784,9 @@ function pubDone(p,feed){
   if(p.type==="approve"){ const x=(feed.approve||{})[String(p.id).toUpperCase()]; return !!x&&(p.expect==null||String(!!x.ok)===p.expect); }
   if(p.type==="comp"){ const x=(feed.comps||[]).find(v=>v.id===p.id); return !!x&&(p.expect==null||String(!!x.revoked)===p.expect); }
   if(p.type==="interview"){ const x=feed.interviews.find(v=>v.id===p.id); return !!x&&(p.expect==null||String(x.status||"")===p.expect); }
-  if(p.type==="reply"){ const r=feed.replies[p.id]; return !!r&&(p.expect==null||r.at===p.expect); }
+  if(p.type==="reply"){
+    if(p.expect&&String(p.expect).indexOf("mid:")===0) return ((feed.replyLog||{})[p.id]||[]).some(m=>"mid:"+m.mid+"|"+hashStr(m.status+"|"+m.reply)===p.expect);
+    const r=feed.replies[p.id]; return !!r&&(p.expect==null||r.at===p.expect); }
   return false;
 }
 let pubTimer=null;
@@ -13875,8 +13964,7 @@ async function loadAdminLists(force){
   ADMIN_IV=[...ivs.values()].reverse();
   const rps=new Map();
   if(rp.status==="fulfilled"&&rp.value) rp.value.forEach(r=>{ const no=String(r[0]||"").trim(); if(no) rps.set(no,{no,status:r[1],reply:r[2],at:r[3],src:"sheet"}); });
-  if(feed) Object.entries(feed.replies).sort((a,b)=>a[1].row-b[1].row).forEach(([no,x])=>{ rps.delete(no); rps.set(no,Object.assign({no,src:"feed"},x)); });
-  ADMIN_RP=[...rps.values()].reverse();
+  RP_SHEET=rps; rpFromFeed(feed);
   renderIvTable(); renderRpTable();
   if(!feed&&sheetUrl("feed")&&fd.status==="rejected") toast("暫時讀不到後台資料");
 }
@@ -14008,13 +14096,19 @@ function renderIvTable(){
         <td>${x.src==="feed"?`<span style="display:flex;gap:4px">${off?"":`<button class="mini-btn" type="button" data-ivedit="${esc(x.id)}">改時間</button>`}<button class="del" type="button" data-ivtoggle="${esc(x.id)}">${off?"恢復通知":"取消通知"}</button></span>`:`<span class="ahint">請到工作表修改</span>`}</td>
       </tr>`;}).join(""):`<tr><td colspan="8">${sheetUrl("feed")?"還沒有發布過面談通知。":"請先完成設定小幫手。"}</td></tr>`}</tbody>`;
 }
+let RP_SHEET=new Map();
+function rpFromFeed(feed){                               // 已發布的回覆：每一則一列（最新的在上面）
+  const rps=new Map(RP_SHEET);
+  if(feed) Object.entries(feed.replyLog||{}).forEach(([no,list])=>{ rps.delete(no); list.forEach(m=>rps.set(no+"|"+m.mid,Object.assign({no,src:"feed"},m))); });
+  ADMIN_RP=[...rps.values()].sort((a,b)=>(b.last||-1)-(a.last||-1));
+}
 function renderRpTable(){
   $("#rpTable").innerHTML=`<thead><tr><th>申請編號</th><th>狀態</th><th>回覆</th><th>回覆時間</th><th><span class="sr">操作</span></th></tr></thead><tbody>${
     ADMIN_RP.length?ADMIN_RP.map(x=>`<tr>
       <td><code>${esc(x.no)}</code></td><td>${stTag(String(x.status||"待處理"))}</td>
-      <td style="white-space:normal;min-width:14em">${esc(x.reply)}</td>
+      <td style="white-space:normal;min-width:14em">${x.reply?esc(x.reply):'<span class="ahint">（只更新狀態）</span>'}${x.edited?' <span class="ahint">（已修改）</span>':""}</td>
       <td>${esc(x.at||"")}${x.src==="feed"&&x.by?`<br><span class="ahint">${esc(x.by)}</span>`:""}</td>
-      <td><button class="mini-btn" type="button" data-rpedit="${esc(x.no)}">修改</button></td></tr>`).join("")
+      <td><button class="mini-btn" type="button" data-rpedit="${esc(x.no)}" data-mid="${esc(x.mid||"")}">修改</button></td></tr>`).join("")
     :`<tr><td colspan="5">${sheetUrl("feed")?"還沒有發布過回覆。":"請先完成設定小幫手。"}</td></tr>`}</tbody>`;
 }
 $("#hvSend").addEventListener("click",async()=>{
@@ -14082,7 +14176,40 @@ $("#ivTable").addEventListener("click",async e=>{
   if(await adminSend("interview",x.id,payload,`${off?"恢復":"取消"}面談通知：${x.title}（${x.code}）`,status)) renderIvTable();
 });
 let CS_ROWS=[], CS_FILTER="todo";
-function csStatus(no){ const r=(FEED&&FEED.replies||{})[no]; return r?r.status:"待回覆"; }
+const csT=d=>d?d.getTime():0;
+function csGroup(raw){                                 // 同一個申請編號：原申請＋追問＋撤回 → 一件
+  const m=new Map();
+  raw.slice().sort((a,b)=>csT(a.at)-csT(b.at)).forEach(x=>{
+    const kind=x.cat==="追問"?"f":x.cat==="撤回申請"?"w":"o";
+    let c=m.get(x.no);
+    if(!c){ c={no:x.no,code:x.code,name:x.name,group:x.group,cat:"—",topic:String(x.topic||"").replace(/^【(追問|撤回)】/,""),detail:"",pref:"",at:x.at,ups:[],withdrawn:false}; m.set(x.no,c); }
+    if(kind==="o"&&!c.orig){ Object.assign(c,{cat:x.cat,topic:x.topic,detail:x.detail,pref:x.pref,at:x.at,name:x.name,group:x.group,orig:true}); }
+    else if(kind==="f") c.ups.push({text:x.detail,at:x.at});
+    else if(kind==="w"){ c.withdrawn=true; c.ups.push({sys:"新人撤回了申請",at:x.at}); }
+    c.lastAt=x.at||c.lastAt;
+  });
+  return [...m.values()].sort((a,b)=>csT(b.lastAt||b.at)-csT(a.lastAt||a.at));
+}
+function csLog(no){ return (FEED&&FEED.replyLog||{})[no]||[]; }
+function csStatus(no){
+  const r=(FEED&&FEED.replies||{})[no], c=CS_ROWS.find(v=>v.no===no), st=r?r.status:"";
+  if(st&&CS_CLOSED.has(st)) return st;
+  if(c&&c.withdrawn) return "已撤回";
+  const lastD=Math.max(0,...csLog(no).map(m=>csT(parseSheetTs(m.lastTs||m.ts))));
+  const lastU=c?Math.max(0,...c.ups.filter(u=>!u.sys).map(u=>csT(u.at))):0;
+  if(lastU&&lastU>lastD) return "待回覆";                // 新人追問了，還沒回
+  if(st) return st;
+  if(c&&c.at&&Date.now()-csT(c.at)>90*864e5) return "已封存";
+  return "待回覆";
+}
+function csAdminThread(x){
+  const L=csLog(x.no).map(m=>({k:csT(parseSheetTs(m.ts)),o:0,h:m.reply?`<p class="csmsg d"><b>${esc(CFG.director)}・${esc(m.at||"")}${m.edited?"（已修改）":""}</b>${esc(m.reply)}</p>`
+      :`<p class="csmsg s">狀態改為「${esc(m.status)}」・${esc(m.at||"")}</p>`}))
+    .concat(x.ups.map(u=>({k:csT(u.at),o:1,h:u.sys?`<p class="csmsg s">${esc(u.sys)}・${u.at?esc(fmtShort(u.at)):""}</p>`
+      :`<p class="csmsg u"><b>${esc(x.name||"新人")}・${u.at?esc(fmtShort(u.at)):""}</b>${esc(u.text)}</p>`})))
+    .sort((a,b)=>a.k-b.k||a.o-b.o);
+  return L.length?`<div class="csthread">${L.map(v=>v.h).join("")}</div>`:"";
+}
 async function loadConsultAdmin(){
   const src=$("#csSrc"), list=$("#csAdminList"); if(!list) return;
   if(!sheetUrl("consults")){
@@ -14093,8 +14220,8 @@ async function loadConsultAdmin(){
   try{ await getFeed(true); }catch(e){}
   try{
     const rows=await fetchSheet("consults",true);
-    CS_ROWS=(rows||[]).filter(r=>/^CS-/i.test(String(r[1]||"").trim())).map(r=>({at:parseSheetTs(r[0]),no:String(r[1]).trim().toUpperCase(),code:String(r[2]||""),name:String(r[3]||""),group:String(r[4]||""),
-      cat:String(r[5]||""),topic:String(r[6]||""),detail:String(r[7]||""),pref:String(r[8]||"")})).sort((a,b)=>(b.at?b.at.getTime():0)-(a.at?a.at.getTime():0));
+    CS_ROWS=csGroup((rows||[]).filter(r=>/^CS-/i.test(String(r[1]||"").trim())).map(r=>({at:parseSheetTs(r[0]),no:String(r[1]).trim().toUpperCase(),code:String(r[2]||""),name:String(r[3]||""),group:String(r[4]||""),
+      cat:String(r[5]||""),topic:String(r[6]||""),detail:String(r[7]||""),pref:String(r[8]||"")})));
     src.textContent=`共 ${CS_ROWS.length} 筆申請，其中 ${CS_ROWS.filter(x=>csStatus(x.no)==="待回覆"||csStatus(x.no)==="待處理").length} 筆待回覆。資料來源：「諮詢資料」工作表（最慢約 5 分鐘更新）。`;
   }catch(e){ src.innerHTML=`<span class="cerr" style="display:inline">讀不到「諮詢資料」工作表</span>，請確認已發布並設定 CSV 網址。`; CS_ROWS=[]; }
   renderConsultAdmin();
@@ -14107,11 +14234,11 @@ function renderConsultAdmin(){
   list.innerHTML=L.length?L.map(x=>{ const st=csStatus(x.no), r=(FEED&&FEED.replies||{})[x.no];
     return `<article class="csrow${todo(x)?" todo":""}">
       <div class="cshead"><b>${esc(x.topic||"（沒有主題）")}</b>
-        <span class="st ${todo(x)?"st-wait":st==="已完成"?"st-ok":st==="無法受理"?"st-off":"st-info"}">${esc(st)}</span></div>
+        <span class="st ${todo(x)?"st-wait":st==="已完成"?"st-ok":["無法受理","已撤回","已封存"].includes(st)?"st-off":"st-info"}">${esc(st)}</span></div>
       <p class="ahint" style="margin:2px 0 6px">${esc(x.name||"—")}・${esc(x.group||"—")}・${esc(x.cat||"—")}・<code>${esc(x.no)}</code>・${x.at?esc(fmtShort(x.at)):""}${x.pref?`・希望時間：${esc(x.pref)}`:""}</p>
       ${x.detail?`<details><summary>申請內容</summary><p class="csdetail">${esc(x.detail)}</p></details>`:""}
-      ${r&&r.reply?`<p class="csreply">💬 已回覆：${esc(r.reply)}</p>`:""}
-      <div class="formfoot"><span></span><button class="act${todo(x)?"":" ghost"}" type="button" data-csreply="${esc(x.no)}">${todo(x)?"回覆":"修改回覆"}</button></div>
+      ${csAdminThread(x)}
+      ${st==="已撤回"?"":`<div class="formfoot"><span></span><button class="act${todo(x)?"":" ghost"}" type="button" data-csreply="${esc(x.no)}">${CS_CLOSED.has(st)||st==="已封存"?"補充回覆":"回覆"}</button></div>`}
     </article>`; }).join(""):`<p class="empty-note">${CS_ROWS.length?(CS_FILTER==="todo"?"目前沒有待回覆的諮詢 🎉":"沒有符合的申請。"):"目前還沒有收到任何申請。"}</p>`;
 }
 $("#csReload").addEventListener("click",loadConsultAdmin);
@@ -14119,29 +14246,40 @@ document.querySelectorAll("[data-csf]").forEach(b=>b.addEventListener("click",()
 $("#csAdminList").addEventListener("click",e=>{
   const b=e.target.closest("[data-csreply]"); if(!b) return;
   const no=b.dataset.csreply, r=(FEED&&FEED.replies||{})[no], x=CS_ROWS.find(v=>v.no===no);
-  $("#hcNo").value=no; $("#hcReply").value=r&&r.reply?r.reply:"";
+  HC_EDIT=null; $("#hcNo").value=no; $("#hcReply").value="";
   const want=r&&r.status&&r.status!=="待處理"?r.status:"已排定";
   if([...$("#hcStatus").options].some(o=>o.value===want)) $("#hcStatus").value=want;
   $("#hcBox").scrollIntoView({behavior:"smooth",block:"center"});
   setTimeout(()=>{ $("#hcReply").focus(); },350);
-  $("#hcErr").textContent=x?`正在回覆：${x.name}「${x.topic}」`:"";
+  $("#hcErr").textContent=x?`正在回覆：${x.name}「${x.topic}」（會新增一則）`:"";
 });
+let HC_EDIT=null;                                       // 修改已發布的某一則回覆
+$("#hcNo").addEventListener("input",()=>{ if(HC_EDIT&&$("#hcNo").value.trim().toUpperCase()!==HC_EDIT.no){ HC_EDIT=null; $("#hcErr").textContent=""; } });
 $("#hcSend").addEventListener("click",async()=>{
   const err=$("#hcErr"); err.textContent="";
   const no=$("#hcNo").value.trim().toUpperCase(), status=$("#hcStatus").value, reply=String($("#hcReply").value).trim().slice(0,1000);
   if(!/^CS-[A-Z0-9-]{4,30}$/.test(no)){ err.textContent="申請編號格式不對，應以 CS- 開頭"; Sound.sfx("error"); return; }
-  if(!reply&&status!=="待處理"){ err.textContent="請輸入回覆內容"; Sound.sfx("error"); return; }
-  const at=nowText();
-  if(await adminSend("reply",no,"j:"+JSON.stringify({status,reply,at}),`諮詢回覆：${no}（${status}）`,at)){
-    $("#hcNo").value=""; $("#hcReply").value=""; $("#hcErr").textContent="";
-    FEED=FEED||{}; FEED.replies=FEED.replies||{}; FEED.replies[no]={status,reply,at};   // 先在清單上更新狀態
-    renderConsultAdmin();
+  const curSt=((FEED&&FEED.replies||{})[no]||{}).status||"";
+  if(!reply&&status!=="待處理"&&(status===curSt||HC_EDIT)){ err.textContent="請輸入回覆內容（只改狀態時，請選不同的狀態）"; Sound.sfx("error"); return; }
+  const ed=HC_EDIT&&HC_EDIT.no===no?HC_EDIT:null;
+  const mid=ed?ed.mid:randChars(6), at=ed&&ed.at?ed.at:nowText();
+  if(await adminSend("reply",no,"j:"+JSON.stringify({mid,status,reply,at}),`諮詢回覆：${no}（${status}${ed?"・修改":""}）`,"mid:"+mid+"|"+hashStr(status+"|"+reply))){
+    $("#hcNo").value=""; $("#hcReply").value=""; $("#hcErr").textContent=""; HC_EDIT=null;
+    FEED=FEED||{}; FEED.replies=FEED.replies||{}; FEED.replyLog=FEED.replyLog||{};   // 先在清單上更新
+    const log=FEED.replyLog[no]=(FEED.replyLog[no]||[]).slice(), ts=nowText()+":00", i=log.findIndex(m=>m.mid===mid);
+    const row=1e9+Date.now()%1e6;
+    if(i>=0) log[i]=Object.assign({},log[i],{status,reply,last:row,lastTs:ts,edited:true}); else log.push({mid,status,reply,at,row,last:row,ts,lastTs:ts,by:opName()});
+    const said=log.filter(m=>m.reply), lm=said[said.length-1];
+    FEED.replies[no]={status,reply:lm?lm.reply:"",at:lm?lm.at:at,row,n:said.length,lastMid:lm?lm.mid:mid};
+    renderConsultAdmin(); rpFromFeed(FEED); renderRpTable();
   }
 });
 $("#rpTable").addEventListener("click",e=>{
   const b=e.target.closest("[data-rpedit]"); if(!b) return;
-  const x=ADMIN_RP.find(v=>v.no===b.dataset.rpedit); if(!x) return;
+  const x=ADMIN_RP.find(v=>v.no===b.dataset.rpedit&&String(v.mid||"")===String(b.dataset.mid||"")); if(!x) return;
+  HC_EDIT=x.src==="feed"?{no:x.no,mid:x.mid,at:x.at}:null;
   $("#hcNo").value=x.no; $("#hcReply").value=x.reply||"";
+  $("#hcErr").textContent=HC_EDIT?"正在修改這一則回覆（不會新增一則）":"";
   if([...$("#hcStatus").options].some(o=>o.value===x.status)) $("#hcStatus").value=x.status;
   $("#hcReply").focus(); window.scrollTo({top:$("#hcNo").getBoundingClientRect().top+scrollY-140,behavior:"smooth"});
 });

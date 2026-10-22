@@ -820,7 +820,38 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 
 .visitwrap{max-width:min(760px,calc(100vw - 28px))}
 .vsstats{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
-.vsstats span{background:#1B2466;border:2px solid var(--line);border-radius:4px;padding:4px 10px;font-size:14px}
+.vsstats>span{background:#1B2466;border:2px solid var(--line);border-radius:4px;padding:4px 10px;font-size:14px}
+.vsstats{display:block;margin:0 0 12px}
+.vsprof{position:relative;background:#1B2466;background:linear-gradient(100deg,color-mix(in srgb,var(--jc) 22%,#1B2466) 0%,#1B2466 55%);border:2px solid var(--line);border-left:6px solid var(--jc);border-radius:4px;padding:12px 14px}
+.vsprofhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.vsjob{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 auto}
+.vsjob .jmark{width:46px;height:46px;font-size:26px;border-width:3px;border-radius:6px}
+.vsjob .jmark.j2{box-shadow:0 0 0 3px #F2C14E,0 0 12px rgba(242,193,78,.7)}
+.vsjob.nojob .jmark{background:#8E9AB0}
+.vsjobtxt{display:flex;flex-direction:column;min-width:0}
+.vsjobtxt small{font-size:13px;color:var(--win-muted,#B9C2EA);line-height:1.4}
+.vsjobtxt b{font-family:var(--pixel);font-weight:400;font-size:24px;line-height:1.25;color:var(--jc);text-shadow:2px 2px 0 #0B1030;overflow-wrap:anywhere}
+.vsjob.nojob .vsjobtxt b{color:#E6E9FF;font-size:18px}
+.vslv{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto;padding:4px 12px;background:#0B1030;border:2px solid #F2C14E;border-radius:4px}
+.vslv b{font-family:var(--pixel);font-weight:400;font-size:20px;color:#FFE08A;line-height:1.2}
+.vslv small{font-size:12px;color:#E6E9FF}
+.vsquote{position:relative;margin:12px 0 0;padding:8px 12px;background:#F7F3E3;color:#2B2340;border-radius:4px;border:2px solid #0B1030;font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.vsquote::before{content:"";position:absolute;left:18px;top:-9px;border:8px solid transparent;border-top:0;border-bottom-color:#0B1030}
+.vsquote::after{content:"";position:absolute;left:20px;top:-6px;border:6px solid transparent;border-top:0;border-bottom-color:#F7F3E3}
+.vsbadges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.vsbadge{display:inline-block;font-size:13px;line-height:1.6;padding:1px 10px;border-radius:3px;white-space:nowrap}
+.vsbadge.zd{background:#C8282E;color:#FFE8A0;box-shadow:inset 0 0 0 1px #F2C14E}
+.vsbadge.tro{background:#2E3C86;color:#FFE58A;box-shadow:inset 0 0 0 1px #F2C14E}
+.vscells{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:10px 0 0}
+.vscell{background:#0F1648;border:2px solid var(--line);border-radius:4px;padding:6px 10px;display:flex;flex-direction:column}
+.vscell small{font-size:12px;color:var(--win-muted,#B9C2EA)}
+.vscell b{font-family:var(--pixel);font-weight:400;font-size:20px;color:#fff;line-height:1.3}
+.vscell b span{font-size:13px;color:var(--win-muted,#B9C2EA)}
+.vsfriend{margin:10px 0 0}
+.vsfriend[hidden]{display:none}
+.vsfriend .pdtag{display:block;padding:6px 12px;border-radius:4px;font-size:14px;border:2px solid #F4A6BF}
+.vsstats>.vsfriend{margin:0 0 8px}
+@media (max-width:520px){.vsprof{padding:10px}.vsjob .jmark{width:38px;height:38px;font-size:21px}.vsjobtxt b{font-size:20px}.vslv{padding:3px 8px}.vslv b{font-size:17px}.vscells{grid-template-columns:repeat(3,1fr);gap:6px}.vscell{padding:5px 6px}.vscell b{font-size:17px}}
 .vsbook{display:grid;gap:8px;margin-top:6px;max-height:240px;overflow:auto}
 .vsitem{display:flex;gap:10px;align-items:center;background:#1B2466;border:2px solid var(--line);border-radius:4px;padding:8px 10px}
 .vsitem .vsav{width:40px;height:40px;flex:none;background:#8FD3F0;border:2px solid #fff;border-radius:3px;padding:2px}
@@ -3006,9 +3037,9 @@ footer.site p{margin:4px 0}
       <button class="act ghost" type="button" data-close>離開</button>
     </div>
     <div class="body">
+      <div class="vsstats" id="vsStats"></div>
       <div id="vsRoom"></div>
       <div id="vsRps" class="vsrps"></div>
-      <div class="vsstats" id="vsStats"></div>
       <div class="stabbar" role="tablist" data-stabbar="visit"><button type="button" role="tab" class="stab on" data-stabgo="visit" data-stabid="farm" aria-selected="true">🌱 農場</button><button type="button" role="tab" class="stab" data-stabgo="visit" data-stabid="act" aria-selected="false">🥕 互動</button><button type="button" role="tab" class="stab" data-stabgo="visit" data-stabid="book" aria-selected="false">📒 訪客簿</button></div>
       <div class="stabpane" role="tabpanel" data-stabpane="visit" data-stabid="farm"><div id="vsFarm"></div></div>
       <div class="stabpane" role="tabpanel" data-stabpane="visit" data-stabid="act" hidden><div id="vsAct"></div></div>
@@ -8343,6 +8374,22 @@ function visitItemHTML(v,people,host){
     <div><p><b>${esc(v.name||p.name||"冒險者")}</b><span class="ahint"> ${esc(fmtShort(v.at))}${v.pending?"・同步中":""}</span>${mine?`<button class="linkbtn retract" type="button" data-retract="visit" data-target="${esc(host)}" data-msg="${esc(v.msg)}">收回</button>`:""}</p>
     <p>${v.msg?esc(v.msg):'<span class="ahint">來拜訪過</span>'}</p></div></article>`;
 }
+function vsProfileHTML(p,h){                            // 拜訪頁的屋主名片
+  const av=p.av||{}, j=jobById(av.job), t=+av.jt===2?2:1, lv=Math.max(1,Math.min(TITLES.length,+p.level||1));
+  const job=j?`<div class="vsjob">${jobMarkHTML(j.id,t)}<div class="vsjobtxt"><small>${esc(j.group)}・${t>=2?"二轉職業":"職業"}</small><b>${esc(t>=2?j.n2:j.n1)}</b></div></div>`
+    :`<div class="vsjob nojob"><span class="jmark" aria-hidden="true">？</span><div class="vsjobtxt"><small>${esc(p.group||"冒險者")}</small><b>還沒有轉職</b></div></div>`;
+  const c=Array.isArray(h.trc)?h.trc.map(n=>+n||0):[0,0,0];
+  const badges=(+av.zt?`<span class="vsbadge zd">🏮 十二生肖收藏家</span>`:"")
+    +(c[0]+c[1]+c[2]?`<span class="vsbadge tro" title="小遊戲週獎盃">🏆 ${[["金",c[0]],["銀",c[1]],["銅",c[2]]].filter(x=>x[1]).map(x=>`${x[0]} ${x[1]}`).join("・")}</span>`:"");
+  const cells=[["🏅","成就",h.ach,ACH.length],["🧳","收藏",h.finds,FINDS.length],["🖼","相簿",h.album,ALBUM.length]].filter(x=>x[2]!=null);
+  return `<section class="vsprof" style="--jc:${j?j.color:"#8E9AB0"}" aria-label="${esc(p.name||"屋主")}的名片">
+    <div class="vsprofhead">${job}<div class="vslv"><b>LV ${lv}</b><small>${esc(TITLES[lv-1])}</small></div></div>
+    ${p.msg?`<p class="vsquote">${esc(p.msg)}</p>`:""}
+    ${badges?`<div class="vsbadges">${badges}</div>`:""}
+    ${cells.length?`<div class="vscells">${cells.map(([i,l,n,tot])=>`<div class="vscell"><small>${i} ${l}</small><b>${+n||0}<span> / ${tot}</span></b></div>`).join("")}</div>`:""}
+    <div class="vsfriend"></div>
+  </section>`;
+}
 function renderVisit(){
   const d=loungeData(), p=d.people[visitHost]; if(!p) return;
   const h=(p.av&&p.av.home)||{};
@@ -8358,8 +8405,8 @@ function renderVisit(){
     hostEl.onclick=()=>hostGreet(hostEl,p,h);
     setTimeout(()=>{ if(document.body.contains(hostEl)&&!hostEl.dataset.greeted) hostGreet(hostEl,p,h,true); },900);   // 一進門先打招呼
   }
-  $("#vsStats").innerHTML=(jobBadgeHTML(p.av)?`<span>${jobBadgeHTML(p.av)}</span>`:"")+`<span>LV ${esc(p.level||"1")}</span>`+(h.ach!=null?`<span>🏆 成就 ${h.ach}/${ACH.length}</span>`:"")+(h.finds!=null?`<span>🧳 收藏 ${h.finds}/${FINDS.length}</span>`:"")+(h.album!=null?`<span>🖼 相簿 ${h.album}/${ALBUM.length}</span>`:"")+(p.msg?`<span>「${esc(p.msg)}」</span>`:"");
-  if(p.nocard) $("#vsStats").innerHTML=`<p class="nocardvisit">🏠 ${esc(p.name||"屋主")}${p.friendOnly?"的名片暫時讀不到，家裡的佈置看不到":"還沒逛過交誼廳，家裡還沒佈置"}${p.pet?"":"，也還沒有寵物"}。${p.pet?"寵物們照樣可以一起玩；":""}可以在「訪客簿」留言或送他蔬菜，他下次打開網站就會收到。</p>`;
+  $("#vsStats").innerHTML=vsProfileHTML(p,h);
+  if(p.nocard) $("#vsStats").innerHTML=`<div class="vsfriend"></div><p class="nocardvisit">🏠 ${esc(p.name||"屋主")}${p.friendOnly?"的名片暫時讀不到，家裡的佈置看不到":"還沒逛過交誼廳，家裡還沒佈置"}${p.pet?"":"，也還沒有寵物"}。${p.pet?"寵物們照樣可以一起玩；":""}可以在「訪客簿」留言或送他蔬菜，他下次打開網站就會收到。</p>`;
   renderVisitPlayTag(p);
   renderVisitFarm(p,h);
   renderVisitActions(p);
@@ -12837,6 +12884,8 @@ async function sendPlaydate(code,p){                   // 打開拜訪視窗時�
 }
 function renderVisitPlayTag(p){
   const box=$("#vsStats"); if(!box) return;
+  const slot=box.querySelector(".vsfriend");
+  if(slot){ slot.innerHTML=playTagHTML(p); slot.hidden=!slot.innerHTML; return; }
   const old=box.querySelector(".pdtag"); if(old) old.remove();
   const html=playTagHTML(p); if(html) box.insertAdjacentHTML("afterbegin",html);
 }

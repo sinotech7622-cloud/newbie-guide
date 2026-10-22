@@ -1584,7 +1584,19 @@ body.tour-lock .mapframe{z-index:41}
 .mgcell{position:relative;border:2px solid #2B3F7A;border-radius:4px;background:#101B44;padding:0;cursor:pointer;overflow:hidden;font:inherit;color:inherit;touch-action:manipulation}
 .mgcell::before{content:"";position:absolute;inset:14% 12% auto;height:6%;background:#22356E;box-shadow:0 10px 0 #22356E,0 20px 0 #1C2D60,0 30px 0 #22356E}
 .mgcell svg{position:absolute;inset:10%;width:80%;height:80%;image-rendering:pixelated;animation:mgpop .12s ease-out,mgwig .5s ease-in-out .12s infinite alternate}
-.mgcell.hit{background:#1E5A3A;border-color:#5FE39A}.mgcell.oops{background:#5A1E2A;border-color:var(--red)}
+.mgcell.hit{background:#1E5A3A;border-color:#5FE39A}
+#mgBug .mgboard{transition:box-shadow .3s}
+#mgBug[data-ph="1"] .mgboard{box-shadow:inset 0 0 0 3px #F2C14E}
+#mgBug[data-ph="2"] .mgboard{box-shadow:inset 0 0 0 3px #FF9F43}
+#mgBug[data-ph="3"] .mgboard{box-shadow:inset 0 0 0 3px #E0505A}
+#mgBug[data-ph="1"] .mgcell svg{animation-duration:.12s,.4s}
+#mgBug[data-ph="2"] .mgcell svg{animation-duration:.12s,.3s}
+#mgBug[data-ph="3"] .mgcell svg{animation-duration:.1s,.22s}
+.mgcell.fast svg{filter:hue-rotate(185deg) saturate(1.5);animation-duration:.1s,.16s!important}
+.mgcell.fast::after{content:"⚡";position:absolute;right:6%;top:2%;font-size:clamp(12px,4vw,20px);line-height:1;pointer-events:none}
+#mgBug.rush .mgboard{animation:mgrush .45s ease-in-out infinite alternate}
+@keyframes mgrush{from{box-shadow:inset 0 0 0 3px #E0505A,0 0 0 rgba(224,80,90,0)}to{box-shadow:inset 0 0 0 3px #FF8A8A,0 0 18px rgba(224,80,90,.8)}}
+@media (prefers-reduced-motion:reduce){#mgBug.rush .mgboard{animation:none}}.mgcell.oops{background:#5A1E2A;border-color:var(--red)}
 @keyframes mgpop{from{transform:scale(.4)}to{transform:scale(1)}}
 @keyframes mgwig{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
 .mgrules summary{cursor:pointer;color:var(--gold);font-size:14px}
@@ -8682,8 +8694,8 @@ const MG={
     tiers:[[8,{seed:20,fert:2,aff:2}],[6,{seed:20,fert:2}],[4,{seed:10,fert:1}],[2,{seed:5}]],
     say:[[8,"排水系統完美運作，村子安全度過暴雨！"],[6,"了不起，大部分的雨水都排掉了。"],[4,"不錯！主要道路都沒淹水。"],[2,"有接通幾段，下次再快一點！"],[0,"淹水了…別急，先找從進水口出發的那根水管。"]]},
   bug:{place:"digital",name:"抓 Bug",unit:"分",icon:"🐛",dept:"數位總合辦公室・小遊戲",
-    tiers:[[30,{seed:20,fert:2,aff:2}],[22,{seed:20,fert:2}],[15,{seed:10,fert:1}],[8,{seed:5}]],
-    say:[[30,"系統穩如泰山！你可以來數位總合辦公室上班了。"],[22,"抓得又快又準，Bug 都怕你了。"],[15,"不錯！這次上線應該不會出包了。"],[8,"有抓到一些，剩下的我來處理。"],[0,"Bug 有點多…別點到正常程式喔！"]]}
+    tiers:[[45,{seed:20,fert:2,aff:2}],[32,{seed:20,fert:2}],[22,{seed:10,fert:1}],[12,{seed:5}]],
+    say:[[45,"系統穩如泰山！你可以來數位總合辦公室上班了。"],[32,"抓得又快又準，Bug 都怕你了。"],[22,"不錯！這次上線應該不會出包了。"],[12,"有抓到一些，剩下的我來處理。"],[0,"Bug 有點多…別點到正常程式喔！"]]}
 };
 const mgWeek=()=>{ const d=new Date(); d.setDate(d.getDate()-(d.getDay()+6)%7); return dayKey(d); };   // 本週一的日期
 function mgSubmit(g,score){                                // 打破自己本週紀錄時，送一筆成績到交誼廳
@@ -8710,6 +8722,7 @@ function mgRanks(g,period){                                // 每個人只取最
 function mgS(){ S.mg=S.mg&&typeof S.mg==="object"?S.mg:{}; const m=S.mg; if(m.day!==dayKey()){ m.day=dayKey(); m.n={}; } m.n=m.n||{}; m.best=m.best||{}; return m; }
 const mgLeft=g=>restricted()?0:Math.max(0,MG_PLAYS-(+mgS().n[g]||0));
 const mgRwText=r=>[r.seed?`種子 ×${r.seed}`:"",r.fert?`一般肥料 ×${r.fert}`:"",r.aff?`寵物親密度 +${r.aff}`:""].filter(Boolean).join("、");
+const bugExtra=()=>jb("digital",2)?5:jb("digital")?3:0;   // 數位魔導士 +3 秒、AI 大法師 +5 秒
 const MG_DESC={tower:"幫村長蓋一棟新大樓！樓層左右移動，對準下面那層再放下，看你能蓋幾層。",
   pipe:"午後雷陣雨要來了！轉動水管，把雨水從進水口接到排水溝，看你能接通幾處。",
   bug:"總長的系統跑出一堆 Bug 了！20 秒內點越多越好，小心別點到正常程式。"};
@@ -8836,36 +8849,52 @@ const mgGame=(()=>{
   const SV_GOLD=px(BUGR,{a:"#FFF6C8",k:"#6B4A0A",L:"#FFF1A0",H:"#FFD23F",w:"#FFFFFF",n:"#4A3008",c:"#FF9F43",m:"#8A5A10"});
   const SV_OK=px(["..........",".kkkkkk...",".kWWWWkk..",".kWWWWWWk.",".kWWWWWgk.",".kWWWWggk.",".kWgWggWk.",".kWWgWWWk.",".kWWWWWWk.",".kkkkkkkk."],{k:"#14402A",W:"#E8FFF0",g:"#2EAE5E"});
   const cells=()=>[...document.querySelectorAll("#mgBoard .mgcell")];
-  function bStop(){ if(!B) return; clearTimeout(B.spawnT); clearInterval(B.tick); B.items.forEach(it=>clearTimeout(it.t)); B.running=false; cells().forEach(c=>{ c.innerHTML=""; c.classList.remove("hit","oops"); }); }
+  // 四段速度：gap 出現間隔、life 停留、max 同時最多、dbl 一次冒 2 隻的機率、fast 快速 Bug、gold 金色、ok 正常程式
+  const BPH=[{gap:650,life:1300,max:2,dbl:0,fast:0,gold:.10,ok:.15,say:""},
+    {gap:450,life:1100,max:3,dbl:.15,fast:0,gold:.10,ok:.15,say:"加速！Bug 越冒越多了！"},
+    {gap:330,life:900,max:4,dbl:.30,fast:.06,gold:.10,ok:.20,say:"高峰！小心跑得快的藍色 Bug！"},
+    {gap:250,life:800,max:5,dbl:.30,fast:.06,gold:.20,ok:.20,say:"Bug 大爆發！最後衝刺！"}];
+  const bPhase=()=>{ const e=B.elapsed, x=B.total-20; return e<5+x?0:e<12+x?1:e<17+x?2:3; };   // 職業多的秒數加在暖身
+  function bStop(){ if(!B) return; clearTimeout(B.spawnT); clearInterval(B.tick); B.items.forEach(it=>clearTimeout(it.t)); B.running=false; cells().forEach(c=>{ c.innerHTML=""; c.classList.remove("hit","oops","fast"); });
+    const scr=$("#mgBug"); if(scr){ scr.classList.remove("rush"); delete scr.dataset.ph; } }
   const bCombo=()=>{ $("#mgCombo").textContent=B.combo>=2?`連擊 ×${B.combo}`:""; };
-  function bClear(i){ const it=B&&B.items.get(i); if(it){ clearTimeout(it.t); B.items.delete(i); } const c=cells()[i]; if(c) c.innerHTML=""; }
+  function bClear(i){ const it=B&&B.items.get(i); if(it){ clearTimeout(it.t); B.items.delete(i); } const c=cells()[i]; if(c){ c.innerHTML=""; c.classList.remove("fast"); } if(B&&B.cool) B.cool[i]=performance.now()+300; }   // 剛清掉的格子 0.3 秒內不冒新的，避免誤點
+  function bSpawnOne(P){
+    const C=cells(), now=performance.now(), free=C.map((c,i)=>i).filter(i=>!B.items.has(i)&&!(B.cool[i]>now));
+    if(!free.length||B.items.size>=P.max) return;
+    const i=free[Math.floor(Math.random()*free.length)], r=Math.random();
+    const k=r<P.gold?"gold":r<P.gold+P.fast?"fast":r<P.gold+P.fast+P.ok?"ok":"bug";
+    C[i].innerHTML=k==="gold"?SV_GOLD:k==="ok"?SV_OK:SV_BUG; C[i].classList.toggle("fast",k==="fast");
+    const life=k==="fast"?600:P.life;
+    B.items.set(i,{kind:k,t:setTimeout(()=>{ if(k!=="ok"&&B.combo){ B.combo=0; bCombo(); } bClear(i); },life)});
+  }
   function bSpawn(){
     if(!B||!B.running) return;
-    const C=cells(), free=C.map((c,i)=>i).filter(i=>!B.items.has(i));
-    if(free.length){
-      const i=free[Math.floor(Math.random()*free.length)], r=Math.random(), k=r<.1?"gold":r<.25?"ok":"bug";
-      C[i].innerHTML=k==="gold"?SV_GOLD:k==="ok"?SV_OK:SV_BUG;
-      const life=Math.max(850,1350-B.elapsed*20);
-      B.items.set(i,{kind:k,t:setTimeout(()=>{ if(k!=="ok"&&B.combo){ B.combo=0; bCombo(); } bClear(i); },life)});
+    const ph=bPhase(), P=BPH[ph];
+    if(ph!==B.ph){
+      B.ph=ph; const scr=$("#mgBug"); if(scr) scr.dataset.ph=ph;
+      if(P.say){ floatText(P.say); $("#mgSay").textContent=P.say; sfx(ph===3?"levelup":"select",{soft:true}); }
     }
-    const gap=Math.max(430,800-B.elapsed*15); B.spawnT=setTimeout(bSpawn,gap*(.7+Math.random()*.6));
+    bSpawnOne(P); if(Math.random()<P.dbl) bSpawnOne(P);
+    B.spawnT=setTimeout(bSpawn,P.gap*(.8+Math.random()*.4));
   }
   function bHit(i){
     if(!B||!B.running||paused) return; const it=B.items.get(i); if(!it) return; const c=cells()[i];
     const flash=cls=>{ c.classList.add(cls); setTimeout(()=>c.classList.remove(cls),180); };
     if(it.kind==="ok"){ B.score=Math.max(0,B.score-1); B.combo=0; flash("oops"); sfx("error",{soft:true}); floatText("−1"); }
-    else{ const add=it.kind==="gold"?3:1; B.combo++; const bonus=B.combo%5===0?1:0; B.score+=add+bonus; flash("hit");
-      sfx(it.kind==="gold"?"get":"cursor",{soft:true}); if(it.kind==="gold") floatText("金色 Bug +3"); else if(bonus) floatText(`${B.combo} 連擊 +1`); }
+    else{ const add=it.kind==="gold"?3:it.kind==="fast"?2:1; B.combo++; const bonus=B.combo%5===0?1:0; B.score+=add+bonus; flash("hit");
+      sfx(it.kind==="gold"||it.kind==="fast"?"get":"cursor",{soft:true}); if(it.kind==="gold") floatText("金色 Bug +3"); else if(it.kind==="fast") floatText("快速 Bug +2"); else if(bonus) floatText(`${B.combo} 連擊 +1`); }
     bClear(i); bCombo(); $("#mgScore").textContent=B.score;
   }
   function bTick(){
     if(!B||!B.running) return; if(!$("#mgDlg").open){ bStop(); return; }
     B.elapsed=(performance.now()-B.start)/1000; const left=Math.max(0,B.total-B.elapsed); $("#mgTime").textContent=left.toFixed(1);
+    const scr=$("#mgBug"); if(scr) scr.classList.toggle("rush",left<=3&&left>0);
     if(left<=0){ bStop(); finish(B.score); }
   }
   function bStart(){
-    bStop(); const total=20+(jb("digital")?10:0);
-    B={score:0,combo:0,items:new Map(),running:true,elapsed:0,total,start:performance.now()};
+    bStop(); const total=20+bugExtra();
+    B={score:0,combo:0,items:new Map(),running:true,elapsed:0,total,start:performance.now(),cool:{},ph:-1};
     showStop(); $("#mgBugOv").hidden=true; $("#mgScore").textContent="0"; bCombo(); $("#mgSay").textContent="開始了！看到紅色的就抓！"; sfx("open");
     B.tick=setInterval(bTick,100);
     bSpawn();
@@ -8953,13 +8982,13 @@ const mgGame=(()=>{
     const isT=g==="tower", isP=g==="pipe", isB=g==="bug", host=isB?DIRECTOR_AV:CHIEF_AV, who=isB?`數位總合辦公室　${CFG.director}`:`部門村長　${CFG.chief}`;
     const bonus=isT?(jb("civil")?"🛡 你的重裝騎士加成：每場一次「鋼骨保險」，完全沒疊到時可以再來一次，不會結束。":"重裝騎士玩這個遊戲有「鋼骨保險」：完全沒疊到時可以再來一次。")
                :isP?(jb("drain")?"⏱ 你的治水術士加成：開場時間多 10 秒。":"治水術士玩這個遊戲開場時間多 10 秒。")
-               :(jb("digital")?"⏱ 你的數位魔導士加成：時間多 10 秒。":"數位魔導士玩這個遊戲時間多 10 秒。");
+               :(jb("digital")?`⏱ 你的${jb("digital",2)?"AI 大法師":"數位魔導士"}加成：時間多 ${bugExtra()} 秒。`:"數位魔導士玩這個遊戲時間多 3 秒（二轉 AI 大法師多 5 秒）。");
     const rules=isT?["點畫面、按空白鍵或「放下」都可以放下樓層。","沒對準的部分會被切掉，樓層越蓋越窄。","完全對準是「完美」，連續 3 次完美，樓層會變寬一點。","完全沒疊到就倒了，遊戲結束。"]
                :isP?["點一下水管就會順時針轉 90 度。","從左邊的進水口接到右邊的排水溝，接通的水管會變藍。","每接通一處就換下一個地段，時間 +12 秒，地段會越來越大。","時間到水就淹上來，遊戲結束；不一定每根水管都要用到。"]
-               :["點冒出來的 Bug 得 1 分，金色 Bug 得 3 分。","綠色勾勾是正常程式，點到扣 1 分。","連續抓到 5 隻多加 1 分；讓 Bug 跑掉或點錯，連擊就中斷。","越到後面 Bug 冒得稍微快一點，但都會停留一下子。"];
+               :["點冒出來的 Bug 得 1 分，金色 Bug 得 3 分。","綠色勾勾是正常程式，點到扣 1 分。","連續抓到 5 隻多加 1 分；讓 Bug 跑掉或點錯，連擊就中斷。","速度分四段：暖身（前 5 秒）→ 加速 → 高峰 → 最後 3 秒「Bug 大爆發」，越後面冒得越多、跑得越快。","高峰開始會出現跑得快的藍色 Bug（有 ⚡），只停一下子，抓到 +2 分。"];
     const say0=isT?"來幫村子蓋一棟新大樓吧！樓層移到正上方時點一下放下去。":isP?"午後雷陣雨要來了！快把水管接好，讓雨水從進水口流到排水溝。":"系統裡又跑出一堆 Bug 了，20 秒內幫我抓越多越好！";
     const hudX=isT?`<span id="mgShield"></span>`:isP?`<span id="mgTimeBox">時間 <b id="mgTime">${60+(jb("drain")?10:0)}</b></span><span>地段 <b id="mgSize">4×4</b></span>`
-               :`<span>時間 <b id="mgTime">${(20+(jb("digital")?10:0)).toFixed(1)}</b></span><span class="mgcombo" id="mgCombo"></span>`;
+               :`<span>時間 <b id="mgTime">${(20+bugExtra()).toFixed(1)}</b></span><span class="mgcombo" id="mgCombo"></span>`;
     const screen=isT?`<div class="mgscreen" id="mgTower"><canvas id="mgTowerCv" width="${CW}" height="${CH}" aria-label="疊疊樂遊戲畫面"></canvas>
           <div class="mgov" id="mgTowerOv"><h4>疊疊樂蓋大樓</h4><p>看你能幫村長蓋幾層樓！</p><button class="act" type="button" data-mgagain>開始</button></div></div>
         <button class="act ghost" type="button" id="mgDrop" disabled>⬇ 放下</button>`

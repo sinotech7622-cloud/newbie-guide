@@ -727,6 +727,9 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
 .syncbtns #syncCancel{margin-right:auto}
+#rcDlg .rccheck{margin:6px 0 10px;padding:6px 10px;border-left:3px solid var(--win-muted)}
+#rcDlg .rccheck.ok{border-color:#5FE39A;color:#BFF5D6}
+#rcDlg .rccheck.warn{border-color:var(--gold);color:#FFE3A3}
 #syncIntro .syncnote{display:block;margin-top:6px;font-size:13px;color:var(--win-muted)}
 #syncIntro .syncdiff{display:block;margin:6px 0;padding:6px 10px;border-left:3px solid var(--gold);background:rgba(242,193,78,.08);font-size:14px}
 @media (max-width:520px){.synccmp{grid-template-columns:1fr}.syncbtns .act{flex:1 1 100%}}
@@ -2929,6 +2932,7 @@ footer.site p{margin:4px 0}
     <div class="body">
       <p class="ahint" id="rcIntro"></p>
       <p class="rccode" id="rcCode"></p>
+      <p class="ahint rccheck" id="rcCheck" hidden></p>
       <ul class="benefits">
         <li><span aria-hidden="true">📝</span>請抄在紙上或存進密碼管理工具</li>
         <li><span aria-hidden="true">🔑</span>忘記密碼時，用帳號＋救援碼就能還原並重設密碼</li>
@@ -7284,12 +7288,48 @@ async function cloudRemember(acc,code,key,meta){
   const raw=b64buf(await crypto.subtle.exportKey("raw",key));
   const m=Object.assign({},meta||{});
   const dek=m.dek||null, rcKey=m.rcKey||null; delete m.dek; delete m.rcKey;
+  if(m.rcWrap===undefined&&CLOUD&&CLOUD.rcWrap&&dek&&dek===CLOUD.dek) m.rcWrap=CLOUD.rcWrap;   // 同一把存檔鑰匙：沿用記下的救援資料
   CLOUD=Object.assign({acc,code,key,dek,rcKey},m);
   const store=Object.assign({acc,code,key:raw},m);
   if(dek) store.dek=b64buf(await crypto.subtle.exportKey("raw",dek));
   if(rcKey) store.rcKey=b64buf(await crypto.subtle.exportKey("raw",rcKey));
   try{ localStorage.setItem(CLOUD_KEY,JSON.stringify(store)); }catch(e){}
   renderCloudBox(); renderHUD();
+}
+const keyRaw=async k=>k?b64buf(await crypto.subtle.exportKey("raw",k)):"";
+async function rcWorks(k,wrap){ if(!k||!wrap) return false; try{ await unwrapDek(k,wrap); return true; }catch(e){ return false; } }
+async function rcSync(opened){                            // 救援碼以雲端存檔為準：所有裝置用同一組
+  if(!CLOUD||!opened||!opened.dek) return;
+  const wrap=(opened.body&&opened.body.rc)||"", cloudRc=fmtRecovery(opened.payload&&opened.payload.rc);
+  const same=!!CLOUD.dek&&(await keyRaw(CLOUD.dek))===(await keyRaw(opened.dek));
+  let rcKey=same?CLOUD.rcKey:null, rc=CLOUD.rc||"", fresh="";
+  const tryCode=async c=>{ if(!c) return null; const k=await deriveKey(CLOUD.acc,recoveryPhrase(c)); return (await rcWorks(k,wrap))?k:null; };
+  if(wrap){
+    if(rcKey&&await rcWorks(rcKey,wrap)){ if(!rc&&cloudRc&&await tryCode(cloudRc)) rc=cloudRc; }
+    else{
+      rcKey=null;
+      let k=await tryCode(cloudRc); if(k){ rcKey=k; rc=cloudRc; }
+      else if(rc&&rc!==cloudRc){ k=await tryCode(rc); if(k) rcKey=k; }
+      if(!rcKey) rc="";                                     // 這台不知道雲端目前那組：上傳時沿用雲端的救援資料
+    }
+  }else if(!rcKey){                                         // 雲端存檔完全沒有救援資料：產生一組，上傳後所有裝置都用這組
+    fresh=makeRecoveryCode(); rc=fresh; rcKey=await deriveKey(CLOUD.acc,recoveryPhrase(fresh));
+  }
+  if(!same||rcKey!==CLOUD.rcKey||rc!==(CLOUD.rc||"")||wrap!==(CLOUD.rcWrap||""))
+    await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek:opened.dek,rcKey,rc,rcWrap:wrap,rcHint:CLOUD.rcHint});
+  if(fresh){ cloudDirty=true; PENDING_FORCE=true; setTimeout(()=>{ cloudPush(true,true); },500); setTimeout(()=>showRecovery(fresh,"這個帳號的雲端存檔沒有救援資料，系統剛剛幫你產生一組，其他裝置同步後也會是這一組。"),900); }
+}
+async function ensureDek(){                                 // 上傳前一定要有存檔鑰匙：不再上傳沒有救援資料的舊格式
+  if(!CLOUD) return false; if(CLOUD.dek) return true;
+  let remote; try{ remote=await cloudFetch(CLOUD.code); }catch(e){ return false; }
+  if(remote){
+    let o; try{ o=await openSave(remote.data,CLOUD.key,"pw"); }catch(e){ return false; }
+    if(o.dek){ await rcSync(o); return !!CLOUD.dek; }
+  }
+  const dek=await newDek(), fresh=makeRecoveryCode(), rcKey=await deriveKey(CLOUD.acc,recoveryPhrase(fresh));   // 雲端只有舊格式（或沒有存檔）：建立存檔鑰匙和救援碼
+  await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek,rcKey,rc:fresh,rcWrap:"",rcHint:CLOUD.rcHint});
+  setTimeout(()=>showRecovery(fresh,"這個帳號還沒有救援碼，系統剛剛幫你產生一組。"),900);
+  return true;
 }
 async function cloudRestoreSession(){
   if(!cloudReady()) return;
@@ -7298,7 +7338,9 @@ async function cloudRestoreSession(){
   try{
     const key=await crypto.subtle.importKey("raw",unb64buf(d.key),{name:"AES-GCM"},true,["encrypt","decrypt"]);
     const imp=async v=>v?crypto.subtle.importKey("raw",unb64buf(v),{name:"AES-GCM"},true,["encrypt","decrypt"]):null;
-    CLOUD={acc:d.acc,code:d.code,key,dek:await imp(d.dek),rcKey:await imp(d.rcKey),rcHint:d.rcHint,rc:d.rc||""};
+    const code=await accCode(d.acc);
+    CLOUD={acc:d.acc,code,key,dek:await imp(d.dek),rcKey:await imp(d.rcKey),rcHint:d.rcHint,rc:d.rc||"",rcWrap:d.rcWrap||""};
+    if(d.code!==code){ d.code=code; try{ localStorage.setItem(CLOUD_KEY,JSON.stringify(d)); }catch(e){} }   // 舊的登入資料代碼不對：修正後照常同步
   }catch(e){}
 }
 function cloudLogout(){
@@ -7342,6 +7384,7 @@ async function packSave(dek,pwKey,rcKey,obj){
   if(pub){ try{ body.esc=b64buf(await crypto.subtle.encrypt({name:"RSA-OAEP"},pub,await crypto.subtle.exportKey("raw",dek))); }catch(e){} }
   if(pwKey) body.pw=await wrapDek(pwKey,dek);
   if(rcKey) body.rc=await wrapDek(rcKey,dek);
+  else if(CLOUD&&CLOUD.rcWrap&&dek===CLOUD.dek) body.rc=CLOUD.rcWrap;
   return serializeSave(body);
 }
 function parseSave(str){
@@ -7400,15 +7443,18 @@ async function pushVerify(){
   o.state="fail"; o.tries=(+o.tries||0)+1; pvSet(o);              // 雲端還是上傳前那份：這次沒送到
   try{ localStorage.removeItem(PUSH_KEY); }catch(e){}
   cloudDirty=true; renderCloudBox();
-  if(o.tries<=2){ toast("⚠ 剛才的雲端存檔沒有送到 Google，正在重新上傳"); setTimeout(()=>cloudPush(true,true),1500); }
-  else toast("⚠ 雲端存檔一直沒有送到 Google，請截圖「雲端存檔」頁面給管理者");
+  const multi=lastSaveLen()>SAVE_CELL;
+  if(o.tries<=2&&!(multi&&o.tries>1)){ toast("⚠ 剛才的雲端存檔沒有送到 Google，正在重新上傳"); setTimeout(()=>cloudPush(true,true),1500); }
+  else toast(multi?"⚠ 雲端存檔超過 4.5 萬字，要用到「存檔資料2」以後的欄位，一直沒有送到 Google，請管理者檢查表單（見雲端存檔頁面）"
+                  :"⚠ 雲端存檔一直沒有送到 Google，請截圖「雲端存檔」頁面給管理者");
 }
 function pvText(){
   const o=pvGet(); if(!o||!CLOUD||o.code!==CLOUD.code) return "";
   const hm=t=>{ const d=new Date(t); return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; };
   if(o.state==="wait") return `☁ ${hm(o.at)} 上傳的存檔確認中（Google 約 5 分鐘後才看得到）`;
   if(o.state==="ok") return `✓ ${hm(o.at)} 上傳的存檔已確認送到雲端`;
-  return `⚠ ${hm(o.at)} 上傳的存檔沒有送到雲端${o.tries>2?"，請截圖給管理者":"，正在重新上傳"}`;
+  const multi=lastSaveLen()>SAVE_CELL;
+  return `⚠ ${hm(o.at)} 上傳的存檔沒有送到雲端${multi?"（存檔超過 4.5 萬字，會用到表單的「存檔資料2」以後的題目：請管理者確認那幾題是「段落」、沒有設定回應驗證，且 config.js 有這幾題的代號）":o.tries>2?"，請截圖給管理者":"，正在重新上傳"}`;
 }
 setTimeout(pvSchedule,3000);                               // 上次上傳還沒確認（例如關掉網頁）：開站後補確認
 async function sendSave(acc,data,note){
@@ -7416,7 +7462,9 @@ async function sendSave(acc,data,note){
   return sendForm("save",Object.assign({acc,note},f));
 }
 let saveWarnAt=0, SAVE_FULL=0;
+const lastSaveLen=()=>{ try{ return +localStorage.getItem("sino22-save-len")||0; }catch(e){ return 0; } };
 function saveSizeCheck(len){                           // 快滿時提醒（10 分鐘最多提醒一次）
+  try{ localStorage.setItem("sino22-save-len",String(len)); }catch(e){}
   const cap=saveCap(), r=len/cap;
   SAVE_FULL=r>1?2:r>=.8?1:0;
   if(SAVE_FULL&&Date.now()-saveWarnAt>10*60e3){
@@ -7452,7 +7500,7 @@ const PUSH_SKIP=new Set(["loc","digAt","seedAt","ixSeen","achSeen"]);
 const PUSH_KEY="sino22-push-hash";
 function pushHash(){ const o={}; Object.keys(S).forEach(k=>{ if(!PUSH_SKIP.has(k)) o[k]=S[k]; }); return hashStr(stableStr(o)); }
 async function cloudPush(force,bypass){
-  if(!CLOUD||!cloudReady()) return false;
+  if(!CLOUD||!cloudReady()||!CLOUD.code) return false;
   if(HOLD_PUSH&&!bypass){ if(force) PENDING_FORCE=true; cloudDirty=true; return false; }   // 還在確認別台的最新進度：先留在這台
   if(cloudBusy) return false;
   noteDevice();
@@ -7461,8 +7509,8 @@ async function cloudPush(force,bypass){
   if(!force&&h===last){ cloudDirty=false; cloudDirtySince=0; return true; }        // 沒有變化：不新增一列
   cloudBusy=true;
   try{
-    const data=CLOUD.dek?await packSave(CLOUD.dek,CLOUD.key,CLOUD.rcKey,snapshot())
-                        :await encryptSave(CLOUD.key,snapshot());
+    if(!CLOUD.dek&&!(await ensureDek())){ cloudDirty=true; return false; }
+    const data=await packSave(CLOUD.dek,CLOUD.key,CLOUD.rcKey,snapshot());
     saveSizeCheck(data.length);
     if(data.length>saveCap()){ cloudDirty=true; renderCloudBox(); return false; }   // 放不下：保留線上那份完好的存檔
     const prevTags=knownTags();
@@ -7536,9 +7584,8 @@ async function cloudSignIn(acc,pw,mode,opt){
   try{ remote=await cloudFetch(code); }catch(e){ throw new Error("offline"); }
   if(mode==="login"&&!remote) throw new Error("noacc");
   if(mode==="create"&&remote) throw new Error("exists");
-  let loaded=null, dek=null, rcKey=null, freshCode="";
+  let loaded=null, dek=null, rcKey=null, freshCode="", opened=null;
   if(remote){
-    let opened;
     try{ opened=await openSave(remote.data,key,"pw"); }catch(e){ throw new Error("badpw"); }
     loaded=opened.payload; dek=opened.dek;
     if(opened.body&&opened.body.tmp) setTimeout(()=>{ toast("管理者已協助重設密碼，請設定一組你自己的新密碼"); openCloud("change"); },1600);
@@ -7551,7 +7598,8 @@ async function cloudSignIn(acc,pw,mode,opt){
     dek=await newDek(); freshCode=makeRecoveryCode();
     rcKey=await deriveKey(acc,recoveryPhrase(freshCode));
   }
-  await cloudRemember(acc,code,key,{dek,rcKey,rc:freshCode||(loaded&&fmtRecovery(loaded.rc))||""}); cloudSynced=true;
+  await cloudRemember(acc,code,key,{dek,rcKey,rc:freshCode,rcWrap:""}); cloudSynced=true;
+  if(opened&&opened.dek&&!freshCode) await rcSync(opened);   // 救援碼用雲端那組
   if(loaded){
     const mine=progressCount(S), theirs=progressCount(loaded.S);
     let useCloud=true;
@@ -7577,15 +7625,35 @@ async function cloudRecover(acc,rc,newPw){
   let opened;
   try{ opened=await openSave(remote.data,rcKey,"rc"); }catch(e){ throw new Error(e&&e.message==="norc"?"norc":"badrc"); }
   const key=await deriveKey(acc,newPw);
-  await cloudRemember(acc,code,key,{dek:opened.dek,rcKey,rc:fmtRecovery(rc)}); cloudSynced=true;   // 救援碼固定：沿用原本那組
+  await cloudRemember(acc,code,key,{dek:opened.dek,rcKey,rc:fmtRecovery(rc),rcWrap:(opened.body&&opened.body.rc)||""}); cloudSynced=true;   // 救援碼固定：沿用原本那組
   applySave(opened.payload);
   await cloudPush(true); openSyncGate();
   toast("已用救援碼還原存檔，密碼也換成新的了；救援碼還是原本那組，請繼續保存");
   return true;
 }
-function cloudShowRecovery(){                         // 一個帳號固定一組救援碼：只能查看，不能重新產生
-  if(CLOUD&&CLOUD.rc){ showRecovery(CLOUD.rc,"這是你帳號的救援碼，一個帳號固定一組，不會改變。請抄下來或存成檔案。"); return; }
-  uiAlert("這台電腦沒有這個帳號的救援碼紀錄。\n救援碼一個帳號固定一組，就是建立帳號時顯示的那一組；如果找不到了，請洽管理者協助（帳號救援）。");
+async function cloudShowRecovery(){                   // 一個帳號固定一組救援碼：只能查看，不能重新產生；打開時用雲端存檔驗證
+  if(!CLOUD) return;
+  const chk=(t,cls)=>{ const e=$("#rcCheck"); if(!e) return; e.hidden=!t; e.textContent=t||""; e.className="ahint rccheck"+(cls?" "+cls:""); };
+  const INTRO="這是你帳號的救援碼，一個帳號固定一組，所有裝置都一樣。請抄下來或存成檔案。";
+  if(CLOUD.rc) showRecovery(CLOUD.rc,INTRO);
+  else{ rcCurrent=""; $("#rcCode").textContent="確認中…"; $("#rcIntro").textContent="正在向雲端確認這個帳號的救援碼…"; const d=$("#rcDlg"); if(!d.open) d.showModal(); }
+  chk("☁ 正在用雲端存檔確認這組救援碼可以用…");
+  let remote=null;
+  try{ remote=await cloudFetch(CLOUD.code); }catch(e){ chk("連不到雲端，暫時無法確認這組救援碼。","warn"); return; }
+  if(!remote){ chk("雲端還沒有存檔，上傳一次後就能確認。","warn"); return; }
+  let o=null; try{ o=await openSave(remote.data,CLOUD.key,"pw"); }catch(e){ chk("雲端存檔的密碼已變更，請重新登入後再查看。","warn"); return; }
+  if(!o.dek){ chk("雲端是舊格式的存檔，下次同步後才會有救援碼。","warn"); return; }
+  await rcSync(o);
+  const wrap=(o.body&&o.body.rc)||"";
+  if(CLOUD.rc){
+    rcCurrent=CLOUD.rc; $("#rcCode").textContent=CLOUD.rc; $("#rcIntro").textContent=INTRO;
+    const ok=!!wrap&&await rcWorks(await deriveKey(CLOUD.acc,recoveryPhrase(CLOUD.rc)),wrap);
+    chk(ok?"✓ 已用雲端存檔確認：這組救援碼可以用來還原。":"⚠ 這組救援碼還沒有存進雲端，下次同步後就會生效。",ok?"ok":"warn");
+    if(!ok){ cloudDirty=true; PENDING_FORCE=true; setTimeout(()=>cloudPush(true,true),300); }
+  }else{
+    $("#rcCode").textContent="—"; $("#rcIntro").textContent="這台裝置不知道目前有效的救援碼。";
+    chk("⚠ 請在最近上傳存檔的那台裝置查看，那台會顯示正確的救援碼；找不到的話請洽管理者協助（帳號救援）。","warn");
+  }
 }
 async function cloudChangePassword(oldPw,newPw){
   if(!CLOUD) throw new Error("noacc");
@@ -7594,14 +7662,14 @@ async function cloudChangePassword(oldPw,newPw){
   const b=b64buf(await crypto.subtle.exportKey("raw",CLOUD.key));
   if(a!==b) throw new Error("oldpw");
   const newKey=await deriveKey(CLOUD.acc,newPw);
+  if(!CLOUD.dek&&!(await ensureDek())) throw new Error("offline");
   let dek=CLOUD.dek, rcKey=CLOUD.rcKey, fresh="";
-  if(!dek){ dek=await newDek(); fresh=makeRecoveryCode(); rcKey=await deriveKey(CLOUD.acc,recoveryPhrase(fresh)); }
   const data=await packSave(dek,newKey,rcKey,snapshot());
   saveSizeCheck(data.length);
   if(data.length>saveCap()) throw new Error("toobig");
   const prevTags=knownTags();
   await sendSave(CLOUD.code,data,saveNote()); rememberTag(data); pushVerifyStart(data,prevTags);
-  await cloudRemember(CLOUD.acc,CLOUD.code,newKey,{dek,rcKey,rc:fresh||CLOUD.rc||""});
+  await cloudRemember(CLOUD.acc,CLOUD.code,newKey,{dek,rcKey,rc:fresh||CLOUD.rc||"",rcWrap:rcKey?"":(CLOUD.rcWrap||""),rcHint:CLOUD.rcHint});
   if(fresh) setTimeout(()=>showRecovery(fresh,"順便幫你產生了救援碼，忘記密碼時可以用它還原。"),400);
   cloudDirty=false; cloudLastAt=new Date().toISOString();
   try{ localStorage.setItem("sino22-cloud-at",cloudLastAt); }catch(e){}
@@ -7769,9 +7837,7 @@ async function cloudReconcile(){
       catch(e){ cloudSynced=true; cloudLogout(); toast("雲端存檔的密碼已被重設，請用新的密碼重新登入"); return; }
       const loaded=opened.payload; cloudSumSet(loaded);
       if(opened.body&&!opened.body.esc&&CFG.escrowKey) setTimeout(()=>queueCloud(true),3000);
-      if(opened.dek&&!CLOUD.dek) await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek:opened.dek,rcKey:CLOUD.rcKey,rc:CLOUD.rc||fmtRecovery(loaded.rc)});
-      else if(opened.dek) CLOUD.dek=opened.dek;
-      if(!CLOUD.rc&&fmtRecovery(loaded.rc)) await cloudRemember(CLOUD.acc,CLOUD.code,CLOUD.key,{dek:CLOUD.dek,rcKey:CLOUD.rcKey,rc:fmtRecovery(loaded.rc)});
+      await rcSync(opened);
       cloudSynced=true;
       const rAt=String(loaded.at||""), lAt=cloudAt(), localChanged=localChangedSinceSync();
       if(rAt<=lAt){                                    // 線上沒有別的裝置的新存檔：這台有新進度就上傳
@@ -7866,6 +7932,7 @@ let rcCurrent="";
 function showRecovery(code,intro){
   if(!code) return;
   rcCurrent=code;
+  { const e=$("#rcCheck"); if(e) e.hidden=true; }
   $("#rcCode").textContent=code;
   $("#rcIntro").textContent=intro||"";
   const d=$("#rcDlg"); if(!d.open) d.showModal();
@@ -8844,7 +8911,7 @@ async function fetchCloudSave(){                         // 下載並打開雲�
   rememberTag(remote.data);
   let opened;
   try{ opened=await openSave(remote.data,CLOUD.key,"pw"); }catch(e){ return {err:"pw"}; }
-  if(opened.dek&&!CLOUD.dek) CLOUD.dek=opened.dek;
+  await rcSync(opened);
   cloudSumSet(opened.payload);
   return {loaded:opened.payload};
 }
@@ -13873,6 +13940,7 @@ function renderCloudBox(){
     <dl class="cloudfacts"><dt>姓名</dt><dd>${esc(S.name||"—")}${S.nick?`（暱稱 ${esc(S.nick)}）`:""}</dd><dt>員工編號</dt><dd>${esc(S.emp||"—")}</dd><dt>組別</dt><dd>${esc(S.group||"—")}</dd><dt>新人代碼</dt><dd>${esc(myCode())}</dd></dl>
     <p class="ahint">${[`帳號 <b>${esc(CLOUD.acc)}</b>`,at?`最後同步 ${fmtDate(at)}`:"",cloudDirty?"有尚未同步的進度":""].filter(Boolean).join("・")}</p>
     ${pvText()?`<p class="ahint">${esc(pvText())}</p>`:""}
+    ${lastSaveLen()?`<p class="ahint">存檔大小 ${lastSaveLen().toLocaleString()} 字・用 ${Math.ceil(lastSaveLen()/SAVE_CELL)} 格（表單可用 ${saveCells()} 格，每格 ${SAVE_CELL.toLocaleString()} 字）</p>`:""}
     ${FRESH_WAIT?`<p class="ahint">⏳ 正在確認其他裝置的最新進度：雲端約 5 分鐘更新一次，開網站約 5 分鐘後確認完，才會上傳這台的進度和發放禮物。</p>`:""}
     ${SAVE_FULL?`<p class="warnbox">${SAVE_FULL===2?"⚠ 雲端存檔太大，最近的進度沒有上傳（線上保留的是上一份完好的存檔）。":"⚠ 雲端存檔快滿了。"}請聯絡管理者協助處理。</p>`:""}
     <p class="ahint">進度會自動同步，換電腦時用同一組帳密登入就能接著玩。密碼忘記將無法還原存檔。</p>

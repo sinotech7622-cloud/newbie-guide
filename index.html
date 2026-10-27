@@ -7371,6 +7371,46 @@ function saveFields(data){                             // 切成表單欄位；�
   return o;
 }
 const saveRowData=r=>[2,4,5,6].map(i=>String((r&&r[i])||"")).join("");   // 公式範圍 A:G：C 是第 1 格，E～G 是第 2～4 格
+function saveNote(){ const d=new Date(); return `${myCode()}｜${deviceText()}｜${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; }   // 備註：新人代碼｜哪一台｜上傳時間
+const noteCode=n=>String(n||"").split("｜")[0];
+/* 上傳確認 */
+const PV_KEY="sino22-push-verify", PV_WAIT=340000;
+let pvTimer=0;
+function pvGet(){ try{ return JSON.parse(localStorage.getItem(PV_KEY)||"null"); }catch(e){ return null; } }
+function pvSet(o){ try{ o?localStorage.setItem(PV_KEY,JSON.stringify(o)):localStorage.removeItem(PV_KEY); }catch(e){} }
+function pushVerifyStart(data,prevTags){
+  const o=pvGet();
+  pvSet({tag:saveTag(data),at:Date.now(),prev:(prevTags||[]).filter(t=>t!==saveTag(data)).slice(-8),tries:o&&o.state==="fail"?(+o.tries||0):0,state:"wait",code:CLOUD&&CLOUD.code});
+  pvSchedule();
+}
+function pvSchedule(){
+  clearTimeout(pvTimer); const o=pvGet(); if(!o||o.state!=="wait") return;
+  pvTimer=setTimeout(pushVerify,Math.max(2000,o.at+PV_WAIT-Date.now()));
+}
+async function pushVerify(){
+  const o=pvGet(); if(!o||o.state!=="wait"||!CLOUD||o.code!==CLOUD.code) return;
+  if(Date.now()-o.at<PV_WAIT){ pvSchedule(); return; }
+  let t="";
+  try{
+    if(sheetUrl("saveIndex")){ const rows=(await fetchSheet("saveIndex",true))||[]; const hit=rows.find(r=>String(r[0]||"").trim()===CLOUD.code); t=hit?String(hit[1]||"").trim():""; }
+    else{ const r=await cloudFetch(CLOUD.code); t=r?saveTag(r.data):""; }
+  }catch(e){ o.at=Date.now()-PV_WAIT+60000; pvSet(o); pvSchedule(); return; }   // 讀不到：1 分鐘後再試
+  if(t===o.tag){ o.state="ok"; o.okAt=Date.now(); pvSet(o); renderCloudBox(); return; }
+  if(t&&!o.prev.includes(t)){ o.state="ok"; o.okAt=Date.now(); o.newer=1; pvSet(o); renderCloudBox(); return; }   // 之後別台又上傳了新的：這次的已經被取代
+  o.state="fail"; o.tries=(+o.tries||0)+1; pvSet(o);              // 雲端還是上傳前那份：這次沒送到
+  try{ localStorage.removeItem(PUSH_KEY); }catch(e){}
+  cloudDirty=true; renderCloudBox();
+  if(o.tries<=2){ toast("⚠ 剛才的雲端存檔沒有送到 Google，正在重新上傳"); setTimeout(()=>cloudPush(true,true),1500); }
+  else toast("⚠ 雲端存檔一直沒有送到 Google，請截圖「雲端存檔」頁面給管理者");
+}
+function pvText(){
+  const o=pvGet(); if(!o||!CLOUD||o.code!==CLOUD.code) return "";
+  const hm=t=>{ const d=new Date(t); return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; };
+  if(o.state==="wait") return `☁ ${hm(o.at)} 上傳的存檔確認中（Google 約 5 分鐘後才看得到）`;
+  if(o.state==="ok") return `✓ ${hm(o.at)} 上傳的存檔已確認送到雲端`;
+  return `⚠ ${hm(o.at)} 上傳的存檔沒有送到雲端${o.tries>2?"，請截圖給管理者":"，正在重新上傳"}`;
+}
+setTimeout(pvSchedule,3000);                               // 上次上傳還沒確認（例如關掉網頁）：開站後補確認
 async function sendSave(acc,data,note){
   const f=saveFields(data); if(!f) throw new Error("toobig");
   return sendForm("save",Object.assign({acc,note},f));
@@ -7394,7 +7434,7 @@ async function cloudFetch(code){
 }
 /* 存檔索引：每個帳號最新一筆存檔的「標記」（存檔內容最後 16 個字，每次上傳都不同）。
    標記是這台上傳過或已經看過的，就代表別台沒有新存檔，不必下載整張存檔資料表 */
-const saveTag=d=>String(d||"").slice(-16);
+const saveTag=d=>String(d||"").slice(0,SAVE_CELL).slice(-16);
 const KNOWN_TAGS="sino22-save-tags";
 function knownTags(){ try{ const a=JSON.parse(localStorage.getItem(KNOWN_TAGS)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
 function rememberTag(d){ const t=saveTag(d); if(!t) return; const a=knownTags().filter(x=>x!==t); a.push(t); try{ localStorage.setItem(KNOWN_TAGS,JSON.stringify(a.slice(-8))); }catch(e){} }
@@ -7425,8 +7465,9 @@ async function cloudPush(force,bypass){
                         :await encryptSave(CLOUD.key,snapshot());
     saveSizeCheck(data.length);
     if(data.length>saveCap()){ cloudDirty=true; renderCloudBox(); return false; }   // 放不下：保留線上那份完好的存檔
-    await sendSave(CLOUD.code,data,myCode());
-    rememberTag(data);
+    const prevTags=knownTags();
+    await sendSave(CLOUD.code,data,saveNote());
+    rememberTag(data); pushVerifyStart(data,prevTags);
     try{ localStorage.setItem(PUSH_KEY,h); }catch(e){}
     cloudDirty=false; cloudDirtySince=0; cloudLastAt=new Date().toISOString();
     try{ localStorage.setItem("sino22-cloud-at",cloudLastAt); }catch(e){}
@@ -7558,7 +7599,8 @@ async function cloudChangePassword(oldPw,newPw){
   const data=await packSave(dek,newKey,rcKey,snapshot());
   saveSizeCheck(data.length);
   if(data.length>saveCap()) throw new Error("toobig");
-  await sendSave(CLOUD.code,data,myCode()); rememberTag(data);
+  const prevTags=knownTags();
+  await sendSave(CLOUD.code,data,saveNote()); rememberTag(data); pushVerifyStart(data,prevTags);
   await cloudRemember(CLOUD.acc,CLOUD.code,newKey,{dek,rcKey,rc:fresh||CLOUD.rc||""});
   if(fresh) setTimeout(()=>showRecovery(fresh,"順便幫你產生了救援碼，忘記密碼時可以用它還原。"),400);
   cloudDirty=false; cloudLastAt=new Date().toISOString();
@@ -11635,7 +11677,7 @@ $("#rsLookup").addEventListener("click",async()=>{
   const canRescue=!!(body&&body.esc);
   out.innerHTML=`<div class="icard">
     <dl><dt>帳號</dt><dd>${esc(acc)}</dd><dt>最後存檔</dt><dd>${esc(RS_FOUND.ts||"—")}</dd>
-      <dt>新人代碼</dt><dd>${esc(RS_FOUND.note||"—")}</dd><dt>狀態</dt><dd>${esc(kind)}</dd></dl>
+      <dt>新人代碼</dt><dd>${esc(noteCode(RS_FOUND.note)||"—")}</dd>${RS_FOUND.note&&RS_FOUND.note.includes("｜")?`<dt>最後上傳</dt><dd>${esc(RS_FOUND.note.split("｜").slice(1).join("・"))}</dd>`:""}<dt>狀態</dt><dd>${esc(kind)}</dd></dl>
     ${canRescue?`<p class="ahint">按「產生臨時密碼」後，把臨時密碼交給新人。新人約 5 分鐘後就能用臨時密碼登入，登入時會被要求改成自己的新密碼，進度完整保留。</p>`
                :`<p class="ahint">這份存檔沒有救援資料，管理者無法解開。可以請新人用救援碼重設；如果救援碼也遺失，只能重置帳號，讓新人用同一個帳號重新建立（原本的雲端進度會清空，但新人電腦裡的進度若還在，登入後會自動上傳）。</p>`}
     <div class="formfoot"><span></span><span class="afilters">
@@ -13830,6 +13872,7 @@ function renderCloudBox(){
   box.innerHTML=`<h3>雲端存檔 ${helpBtn("cloud")} <span class="st st-ok">已登入</span></h3>
     <dl class="cloudfacts"><dt>姓名</dt><dd>${esc(S.name||"—")}${S.nick?`（暱稱 ${esc(S.nick)}）`:""}</dd><dt>員工編號</dt><dd>${esc(S.emp||"—")}</dd><dt>組別</dt><dd>${esc(S.group||"—")}</dd><dt>新人代碼</dt><dd>${esc(myCode())}</dd></dl>
     <p class="ahint">${[`帳號 <b>${esc(CLOUD.acc)}</b>`,at?`最後同步 ${fmtDate(at)}`:"",cloudDirty?"有尚未同步的進度":""].filter(Boolean).join("・")}</p>
+    ${pvText()?`<p class="ahint">${esc(pvText())}</p>`:""}
     ${FRESH_WAIT?`<p class="ahint">⏳ 正在確認其他裝置的最新進度：雲端約 5 分鐘更新一次，開網站約 5 分鐘後確認完，才會上傳這台的進度和發放禮物。</p>`:""}
     ${SAVE_FULL?`<p class="warnbox">${SAVE_FULL===2?"⚠ 雲端存檔太大，最近的進度沒有上傳（線上保留的是上一份完好的存檔）。":"⚠ 雲端存檔快滿了。"}請聯絡管理者協助處理。</p>`:""}
     <p class="ahint">進度會自動同步，換電腦時用同一組帳密登入就能接著玩。密碼忘記將無法還原存檔。</p>

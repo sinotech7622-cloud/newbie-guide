@@ -7107,6 +7107,7 @@ document.addEventListener("click",e=>{
   const op=t.closest("[data-updopen]"); if(op){ $("#updDlg").close(); openQuest(op.dataset.updopen); return; }
 });
 function refreshBonus(){
+  if(!syncGateOk("refreshBonus",()=>refreshBonus())) return;          // 先確認雲端存檔是不是已經領過
   if(!S.awarded||!ALLQ.length) return;
   const ids=ALLQ.map(q=>q.id);
   if(!Array.isArray(S.knownQ)){                      // 第一次：以已完成的任務當作「既有任務」，還沒完成的就是新任務
@@ -7516,9 +7517,10 @@ async function cloudSignIn(acc,pw,mode,opt){
   }else{
     await cloudPush(true);
     toast("已建立雲端存檔，之後進度會自動同步");
-    if(opt&&opt.quiet) return freshCode;                 // 新人報到設定：救援碼改在設定畫面裡顯示
+    openSyncGate(); if(opt&&opt.quiet) return freshCode;                 // 新人報到設定：救援碼改在設定畫面裡顯示
     showRecovery(freshCode,"帳號建立完成！萬一忘記密碼，就靠這組救援碼把進度救回來。");
   }
+  openSyncGate();
   return true;
 }
 async function cloudRecover(acc,rc,newPw){
@@ -7532,7 +7534,7 @@ async function cloudRecover(acc,rc,newPw){
   const key=await deriveKey(acc,newPw);
   await cloudRemember(acc,code,key,{dek:opened.dek,rcKey,rc:fmtRecovery(rc)}); cloudSynced=true;   // 救援碼固定：沿用原本那組
   applySave(opened.payload);
-  await cloudPush(true);
+  await cloudPush(true); openSyncGate();
   toast("已用救援碼還原存檔，密碼也換成新的了；救援碼還是原本那組，請繼續保存");
   return true;
 }
@@ -7740,7 +7742,27 @@ async function cloudReconcile(){
   })();
   return reconcileJob;
 }
-async function cloudSyncOnStart(){ await cloudReconcile(); }
+/* 開站同步閘門：雲端比對完（或確定不用比對）才開始自動領取 */
+let SYNC_GATE_OPEN=false;
+const SYNC_GATE_Q=new Map();
+function syncGateOk(key,fn){                             // 閘門還沒開：先排隊，開了再跑（同一種只跑最後一次）
+  if(SYNC_GATE_OPEN) return true;
+  SYNC_GATE_Q.set(key,fn); return false;
+}
+function openSyncGate(){
+  if(SYNC_GATE_OPEN) return; SYNC_GATE_OPEN=true;
+  const L=[...SYNC_GATE_Q.values()]; SYNC_GATE_Q.clear();
+  L.forEach((fn,i)=>setTimeout(()=>{ try{ fn(); }catch(e){} },300+i*120));
+}
+(function gateSafety(){                                   // 網路卡住時的保險：30 秒後還沒開，而且沒有在等新人選擇或登入，就先開
+  const t0=Date.now();
+  const tick=()=>{ if(SYNC_GATE_OPEN) return;
+    const waiting=(typeof LOGIN_GATE!=="undefined"&&LOGIN_GATE)||$("#syncDlg").open;
+    if(Date.now()-t0>30000&&!waiting){ openSyncGate(); return; }
+    setTimeout(tick,3000); };
+  setTimeout(tick,3000);
+})();
+async function cloudSyncOnStart(){ try{ await cloudReconcile(); } finally{ openSyncGate(); } }
 function cloudPushSafe(){ return Date.now()-lastRemoteCheck>5*60e3?cloudReconcile():cloudPush(); }   // 至少每 5 分鐘先確認線上有沒有別的裝置的新存檔
 
 const LOGIN_HINT_KEY="sino22-loginhint";
@@ -7853,6 +7875,7 @@ function openCloud(mode){
 /* ---- 開啟網站時先登入（或註冊新帳號），再開始冒險 ---- */
 let LOGIN_GATE=false, gateDone=false;
 function gateFinish(){
+  if(!CLOUD) openSyncGate();
   if(gateDone) return; gateDone=true; LOGIN_GATE=false;
   setTimeout(()=>{ if(S.group) loadInbox(false); },2500);   // 登入後再檢查一次通知與補償包裹（換裝置時存檔剛下載）
   const go=()=>{ if(document.querySelector("dialog[open]")){ setTimeout(go,400); return; } startWelcome(false); };   // 救援碼等視窗關掉後才開始
@@ -8658,6 +8681,7 @@ function pruneClaims(){
   return n;
 }
 function claimGifts(){
+  if(!syncGateOk("claimGifts",()=>claimGifts())) return;          // 先確認雲端存檔是不是已經領過
   if(!S.group||!loungeReady()||!LOUNGE.at) return;
   const mine=(loungeData().gifts||{})[myCode().toUpperCase()]||[];
   S.giftClaimed=S.giftClaimed||{};
@@ -9448,6 +9472,7 @@ function bondBuy(id){
   bondDone(`💞 用 ${it[3]} 羈絆點換到 ${got}`);
 }
 function bondDailyGift(){                                  // ⑤ 每天第一次打開網站：寵物有機會叼小禮物回家
+  if(!syncGateOk("bondDailyGift",()=>bondDailyGift())) return;          // 先確認雲端存檔是不是已經領過
   if(!S.pet||!PETS[S.pet.type]||!S.group||touristLocked()) return;
   const day=dayKey(); if(S.bondGift===day) return;
   const st=bondStars(S.pet.type); if(!st) return;
@@ -9540,6 +9565,7 @@ async function playRps(p,mine){
   renderVisitActions(p);
 }
 function claimRps(){                                   // 主人這邊：寵物猜拳的結果（扣蔬菜、加親密度）
+  if(!syncGateOk("claimRps",()=>claimRps())) return;          // 先確認雲端存檔是不是已經領過
   if(!S.group||!loungeReady()||!LOUNGE.at) return;
   const mine=(loungeData().rpss||{})[myCode().toUpperCase()]||[];
   S.rpsClaimed=S.rpsClaimed||{};
@@ -11393,6 +11419,7 @@ function compForMe(c){
 }
 let COMP_Q=[], COMP_CUR=null, COMP_LATER=new Set();
 function checkComp(feed){
+  if(!syncGateOk("checkComp",()=>checkComp(feed))) return;          // 先確認雲端存檔是不是已經領過
   if(!feed||!feed.comps||!S.group) return;
   S.compClaimed=S.compClaimed||{};
   feed.comps.forEach(c=>{ if(compForMe(c)&&!S.compClaimed[c.id]&&!COMP_LATER.has(c.id)&&!COMP_Q.some(x=>x.id===c.id)&&!(COMP_CUR&&COMP_CUR.c.id===c.id)) COMP_Q.push(c); });
@@ -11727,6 +11754,7 @@ const FRAME_SAY={j1:["智慧神殿・轉職","恭喜完成第一次轉職！這�
   fs_dongzhi:["冬至限定","冬至吃湯圓，暖呼呼又長一歲！"],fs_xmas:["聖誕節限定","聖誕快樂！這幅畫是給你的聖誕禮物。"],fs_ny:["春節限定","新年快樂！祝你福氣滿滿。"]};
 const FRAME_Q=[];
 function newFramesCheck(){                              // 達成條件就發畫框（以前就達成的人也會補發）
+  if(!syncGateOk("newFramesCheck",()=>newFramesCheck())) return;          // 先確認雲端存檔是不是已經領過
   if(!S.group||restricted()) return;
   S.album=S.album||{};
   const got=[];
@@ -12118,6 +12146,7 @@ function supportBlessed(){                              // 今天有萬能支援
 function growMult(){ let m=1; if(jb("south")) m*=.85; if(!restricted()&&supportBlessed()) m*=.9; return Math.round(m*1000)/1000; }
 function growNote(){ return [jb("south")?"南國遊俠 −15%":"",!restricted()&&supportBlessed()?"支援祝福 −10%":""].filter(Boolean).join("、"); }
 function claimGuestSeeds(){                              // 科技城主：別人在你家訪客簿留言，得 2 顆種子
+  if(!syncGateOk("claimGuestSeeds",()=>claimGuestSeeds())) return;          // 先確認雲端存檔是不是已經領過
   if(!jb("park",2)||!loungeReady()||!LOUNGE.at) return;
   const J=jobS(), since=(J.at||{}).park2||0; if(!since) return;
   const me=myCode().toUpperCase(), L=(loungeData().visits[me]||[]).filter(v=>v.msg&&!v.pending&&v.code!==me&&v.at&&v.at.getTime()>since);
@@ -12298,6 +12327,7 @@ function kgAwards(wk){                                     // 每個遊戲第 1 
   return {ten,one,champs};
 }
 function kgClaimTickets(){
+  if(!syncGateOk("kgClaimTickets",()=>kgClaimTickets())) return;          // 先確認雲端存檔是不是已經領過
   if(!S.group||restricted()||!LOUNGE.at||LOUNGE.err) return;
   let tro=[]; try{ tro=troClaim(); }catch(e){}
   if(tro.length){ save(); queueSync(true); setTimeout(()=>{ try{ renderHUD(); }catch(e){} },300); }
@@ -12978,7 +13008,7 @@ async function offerSnowman(){
     if(curPlace&&curPlace.id==="myhome") renderPlace();
   }
 }
-function checkSnowman(){ if(S.group&&rareCount()>=Object.keys(RARE).length&&!(S.petKinds&&S.petKinds.snowman)) grantSnowman(false); }
+function checkSnowman(){ if(!syncGateOk("checkSnowman",()=>checkSnowman())) return; if(S.group&&rareCount()>=Object.keys(RARE).length&&!(S.petKinds&&S.petKinds.snowman)) grantSnowman(false); }
 function rareComplete(){
   S.album=S.album||{};
   if(S.album[RARE_FRAME]) return;
@@ -13130,6 +13160,7 @@ function playTagHTML(p){
 
 /* ---- 屋主回家：領取別人帶寵物來玩的紀錄 ---- */
 function claimPlaydates(){
+  if(!syncGateOk("claimPlaydates",()=>claimPlaydates())) return;          // 先確認雲端存檔是不是已經領過
   if(!S.group||!loungeReady()||!LOUNGE.at) return;
   const me=myCode().toUpperCase(), L=((loungeData().playdates||{})[me]||[]).slice();
   S.pdClaimed=S.pdClaimed||{};
@@ -15081,7 +15112,7 @@ setTimeout(hideBoot,6000); window.__bootAlive=true; window.hideBoot=hideBoot;   
 applyInterviewSwitch();
 try{ pruneClaims(); }catch(e){}
 if(starActive()) startStar();
-cloudRestoreSession().then(()=>{ renderCloudBox(); setTimeout(()=>cloudSyncOnStart(),1200); startAfterLogin(); });
+cloudRestoreSession().then(()=>{ renderCloudBox(); setTimeout(()=>cloudSyncOnStart(),200); startAfterLogin(); });
 renderTouristBar();
 if(TOURIST_EXPIRED) setTimeout(()=>toast("🧳 觀光客進度超過 30 天沒有使用，已自動清空，歡迎重新開始冒險！"),2500);
 bootstrap().then(()=>{

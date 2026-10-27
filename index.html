@@ -633,7 +633,6 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
-.syncbtns #syncCancel{margin-right:auto}
 @media (max-width:520px){.synccmp{grid-template-columns:1fr}.syncbtns .act{flex:1 1 100%}}
 
 .cloudwrap{max-width:min(520px,calc(100vw - 28px))}
@@ -2874,9 +2873,8 @@ footer.site p{margin:4px 0}
       <p class="ahint">筆記本的內容兩邊都會保留，不會因為選哪一邊而不見。</p>
     </div>
     <div class="foot"><div class="row syncbtns">
-      <button class="act ghost" type="button" id="syncCancel" hidden>取消<small>先不同步</small></button>
-      <button class="act" type="button" id="syncUp">⬆ 上傳這台<small>用這台的進度更新雲端</small></button>
-      <button class="act" type="button" id="syncDown">⬇ 從雲端下載<small>用雲端的進度覆蓋這台</small></button>
+      <button class="act" type="button" id="syncUp">⬆ 更新線上<small>用這台的進度上傳</small></button>
+      <button class="act" type="button" id="syncDown">⬇ 覆蓋這台<small>用線上的進度取代</small></button>
     </div></div>
   </div>
 </dialog>
@@ -7543,38 +7541,23 @@ function saveSummaryHTML(st,title,dev,at,mark){
       <dt>種子</dt><dd>${seeds} 顆</dd><dt>倉庫蔬菜</dt><dd>${barn} 份</dd><dt>家具</dt><dd>${furn} 件</dd><dt>寵物</dt><dd>${esc(pet)}</dd></dl></div>`;
 }
 let syncAsk=null;
-let SYNC_MANUAL=false;
-function askSyncChoice(loaded,localChanged,manual){
+function askSyncChoice(loaded,localChanged){
   if(syncAsk) return syncAsk;
   syncAsk=new Promise(res=>{
-    const d=$("#syncDlg"); let rec=localChanged?"":"down";
-    SYNC_MANUAL=!!manual; $("#syncCancel").hidden=!manual;
-    if(manual){                                          // 手動「立即同步」：一定讓新人自己選
-      const remoteNewer=String(loaded.at||"")>cloudAt(), remoteLater=String(loaded.at||"")>localMt();
-      rec=remoteNewer?(!localChanged||remoteLater?"down":"up"):(localChanged?"up":"");
-      $("#syncTitle").textContent="要上傳還是下載？";
-      $("#syncIntro").innerHTML=(remoteNewer
-        ?(localChanged?`雲端存檔在別的裝置更新過，這台也有還沒上傳的新進度。比較新的是${rec==="down"?"雲端":"這台"}，<b>建議${rec==="down"?"從雲端下載":"上傳這台"}</b>。`
-          :"雲端存檔在別的裝置（例如手機或另一台電腦）更新過，<b>建議從雲端下載</b>。")
-        :(localChanged?"這台有還沒上傳的新進度，<b>建議上傳這台</b>。":"這台和雲端目前是同一份進度，選哪一邊都可以。"))
-        +"請選擇要用哪一邊當作最新的進度：";
-    }else{
-      $("#syncTitle").textContent="這台和線上的進度不一樣";
-      $("#syncIntro").innerHTML=localChanged
-        ?"線上存檔在別的裝置（例如手機或另一台電腦）更新過，這台也有還沒上傳的新進度。請選一邊當作最新的進度："
-        :"線上存檔在別的裝置（例如手機或另一台電腦）更新過。這台上次同步後沒有新進度，<b>建議用線上的進度覆蓋這台</b>：";
-    }
+    const d=$("#syncDlg"), rec=localChanged?"":"down";
+    $("#syncIntro").innerHTML=localChanged
+      ?"線上存檔在別的裝置（例如手機或另一台電腦）更新過，這台也有還沒上傳的新進度。請選一邊當作最新的進度："
+      :"線上存檔在別的裝置（例如手機或另一台電腦）更新過。這台上次同步後沒有新進度，<b>建議用線上的進度覆蓋這台</b>：";
     $("#syncCmp").innerHTML=saveSummaryHTML(S,`這台（${deviceText()}）`,"目前的進度",localMt(),rec==="up")
-      +saveSummaryHTML(loaded.S,manual?"雲端存檔":"線上存檔",loaded.dev?`由${loaded.dev}儲存`:"由其他裝置儲存",loaded.at,rec==="down");
-    $("#syncUp").classList.toggle("ghost",rec==="down"); $("#syncDown").classList.toggle("ghost",rec==="up");
-    const done=v=>{ $("#syncUp").onclick=$("#syncDown").onclick=$("#syncCancel").onclick=null; SYNC_MANUAL=false; d.close(); syncAsk=null; res(v); };
-    $("#syncUp").onclick=()=>done("up"); $("#syncDown").onclick=()=>done("down"); $("#syncCancel").onclick=()=>done("cancel");
-    d._done=done;
+      +saveSummaryHTML(loaded.S,"線上存檔",loaded.dev?`由${loaded.dev}儲存`:"由其他裝置儲存",loaded.at,rec==="down");
+    $("#syncUp").classList.toggle("ghost",rec==="down"); $("#syncDown").classList.toggle("ghost",false);
+    const done=v=>{ $("#syncUp").onclick=$("#syncDown").onclick=null; d.close(); syncAsk=null; res(v); };
+    $("#syncUp").onclick=()=>done("up"); $("#syncDown").onclick=()=>done("down");
     if(!d.open) d.showModal(); Sound.sfx("open");
   });
   return syncAsk;
 }
-$("#syncDlg").addEventListener("cancel",e=>{ e.preventDefault(); if(SYNC_MANUAL&&$("#syncDlg")._done) $("#syncDlg")._done("cancel"); });   // 自動比對時一定要選一邊；手動同步按 Esc 等於取消
+$("#syncDlg").addEventListener("cancel",e=>e.preventDefault());       // 一定要選一邊
 let reconcileJob=null, lastRemoteCheck=0;
 async function cloudReconcile(){
   if(!CLOUD||!cloudReady()){ cloudSynced=true; return; }
@@ -8607,48 +8590,10 @@ function tryZoneSeeds(zoneId){                         // 到任務地點隨機�
   const z=ZONES.find(x=>x.id===zoneId);
   setTimeout(()=>{ Sound.sfx("get"); toast(`🌱 在${z?z.name:"路上"}撿到 ${n} 顆${CROPS[k].name}種子！`); },900);
 }
-function syncNow(btn){
-  if(CLOUD&&cloudReady()&&!touristLocked()) return manualSync(btn);
+function syncNow(){
   queueSync(true); pushFarm(true); markAutoSync(); renderAutoSync();
   toast(CLOUD?"☁ 已立即同步：雲端存檔和交誼廳名片都更新了":"已更新交誼廳名片（登入雲端存檔後，也會同步到雲端）");
   Sound.sfx("get");
-}
-let manualBusy=false;
-async function manualSync(btn){                          // 立即同步：先下載雲端存檔比對，再讓新人選上傳或下載
-  if(manualBusy) return; manualBusy=true;
-  const label=btn?btn.innerHTML:""; if(btn){ btn.disabled=true; btn.textContent="比對雲端中…"; }
-  try{
-    if(reconcileJob) await reconcileJob;
-    let remote;
-    try{ remote=await cloudFetch(CLOUD.code); }catch(e){ toast("連不到雲端，請檢查網路後再試"); Sound.sfx("error"); return; }
-    lastRemoteCheck=Date.now();
-    const finish=msg=>{ pushFarm(true); markAutoSync(); renderAutoSync(); renderCloudBox(); toast(msg); Sound.sfx("get"); if(curPlace) renderPlace(); };
-    if(!remote){                                         // 雲端還沒有存檔：直接上傳
-      for(let i=0;i<40&&cloudBusy;i++) await new Promise(r=>setTimeout(r,250));
-      const ok=await cloudPush(true); finish(ok?"⬆ 雲端還沒有存檔，已上傳這台的進度":"上傳失敗，請稍後再試"); return;
-    }
-    rememberTag(remote.data);
-    let opened;
-    try{ opened=await openSave(remote.data,CLOUD.key,"pw"); }
-    catch(e){ cloudLogout(); toast("雲端存檔的密碼已被重設，請用新的密碼重新登入"); return; }
-    const loaded=opened.payload;
-    if(opened.dek&&!CLOUD.dek) CLOUD.dek=opened.dek;
-    const pick=await askSyncChoice(loaded,localChangedSinceSync(),true);
-    if(pick==="cancel"){ toast("沒有同步，兩邊的進度都沒有變"); return; }
-    for(let i=0;i<40&&cloudBusy;i++) await new Promise(r=>setTimeout(r,250));   // 等自動同步送完
-    clearTimeout(cloudTimer);
-    if(pick==="up"){
-      mergeFavInto(loaded.S); save();
-      const ok=await cloudPush(true);
-      finish(ok?"⬆ 已上傳：雲端存檔改成這台的進度（筆記本兩邊都保留）":"上傳失敗，請稍後再試");
-    }else{
-      applySave(loaded); setCloudAt(new Date().toISOString()); cloudDirty=false; markSynced();
-      finish("⬇ 已下載：這台改成雲端的進度");
-    }
-  }finally{
-    manualBusy=false;
-    if(btn&&document.body.contains(btn)){ btn.disabled=false; btn.innerHTML=label; }
-  }
 }
 function interactionLog(){
   if(!loungeReady()||!LOUNGE.at) return [];
@@ -13743,7 +13688,7 @@ $("#placeBody").addEventListener("click",async e=>{
   }
   const fd2=t.closest("[data-feed]");
   if(fd2){ feedPet(fd2.dataset.feed); return; }
-  if(t.closest("[data-syncnow]")){ syncNow(t.closest("[data-syncnow]")); return; }
+  if(t.closest("[data-syncnow]")){ syncNow(); return; }
   const spv=t.closest("[data-shoppv]"); if(spv){ openPreview(spv.dataset.shoppv); return; }
   const sth=t.closest("[data-shoptheme]"); if(sth){ shopTheme=sth.dataset.shoptheme; Sound.sfx("select"); renderShop($("#shopPanel")); return; }
   const sb=t.closest("[data-shopbuy]"); if(sb){ shopBuy(sb.dataset.shopbuy); return; }
@@ -13781,7 +13726,8 @@ $("#placeBody").addEventListener("click",async e=>{
       if(!(await uiConfirm("登出後，這台電腦的進度仍在，但不會再自動同步。確定登出嗎？","登出"))) return;
       cloudLogout(); toast("已登出雲端存檔");
     }else if(act==="push"){
-      await manualSync(cb);
+      cb.disabled=true; await cloudReconcile(); cb.disabled=false;
+      toast(cloudDirty?"同步失敗，請稍後再試":"已同步到雲端"); renderCloudBox();
     }
     return;
   }

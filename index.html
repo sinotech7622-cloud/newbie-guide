@@ -727,6 +727,7 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
 .syncbtns #syncCancel{margin-right:auto}
+#syncIntro .syncdiff{display:block;margin:6px 0;padding:6px 10px;border-left:3px solid var(--gold);background:rgba(242,193,78,.08);font-size:14px}
 @media (max-width:520px){.synccmp{grid-template-columns:1fr}.syncbtns .act{flex:1 1 100%}}
 
 .cloudwrap{max-width:min(520px,calc(100vw - 28px))}
@@ -2911,12 +2912,12 @@ footer.site p{margin:4px 0}
     <div class="body">
       <p class="dbody" id="syncIntro"></p>
       <div class="synccmp" id="syncCmp"></div>
-      <p class="ahint">筆記本的內容兩邊都會保留，不會因為選哪一邊而不見。</p>
+      <p class="ahint">不管選哪一邊，<b>職業、任務、成就、收藏</b>和筆記本都會兩邊合併保留；只有種子、蔬菜、點數等數量會用你選的那一邊。</p>
     </div>
     <div class="foot"><div class="row syncbtns">
       <button class="act ghost" type="button" id="syncCancel" hidden>取消<small>先不同步</small></button>
-      <button class="act" type="button" id="syncUp">⬆ 上傳這台<small>用這台的進度更新雲端</small></button>
-      <button class="act" type="button" id="syncDown">⬇ 從雲端下載<small>用雲端的進度覆蓋這台</small></button>
+      <button class="act" type="button" id="syncUp">⬆ 上傳這台<small>種子、點數等數量用這台的</small></button>
+      <button class="act" type="button" id="syncDown">⬇ 從雲端下載<small>種子、點數等數量用雲端的</small></button>
     </div></div>
   </div>
 </dialog>
@@ -7471,8 +7472,10 @@ function mergeFavInto(other){                          // 把另一份存檔的�
 }
 function applySave(obj){
   if(!obj||!obj.S) return false;
-  const keepCs=S.consults, keepIv=S.ivReplies, keepFav=S.fav, keepDel=S.favDel;
-  S=Object.assign({},S,obj.S);
+  const keepCs=S.consults, keepIv=S.ivReplies, keepFav=S.fav, keepDel=S.favDel, prev=S;
+  S=Object.assign({},S,JSON.parse(JSON.stringify(obj.S)));
+  APPLY_GAIN=prev&&prev.group?mergeProgInto(S,prev):0;  // 這台有、雲端沒有的職業、任務、成就、收藏都保留
+  if(APPLY_GAIN) afterProgMerge();
   { const m=mergeFav(keepFav,keepDel,obj.S.fav,obj.S.favDel); S.fav=m.fav; S.favDel=m.del; }
   S.consults=mergeConsults(keepCs,obj.S.consults);
   S.ivReplies=Object.assign({},keepIv||{},obj.S.ivReplies||{});
@@ -7507,8 +7510,8 @@ async function cloudSignIn(acc,pw,mode,opt){
     const mine=progressCount(S), theirs=progressCount(loaded.S);
     let useCloud=true;
     if(S.group&&saveFingerprint(S)!==saveFingerprint(loaded.S)) useCloud=(await askSyncChoice(loaded,true))==="down";
-    if(useCloud){ applySave(loaded); setCloudAt(new Date().toISOString()); markSynced(); toast("已載入雲端存檔"); }
-    else { mergeFavInto(loaded.S); save(); await cloudPush(true); toast("已用這台電腦的進度覆蓋雲端（筆記本兩邊都保留）"); }
+    if(useCloud){ applySave(loaded); setCloudAt(new Date().toISOString()); markSynced(); await pushIfGained(); toast("已載入雲端存檔"); }
+    else { mergeFavInto(loaded.S); mergeProgInto(S,loaded.S); afterProgMerge(); save(); await cloudPush(true); toast("已用這台的進度更新雲端（職業、任務、收藏和筆記本兩邊都保留）"); }
     if(freshCode){ await cloudPush(true); showRecovery(freshCode,"這個帳號還沒有救援碼，系統剛剛幫你產生一組。"); }
   }else{
     await cloudPush(true);
@@ -7563,7 +7566,7 @@ const cloudAt=()=>{ try{ return localStorage.getItem("sino22-cloud-at")||""; }ca
 const setCloudAt=v=>{ try{ localStorage.setItem("sino22-cloud-at",v); }catch(e){} };
 const localMt=()=>{ try{ return localStorage.getItem("sino22-local-at")||""; }catch(e){ return ""; } };
 const syncFp=()=>{ try{ return localStorage.getItem("sino22-sync-fp")||""; }catch(e){ return ""; } };
-function markSynced(ph){ try{ localStorage.setItem("sino22-sync-fp",hashStr(saveFingerprint(S))); localStorage.setItem(PUSH_KEY,ph||pushHash()); }catch(e){} }   // 線上已經是這份：之後沒變就不用再送
+function markSynced(ph){ try{ localStorage.setItem("sino22-sync-fp",hashStr(saveFingerprint(S))); localStorage.setItem("sino22-sync-qfp",hashStr(qtyFingerprint(S))); localStorage.setItem(PUSH_KEY,ph||pushHash()); }catch(e){} }   // 線上已經是這份：之後沒變就不用再送
 const localChangedSinceSync=()=>!!S.group&&hashStr(saveFingerprint(S))!==syncFp();
 const FP_SKIP=new Set(["rpsClaimed","seenQuests","bonusSeen","fav","favDel","consults","ivReplies","pdClaimed","giftClaimed","ixSeen","achSeen","seenContent","loc","seedAt","lvMax","ach","guardUntil","starUntil","farmSeed","tourDone","npcMile","cleanedAt","onb"]);
 const stableStr=v=>v&&typeof v==="object"?(Array.isArray(v)?"["+v.map(x=>x===undefined?"null":stableStr(x)).join(",")+"]":"{"+Object.keys(v).filter(k=>v[k]!==undefined&&typeof v[k]!=="function").sort().map(k=>JSON.stringify(k)+":"+stableStr(v[k])).join(",")+"}"):JSON.stringify(v);
@@ -7572,15 +7575,84 @@ function fpNorm(v){                                   // 空的預設值（空�
   if(v&&typeof v==="object"){ const o={}; Object.keys(v).forEach(k=>{ const x=fpNorm(v[k]); if(x!==undefined) o[k]=x; }); return Object.keys(o).length?o:undefined; }
   return v===null||v===""||v==="wp_default"||v==="fl_wood"?undefined:v;
 }
+/* 永久進度：只會增加、不會用掉的東西。兩台都有變動時，不管選哪一邊都兩邊合併 */
+const PROG_SETS=["done","visited","ach","album","shopOwned","petKinds","outfits","accs","findSeen","rareSeen","petColors"];
+const PROG_MAX=["rare","aff"];                           // 數字只會變大：取比較大的
+const PROG_OWN=["items","finds"];                        // 可以賣掉的收藏：至少保有 1 個（數量用選的那一邊）
+const PROG_KEYS=new Set(PROG_SETS.concat(PROG_MAX,PROG_OWN,["job","lvMax","caught","tro","frame"]));
+const isObj=o=>!!o&&typeof o==="object"&&!Array.isArray(o);
+function mergeProgInto(dst,src){                         // 把 src 有、dst 沒有的永久進度補進 dst；回傳補了幾項
+  if(!isObj(dst)||!isObj(src)) return 0;
+  let n=0;
+  const box=k=>isObj(dst[k])?dst[k]:(dst[k]={});
+  PROG_SETS.forEach(k=>{ const o=src[k]; if(!isObj(o)) return; Object.keys(o).forEach(id=>{ if(!o[id]) return; const d=box(k); if(!d[id]){ d[id]=o[id]; n++; } }); });
+  PROG_MAX.forEach(k=>{ const o=src[k]; if(!isObj(o)) return; Object.keys(o).forEach(id=>{ const v=+o[id]||0; if(v>0&&v>(+((dst[k]||{})[id])||0)){ box(k)[id]=o[id]; n++; } }); });
+  PROG_OWN.forEach(k=>{ const o=src[k]; if(!isObj(o)) return; Object.keys(o).forEach(id=>{ if((+o[id]||0)>0&&!((+((dst[k]||{})[id])||0)>0)){ box(k)[id]=1; n++; } }); });
+  if((+src.lvMax||0)>(+dst.lvMax||0)){ dst.lvMax=src.lvMax; n++; }
+  if(Array.isArray(src.caught)){ if(!Array.isArray(dst.caught)) dst.caught=[]; src.caught.forEach(x=>{ if(!dst.caught.includes(x)){ dst.caught.push(x); n++; } }); }
+  const sj=src.job;
+  if(isObj(sj)&&isObj(sj.have)){
+    if(!isObj(dst.job)) dst.job={};
+    const dj=dst.job; if(!isObj(dj.have)) dj.have={};
+    Object.keys(sj.have).forEach(id=>{
+      const t=Math.min(2,+sj.have[id]||0); if(!(t>(+dj.have[id]||0))) return;
+      dj.have[id]=t; n+=2;
+      if(isObj(sj.at)) Object.keys(sj.at).forEach(x=>{ if(x.indexOf(id)===0){ if(!isObj(dj.at)) dj.at={}; if(!dj.at[x]) dj.at[x]=sj.at[x]; } });
+    });
+    if((!dj.cur||!(+dj.have[dj.cur]>0))&&sj.cur&&+dj.have[sj.cur]>0){ dj.cur=sj.cur; if(isObj(sj.wear)) dj.wear=Object.assign({},sj.wear); }
+    if(!dj.cursor&&sj.cursor) dj.cursor=sj.cursor;
+  }
+  const st=src.tro;                                      // 小遊戲獎盃：獎盃和「這週已發過」的紀錄一起合併
+  if(isObj(st)&&Array.isArray(st.list)){
+    if(!isObj(dst.tro)) dst.tro={wk:{},list:[]};
+    const dt=dst.tro; if(!isObj(dt.wk)) dt.wk={}; if(!Array.isArray(dt.list)) dt.list=[];
+    st.list.forEach(t=>{ if(t&&!dt.list.some(x=>x.w===t.w&&x.g===t.g)){ dt.list.push(t); n++; } });
+    if(isObj(st.wk)) Object.keys(st.wk).forEach(w=>{ if(!dt.wk[w]) dt.wk[w]=st.wk[w]; });
+  }
+  if(!dst.frame&&src.frame&&isObj(dst.album)&&dst.album[src.frame]) dst.frame=src.frame;
+  return n;
+}
+const progUnits=(a,b)=>mergeProgInto(JSON.parse(JSON.stringify(b||{})),a||{});   // a 有、b 沒有的永久進度有幾項
+function progDiff(a,b){                                   // a 有、b 沒有的永久進度（顯示用）
+  a=a||{}; b=b||{}; const out=[];
+  const ha=((a.job||{}).have)||{}, hb=((b.job||{}).have)||{};
+  Object.keys(ha).forEach(id=>{ const t=+ha[id]||0, j=jobById(id); if(j&&t>(+hb[id]||0)) out.push(t>=2?`${j.n2}（二轉）`:`${j.n1}（轉職）`); });
+  const cnt=(k,f)=>Object.keys(a[k]||{}).filter(x=>a[k][x]&&!(b[k]||{})[x]&&(!f||f(x))).length;
+  const q=cnt("done",id=>QIDS.has(id)); if(q) out.push(`${q} 個任務`);
+  const ac=cnt("ach"); if(ac) out.push(`${ac} 個成就`);
+  const col=["album","shopOwned","petKinds","outfits","accs"].reduce((t,k)=>t+cnt(k),0)
+    +["items","finds"].reduce((t,k)=>t+Object.keys(a[k]||{}).filter(x=>+a[k][x]>0&&!(+((b[k]||{})[x])>0)).length,0);
+  if(col) out.push(`${col} 項收藏`);
+  return out;
+}
+let APPLY_GAIN=0;                                         // 下載雲端存檔時，從這台補進去的永久進度數
+async function pushIfGained(){                            // 合併後比雲端多：上傳回去，別台也拿得到
+  if(!APPLY_GAIN) return; APPLY_GAIN=0;
+  for(let i=0;i<40&&cloudBusy;i++) await new Promise(r=>setTimeout(r,250));
+  await cloudPush(true);
+}
+function afterProgMerge(){ try{ jobS(); syncJobAv(); }catch(e){} }
+const JOB_AV_KEYS=["job","jt","jo","jh","jc","jl","zt"];
+function qtyFingerprint(st){                              // 永久進度以外的部分（種子、蔬菜、點數、田地、佈置…）
+  const o={}; Object.keys(st||{}).forEach(k=>{ if(k[0]!=="_"&&!FP_SKIP.has(k)&&!PROG_KEYS.has(k)) o[k]=st[k]; });
+  if(isObj(o.av)){ o.av=Object.assign({},o.av); JOB_AV_KEYS.forEach(k=>delete o.av[k]); }
+  return stableStr(fpNorm(JSON.parse(JSON.stringify(o)))||{});
+}
+function localQtyChanged(){                               // 上次同步後，這台的種子、蔬菜、田地等有沒有變（只多了永久進度不算）
+  let q=""; try{ q=localStorage.getItem("sino22-sync-qfp")||""; }catch(e){}
+  return q?(!!S.group&&hashStr(qtyFingerprint(S))!==q):localChangedSinceSync();
+}
 function saveFingerprint(st){ const o={}; Object.keys(st||{}).forEach(k=>{ if(k[0]!=="_"&&!FP_SKIP.has(k)) o[k]=st[k]; }); return stableStr(fpNorm(JSON.parse(JSON.stringify(o)))||{}); }   // 只比對真正的遊戲進度
 function saveSummaryHTML(st,title,dev,at,mark){
   st=st||{};
   const done=progressCount(st), seeds=Object.values(st.seeds||{}).reduce((a,b)=>a+(+b||0),0), barn=Object.values(st.barn||{}).reduce((a,b)=>a+(+b||0),0);
   const ach=Object.keys(st.ach||{}).filter(k=>st.ach[k]).length, furn=Object.keys(st.shopOwned||{}).length;
   const pet=st.pet&&PETS[st.pet.type]?(st.pet.name||PETS[st.pet.type].name):"—";
+  const jh=((st.job||{}).have)||{}, jl=Object.keys(jh).filter(id=>jobById(id)&&+jh[id]>0).sort((x,y)=>(+jh[y])-(+jh[x])||(x===(st.job||{}).cur?-1:1));
+  const jobs=jl.length?jl.slice(0,2).map(id=>{ const j=jobById(id); return +jh[id]>=2?j.n2:j.n1; }).join("、")+(jl.length>2?` 等 ${jl.length} 個`:""):"還沒有轉職";
   return `<div class="synccard${mark?" rec":""}"><p class="syncname">${esc(title)}${mark?`<span class="st st-gold">建議</span>`:""}</p>
     <p class="ahint">${esc(dev||"")}${at?`・${esc(fmtShort(new Date(at)))}`:""}</p>
-    <dl class="syncfacts"><dt>等級</dt><dd>LV ${esc(String(st.lvMax||1))}</dd><dt>完成任務</dt><dd>${done} / ${TOTAL}</dd><dt>成就</dt><dd>${ach} 個</dd>
+    <dl class="syncfacts"><dt>等級</dt><dd>LV ${esc(String(st.lvMax||1))}</dd><dt>職業</dt><dd>${esc(jobs)}</dd><dt>完成任務</dt><dd>${done} / ${TOTAL}</dd><dt>成就</dt><dd>${ach} 個</dd>
       <dt>種子</dt><dd>${seeds} 顆</dd><dt>倉庫蔬菜</dt><dd>${barn} 份</dd><dt>家具</dt><dd>${furn} 件</dd><dt>寵物</dt><dd>${esc(pet)}</dd></dl></div>`;
 }
 let syncAsk=null;
@@ -7588,21 +7660,25 @@ let SYNC_MANUAL=false;
 function askSyncChoice(loaded,localChanged,manual){
   if(syncAsk) return syncAsk;
   syncAsk=new Promise(res=>{
-    const d=$("#syncDlg"); let rec=localChanged?"":"down";
+    const uR=progUnits(loaded.S,S), uL=progUnits(S,loaded.S), byProg=uR>uL?"down":uL>uR?"up":"";
+    const d=$("#syncDlg"); let rec=localChanged?byProg:"down";
+    const dR=progDiff(loaded.S,S), dL=progDiff(S,loaded.S);
+    const diffHTML=(dR.length?`<span class="syncdiff">☁ 雲端有、這台沒有：<b>${esc(dR.join("、"))}</b></span>`:"")
+      +(dL.length?`<span class="syncdiff">💻 這台有、雲端沒有：<b>${esc(dL.join("、"))}</b></span>`:"");
     SYNC_MANUAL=!!manual; $("#syncCancel").hidden=!manual;
     if(manual){                                          // 手動「立即同步」：一定讓新人自己選
       const remoteNewer=String(loaded.at||"")>cloudAt(), remoteLater=String(loaded.at||"")>localMt();
-      rec=remoteNewer?(!localChanged||remoteLater?"down":"up"):(localChanged?"up":"");
+      rec=remoteNewer?(!localChanged?"down":(byProg||(remoteLater?"down":"up"))):(localChanged?(byProg||"up"):(uR?"down":""));
       $("#syncTitle").textContent="要上傳還是下載？";
       $("#syncIntro").innerHTML=(remoteNewer
-        ?(localChanged?`雲端存檔在別的裝置更新過，這台也有還沒上傳的新進度。比較新的是${rec==="down"?"雲端":"這台"}，<b>建議${rec==="down"?"從雲端下載":"上傳這台"}</b>。`
+        ?(localChanged?`雲端存檔在別的裝置更新過，這台也有還沒上傳的新進度。${byProg?`${rec==="down"?"雲端":"這台"}的進度比較多`:`比較新的是${rec==="down"?"雲端":"這台"}`}，<b>建議${rec==="down"?"從雲端下載":"上傳這台"}</b>。`
           :"雲端存檔在別的裝置（例如手機或另一台電腦）更新過，<b>建議從雲端下載</b>。")
-        :(localChanged?"這台有還沒上傳的新進度，<b>建議上傳這台</b>。":"這台和雲端目前是同一份進度，選哪一邊都可以。"))
-        +"請選擇要用哪一邊當作最新的進度：";
+        :(localChanged?`這台有還沒上傳的新進度，<b>建議${rec==="down"?"從雲端下載":"上傳這台"}</b>。`:uR?"雲端有一些這台沒有的進度，<b>建議從雲端下載</b>。":"這台和雲端目前是同一份進度，選哪一邊都可以。"))
+        +diffHTML+"請選擇要用哪一邊當作最新的進度：";
     }else{
       $("#syncTitle").textContent="這台和線上的進度不一樣";
       $("#syncIntro").innerHTML=localChanged
-        ?"線上存檔在別的裝置（例如手機或另一台電腦）更新過，這台也有還沒上傳的新進度。請選一邊當作最新的進度："
+        ?`線上存檔在別的裝置（例如手機或另一台電腦）更新過，這台也有還沒上傳的新進度。${rec?`${rec==="down"?"線上":"這台"}的進度比較多，<b>建議${rec==="down"?"用線上的進度":"更新線上"}</b>。`:""}${diffHTML}請選一邊當作最新的進度：`
         :"線上存檔在別的裝置（例如手機或另一台電腦）更新過。這台上次同步後沒有新進度，<b>建議用線上的進度覆蓋這台</b>：";
     }
     $("#syncCmp").innerHTML=saveSummaryHTML(S,`這台（${deviceText()}）`,"目前的進度",localMt(),rec==="up")
@@ -7641,7 +7717,8 @@ async function cloudReconcile(){
       cloudSynced=true;
       const rAt=String(loaded.at||""), lAt=cloudAt(), localChanged=localChangedSinceSync();
       if(rAt<=lAt){                                    // 線上沒有別的裝置的新存檔：這台有新進度就上傳
-        const changed=mergeFavInto(loaded.S); if(changed) save();
+        const g=mergeProgInto(S,loaded.S); if(g) afterProgMerge();
+        const changed=mergeFavInto(loaded.S)||g>0; if(changed) save();
         await cloudPush(localChanged||changed);           // 筆記本等其他還沒上傳的變動也一起送（沒變就不送）
         if(changed&&curPlace&&curPlace.id==="myhome") renderPlace();
         return;
@@ -7651,9 +7728,13 @@ async function cloudReconcile(){
         else{ const changed=mergeFavInto(loaded.S); if(changed){ save(); await cloudPush(true); } }
         setCloudAt(new Date().toISOString()); cloudDirty=false; markSynced(); return;
       }
+      if(!localQtyChanged()){                          // 這台沒有自己的新進度（頂多自動拿到節慶畫框等）：直接下載並合併，不用問
+        applySave(loaded); setCloudAt(new Date().toISOString()); cloudDirty=false; markSynced(); await pushIfGained();
+        toast("⬇ 已同步別的裝置的新進度"); if(curPlace) renderPlace(); return;
+      }
       const pick=await askSyncChoice(loaded,localChanged);
-      if(pick==="up"){ mergeFavInto(loaded.S); save(); await cloudPush(true); toast("⬆ 已用這台的進度更新線上存檔（筆記本兩邊都保留）"); }
-      else{ applySave(loaded); setCloudAt(new Date().toISOString()); cloudDirty=false; markSynced(); toast("⬇ 已用線上的進度覆蓋這台"); }
+      if(pick==="up"){ mergeFavInto(loaded.S); mergeProgInto(S,loaded.S); afterProgMerge(); save(); await cloudPush(true); toast("⬆ 已用這台的進度更新線上存檔（職業、任務、收藏和筆記本兩邊都保留）"); }
+      else{ applySave(loaded); setCloudAt(new Date().toISOString()); cloudDirty=false; markSynced(); await pushIfGained(); toast("⬇ 已用線上的進度更新這台（職業、任務、收藏兩邊都保留）"); }
     }catch(e){ cloudSynced=true; }
     finally{ cloudSynced=true; reconcileJob=null; }
   })();
@@ -8658,7 +8739,7 @@ let manualBusy=false;
 const CLOUD_SUM="sino22-cloud-sum";                     // 雲端存檔的摘要（存在這台）：雲端沒變時不必下載整張存檔資料表
 function cloudSumSet(obj){
   try{ if(!CLOUD||!obj||!obj.S) return; const st=obj.S, keys=o=>Object.fromEntries(Object.keys(o||{}).filter(k=>o[k]).map(k=>[k,1]));
-    localStorage.setItem(CLOUD_SUM,JSON.stringify({code:CLOUD.code,at:obj.at||"",dev:obj.dev||"",S:{lvMax:st.lvMax,done:keys(st.done),ach:keys(st.ach),seeds:st.seeds||{},barn:st.barn||{},shopOwned:keys(st.shopOwned),pet:st.pet?{type:st.pet.type,name:st.pet.name}:null}}));
+    localStorage.setItem(CLOUD_SUM,JSON.stringify({code:CLOUD.code,at:obj.at||"",dev:obj.dev||"",S:{lvMax:st.lvMax,done:keys(st.done),ach:keys(st.ach),seeds:st.seeds||{},barn:st.barn||{},shopOwned:keys(st.shopOwned),pet:st.pet?{type:st.pet.type,name:st.pet.name}:null,job:st.job&&st.job.have?{have:st.job.have,cur:st.job.cur||""}:null}}));
   }catch(e){}
 }
 function cloudSumGet(){ try{ const o=JSON.parse(localStorage.getItem(CLOUD_SUM)||"null"); return o&&CLOUD&&o.code===CLOUD.code&&o.S?o:null; }catch(e){ return null; } }
@@ -8699,9 +8780,9 @@ async function manualSync(btn){                          // 立即同步：比�
     for(let i=0;i<40&&cloudBusy;i++) await new Promise(res=>setTimeout(res,250));   // 等自動同步送完
     clearTimeout(cloudTimer);
     if(pick==="up"){
-      if(!quick) mergeFavInto(loaded.S); save();
+      if(!quick){ mergeFavInto(loaded.S); mergeProgInto(S,loaded.S); afterProgMerge(); } save();
       const ok=await cloudPush(true);
-      finish(ok?"⬆ 已上傳：雲端存檔改成這台的進度（筆記本兩邊都保留）":"上傳失敗，請稍後再試");
+      finish(ok?"⬆ 已上傳：雲端存檔改成這台的進度（職業、任務、收藏和筆記本兩邊都保留）":"上傳失敗，請稍後再試");
       return;
     }
     if(quick){
@@ -8710,8 +8791,8 @@ async function manualSync(btn){                          // 立即同步：比�
       const r=await fetchCloudSave(); if(r.err){ fail(r); return; } if(r.none){ finish("雲端沒有存檔，這台的進度沒有變"); return; }
       loaded=r.loaded;
     }
-    applySave(loaded); setCloudAt(new Date().toISOString()); cloudDirty=false; markSynced();
-    finish("⬇ 已下載：這台改成雲端的進度");
+    applySave(loaded); setCloudAt(new Date().toISOString()); cloudDirty=false; markSynced(); await pushIfGained();
+    finish("⬇ 已下載：這台改成雲端的進度（職業、任務、收藏兩邊都保留）");
   }finally{
     manualBusy=false;
     if(btn&&document.body.contains(btn)){ btn.disabled=false; btn.innerHTML=label; }

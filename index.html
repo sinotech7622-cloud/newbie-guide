@@ -727,6 +727,19 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
 .syncbtns #syncCancel{margin-right:auto}
+@keyframes dlgshake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.dlgshake{animation:dlgshake .35s ease}
+@media (prefers-reduced-motion:reduce){.dlgshake{animation:none;outline:3px solid var(--gold);outline-offset:2px}}
+.qbonus{margin:0;padding:8px 14px;background:rgba(242,193,78,.12);border-bottom:2px solid var(--gold);font-size:14px;color:var(--win-text)}
+.qbonus.ok{background:rgba(95,227,154,.12);border-color:#5FE39A}
+.qbonus .qbp{float:right;color:var(--gold);font-weight:700}
+.qbonus .linkbtn{margin-left:6px}
+.bonushint{margin:10px 0 0;padding:6px 10px;border-left:3px solid var(--gold);background:rgba(242,193,78,.08)}
+.bonusitems{list-style:none;margin:6px 0 12px;padding:0;display:grid;gap:6px}
+.bonusitems li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:6px 10px;border:2px solid var(--line);background:rgba(0,0,0,.15)}
+.bonusitems li.ok{opacity:.75}
+.bonusitems .bmark{display:inline-block;width:1.4em;color:var(--gold);font-weight:700}
+.bonusitems li.ok .bmark{color:#5FE39A}
 #rcDlg .rccheck{margin:6px 0 10px;padding:6px 10px;border-left:3px solid var(--win-muted)}
 #rcDlg .rccheck.ok{border-color:#5FE39A;color:#BFF5D6}
 #rcDlg .rccheck.warn{border-color:var(--gold);color:#FFE3A3}
@@ -2603,6 +2616,7 @@ footer.site p{margin:4px 0}
       <h2 id="qTitle"><span class="from" id="qFrom"></span><span id="qTitleText"></span></h2>
       <button class="x" type="button" data-close>關閉</button>
     </header>
+    <p class="qbonus" id="qBonus" hidden></p>
     <div class="body" id="qBody"></div>
     <footer>
       <div class="nav">
@@ -5853,7 +5867,6 @@ $("#zChapters").addEventListener("click",e=>{
 let curQ=null, listCtx=[];
 function openQuest(id,ctx){
   const q=ALLQ.find(q=>q.id===id); if(!q) return;
-  setTimeout(()=>bonusTouch(id),800);
   setTimeout(()=>tryFind((q.zone&&q.zone.id)||"",.20,"文件"),350);
   Sound.sfx($("#qDlg").open?"cursor":"open");
   curQ=q; listCtx=ctx||ALLQ.filter(x=>x.zone===q.zone);
@@ -5863,7 +5876,7 @@ function openQuest(id,ctx){
   $("#qBody").scrollTop=0;
   const i=listCtx.indexOf(q);
   $("#qPrev").disabled=i<=0; $("#qNext").disabled=i<0||i>=listCtx.length-1;
-  syncDoneBtn(); syncFavBtn();
+  syncDoneBtn(); syncFavBtn(); renderQBonus();
   const dlg=$("#qDlg"); if(!dlg.open) dlg.showModal();
   if(QUEST_NEW[id]) setTimeout(()=>{ if(curQ&&curQ.id===id) openUpdNote(id); },250);
 }
@@ -5885,7 +5898,7 @@ function toggleDone(){
   const before=myLv();
   S.done[curQ.id]=true; toast("獲得 10 EXP！"); Sound.sfx("get");
   setTimeout(obCheck,1800);
-  setTimeout(()=>bonusTouch(curQ.id),1500);
+  { const qid=curQ.id; setTimeout(()=>{ const p=bonusMark(qid,"done"); if(p&&!p.includes("證書到手")) toast(`🎖 ${p}`); renderQBonus(); },1500); }
   save(); syncDoneBtn(); renderHUD(); renderZone(); refreshSearch(); queueSync();
   const after=myLv();
   if(after>before) levelUp(after);
@@ -6349,10 +6362,37 @@ $("#map").addEventListener("keydown",e=>{
   if(g&&(e.key==="Enter"||e.key===" ")){e.preventDefault();g.dataset.place?openPlace(g.dataset.place):openZone(g.dataset.zone);}
 });
 document.querySelectorAll("dialog").forEach(d=>{
-  const keep=d.id==="cloudDlg"||d.id==="cDlg"||d.id==="syncDlg";     // 登入與建立角色視窗：避免誤點外面關掉
-  if(!keep) d.addEventListener("click",e=>{if(e.target===d)d.close();});
   d.addEventListener("close",()=>{setTimeout(topHost,0);Sound.sfx("back",{soft:true});});
 });
+/* 跳出視窗：按旁邊（暗色區域）不會關，視窗晃一下並提示要按按鈕（之後才加進來的視窗也適用） */
+function dlgNudge(d){
+  const w=d.querySelector(":scope > .window")||d;
+  w.classList.remove("dlgshake"); void w.offsetWidth; w.classList.add("dlgshake");
+  if(Date.now()-(dlgNudge.t||0)>2500){ dlgNudge.t=Date.now(); toast("請按視窗裡的按鈕關閉"); }
+  try{ Sound.sfx("cursor",{soft:true}); }catch(e){}
+}
+document.addEventListener("click",e=>{
+  const d=e.target; if(!d||d.tagName!=="DIALOG"||!d.open) return;
+  const r=d.getBoundingClientRect();
+  if(e.detail&&e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom) return;   // 點在視窗框內的空白處
+  e.preventDefault(); dlgNudge(d);
+});
+/* Esc：確認、領取、一定要選的視窗不能用 Esc 關；進行中的先問 */
+const DLG_ESC_BLOCK=new Set(["obDlg","cloudDlg","rcDlg","seedPickDlg","compDlg","uDlg","profDlg","kgDlg"]);
+const DLG_ESC_ASK={
+  mgDlg:{running:()=>!!document.querySelector("#mgBody .mgov:not(.mgpause)[hidden]"),msg:"小遊戲還在進行中，現在離開這一局不會計分。確定要離開嗎？",ok:"離開遊戲"},
+  npcQuizDlg:{running:()=>true,msg:"確定要離開問答嗎？",ok:"離開"}
+};
+document.addEventListener("cancel",async e=>{
+  const d=e.target; if(!d||d.tagName!=="DIALOG") return;
+  if(DLG_ESC_BLOCK.has(d.id)){ e.preventDefault(); e.stopPropagation(); dlgNudge(d); return; }
+  const A=DLG_ESC_ASK[d.id];
+  if(A){
+    e.preventDefault(); e.stopPropagation();
+    let run=false; try{ run=A.running(); }catch(_){}
+    if(!run||await uiConfirm(A.msg,A.ok)){ if(d.open) d.close(); }
+  }
+},true);
 $("#qDlg").addEventListener("close",()=>{ if(curPlace&&curPlace.id==="myhome") renderPlace(); if(curZone){const b=document.querySelector(`#zChapters [data-q="${curQ&&curQ.id}"]`);b&&b.focus();} });
 $("#qDone").addEventListener("click",toggleDone);
 $("#qFav").addEventListener("click",toggleFav);
@@ -7082,6 +7122,7 @@ function openUpdNote(id){                                  // 單一任務：改
   $("#updTitle").textContent=u.q.title;
   $("#updBody").innerHTML=`<p class="dbody">📢 這項任務的內容修改過了${u.none?"。":`，下面是改動的地方：${updCountHTML(u)}`}</p>${updDiffHTML(u)}<p class="ahint">按「看完了」之後，這項任務的「更新」標籤就會消失。</p>`;
   $("#updFoot").innerHTML=`<button class="act ghost" type="button" data-close>稍後再看</button><button class="act" type="button" data-updok="${esc(id)}">✓ 看完了</button>`;
+  if(S.awarded&&(S.bonusBatch||{})[id]&&!bonusItemOk(id)) $("#updBody").insertAdjacentHTML("beforeend",`<p class="bonushint">🎖 這項是 Bonus 進度：按「✓ 看完了」才算完成（目前 ${bonusProg().n}／${bonusProg().t}）。</p>`);
   const d=$("#updDlg"); if(!d.open) d.showModal(); Sound.sfx("open");
 }
 function openUpdList(){                                    // 全部更新的清單
@@ -7089,7 +7130,7 @@ function openUpdList(){                                    // 全部更新的清
   if(!ids.length){ const d=$("#updDlg"); if(d.open) d.close(); return; }
   $("#updDept").textContent="任務內容更新";
   $("#updTitle").textContent=`村長更新了 ${ids.length} 項任務`;
-  $("#updBody").innerHTML=`<p class="dbody">點每一項可以看改了哪裡，看完按「看完了」就會消掉「更新」標籤。</p>${ids.map(id=>{ const u=updInfo(id); return `<details class="upditem"><summary><b>${esc(u.q.title)}</b><span class="ahint">${esc(u.q.zone.name)}｜${esc(u.q.chapter||"")}</span>${updCountHTML(u)}</summary>${updDiffHTML(u)}<div class="updacts"><button class="act ghost" type="button" data-updopen="${esc(id)}">打開任務</button><button class="act" type="button" data-updok="${esc(id)}">✓ 看完了</button></div></details>`; }).join("")}`;
+  $("#updBody").innerHTML=`<p class="dbody">點每一項可以看改了哪裡，看完按「看完了」就會消掉「更新」標籤${S.awarded&&bonusProg().t?"，也會算進 Bonus 進度":""}。</p>${ids.map(id=>{ const u=updInfo(id); return `<details class="upditem"><summary><b>${esc(u.q.title)}</b><span class="ahint">${esc(u.q.zone.name)}｜${esc(u.q.chapter||"")}</span>${updCountHTML(u)}</summary>${updDiffHTML(u)}<div class="updacts"><button class="act ghost" type="button" data-updopen="${esc(id)}">打開任務</button><button class="act" type="button" data-updok="${esc(id)}">✓ 看完了</button></div></details>`; }).join("")}`;
   $("#updFoot").innerHTML=`<button class="act ghost" type="button" data-close>稍後再看</button><button class="act" type="button" data-updall>全部看完了</button>`;
   $("#updDlg").dataset.mode="list";
   const d=$("#updDlg"); if(!d.open) d.showModal();
@@ -7106,42 +7147,87 @@ function updListAuto(tries){                               // 開站時：有新
 }
 document.addEventListener("click",e=>{
   const t=e.target, ok=t.closest("[data-updok]");
-  if(ok){ const id=ok.dataset.updok, list=$("#updDlg").dataset.mode==="list"; updConfirm(id); Sound.sfx("get"); toast("✓ 已經看完這項更新");
+  if(ok){ const id=ok.dataset.updok, list=$("#updDlg").dataset.mode==="list"; updConfirm(id); const p=bonusMark(id,"read"); Sound.sfx("get"); toast(p?`✓ 已看完・${p}`:"✓ 已經看完這項更新"); renderQBonus();
     if(list&&Object.keys(QUEST_NEW).length) openUpdList(); else $("#updDlg").close(); return; }
-  if(t.closest("[data-updall]")){ Object.keys(QUEST_NEW).forEach(updConfirm); Sound.sfx("get"); toast("✓ 全部的更新都看完了"); $("#updDlg").close(); return; }
+  if(t.closest("[data-updall]")){ const ids=Object.keys(QUEST_NEW); ids.forEach(updConfirm); let p=""; ids.forEach(id=>{ p=bonusMark(id,"read")||p; }); Sound.sfx("get"); toast(p?`✓ 全部的更新都看完了・${p}`:"✓ 全部的更新都看完了"); renderQBonus(); $("#updDlg").close(); return; }
+  const un=t.closest("[data-updnote]"); if(un){ $("#updDlg").dataset.mode=""; openUpdNote(un.dataset.updnote); return; }
   const op=t.closest("[data-updopen]"); if(op){ $("#updDlg").close(); openQuest(op.dataset.updopen); return; }
 });
+/* Bonus 進修證書：這一批的每一項都記下版本；新任務「完成」才算，更新的任務按「看完了」才算；同一版只算一次 */
+function bonusS(){ if(!isObj(S.bonusBatch)) S.bonusBatch={}; if(!isObj(S.bonusOk)) S.bonusOk={}; if(!isObj(S.bonusSeenH)) S.bonusSeenH={}; return S.bonusBatch; }
+const bonusItemOk=id=>{ const it=(S.bonusBatch||{})[id]; return !!it&&!!S.bonusOk&&S.bonusOk[id]===it.h; };
+function bonusProg(){ const ids=Object.keys(S.bonusBatch||{}); return {n:ids.filter(bonusItemOk).length,t:ids.length}; }
+function bonusSyncPend(){ const B=S.bonusBatch||{}; S.bonusPend=Object.keys(B).filter(id=>!bonusItemOk(id)); S.bonusTotal=Object.keys(B).length; }
 function refreshBonus(){
   if(!syncGateOk("refreshBonus",()=>refreshBonus())) return;          // 先確認雲端存檔是不是已經領過
   if(!S.awarded||!ALLQ.length) return;
-  const ids=ALLQ.map(q=>q.id);
-  if(!Array.isArray(S.knownQ)){                      // 第一次：以已完成的任務當作「既有任務」，還沒完成的就是新任務
-    S.knownQ=ids.filter(id=>S.done[id]); if(!S.awardTotal) S.awardTotal=S.knownQ.length; save();
+  const ids=ALLQ.map(q=>q.id), byId=new Map(ALLQ.map(q=>[q.id,q]));
+  if(!Array.isArray(S.knownQ)) S.knownQ=ids.filter(id=>S.done[id]);   // 第一次：以已完成的任務當作「既有任務」
+  if(!S.awardTotal) S.awardTotal=S.knownQ.length;
+  const B=bonusS(); let added=0;
+  if(!S.bonusMig){                                   // 舊版的 Bonus 清單轉成新格式（舊版重複加的數字一併修正）
+    S.bonusMig=1;
+    (S.bonusPend||[]).forEach(id=>{ const q=byId.get(id); if(!q||B[id]) return; const h=questHash(q);
+      if(QUEST_NEW[id]){ B[id]={k:"upd",h}; S.bonusSeenH[id]=h; }
+      else if(!S.done[id]) B[id]={k:"new",h};
+      else{ B[id]={k:"upd",h}; S.bonusSeenH[id]=h; S.bonusOk[id]=h; } });   // 以前按過「看完了」卻沒算到的：算完成
   }
-  const known=new Set(S.knownQ), pend=new Set(S.bonusPend||[]);
-  let added=0;
-  ids.forEach(id=>{ if(!known.has(id)){ pend.add(id); known.add(id); added++; } });      // 新增的任務
-  Object.keys(QUEST_NEW).forEach(id=>{ if(!pend.has(id)){ pend.add(id); added++; } });     // 內容更新的任務
-  if(added){
-    S.bonusPend=[...pend]; S.knownQ=[...known];
-    S.bonusTotal=(S.bonusTotal||0)+added; save();
-    setTimeout(()=>toast(`🎖 有 ${pend.size} 項新任務或更新，全部看完（新任務要完成）就能領 Bonus 進修證書！`),2600);
-  }
+  const known=new Set(S.knownQ);
+  ids.forEach(id=>{ if(known.has(id)) return; known.add(id); if(!B[id]){ B[id]={k:"new",h:questHash(byId.get(id))}; added++; } });   // 新增的任務
+  Object.keys(QUEST_NEW).forEach(id=>{                 // 內容更新的任務：同一版只算一次
+    const q=byId.get(id); if(!q) return; const h=questHash(q);
+    if(S.bonusSeenH[id]===h) return;
+    S.bonusSeenH[id]=h;
+    if(B[id]&&B[id].k==="new"&&!bonusItemOk(id)) return;     // 新任務還沒完成：完成就算
+    B[id]={k:"upd",h}; added++;
+  });
+  Object.keys(B).forEach(id=>{ const it=B[id];         // 已經在別台按過「看完了」（這版已看過）：算完成
+    if(!byId.has(id)){ delete B[id]; return; }
+    if(it.k==="upd"&&!bonusItemOk(id)&&!QUEST_NEW[id]&&(S.seenQuests||{})[id]===it.h) S.bonusOk[id]=it.h; });
+  S.knownQ=[...known];
+  bonusSyncPend(); save();
+  const P=bonusProg();
+  if(P.t&&P.n>=P.t){ grantBonus(); return; }
+  if(added) setTimeout(()=>toast(`🎖 有 ${P.t-P.n} 項新任務或更新：新任務按「完成任務」、更新的任務按「看完了」，全部做完就能領 Bonus 進修證書（清單在「溫暖的家 → 證書牆」）`),2600);
 }
-function bonusTouch(id){
-  if(!S.bonusPend||!S.bonusPend.length) return;
-  if(!S.bonusPend.includes(id)||!S.done[id]) return;
-  S.bonusPend=S.bonusPend.filter(x=>x!==id); save();
-  if(!S.bonusPend.length) grantBonus();
-  else toast(`Bonus 進度：還剩 ${S.bonusPend.length} 項`);
+function bonusMark(id,how){                            // how："done" 完成任務／"read" 按了看完了；回傳進度文字
+  const it=(S.bonusBatch||{})[id]; if(!it||!S.awarded||bonusItemOk(id)) return "";
+  if(it.k==="new"&&!S.done[id]) return "";
+  if(it.k==="upd"&&how!=="read") return "";
+  bonusS(); S.bonusOk[id]=it.h; bonusSyncPend(); save(); queueSync();
+  const P=bonusProg();
+  if(P.n>=P.t){ grantBonus(); return `Bonus 進度 ${P.t}／${P.t}，證書到手！`; }
+  return `Bonus 進度 ${P.n}／${P.t}`;
 }
+const bonusTouch=id=>bonusMark(id,"done");
 function grantBonus(){
-  const n=S.bonusTotal||0; if(!n) return;
+  const n=Object.keys(S.bonusBatch||{}).length||S.bonusTotal||0; if(!n) return;
   const d=new Date(), date=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
   S.bonusCerts=S.bonusCerts||[]; S.bonusCerts.push({date,n,total:TOTAL});
-  S.bonusTotal=0; S.bonusPend=[]; save(); queueSync(true);
+  S.bonusBatch={}; S.bonusTotal=0; S.bonusPend=[]; save(); queueSync(true);
   Sound.sfx("levelup");
   setTimeout(()=>toast(`🎖 恭喜獲得第 ${S.bonusCerts.length} 張 Bonus 進修證書！到「溫暖的家 → 證書牆」查看`),400);
+  try{ renderQBonus(); }catch(e){}
+}
+function renderQBonus(){                                // 任務視窗上方：這項是不是 Bonus 進度、怎樣才算完成
+  const el=$("#qBonus"); if(!el) return;
+  const it=curQ&&S.awarded&&(S.bonusBatch||{})[curQ.id];
+  if(!it){ el.hidden=true; el.innerHTML=""; return; }
+  const P=bonusProg(), ok=bonusItemOk(curQ.id);
+  el.hidden=false; el.className="qbonus"+(ok?" ok":"");
+  el.innerHTML=ok?`🎖 Bonus：這項已完成 ✓<span class="qbp">進度 ${P.n}／${P.t}</span>`
+    :it.k==="new"?`🎖 Bonus 新任務：按下方「完成任務」就算完成<span class="qbp">進度 ${P.n}／${P.t}</span>`
+    :`🎖 Bonus 內容更新：看完按「✓ 看完了」才算完成 <button class="linkbtn" type="button" data-updnote="${esc(curQ.id)}">看改了哪裡</button><span class="qbp">進度 ${P.n}／${P.t}</span>`;
+}
+function bonusListHTML(){                               // 證書牆：這一批的清單
+  if(!S.awarded) return `<p class="ahint">結業之後，村長新增或更新任務時，新任務完成、更新的任務按「看完了」，全部做完就會獲得一張 Bonus 進修證書。</p>`;
+  const B=S.bonusBatch||{}, ids=Object.keys(B).filter(id=>ALLQ.some(q=>q.id===id));
+  if(!ids.length) return `<p class="ahint">村長新增或更新任務後，新任務按「完成任務」、更新的任務按「看完了」，全部做完就會獲得一張 Bonus 進修證書。</p>`;
+  const P=bonusProg();
+  return `<p class="dbody">🎖 Bonus 進度 <b>${P.n}／${P.t}</b>${P.n<P.t?`，還差 ${P.t-P.n} 項就能領下一張證書。點任務可以直接打開：`:""}</p>
+    <ul class="bonusitems">${ids.map(id=>{ const q=ALLQ.find(x=>x.id===id), ok=bonusItemOk(id), nw=B[id].k==="new";
+      return `<li class="${ok?"ok":""}"><button type="button" class="linkbtn" data-q="${esc(id)}"><span class="bmark" aria-hidden="true">${ok?"✓":"☐"}</span>${q.title}</button>
+        <span class="ahint">${esc(q.zone.name)}・${nw?(ok?"新任務・已完成":"新任務・按「完成任務」就算"):(ok?"內容更新・已看完":"內容更新・按「看完了」就算")}</span></li>`; }).join("")}</ul>`;
 }
 function clearZoneNew(id){                                // 地點介紹看過了；任務的「更新」要點開看完才會消
   const z=ZONES.find(x=>x.id===id); if(!z) return;
@@ -7692,7 +7778,7 @@ function fpNorm(v){                                   // 空的預設值（空�
   return v===null||v===""||v==="wp_default"||v==="fl_wood"?undefined:v;
 }
 /* 永久進度：只會增加、不會用掉的東西。兩台都有變動時，不管選哪一邊都兩邊合併 */
-const PROG_SETS=["done","visited","ach","album","shopOwned","petKinds","outfits","accs","findSeen","rareSeen","petColors","devs"];
+const PROG_SETS=["done","visited","ach","album","shopOwned","petKinds","outfits","accs","findSeen","rareSeen","petColors","devs","bonusOk","bonusSeenH"];
 const PROG_MAX=["rare","aff"];                           // 數字只會變大：取比較大的
 const PROG_OWN=["items","finds"];                        // 可以賣掉的收藏：至少保有 1 個（數量用選的那一邊）
 const PROG_KEYS=new Set(PROG_SETS.concat(PROG_MAX,PROG_OWN,["job","lvMax","caught","tro","frame"]));
@@ -8621,7 +8707,7 @@ const HELP={
   party:"出遊隊伍：隊長是你目前的寵物，另外可以帶最多 2 隻跟班。第 1 隻跟班的位置在任一寵物親密度滿 100 時解鎖，第 2 隻在任一寵物羈絆 ★3 或完成第二次轉職時解鎖。跟班會跟著你在地圖上散步、在家裡走來走去，同事拜訪你家也看得到。每天第一次在地圖上散步，每隻跟班親密度 +1；倉庫上方可以選「餵給」哪一隻（餵跟班一樣會看守農場）。跟班也能裝扮：基本衣服（LV 5）、商店配件、親密度滿級的專屬配件、友誼項圈；商店配件一次只能給一隻戴（隊長或其中一隻跟班）。試煉、看守、猜拳、羈絆加成都還是看隊長。",
   bond:"親密度滿 100 之後，多出來的親密度（餵最愛的菜、寵物零食、稀有作物、猜拳、試煉…）會變成羈絆點，每隻寵物分開計算，最多存 500 點。累積每 100 點升一顆星（最多 5 顆，花掉羈絆點不會掉星）：每顆星讓試煉寵物攻擊 +1、看守農場多 1 分鐘、每天叼小禮物回家的機率 +8%。羈絆點可以升級寵物技能（Lv2：150 點、需要 2 顆星；Lv3：300 點、需要 4 顆星），也能在羈絆商店換種子禮包和肥料。",
   trophy:"完成特定目標就會解鎖成就，標示 NEW 的是剛解鎖的。成就數量會顯示在結業證書和你的名片上。",
-  cert:"完成全部任務並集滿智慧存摺點數後，村長會頒發結業證書。之後有新任務時，把新內容看完還能領 Bonus 進修證書。證書都可以下載成圖片。",
+  cert:"完成全部任務並集滿智慧存摺點數後，村長會頒發結業證書。之後有新任務時，新任務按「完成任務」、更新的任務按「看完了」，全部做完還能領 Bonus 進修證書（證書牆有清單和進度）。證書都可以下載成圖片。",
   collect:"查看任務文件、加入最愛時有機會撿到小物；拜訪村長的家、數位總合辦公室可能找到隱藏小物。點小物可以看說明和容易出現的地點。",
   armory:"走進海裡撈寶，或拜訪村長的家、數位總合辦公室時有機會拿到武器，分成普通、稀有、史詩、傳說四個等級。暗色剪影是還沒拿到的，點武器可以裝備或卸下。",
   closet:"基本款一開始就有；秘密服裝要在地圖上散步時遇到村長或總長才拿得到。可以在這裡換衣服、換顏色，點衣服能先預覽穿上的樣子。",
@@ -13639,8 +13725,7 @@ function renderCertWall(panel){
   </section>
   <section class="window pbox">
     <div class="abar"><h3>Bonus 進修證書 ${helpBtn("cert")}</h3><span class="ahint">已獲得 ${(S.bonusCerts||[]).length} 張</span></div>
-    ${(S.bonusPend||[]).length?`<p class="dbody">🎖 目前有 <b>${S.bonusPend.length}</b> 項新任務或更新還沒看完（新任務需要完成）。地圖上有「！」、任務列標示「更新」或「NEW」的就是，全部完成就能領下一張。</p>`
-      :`<p class="ahint">村長新增或更新任務後，把新內容全部看完、新任務都完成，就會獲得一張 Bonus 進修證書。</p>`}
+    ${bonusListHTML()}
     ${(S.bonusCerts||[]).length?`<div class="bonuslist">${S.bonusCerts.map((b,i)=>`<button type="button" class="bonuscard${i===S.bonusCerts.length-1?" on":""}" data-bonus="${i}">
         <span class="bc-ribbon">BONUS #${i+1}</span><b>${esc(b.date)}</b><span class="ahint">新內容 ${b.n} 項</span></button>`).join("")}</div>
       <div class="certwall"><div class="certframe" id="bonusCertBox"></div></div>

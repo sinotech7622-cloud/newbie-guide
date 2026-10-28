@@ -99,6 +99,7 @@ window.SINO22_CONFIG = {
     "saves": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=29804008&single=true&output=csv",
     "saveIndex": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1171470768&single=true&output=csv",
     "ivreplies": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1271539101&single=true&output=csv",
+    "joinDates": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=180241693&single=true&output=csv",
     "stats": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQn_We5-2mBM6CDNzeTt1cJDqbF3P-x5OItfrQ04S_bLtf0rDdvfX-piEjib_6iVjdQe0gHwxTPz08Y/pub?gid=1664764467&single=true&output=csv",
     "settings": "",
     "interviews": "",

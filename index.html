@@ -1729,6 +1729,12 @@ body.tour-lock .mapframe{z-index:41}
 .mgtile.spin svg{animation:mgspin .14s ease-out}
 @keyframes mgspin{from{transform:rotate(-90deg)}to{transform:rotate(0)}}
 .mgedge{aspect-ratio:1}
+.mgrainbar{position:absolute;left:0;right:0;top:0;height:4px;background:rgba(255,255,255,.08);pointer-events:none;z-index:2}
+.mgrainbar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#8FC8F0,#F2C14E)}
+#mgPipe[data-ph="1"] .mgrain{opacity:.55}
+#mgPipe[data-ph="2"] .mgrain{opacity:.8;animation-duration:.3s}
+#mgPipe[data-ph="1"]{box-shadow:0 0 0 3px #0B1030,inset 0 0 0 3px #8FC8F0}
+#mgPipe[data-ph="2"]{box-shadow:0 0 0 3px #0B1030,inset 0 0 0 3px #E0505A}
 .mgrain{position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(105deg,transparent 0 14px,rgba(191,230,245,.16) 14px 15px);background-size:40px 40px;animation:mgrainf .5s linear infinite;opacity:.35}
 @keyframes mgrainf{to{background-position:-10px 40px}}
 .mgwater{display:flex;align-items:center;gap:8px;padding:4px 8px;background:#0B1030;border-top:2px solid #3D4A96;font-size:12px;color:var(--win-muted)}
@@ -2268,6 +2274,9 @@ footer.site p{margin:4px 0}
           <p class="ahint" style="margin-top:12px">「名冊資料」工作表的 A1（給後台「使用者名冊」用，不含員工編號，這個工作表要發布，選填）：</p>
           <pre class="code" id="fxRosterPub"></pre>
           <button class="mini-btn" type="button" data-copy="fxRosterPub">複製公式</button>
+          <p class="ahint" style="margin-top:12px">「登錄日期」工作表的 A1（每位新人第一次出現在「登錄紀錄」的時間，用來算加入天數；只有新人代碼和日期，這個工作表要發布，選填）：</p>
+          <pre class="code" id="fxJoinPub"></pre>
+          <button class="mini-btn" type="button" data-copy="fxJoinPub">複製公式</button>
           <p class="ahint" style="margin-top:12px">「存檔資料」工作表的 A1（新人的雲端存檔，內容已加密，這個工作表要發布，選填）：</p>
           <pre class="code" id="fxSaves"></pre>
           <button class="mini-btn" type="button" data-copy="fxSaves">複製公式</button>
@@ -6742,13 +6751,14 @@ const SHEET_KEYS={
   saves:{label:"存檔資料",optional:true,headers:["時間戳記","帳號代碼","存檔資料","備註"]},
   saveIndex:{label:"存檔索引",optional:true,hint:"（選填：網站先看這張小表，確認別台裝置有沒有新存檔，不用每次下載全部人的存檔；公式在管理者專區的「試算表公式」）",headers:["帳號代碼","存檔標記"]},
   ivreplies:{label:"回覆資料",optional:true,headers:["時間戳記","通知編號","新人代碼","回覆","說明"]},
+  joinDates:{label:"登錄日期",optional:true,hint:"（選填：每位新人第一次出現在「登錄紀錄」的時間，用來算加入天數；公式在管理者專區的「試算表公式」）",headers:["新人代碼","首次登錄"]},
   stats:{label:"筆數統計",optional:true,hint:"（選填：管理者專區的「容量檢查」會顯示每張表單的確切筆數）",headers:["表單","筆數"]},
   settings:{label:"網站設定",legacy:true,headers:["項目","內容"]},
   interviews:{label:"面談通知",legacy:true,headers:["通知編號","新人代碼","標題","面談時間","地點","內容","狀態"]},
   replies:{label:"諮詢回覆",legacy:true,headers:["申請編號","狀態","回覆","回覆時間"]},
   content:{label:"任務內容",legacy:true,headers:["類型","區域ID","區域介紹","章節順序","章節名稱","章節說明","任務順序","任務ID","任務標題","任務內容(HTML)"]}
 };
-const SHEET_HEAD_HINT={stats:"表單",feed:"類型",saves:"帳號代碼",ivreplies:"通知編號",settings:"項目",interviews:"通知編號",replies:"申請編號",content:"類型"};
+const SHEET_HEAD_HINT={joinDates:"新人代碼",stats:"表單",feed:"類型",saves:"帳號代碼",ivreplies:"通知編號",settings:"項目",interviews:"通知編號",replies:"申請編號",content:"類型"};
 const FORM_ACTION_RE=/^https:\/\/docs\.google\.com\/forms\/(?:u\/\d+\/)?d\/e\/[A-Za-z0-9_-]+\/formResponse$/;
 function formCfg(k){
   const f=(CONF.forms||{})[k];
@@ -7781,7 +7791,7 @@ function fpNorm(v){                                   // 空的預設值（空�
 const PROG_SETS=["done","visited","ach","album","shopOwned","petKinds","outfits","accs","findSeen","rareSeen","petColors","devs","bonusOk","bonusSeenH"];
 const PROG_MAX=["rare","aff"];                           // 數字只會變大：取比較大的
 const PROG_OWN=["items","finds"];                        // 可以賣掉的收藏：至少保有 1 個（數量用選的那一邊）
-const PROG_KEYS=new Set(PROG_SETS.concat(PROG_MAX,PROG_OWN,["job","lvMax","caught","tro","frame"]));
+const PROG_KEYS=new Set(PROG_SETS.concat(PROG_MAX,PROG_OWN,["job","lvMax","caught","tro","frame","joinAt"]));
 const isObj=o=>!!o&&typeof o==="object"&&!Array.isArray(o);
 function mergeProgInto(dst,src){                         // 把 src 有、dst 沒有的永久進度補進 dst；回傳補了幾項
   if(!isObj(dst)||!isObj(src)) return 0;
@@ -7791,6 +7801,7 @@ function mergeProgInto(dst,src){                         // 把 src 有、dst �
   PROG_MAX.forEach(k=>{ const o=src[k]; if(!isObj(o)) return; Object.keys(o).forEach(id=>{ const v=+o[id]||0; if(v>0&&v>(+((dst[k]||{})[id])||0)){ box(k)[id]=o[id]; n++; } }); });
   PROG_OWN.forEach(k=>{ const o=src[k]; if(!isObj(o)) return; Object.keys(o).forEach(id=>{ if((+o[id]||0)>0&&!((+((dst[k]||{})[id])||0)>0)){ box(k)[id]=1; n++; } }); });
   if((+src.lvMax||0)>(+dst.lvMax||0)){ dst.lvMax=src.lvMax; n++; }
+  if(+src.joinAt>0&&!(+dst.joinAt>0&&+dst.joinAt<=+src.joinAt)){ dst.joinAt=src.joinAt; n++; }   // 加入日：兩邊取最早
   if(Array.isArray(src.caught)){ if(!Array.isArray(dst.caught)) dst.caught=[]; src.caught.forEach(x=>{ if(!dst.caught.includes(x)){ dst.caught.push(x); n++; } }); }
   const sj=src.job;
   if(isObj(sj)&&isObj(sj.have)){
@@ -9140,8 +9151,8 @@ const MG={
     tiers:[[30,{seed:20,fert:2,aff:2}],[20,{seed:20,fert:2}],[10,{seed:10,fert:1}],[5,{seed:5}]],
     say:[[30,"太厲害了，這棟可以當部門的新總部！"],[20,"了不起！村子多了一座地標。"],[10,"不錯喔，蓋得又高又穩。"],[5,"有模有樣，再練練就能蓋更高！"],[0,"地基要穩，慢慢來沒關係。"]]},
   pipe:{place:"home",name:"排水接管",unit:"處",icon:"🚰",dept:"村長的家・小遊戲",
-    tiers:[[8,{seed:20,fert:2,aff:2}],[6,{seed:20,fert:2}],[4,{seed:10,fert:1}],[2,{seed:5}]],
-    say:[[8,"排水系統完美運作，村子安全度過暴雨！"],[6,"了不起，大部分的雨水都排掉了。"],[4,"不錯！主要道路都沒淹水。"],[2,"有接通幾段，下次再快一點！"],[0,"淹水了…別急，先找從進水口出發的那根水管。"]]},
+    tiers:[[9,{seed:20,fert:2,aff:2}],[7,{seed:20,fert:2}],[5,{seed:10,fert:1}],[3,{seed:5}]],
+    say:[[9,"排水系統完美運作，村子安全度過暴雨！"],[7,"了不起，大部分的雨水都排掉了。"],[5,"不錯！主要道路都沒淹水。"],[3,"有接通幾段，下次再快一點！"],[0,"淹水了…別急，先找從進水口出發的那根水管。"]]},
   bug:{place:"digital",name:"抓 Bug",unit:"分",icon:"🐛",dept:"數位總合辦公室・小遊戲",
     tiers:[[45,{seed:20,fert:2,aff:2}],[32,{seed:20,fert:2}],[22,{seed:10,fert:1}],[12,{seed:5}]],
     say:[[45,"系統穩如泰山！你可以來數位總合辦公室上班了。"],[32,"抓得又快又準，Bug 都怕你了。"],[22,"不錯！這次上線應該不會出包了。"],[12,"有抓到一些，剩下的我來處理。"],[0,"Bug 有點多…別點到正常程式喔！"]]}
@@ -9171,9 +9182,12 @@ function mgRanks(g,period){                                // 每個人只取最
 function mgS(){ S.mg=S.mg&&typeof S.mg==="object"?S.mg:{}; const m=S.mg; if(m.day!==dayKey()){ m.day=dayKey(); m.n={}; } m.n=m.n||{}; m.best=m.best||{}; return m; }
 const mgLeft=g=>restricted()?0:Math.max(0,MG_PLAYS-(+mgS().n[g]||0));
 const mgRwText=r=>[r.seed?`種子 ×${r.seed}`:"",r.fert?`一般肥料 ×${r.fert}`:"",r.aff?`寵物親密度 +${r.aff}`:""].filter(Boolean).join("、");
+const pipeExtra=()=>jb("drain",2)?10:jb("drain")?6:0;    // 治水術士 +6 秒、潮汐大法師 +10 秒
+const PIPE_CAP=120;                                        // 整局最多 2 分鐘
+const pipeBonus=k=>k<=2?8:k<=4?6:k<=6?4:2;               // 第 k 處接通加幾秒：越後面越少
 const bugExtra=()=>jb("digital",2)?5:jb("digital")?3:0;   // 數位魔導士 +3 秒、AI 大法師 +5 秒
 const MG_DESC={tower:"幫村長蓋一棟新大樓！樓層左右移動，對準下面那層再放下，看你能蓋幾層。",
-  pipe:"午後雷陣雨要來了！轉動水管，把雨水從進水口接到排水溝，看你能接通幾處。",
+  pipe:"午後雷陣雨要來了！轉動水管，把雨水從進水口接到排水溝，看你能接通幾處（每局最多 2 分鐘）。",
   bug:"總長的系統跑出一堆 Bug 了！20 秒內點越多越好，小心別點到正常程式。"};
 function mgCardHTML(gs){
   const m=mgS();
@@ -9405,43 +9419,50 @@ const mgGame=(()=>{
   function pNext(){ PL=pLevel(pSize(P.score)); P.busy=false; pRender(); }
   function pTap(i){
     if(!P||!P.on||P.busy||paused) return; const n=PL.n, x=i%n, y=(i/n)|0; PL.g[y][x]=prot(PL.g[y][x]); sfx("blip",{soft:true});
-    if(pRender(i)){ P.busy=true; P.score++; P.time+=12; $("#mgScore").textContent=P.score; floatText("接通！+12 秒"); sfx("get");
+    if(pRender(i)){ P.busy=true; P.score++; const add=pipeBonus(P.score); P.time+=add; $("#mgScore").textContent=P.score; floatText(`接通！+${add} 秒`); sfx("get");
       const says=["通了！水嘩啦啦地流進排水溝。","漂亮！這一段不會淹水了。","手腳真快，下一段交給你！","有你在，村子不怕颱風天。"]; $("#mgSay").textContent=says[prand(says.length)];
+      const ph=P.score>=8?2:P.score>=4?1:0;
+      if(ph!==P.ph){ P.ph=ph; const scr=$("#mgPipe"); if(scr) scr.dataset.ph=ph; const t=ph===2?"暴雨來了！水退得更快，把握最後的時間！":"雨變大了！接通加的時間變少囉。"; floatText(ph===2?"⛈ 暴雨！":"🌧 大雨！"); $("#mgSay").textContent=t; sfx(ph===2?"levelup":"select",{soft:true}); }
       setTimeout(()=>{ if(P&&P.on) pNext(); },750); }
   }
   function pTick(){
     if(!P||!P.on||paused) return;
     if(!$("#mgDlg").open){ pStop(); return; }
-    const now=performance.now(), dt=(now-P.last)/1000; P.last=now; if(!P.busy) P.time=Math.max(0,P.time-dt);
-    $("#mgTime").textContent=Math.ceil(P.time); const tb=$("#mgTimeBox"); if(tb) tb.classList.toggle("warn",P.time<=10);
+    const now=performance.now(), dt=Math.min(.5,(now-P.last)/1000); P.last=now; if(!P.busy) P.time=Math.max(0,P.time-dt*(P.ph===2?1.2:1));
+    P.played+=dt; const capLeft=Math.max(0,PIPE_CAP-P.played);
+    $("#mgTime").textContent=Math.ceil(Math.min(P.time,capLeft)); const tb=$("#mgTimeBox"); if(tb) tb.classList.toggle("warn",Math.min(P.time,capLeft)<=10);
+    const rb=$("#mgRainLeft"); if(rb){ rb.textContent=`${Math.floor(capLeft/60)}:${String(Math.floor(capLeft%60)).padStart(2,"0")}`; }
+    const rbar=$("#mgRainBar"); if(rbar) rbar.style.width=`${Math.min(100,P.played/PIPE_CAP*100)}%`;
+    if(capLeft<=0){ P.on=false; floatText("☀ 雨停了！"); $("#mgSay").textContent=`雨停了！這場雨你接通了 ${P.score} 處排水管。`; sfx("achieve"); setTimeout(()=>finish(P.score),900); return; }
     P.max=Math.max(P.max,P.time); const fl=$("#mgFlood"); if(fl) fl.style.width=`${Math.max(0,Math.min(100,(1-P.time/P.max)*100))}%`;
     if(P.time<=0){ P.on=false; if(fl) fl.style.width="100%"; sfx("error"); setTimeout(()=>finish(P.score),700); return; }
     requestAnimationFrame(pTick);
   }
   function pStart(){
-    const t0=60+(jb("drain")?10:0);
-    P={on:true,busy:false,score:0,time:t0,max:t0,last:performance.now()};
+    const t0=60+pipeExtra();
+    P={on:true,busy:false,score:0,time:t0,max:t0,last:performance.now(),played:0,ph:0};
+    { const scr=$("#mgPipe"); if(scr) scr.dataset.ph=0; const rbar=$("#mgRainBar"); if(rbar) rbar.style.width="0"; }
     showStop(); $("#mgPipeOv").hidden=true; $("#mgScore").textContent="0"; const fl=$("#mgFlood"); if(fl) fl.style.width="0";
     $("#mgSay").textContent="下雨了！先找進水口旁邊的水管開始接。"; sfx("open"); pNext(); requestAnimationFrame(pTick);
   }
-  function pStop(){ if(P) P.on=false; }
+  function pStop(){ if(P) P.on=false; const scr=$("#mgPipe"); if(scr) delete scr.dataset.ph; }
   /* ---------------- 開啟 ---------------- */
   function open(g){
     const G=MG[g]; if(!G) return; kind=g;
     const isT=g==="tower", isP=g==="pipe", isB=g==="bug", host=isB?DIRECTOR_AV:CHIEF_AV, who=isB?`數位總合辦公室　${CFG.director}`:`部門村長　${CFG.chief}`;
     const bonus=isT?(jb("civil")?"🛡 你的重裝騎士加成：每場一次「鋼骨保險」，完全沒疊到時可以再來一次，不會結束。":"重裝騎士玩這個遊戲有「鋼骨保險」：完全沒疊到時可以再來一次。")
-               :isP?(jb("drain")?"⏱ 你的治水術士加成：開場時間多 10 秒。":"治水術士玩這個遊戲開場時間多 10 秒。")
+               :isP?(jb("drain")?`⏱ 你的${jb("drain",2)?"潮汐大法師":"治水術士"}加成：開場時間多 ${pipeExtra()} 秒。`:"治水術士玩這個遊戲開場時間多 6 秒（二轉潮汐大法師多 10 秒）。")
                :(jb("digital")?`⏱ 你的${jb("digital",2)?"AI 大法師":"數位魔導士"}加成：時間多 ${bugExtra()} 秒。`:"數位魔導士玩這個遊戲時間多 3 秒（二轉 AI 大法師多 5 秒）。");
     const rules=isT?["點畫面、按空白鍵或「放下」都可以放下樓層。","沒對準的部分會被切掉，樓層越蓋越窄。","完全對準是「完美」，連續 3 次完美，樓層會變寬一點。","完全沒疊到就倒了，遊戲結束。"]
-               :isP?["點一下水管就會順時針轉 90 度。","從左邊的進水口接到右邊的排水溝，接通的水管會變藍。","每接通一處就換下一個地段，時間 +12 秒，地段會越來越大。","時間到水就淹上來，遊戲結束；不一定每根水管都要用到。"]
+               :isP?["點一下水管就會順時針轉 90 度。","從左邊的進水口接到右邊的排水溝，接通的水管會變藍。","每接通一處就換下一個地段，地段會越來越大；接通加的時間越後面越少：第 1～2 處 +8 秒、3～4 處 +6 秒、5～6 處 +4 秒、之後 +2 秒。","雨勢分三段：小雨 → 大雨（接通 4 處）→ 暴雨（接通 8 處，水退得更快）。每局最多 2 分鐘，雨停就結算。","時間到水就淹上來，遊戲結束；不一定每根水管都要用到。"]
                :["點冒出來的 Bug 得 1 分，金色 Bug 得 3 分。","綠色勾勾是正常程式，點到扣 1 分。","連續抓到 5 隻多加 1 分；讓 Bug 跑掉或點錯，連擊就中斷。","速度分四段：暖身（前 5 秒）→ 加速 → 高峰 → 最後 3 秒「Bug 大爆發」，越後面冒得越多、跑得越快。","高峰開始會出現跑得快的藍色 Bug（有 ⚡），只停一下子，抓到 +2 分。"];
     const say0=isT?"來幫村子蓋一棟新大樓吧！樓層移到正上方時點一下放下去。":isP?"午後雷陣雨要來了！快把水管接好，讓雨水從進水口流到排水溝。":"系統裡又跑出一堆 Bug 了，20 秒內幫我抓越多越好！";
-    const hudX=isT?`<span id="mgShield"></span>`:isP?`<span id="mgTimeBox">時間 <b id="mgTime">${60+(jb("drain")?10:0)}</b></span><span>地段 <b id="mgSize">4×4</b></span>`
+    const hudX=isT?`<span id="mgShield"></span>`:isP?`<span id="mgTimeBox">時間 <b id="mgTime">${60+pipeExtra()}</b></span><span>地段 <b id="mgSize">4×4</b></span><span title="每局最多 2 分鐘">☀ 雨停 <b id="mgRainLeft">2:00</b></span>`
                :`<span>時間 <b id="mgTime">${(20+bugExtra()).toFixed(1)}</b></span><span class="mgcombo" id="mgCombo"></span>`;
     const screen=isT?`<div class="mgscreen" id="mgTower"><canvas id="mgTowerCv" width="${CW}" height="${CH}" aria-label="疊疊樂遊戲畫面"></canvas>
           <div class="mgov" id="mgTowerOv"><h4>疊疊樂蓋大樓</h4><p>看你能幫村長蓋幾層樓！</p><button class="act" type="button" data-mgagain>開始</button></div></div>
         <button class="act ghost" type="button" id="mgDrop" disabled>⬇ 放下</button>`
-      :isP?`<div class="mgscreen" id="mgPipe"><div class="mgfield" id="mgField" aria-label="排水接管盤面"></div><div class="mgrain" aria-hidden="true"></div><div class="mgwater" aria-hidden="true">💧水位<i><span id="mgFlood"></span></i></div>
+      :isP?`<div class="mgscreen" id="mgPipe"><div class="mgfield" id="mgField" aria-label="排水接管盤面"></div><div class="mgrain" aria-hidden="true"></div><div class="mgwater" aria-hidden="true">💧水位<i><span id="mgFlood"></span></i></div><div class="mgrainbar" aria-hidden="true"><span id="mgRainBar"></span></div>
           <div class="mgov" id="mgPipeOv"><h4>排水接管</h4><p>雷陣雨快來了，幫村長把排水管接好！</p><button class="act" type="button" data-mgagain>開始</button></div></div>`
       :`<div class="mgscreen" id="mgBug"><div class="mgboard" id="mgBoard" aria-label="抓 Bug 遊戲畫面">${Array.from({length:16},(_,i)=>`<button type="button" class="mgcell" data-mgcell="${i}" aria-label="第 ${i+1} 格"></button>`).join("")}</div>
           <div class="mgov" id="mgBugOv"><h4>抓 Bug</h4><p>總長的系統出狀況了，準備好就開始！</p><button class="act" type="button" data-mgagain>開始</button></div></div>`;
@@ -11912,8 +11933,25 @@ const albumOwned=()=>ALBUM.filter(a=>S.album&&S.album[a.id]);
 const redeemable=()=>FINDS.filter(f=>((S.finds||{})[f.id]||0)>=ALBUM_COST);
 /* ---- 新畫框：轉職、試煉、答題、出遊隊伍、看門、年資、節慶 ---- */
 const trialWins=()=>JOBS.reduce((n,j)=>n+jobTier(j.id),0);          // 一轉 1 次、二轉再 1 次
-const joinAt=()=>{ const L=[+S.since,S.onb&&+S.onb.start,+S.profAt,+S.approvedAt].filter(x=>x>0); return L.length?Math.min(...L):0; };
-const joinDays=()=>{ const t=joinAt(); return t?Math.floor((Date.now()-t)/864e5)+1:0; };
+const joinLocal=()=>{ const L=[+S.since,S.onb&&+S.onb.start,+S.applyAt,+S.approvedAt].filter(x=>x>0); return L.length?Math.min(...L):0; };   // 存檔裡最早的加入紀錄
+const joinAt=()=>{ const L=[+S.joinAt,joinLocal()].filter(x=>x>0); return L.length?Math.min(...L):(+S.profAt||0); };
+const joinDays=()=>{ const t=joinAt(); if(!t) return 0; const a=new Date(t), b=new Date(); a.setHours(0,0,0,0); b.setHours(0,0,0,0); return Math.round((b-a)/864e5)+1; };   // 照日曆算：加入當天是第 1 天
+const joinDateText=()=>{ const t=joinAt(); if(!t) return ""; const d=new Date(t); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
+async function loadJoinDate(){                            // 讀後台「登錄日期」：每位新人第一次出現在登錄紀錄的時間
+  if(!syncGateOk("loadJoinDate",()=>loadJoinDate())) return;
+  if(!S.group||!sheetUrl("joinDates")) return;
+  let d=""; try{ d=localStorage.getItem("sino22-join-chk")||""; }catch(e){}
+  if(d===dayKey()&&+S.joinAt>0) return;                    // 每天最多查一次
+  let rows=null; try{ rows=await fetchSheet("joinDates"); }catch(e){ return; }
+  try{ localStorage.setItem("sino22-join-chk",dayKey()); }catch(e){}
+  const me=String(myCode()||"").trim().toUpperCase(), hit=(rows||[]).find(r=>String(r[0]||"").trim().toUpperCase()===me);
+  const dt=hit&&parseSheetTs(hit[1]), t=dt&&!isNaN(dt)?dt.getTime():0;
+  if(!t) return;
+  const v=Math.min(t,joinLocal()||t);                       // 存檔裡有更早的加入紀錄（例如登錄表單還沒設定前）才用更早的
+  if(+S.joinAt!==v){ const before=joinDays(); S.joinAt=v; save(); queueSync();
+    try{ newFramesCheck(); }catch(e){}
+    if(joinDays()!==before) try{ if(curPlace&&curPlace.id==="myhome") renderPlace(); }catch(e){} }
+}
 const caughtN=()=>Array.isArray(S.caught)?S.caught.length:0;
 const FRAME_RULES={
   j1:{ok:()=>jobOn()&&jobLearned().length>=1, hint:()=>"在智慧神殿完成第一次轉職"},
@@ -11922,7 +11960,7 @@ const FRAME_RULES={
   q1:{ok:()=>(+S.qzOK||0)>=50, hint:()=>`累計答對 50 題（${Math.min(50,+S.qzOK||0)}/50）：轉職試煉、村民發種子、${SHOPKEEPER.name}的每日題都算`},
   t1:{ok:()=>(+S.partyDays||0)>=7, hint:()=>`帶隊長和 2 隻跟班在地圖上散步 7 天（${Math.min(7,+S.partyDays||0)}/7）`},
   t2:{ok:()=>caughtN()>=10, hint:()=>`寵物在農場抓到偷菜的人 10 次（${Math.min(10,caughtN())}/10）`},
-  d100:{ok:()=>joinDays()>=100, hint:()=>`加入滿 100 天（今天是第 ${joinDays()||1} 天）`}
+  d100:{ok:()=>joinDays()>=100, hint:()=>`加入滿 100 天（${joinDateText()?`${joinDateText()} 加入，`:""}今天是第 ${joinDays()||1} 天）`}
 };
 const FEST={                                            // 農曆節日、冬至每年日期不同：新的一年在 dates 加上日期
   newyear:{name:"春節",dates:["2027-02-06"],days:7}, lantern:{name:"元宵節",dates:["2027-02-20"],days:7},
@@ -14022,7 +14060,7 @@ function renderCloudBox(){
   }
   let at=""; try{ at=localStorage.getItem("sino22-cloud-at")||""; }catch(e){}
   box.innerHTML=`<h3>雲端存檔 ${helpBtn("cloud")} <span class="st st-ok">已登入</span></h3>
-    <dl class="cloudfacts"><dt>姓名</dt><dd>${esc(S.name||"—")}${S.nick?`（暱稱 ${esc(S.nick)}）`:""}</dd><dt>員工編號</dt><dd>${esc(S.emp||"—")}</dd><dt>組別</dt><dd>${esc(S.group||"—")}</dd><dt>新人代碼</dt><dd>${esc(myCode())}</dd></dl>
+    <dl class="cloudfacts"><dt>姓名</dt><dd>${esc(S.name||"—")}${S.nick?`（暱稱 ${esc(S.nick)}）`:""}</dd><dt>員工編號</dt><dd>${esc(S.emp||"—")}</dd><dt>組別</dt><dd>${esc(S.group||"—")}</dd><dt>新人代碼</dt><dd>${esc(myCode())}</dd>${joinDateText()?`<dt>加入日期</dt><dd>${esc(joinDateText())}（第 ${joinDays()} 天）</dd>`:""}</dl>
     <p class="ahint">${[`帳號 <b>${esc(CLOUD.acc)}</b>`,at?`最後同步 ${fmtDate(at)}`:"",cloudDirty?"有尚未同步的進度":""].filter(Boolean).join("・")}</p>
     ${pvText()?`<p class="ahint">${esc(pvText())}</p>`:""}
     ${lastSaveLen()?`<p class="ahint">存檔大小 ${lastSaveLen().toLocaleString()} 字・用 ${Math.ceil(lastSaveLen()/SAVE_CELL)} 格（表單可用 ${saveCells()} 格，每格 ${SAVE_CELL.toLocaleString()} 字）</p>`:""}
@@ -14218,6 +14256,7 @@ function openAdminView(){
   $("#fxConsultPub").textContent=`={"時間戳記","申請編號","新人代碼","名字","組別","類別","主題","內容","希望時間";QUERY('技術諮詢'!A2:I, "select A, B, C, D, E, F, G, H, I where B is not null order by A desc", 0)}`;
   $("#fxRosterPub").textContent=`={"時間戳記","新人代碼","名字","組別","等級","進度","結業";QUERY(SORTN(SORT('進度回報'!A2:I, 1, FALSE), 9^9, 2, 2, TRUE), "select Col1, Col2, Col3, Col4, Col5, Col6, Col7 where Col2 is not null", 0)}`;
   $("#fxSaveIndex").textContent=`=LET(s,SORTN(SORT(FILTER('進度存檔'!A2:C,'進度存檔'!B2:B<>""),1,FALSE),9^9,2,2,TRUE),{INDEX(s,0,2),RIGHT(INDEX(s,0,3),16)})`;
+  $("#fxJoinPub").textContent=`={"新人代碼","首次登錄";QUERY('登錄紀錄'!A2:B, "select B, min(A) where B is not null group by B label min(A) ''", 0)}`;
   $("#fxSaves").textContent=`=SORTN(SORT('進度存檔'!A2:G, 1, FALSE), 9^9, 2, 2, TRUE)`;
   $("#fxStats").textContent=`={"表單","筆數";"進度存檔",IFERROR(COUNTA('進度存檔'!A2:A),"");"進度回報",IFERROR(COUNTA('進度回報'!A2:A),"");"交誼廳",IFERROR(COUNTA('交誼廳'!A2:A),"");"登錄紀錄",IFERROR(COUNTA('登錄紀錄'!A2:A),"");"技術諮詢",IFERROR(COUNTA('技術諮詢'!A2:A),"");"面談回覆",IFERROR(COUNTA('面談回覆'!A2:A),"");"後台更新",IFERROR(COUNTA('後台更新'!A2:A),"")}`;
   $("#fxLoungeLite").textContent=`=LET(s,FILTER('交誼廳'!A2:J,'交誼廳'!B2:B<>""),t,INDEX(s,0,2),d,INDEX(s,0,1),c,IFERROR(SORTN(SORT(FILTER(s,t="presence"),1,FALSE),9^9,2,3,TRUE)),h,IFERROR(SORTN(SORT(FILTER(s,t="here"),1,FALSE),9^9,2,3,TRUE)),e,IFERROR(FILTER(s,(t<>"presence")*(t<>"here")*((REGEXMATCH(t,"^(gift|steal|toss|playdate|rps)$")=FALSE)+(d>=TODAY()-60)))),a,VSTACK(c,h,e),r,FILTER(a,IFERROR(INDEX(a,0,2),"")<>""),HSTACK(TEXT(INDEX(r,0,1),"yyyy/m/d HH:mm:ss"),CHOOSECOLS(r,2,3,4,5,6,7,8,9,10)))`;
@@ -15353,6 +15392,7 @@ bootstrap().then(()=>{
   },20000);   // 每次開站都讓大家看到自己在線上
   try{ if(!S.seenContent||!Object.keys(S.seenContent).length||!HAS_SHEETS) markContentUpdates(); else refreshBonus(); }catch(e){}
   setTimeout(()=>{ try{ bondDailyGift(); }catch(e){} },6000);   // 寵物叼小禮物
+  setTimeout(()=>{ try{ loadJoinDate(); }catch(e){} },4000);       // 加入日期（後台登錄紀錄）
   if(S.group){
     setTimeout(()=>loadInbox(),1500);
     try{ if(!sessionStorage.getItem("sino22-reported")){ sessionStorage.setItem("sino22-reported","1"); queueSync(true); } }catch(e){}

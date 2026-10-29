@@ -727,6 +727,8 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
 .syncbtns #syncCancel{margin-right:auto}
+.apdirect{flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.apdirect .ainput{max-width:11em;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;text-transform:uppercase}
 @keyframes dlgshake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 .dlgshake{animation:dlgshake .35s ease}
 @media (prefers-reduced-motion:reduce){.dlgshake{animation:none;outline:3px solid var(--gold);outline-offset:2px}}
@@ -2523,6 +2525,10 @@ footer.site p{margin:4px 0}
           <label class="chk"><input type="checkbox" id="apShowAll"> 顯示已審核</label>
           <button class="act ghost" type="button" id="apReload">重新讀取</button></span></div>
         <p class="ahint" id="apInfo"></p>
+        <div class="lrow apdirect"><label for="apCode" class="ahint" style="margin:0">名單裡找不到的人：輸入新人代碼直接通過</label>
+          <input id="apCode" class="ainput" maxlength="12" placeholder="例如 X64E-NRJY" autocomplete="off" spellcheck="false">
+          <button class="act" type="button" id="apCodeGo">直接通過</button></div>
+        <p class="cerr" id="apCodeErr" hidden></p>
         <div class="tscroll"><table class="atable" id="apTable"></table></div>
         <p class="ahint" style="margin-top:10px">新人建立角色後會送出申請（名字、組別、新人代碼、員工編號末 3 碼）。審核通過前，他和觀光客一樣只能看任務、玩自己的農場和寵物，交誼廳不會出現他的名片，也不能留言、按讚、送禮。按「通過」後約 1–5 分鐘，新人那邊會自動解鎖並跳出通知；按「不通過」，新人會看到申請沒有通過，可以重新申請。已審核的可以勾「顯示已審核」再改。完整員工編號請到「新人登錄紀錄」試算表核對。</p>
       </section>
@@ -11482,6 +11488,32 @@ function renderApprovals(){
     :`<tr><td colspan="7">${list.length?"目前沒有待審核的申請。":"目前還沒有人送出申請。"}</td></tr>`}</tbody>`;
 }
 $("#apReload").addEventListener("click",()=>loadApprovals(true));
+function normNewbieCode(v){                               // 新人代碼：不分大小寫、可以不打中間的「-」
+  const r=String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  return r.length===8?r.slice(0,4)+"-"+r.slice(4):"";
+}
+async function approveByCode(){
+  const inp=$("#apCode"), err=$("#apCodeErr"), btn=$("#apCodeGo"), code=normNewbieCode(inp.value);
+  err.hidden=true;
+  if(!code){ err.textContent="新人代碼是 8 個英文字母或數字，例如 X64E-NRJY"; err.hidden=false; Sound.sfx("error"); inp.focus(); return; }
+  inp.value=code;
+  const x=AP_ROWS.find(r=>r.code===code)||(typeof RS_ROWS!=="undefined"&&RS_ROWS.find(r=>String(r.code||"").toUpperCase()===code))||{};
+  const d=(FEED&&FEED.approve||{})[code];
+  const who=x.name?`「${x.name}」${x.group?`（${x.group}）`:""}`:"這位新人";
+  const note=d&&d.ok?"\n（後台紀錄顯示他已經通過過了，再送一次也沒關係。）":x.code?"":"\n（名單裡找不到這個代碼，請確認沒有打錯；通過後，他下次開網站或按「檢查審核結果」就會解鎖。）";
+  if(!(await uiConfirm(`確定讓${who}通過審核嗎？\n新人代碼：${code}${note}`,"通過"))) return;
+  btn.disabled=true;
+  const at=Date.now();
+  const sent=await adminSend("approve",code,"j:"+JSON.stringify({ok:true,at,name:x.name||"",group:x.group||""}),`審核通過：${x.name||code}`,"true");
+  btn.disabled=false;
+  if(sent){
+    AP_LOCAL[code]={ok:true,at};
+    if(!AP_ROWS.some(r=>r.code===code)) AP_ROWS.push({code,name:x.name||"",group:x.group||"",emp3:"",at:0,first:0,manual:true});
+    inp.value=""; renderApprovals();
+  }
+}
+$("#apCodeGo").addEventListener("click",approveByCode);
+$("#apCode").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); approveByCode(); } });
 $("#apShowAll").addEventListener("change",renderApprovals);
 $("#apTable").addEventListener("click",async e=>{
   const b=e.target.closest("[data-apok],[data-apno]"); if(!b) return;

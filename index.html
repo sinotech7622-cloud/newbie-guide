@@ -732,6 +732,25 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
 .syncbtns #syncCancel{margin-right:auto}
+.ppgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px 14px;margin:10px 0 6px}
+.ppcard{margin:0;background:#FFF8E8;padding:7px 7px 6px;box-shadow:0 0 0 2px #3B2412,3px 4px 0 rgba(0,0,0,.35);color:#3B2412;text-align:center}
+.ppcard:nth-child(odd){transform:rotate(-1.2deg)}.ppcard:nth-child(even){transform:rotate(1deg)}
+.ppcard .ppimg{display:block;width:100%;aspect-ratio:4/3;padding:0;border:0;background:#CFEAFF;overflow:hidden;cursor:zoom-in}
+.ppcard .ppimg svg{display:block}
+.ppcard figcaption{font-size:13px;margin-top:5px;line-height:1.35}
+.ppcard .ppbtns{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-top:5px}
+.ppcard.rare{background:linear-gradient(#FFF1B8,#FFE08A);box-shadow:0 0 0 3px #E8B93A,3px 4px 0 rgba(0,0,0,.35)}
+.ppcard.hung{outline:3px dashed var(--gold);outline-offset:3px}
+.ppcard.empty{background:#F3EBDD;opacity:.85}
+.ppcard.empty .ppimg{display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#E9E0D0 0 8px,#F1E9DB 8px 16px);cursor:default}
+.ppcard.empty .pppet{width:45%;aspect-ratio:1;filter:grayscale(1) opacity(.45)}
+.ppcard.empty .ahint{margin:2px 0 0;font-size:11.5px;color:#6B5A48}
+.ppcard.big{max-width:420px;margin:0 auto 10px;transform:rotate(-1deg)}
+.ppcard.big .ppimg{cursor:default}
+.ppcard.big figcaption{font-size:16px}
+.sr-photo.ppw .ph-pic{display:block;background:none;height:auto;aspect-ratio:4/3}
+.sr-photo.ppw .ph-pic svg{display:block}
+@media (prefers-reduced-motion:reduce){.ppcard,.ppcard.big{transform:none}}
 .seasonfx{position:absolute;inset:8px;overflow:hidden;pointer-events:none;z-index:3}
 .seasonfx i{position:absolute;top:-6%;left:var(--x);width:7px;height:5px;transform:scale(var(--s));animation:sefall var(--d) linear var(--w) infinite}
 .seasonfx.se-spring i{background:#FFB8CF;border-radius:70% 0 70% 0;box-shadow:inset -1px -1px 0 #F28CB0}
@@ -2163,7 +2182,7 @@ footer.site p{margin:4px 0}
       </div>
       <nav class="menu window" aria-label="區域選單">
         <section class="oblist" id="obList" aria-label="第一週任務清單" hidden></section>
-        <h2>前往哪裡？ <button type="button" class="help" data-help="每個區域有不同主題的任務。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。" aria-label="說明" title="說明">?</button></h2>
+        <h2>前往哪裡？ <button type="button" class="help" data-help="每個區域有不同主題的任務。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件或加入最愛時有機會撿到小物，進入區域時有機會撿到種子。" aria-label="說明" title="說明">?</button></h2>
         <ol id="zoneMenu"></ol>
         <h2 class="sub2">特別地點 <button type="button" class="help" data-help="溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏。" aria-label="說明" title="說明">?</button></h2>
         <ol id="placeMenu"></ol>
@@ -2634,7 +2653,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-10-30T12:20+0800">2026/10/30 12:20</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-10-30T17:56+0800">2026/10/30 17:56</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -3133,6 +3152,13 @@ footer.site p{margin:4px 0}
     <div class="foot"><button class="act ghost" type="button" id="cpdLater">稍後再領</button><button class="act" type="button" id="cpdOk">領取</button></div>
   </div>
 </dialog>
+<dialog id="ppDlg" aria-labelledby="ppTitle">
+  <div class="window dlg form ppwrap">
+    <div class="head"><div><p class="dept">📸 主人與寵物合照</p><h3 id="ppTitle">合照</h3></div></div>
+    <div class="body"><div id="ppShow"></div><p class="dbody" id="ppSay"></p></div>
+    <div class="foot"><button class="act ghost" type="button" id="ppDl">下載</button><button class="act ghost" type="button" id="ppWall">掛到牆上</button><button class="act" type="button" data-close>收進相簿</button></div>
+  </div>
+</dialog>
 <dialog id="visitDlg" aria-labelledby="vsTitle">
   <div class="window dlg form visitwrap">
     <div class="head">
@@ -3559,6 +3585,7 @@ const starsTxt=n=>"★".repeat(n)+"☆".repeat(5-n);
 function affGain(t,n,quiet){                               // 親密度 +n；滿 100 之後多出來的變成羈絆點。回傳是否剛好滿級
   S.aff=S.aff||{};
   const before=affOf(t), raw=before+n; S.aff[t]=Math.min(AFF_MAX,raw);
+  try{ if(before<PP_AFF&&S.aff[t]>=PP_AFF) ppQueue(t); }catch(e){}       // 主人與寵物合照
   LAST_BOND=0;
   const over=raw-AFF_MAX;
   if(over>0){
@@ -4893,7 +4920,8 @@ function tryHiddenFind(id){
   const pool=FINDS.filter(f=>f.hidden&&f.place===id);
   setTimeout(()=>{
     if(!curPlace||curPlace.id!==id) return;
-    if(!starActive()&&(now-(S.hidAt[id]||0)<10*60*1000||Math.random()>=(jb("digital",2)?.35:.25))){
+    if(!starActive()&&now-(S.hidAt[id]||0)<10*60*1000){ toast("剛剛才在這裡找到過隱藏小物，過 10 分鐘再來看看吧"); return; }
+    if(!starActive()&&Math.random()>=(jb("digital",2)?.35:.25)){
       toast(HIDDEN_MISS[id][Math.floor(Math.random()*HIDDEN_MISS[id].length)]); return;
     }
     S.hidAt[id]=now;
@@ -4906,6 +4934,25 @@ function tryHiddenFind(id){
     setTimeout(()=>toast(`${first?"🔍 發現隱藏小物":"又找到"}：${f.name}${first?"　已放進蒐藏箱":""}`),1200);
     checkAch(); renderHUD();
   },3000);
+}
+const DEV_HIT=["辦公桌上散落著一樣東西……","螢幕旁邊好像放著什麼。","機房門口掉了一個小東西。"];
+function tryDevFind(id){                                    // 數位總合辦公室：進入時 20% 撿到程式開發類小物（撿到後 10 分鐘內不會再撿到）
+  if(id!=="digital"||!S.group) return;
+  if(!starActive()&&Date.now()-(+S.devAt||0)<10*60*1000) return;
+  setTimeout(()=>{
+    if(!curPlace||curPlace.id!==id) return;
+    if(!starActive()&&Math.random()>=.2) return;          // 沒撿到時不另外提示（隱藏小物已經有訊息）
+    S.devAt=Date.now();
+    const pool=FINDS.filter(f=>!f.hidden&&f.cat==="程式開發"), tot=pool.reduce((a,f)=>a+f.w,0);
+    let r=Math.random()*tot, f=pool[0]; for(const x of pool){ r-=x.w; if(r<=0){ f=x; break; } }
+    S.finds=S.finds||{};
+    const first=!S.finds[f.id];
+    S.finds[f.id]=(S.finds[f.id]||0)+1; save();
+    toast(DEV_HIT[Math.floor(Math.random()*DEV_HIT.length)]);
+    Sound.sfx(first?"achieve":"get");
+    setTimeout(()=>toast(`${first?"✨ 發現新收藏":"又找到"}：${f.name}（${f.cat}）${first?"　已放進蒐藏箱":""}`),1200);
+    checkAch(); renderHUD();
+  },5200);
 }
 function tryPlaceTreasure(id){
   const cfg=PLACE_TREASURE[id]; if(!cfg||!S.group) return;
@@ -7867,7 +7914,7 @@ function fpNorm(v){                                   // 空的預設值（空�
   return v===null||v===""||v==="wp_default"||v==="fl_wood"?undefined:v;
 }
 /* 永久進度：只會增加、不會用掉的東西。兩台都有變動時，不管選哪一邊都兩邊合併 */
-const PROG_SETS=["done","visited","ach","album","shopOwned","petKinds","outfits","accs","findSeen","rareSeen","petColors","devs","bonusOk","bonusSeenH"];
+const PROG_SETS=["done","visited","ach","album","shopOwned","petKinds","outfits","accs","findSeen","rareSeen","petColors","devs","bonusOk","bonusSeenH","petPhotos"];
 const PROG_MAX=["rare","aff"];                           // 數字只會變大：取比較大的
 const PROG_OWN=["items","finds"];                        // 可以賣掉的收藏：至少保有 1 個（數量用選的那一邊）
 const PROG_KEYS=new Set(PROG_SETS.concat(PROG_MAX,PROG_OWN,["job","lvMax","caught","tro","frame","joinAt"]));
@@ -8639,7 +8686,7 @@ function openPlace(id,push){
   curPlace=pl; curZone=null;
   S.loc=id; save();
   if(id==="lounge"&&!restricted()) obMark("lounge");
-  if(entering){ tryPlaceTreasure(id); tryHiddenFind(id); }
+  if(entering){ tryPlaceTreasure(id); tryHiddenFind(id); tryDevFind(id); }
   if(entering&&id==="myhome"&&loungeReady()){
     loadLounge(false).then(()=>{ checkAch();
       notifyInteractions();
@@ -8790,7 +8837,7 @@ function runCheat(msg){
 const HELP={
   job:"滿級（LV 10）之後可以在這裡轉職。職業可以自由選，選自己組別的職業有「本家」好處（禮包加倍、名片標記、守護者的血少 20%）。轉職要獻上種子並通過神殿試煉：答情境題打守護者，答對一題造成「武器傷害＋寵物攻擊力」，答錯扣 1 顆心；中途放棄或關掉網頁都算失敗，供品不退還。收集全部 20 種小物和 16 把武器（含請假卡）後，可以挑戰第二次轉職。學會的職業隨時可以換、不限次數（在「我的職業」選好再按確定），職業加成只套用目前的職業。職業服裝、職業頭飾、披風可以分開穿，也能跟衣櫃的衣服、角色設定的配件互換。10 個職業全部學會，神殿的石像守護者會成為你的隱藏版寵物。第二次轉職還會拿到職業鼠標和點擊特效（手機點畫面也有），可以在「我的職業」切換或改回系統預設。",
   map:"點地圖上的建築或右邊的選單前往各地點。在空地上自由走動，可能遇到村長或總長送秘密服裝，或停下來聊兩句（有時會透露留言板的密技）；走進海裡可以撈寶，還可能遇到章魚海怪幫寵物換色。",
-  zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件時有機會撿到小物，進入區域時有機會撿到種子。",
+  zones:"每個區域有不同主題的任務，也有負責供應種子的 NPC：每天可以找每位 NPC 答一題這個地點的情報問題，答對送 10 倍種子，答錯也有一般份量。打開任務看說明，看完按「完成」拿 10 EXP；按「♡ 加入最愛」會收進筆記本。查看文件或加入最愛時有機會撿到小物，進入區域時有機會撿到種子。",
   places:"溫暖的家是你的基地；交誼廳可以看大家的名片、拜訪別人家；村長的家和數位總合辦公室可以送蔬菜、找隱藏小物和寶藏，還有小遊戲（村長的家：疊疊樂、排水接管；數位總合辦公室：抓 Bug），成績排名在交誼廳的「🏆 遊戲排名」。",
   notebook:"按過「♡ 加入最愛」的任務都收在這裡，可以搜尋標題和內容。",
   pet:"LV 3 可以領養寵物，LV 5 可以換衣服；毛色隨時可以換。餵牠最愛的蔬菜可以提升親密度（每種寵物分開計算），滿 100 會解鎖彩虹毛色和專屬配件；之後多出來的親密度會變成羈絆點。",
@@ -8798,7 +8845,7 @@ const HELP={
   bond:"親密度滿 100 之後，多出來的親密度（餵最愛的菜、寵物零食、稀有作物、猜拳、試煉…）會變成羈絆點，每隻寵物分開計算，最多存 500 點。累積每 100 點升一顆星（最多 5 顆，花掉羈絆點不會掉星）：每顆星讓試煉寵物攻擊 +1、看守農場多 1 分鐘、每天叼小禮物回家的機率 +8%。羈絆點可以升級寵物技能（Lv2：150 點、需要 2 顆星；Lv3：300 點、需要 4 顆星），也能在羈絆商店換種子禮包和肥料。",
   trophy:"完成特定目標就會解鎖成就，標示 NEW 的是剛解鎖的。成就數量會顯示在結業證書和你的名片上。",
   cert:"完成全部任務並集滿智慧存摺點數後，村長會頒發結業證書。之後有新任務時，新任務按「完成任務」、更新的任務按「看完了」，全部做完還能領 Bonus 進修證書（證書牆有清單和進度）。證書都可以下載成圖片。",
-  collect:"查看任務文件、加入最愛時有機會撿到小物；拜訪村長的家、數位總合辦公室可能找到隱藏小物。點小物可以看說明和容易出現的地點。",
+  collect:"查看任務文件、加入最愛時有機會撿到小物，進入數位總合辦公室時也可能撿到程式開發類小物；拜訪村長的家、數位總合辦公室可能找到隱藏小物（同一個地點每 10 分鐘最多一次）。點小物可以看說明和容易出現的地點。",
   armory:"走進海裡撈寶，或拜訪村長的家、數位總合辦公室時有機會拿到武器，分成普通、稀有、史詩、傳說四個等級。暗色剪影是還沒拿到的，點武器可以裝備或卸下。",
   closet:"基本款一開始就有；秘密服裝要在地圖上散步時遇到村長或總長才拿得到。可以在這裡換衣服、換顏色，點衣服能先預覽穿上的樣子。",
   album:"同一種小物收集到 30 個，就能兌換一張隱藏畫框；另外 4 幅要送蔬菜給村長或總長、1 幅要集滿稀有作物圖鑑，在交誼廳留言板留言 1 次也能拿到「吶喊兔」。轉職、試煉、答題、出遊隊伍、看門、加入滿 100 天，以及節日期間登入（大節日前後 7 天、小節日前後 3 天），也各有一幅畫框；「全家福」「看門神寵」「萬聖節」會畫出你自己的寵物。畫框可以掛在展示區的牆上，別人拜訪時也看得到。",
@@ -11561,6 +11608,14 @@ function renderApprovals(){
     :`<tr><td colspan="7">${list.length?"目前沒有待審核的申請。":"目前還沒有人送出申請。"}</td></tr>`}</tbody>`;
 }
 $("#apReload").addEventListener("click",()=>loadApprovals(true));
+document.addEventListener("click",e=>{
+  const t=e.target.closest&&e.target.closest("[data-ppwall],[data-ppdl],[data-ppview],#ppWall,#ppDl"); if(!t) return;
+  if(t.id==="ppWall") return ppHang($("#ppDlg").dataset.t);
+  if(t.id==="ppDl") return ppDownload($("#ppDlg").dataset.t);
+  if(t.dataset.ppwall) return ppHang(t.dataset.ppwall);
+  if(t.dataset.ppdl) return ppDownload(t.dataset.ppdl);
+  if(t.dataset.ppview){ Sound.sfx("select"); ppShow(t.dataset.ppview,false); }
+});
 function normNewbieCode(v){                               // 新人代碼：不分大小寫、可以不打中間的「-」
   const r=String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
   return r.length===8?r.slice(0,4)+"-"+r.slice(4):"";
@@ -13520,10 +13575,182 @@ function friendBump(code,owner,pet,stage,day){          // 同一對寵物每天
   const la=friendLv(f.n);
   return {code,n:f.n,up:la>lb?la:-1};
 }
+/* ===== 主人與寵物合照 ===== */
+const PP_AFF=50;                                           // 親密度到這裡自動拍一張
+const PP_BG={spring:["🌸","春天櫻花"],summer:["☀️","夏天海邊"],autumn:["🍁","秋天落葉"],winter:["❄️","冬天雪地"],home:["🏠","溫暖的家"],village:["🏡","新手村廣場"],office:["💻","數位總合辦公室"],night:["🌙","星空夜晚"],sunset:["🌇","夕陽山丘"],rainbow:["🌈","雨後彩虹"],fire:["🎆","煙火大會"]};
+const PP_PO={side:"並肩站",hug:"抱抱",lift:"舉高高",head:"趴在頭上",jump:"一起跳",selfie:"自拍",peek:"寵物搶鏡",back:"背對背",nap:"一起午睡",ya:"比 YA"};
+const PP_BIG=new Set(["horse","panda","bear","tiger","sheep","guardian","snowman"]);   // 太大隻，不會趴在頭上
+const ppAll=()=>(S.petPhotos&&typeof S.petPhotos==="object")?S.petPhotos:(S.petPhotos={});
+const ppOk=ph=>!!(ph&&ph.p&&PETS[ph.p.type]&&PP_BG[ph.bg]&&PP_PO[ph.po]);
+const ppName=ph=>(ph.p.name||PETS[ph.p.type].name);
+const ppDate=t=>{ const d=new Date(+t||Date.now()); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
+function ppPick(t){                                        // 背景：現在的季節機率高、煙火 5%；動作：大隻的不趴頭上
+  const se=seasonNow(), SE=["spring","summer","autumn","winter"];
+  let bg="fire";
+  if(Math.random()>=.05){
+    const W=Object.keys(PP_BG).filter(k=>k!=="fire").map(k=>[k,k===se?5:SE.includes(k)?1:2]);
+    let r=Math.random()*W.reduce((a,b)=>a+b[1],0); bg=W[W.length-1][0];
+    for(const [k,w] of W){ if((r-=w)<0){ bg=k; break; } }
+  }
+  const P=Object.keys(PP_PO).filter(k=>k!=="head"||!PP_BIG.has(t));
+  return {bg,po:P[Math.floor(Math.random()*P.length)],s:Math.floor(Math.random()*1e6)};
+}
+function ppPetLook(t){                                     // 這隻寵物現在的樣子（隊長、跟班或上次的打扮）
+  let p=S.pet&&S.pet.type===t?S.pet:null;
+  if(!p) try{ p=partyList().find(x=>x&&x.type===t)||null; }catch(e){}
+  if(!p) try{ p=draftFromLook(t); }catch(e){ p={type:t,color:PETS[t].defColor||0}; }
+  const v=petView(Object.assign({},p,{type:t}));
+  return {type:t,color:+v.color||0,name:String(v.name||"").slice(0,8),wear:v.wear||"none",wc:+v.wc||0,acc:!!v.acc,collar:!!v.collar,gear:v.gear||""};
+}
+function ppBgSVG(bg,seed){
+  const q=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
+  const rn=i=>{ const t=Math.sin(((+seed||0)%9973+i)*99.13)*43758.5; return t-Math.floor(t); };
+  const dots=(n,c,y0,y1,k,w)=>{ let o=""; for(let i=0;i<n;i++) o+=q(Math.floor(rn(k+i)*100),Math.floor(y0+rn(k+i+50)*(y1-y0)),w||1,1,c); return o; };
+  const tree=(x,y,c1,c2)=>q(x+4,y+10,3,12,"#7A5230")+q(x,y+2,11,9,c1)+q(x+2,y,7,3,c1)+q(x+1,y+4,3,2,c2)+q(x+7,y+6,2,2,c2);
+  const rep=(n,f)=>Array.from({length:n},(_,i)=>f(i)).join("");
+  switch(bg){
+    case "spring": return q(0,0,100,75,"#CFEAFF")+q(0,48,100,27,"#8BCB72")+q(0,48,100,2,"#7ABB62")+tree(4,22,"#F7B3CB","#FF8FB1")+tree(78,18,"#F7B3CB","#FF8FB1")+q(14,8,9,3,"#FFFFFF")+q(16,6,5,2,"#FFFFFF")+dots(26,"#FF9FBF",5,70,3);
+    case "summer": return q(0,0,100,75,"#7CC8F5")+q(80,5,10,10,"#FFE066")+q(78,8,14,4,"#FFE066")+q(0,36,100,14,"#2A9BD0")+q(0,40,100,1,"#8FD3F0")+q(30,44,12,1,"#8FD3F0")+q(0,50,100,25,"#F3DE96")+q(8,26,1,26,"#8A6A4A")+q(1,24,15,3,"#E0505A")+q(4,22,9,2,"#FFFFFF")+dots(18,"#E2C77A",52,74,7)+q(70,58,4,2,"#FF8FB1");
+    case "autumn": return q(0,0,100,75,"#F6E3C2")+q(0,48,100,27,"#B7A050")+q(0,48,100,2,"#A3903E")+tree(3,20,"#E08A2E","#C9592B")+tree(80,24,"#F0A030","#E08A2E")+dots(30,"#E5852F",8,74,11,2)+dots(14,"#C9592B",50,74,31,2);
+    case "winter": return q(0,0,100,75,"#B7C6D6")+q(0,46,100,29,"#F4F8FC")+q(0,46,100,2,"#DCE7F2")+q(84,34,10,10,"#FFFFFF")+q(86,27,7,7,"#FFFFFF")+q(88,29,1,1,"#333333")+q(90,29,1,1,"#333333")+q(89,31,2,1,"#F08A2E")+q(83,36,3,1,"#E0505A")+dots(40,"#FFFFFF",2,60,17);
+    case "home": return q(0,0,100,75,"#F3D9B1")+rep(10,i=>q(i*10+4,0,2,52,"#EBCB9C"))+q(0,52,100,23,"#B07A48")+rep(6,i=>q(0,54+i*4,100,1,"#9A663A"))+q(66,10,24,18,"#7A5230")+q(68,12,20,14,"#AEE0FF")+q(77,12,2,14,"#7A5230")+q(68,18,20,2,"#7A5230")+q(10,12,12,9,"#E0505A")+q(11,13,10,7,"#FFE9A8")+q(25,58,50,10,"#E58FA6")+q(27,60,46,6,"#F2B3C3");
+    case "night": return q(0,0,100,75,"#1E2A55")+q(0,0,100,20,"#162046")+q(80,6,9,9,"#FFF3B0")+q(83,6,6,6,"#1E2A55")+dots(30,"#FFFFFF",1,40,23)+dots(8,"#FFE066",1,40,61)+q(0,50,100,25,"#2F5A3A")+q(0,50,100,2,"#3E7048")+q(10,40,3,10,"#3A2A1A")+q(6,34,11,8,"#22462E");
+    case "fire": return q(0,0,100,75,"#1B1F45")+[[20,16,"#FF7FA8"],[52,10,"#FFE066"],[80,20,"#7FE0FF"]].map(([x,y,c])=>rep(12,k=>{ const a=k/12*6.283; return q(Math.round(x+Math.cos(a)*9),Math.round(y+Math.sin(a)*9),2,2,c)+q(Math.round(x+Math.cos(a)*5),Math.round(y+Math.sin(a)*5),1,1,c); })+q(x,y,2,2,"#FFFFFF")).join("")+q(0,52,100,23,"#2B2F55")+q(0,52,100,2,"#3B3F6E")+rep(7,i=>q(6+i*14,46,2,6,"#FFB347")+q(5+i*14,45,4,2,"#E0505A"));
+    case "sunset": return q(0,0,100,14,"#FFB37A")+q(0,14,100,12,"#FF9A7A")+q(0,26,100,12,"#F27F8F")+q(40,26,20,10,"#FFE08A")+q(44,24,12,2,"#FFE08A")+q(0,38,100,37,"#6E7F4A")+q(0,36,30,4,"#6E7F4A")+q(66,34,34,6,"#6E7F4A")+q(0,38,100,2,"#5E6E3E")+dots(10,"#FFD27A",42,74,41);
+    case "office": return q(0,0,100,75,"#C9D6E6")+q(0,30,100,2,"#AFC0D6")+[8,40,72].map(x=>q(x,10,20,14,"#2D3B55")+q(x+2,12,16,10,"#5FD3A0")+q(x+4,14,8,1,"#1E2A3A")+q(x+4,17,11,1,"#1E2A3A")+q(x+4,20,6,1,"#1E2A3A")+q(x+9,24,2,4,"#2D3B55")).join("")+q(0,50,100,25,"#8C98AA")+rep(10,i=>q(i*10,50,1,25,"#7E8A9C"))+q(4,28,92,4,"#B98A5A");
+    case "village": return q(0,0,100,75,"#AEE0FF")+[[2,"#E0505A"],[76,"#3C8DBF"]].map(([x,c])=>q(x,22,22,22,"#F6E7C8")+q(x-2,16,26,7,c)+q(x+2,12,18,5,c)+q(x+8,32,6,12,"#8A5A3A")+q(x+2,26,5,5,"#AEE0FF")+q(x+16,26,5,5,"#AEE0FF")).join("")+q(0,44,100,31,"#D9C79A")+rep(8,i=>q(i*13+3,56+(i%2)*8,8,1,"#C4B183"))+q(42,38,16,6,"#9FB3C8")+q(44,36,12,3,"#7FC8F0")+q(49,28,2,8,"#9FB3C8");
+    case "rainbow": return q(0,0,100,75,"#BFE3F7")+["#FF6B6B","#FFA94D","#FFE066","#69DB7C","#4DABF7","#9775FA"].map((c,i)=>{ const r=40-i*3; let o=""; for(let a=0;a<=40;a++){ const t=Math.PI*a/40; o+=q(Math.round(50-Math.cos(t)*r),Math.round(50-Math.sin(t)*r*.9),3,3,c); } return o; }).join("")+q(0,50,100,25,"#7FC86B")+q(16,62,14,3,"#9ED3F0")+q(66,66,18,3,"#9ED3F0");
+  }
+  return q(0,0,100,75,"#CFEAFF");
+}
+const PP_FX={                                              // 小點陣特效
+  heart:[["#FF5C8A"],[".XX.XX.","XXXXXXX","XXXXXXX",".XXXXX.","..XXX..","...X..."]],
+  spark:[["#FFF3A0"],["..X..","..X..","XXXXX","..X..","..X.."]],
+  star:[["#FFD23F"],["..X..",".XXX.","XXXXX",".XXX.","X...X"]],
+  ask:[["#FF6B6B"],[".XXX.","X...X","...X.","..X..",".....","..X.."]],
+  z:[["#DCE8FF"],["XXXX","..X.",".X..","XXXX"]],
+  puff:[["#FFFFFF"],[".XX..",  "XXXX.", "XXXXX"]],
+  note:[["#FFFFFF"],["..XX","..X.","..X.","XXX.","XX.."]],
+};
+function ppFx(k,x,y,sc){
+  const [[c],rows]=PP_FX[k]; let o="";
+  let sh="";
+  rows.forEach((r,j)=>{ for(let i=0;i<r.length;i++) if(r[i]==="X"){ const X=+(x+i*sc).toFixed(2), Y=+(y+j*sc).toFixed(2);
+    sh+=`<rect x="${+(X+sc*.4).toFixed(2)}" y="${+(Y+sc*.4).toFixed(2)}" width="${sc}" height="${sc}" fill="rgba(35,31,32,.45)"/>`; o+=`<rect x="${X}" y="${Y}" width="${sc}" height="${sc}" fill="${c}"/>`; } });
+  return sh+o;
+}
+function ppNest(svg,x,y,w,rot,flip){                       // 把角色／寵物的 SVG 放進照片裡
+  const m=/^<svg([^>]*)>/.exec(svg); if(!m) return "";
+  const vb=(/viewBox="([^"]+)"/.exec(m[1])||[])[1]||"0 0 32 32";
+  const inner=svg.slice(m[0].length).replace(/<\/svg>\s*$/,"");
+  const cx=+(x+w/2).toFixed(2), cy=+(y+w/2).toFixed(2);
+  return `<g transform="translate(${cx} ${cy}) rotate(${rot||0}) scale(${flip?-1:1} 1) translate(${-w/2} ${-w/2})"><svg width="${w}" height="${w}" viewBox="${vb}" preserveAspectRatio="xMidYMax meet">${inner}</svg></g>`;
+}
+const PP_LAY={                                             // [x,y,寬,旋轉,翻轉]；寵物畫在角色前面
+  side:{a:[22,26,46],p:[56,36,36]},
+  hug:{a:[28,25.5,48],p:[36,41.5,32],fx:[["heart",62,14,1.4]]},
+  lift:{a:[27,27.5,46],p:[35,6,30],fx:[["spark",20,10,1.3],["spark",70,16,1.3]]},
+  head:{a:[27,27.5,46],p:[37,7,26]},
+  jump:{a:[18,17.5,44],p:[54,26.5,32],sh:[[40,70,10],[70,70,8]],fx:[["puff",31,68,1.2],["puff",61,68,1.1],["spark",8,22,1.2],["spark",88,26,1.2]]},
+  selfie:{a:[-6,25.5,78,-6],p:[50,29.5,56,5]},
+  peek:{a:[56,28.5,30],p:[6,19.5,60],fx:[["ask",76,10,1.4]]},
+  back:{a:[16,28,44,0,1],p:[54,38,34,0,1]},
+  nap:{a:[6,33.5,46,-90],p:[50,39.5,34,-12],fx:[["z",64,14,1.6],["z",74,6,1.2],["z",30,22,1.1]]},
+  ya:{a:[12,26,46],p:[52,36,36],fx:[["star",6,22,1.4],["star",84,20,1.4],["note",50,14,1.3]]},
+};
+function ppSVG(ph,opt){                                    // 一張合照（100×75）
+  if(!ppOk(ph)) return "";
+  const L=PP_LAY[ph.po]||PP_LAY.side, A=ppNest(avatarSVG(ph.av||AV_DEFAULT),...L.a), P=ppNest(petSVG(ph.p,"adult"),...L.p);
+  const sh=(L.sh||[]).map(([x,y,r])=>`<ellipse cx="${x}" cy="${y}" rx="${r}" ry="1.6" fill="rgba(0,0,0,.2)"/>`).join("");
+  const fx=(L.fx||[]).map(f=>ppFx(...f)).join("");
+  return `<svg${opt&&opt.xmlns?' xmlns="http://www.w3.org/2000/svg"':""} viewBox="0 0 100 75" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" aria-hidden="true">${ppBgSVG(ph.bg,ph.s)}${sh}${A}${P}${fx}</svg>`;
+}
+const ppCap=ph=>`和${ppName(ph)}・${PP_BG[ph.bg][0]} ${ppDate(ph.at)}`;
+function ppTake(t,quiet){                                  // 拍一張（每隻寵物一張，拍過就不再拍）
+  if(!PETS[t]) return null;
+  const all=ppAll(); if(ppOk(all[t])) return null;
+  const ph=Object.assign({av:JSON.parse(JSON.stringify(S.av||AV_DEFAULT)),p:ppPetLook(t),at:Date.now()},ppPick(t));
+  all[t]=ph; save(); queueSync();
+  if(!quiet) ppShow(t,true);
+  return ph;
+}
+function ppQueue(t){ if(ppOk(ppAll()[t])) return; setTimeout(()=>{ try{ ppTake(t); }catch(e){} },2300); }
+function ppCheck(){                                        // 開站時：已經到 50 但還沒拍的寵物補拍
+  if(!syncGateOk("ppCheck",()=>ppCheck())) return;
+  if(!S.group||!S.aff) return;
+  const got=Object.keys(S.aff).filter(t=>PETS[t]&&affOf(t)>=PP_AFF&&!ppOk(ppAll()[t]));
+  if(!got.length) return;
+  got.forEach(t=>ppTake(t,true));
+  if(got.length===1) ppShow(got[0],true);
+  else{ Sound.sfx("get"); toast(`📸 補拍了 ${got.length} 張和寵物的合照！到「溫暖的家 → 寵物窩 → 📸 合照」看看`); }
+}
+function ppShow(t,isNew,tries){                            // 跳出視窗看照片（剛拍好時，別的視窗開著就等它關掉）
+  const ph=ppAll()[t], d=$("#ppDlg"); if(!ppOk(ph)||!d) return;
+  if(isNew&&!d.open&&document.querySelector("dialog[open]")){
+    if((tries||0)<40) setTimeout(()=>ppShow(t,true,(tries||0)+1),3000);
+    else{ Sound.sfx("get"); toast(`📸 和${ppName(ph)}拍了一張合照！到「溫暖的家 → 寵物窩 → 📸 合照」看看`); }
+    return;
+  }
+  d.dataset.t=t;
+  $("#ppTitle").textContent=isNew?"咔嚓！拍了一張合照":`和${ppName(ph)}的合照`;
+  $("#ppShow").innerHTML=`<figure class="ppcard big${ph.bg==="fire"?" rare":""}"><span class="ppimg">${ppSVG(ph)}</span><figcaption>${esc(ppCap(ph))}</figcaption></figure>`;
+  $("#ppSay").textContent=isNew?`${ppName(ph)}的親密度到 ${PP_AFF} 了，一起拍了一張「${PP_PO[ph.po]}」的照片${ph.bg==="fire"?"，還遇到難得的煙火大會！":"！"}收在「溫暖的家 → 寵物窩 → 📸 合照」。`:"";
+  const w=$("#ppWall"); w.textContent=S.photoWall==="pet:"+t?"從牆上取下":"掛到牆上";
+  if(isNew) Sound.sfx("achieve");
+  if(!d.open) d.showModal();
+}
+function ppHang(t){                                        // 掛到展示區牆上（和好朋友合照共用位置）
+  const key="pet:"+t, on=S.photoWall===key, wasFriend=!!S.photoWall&&!on&&String(S.photoWall).indexOf("pet:")!==0;
+  S.photoWall=on?"":key; save(); queueSync(); try{ pushFarm(true); }catch(e){}
+  Sound.sfx(on?"undo":"get");
+  toast(on?"已從牆上取下合照":wasFriend?"合照掛到展示區的牆上了（換下了好朋友合照）":"合照掛到展示區的牆上了，訪客也看得到");
+  const w=$("#ppWall"); if(w&&$("#ppDlg").dataset.t===t) w.textContent=on?"掛到牆上":"從牆上取下";
+  if(curPlace&&curPlace.id==="myhome") renderPlace();
+}
+async function ppDownload(t){                              // 下載成圖片（拍立得樣式）
+  const ph=ppAll()[t]; if(!ppOk(ph)) return;
+  const W=860, H=760, cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const g=cv.getContext("2d"); g.fillStyle="#FFF8E8"; g.fillRect(0,0,W,H);
+  const img=new Image();
+  await new Promise(r=>{ img.onload=r; img.onerror=r; img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(ppSVG(ph,{xmlns:1})); });
+  g.imageSmoothingEnabled=false;
+  try{ g.drawImage(img,30,30,800,600); }catch(e){ toast("圖片產生失敗，請再試一次"); return; }
+  g.fillStyle="#3A2A1A"; g.textAlign="center"; g.font=`bold 34px ${getComputedStyle(document.body).fontFamily}`;
+  g.fillText(ppCap(ph),W/2,690);
+  const blob=await new Promise(r=>cv.toBlob(r,"image/png"));
+  if(!blob){ toast("圖片產生失敗，請再試一次"); return; }
+  const fname=`合照_和${ppName(ph).replace(/[\\/:*?"<>|]/g,"")}.png`;
+  if(!dlApi){ toast("這個畫面無法下載檔案"); return; }
+  if(dlApi==="fallback"){
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=fname;
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); return;
+  }
+  try{ await dlApi.save({filename:fname,data:blob}); toast("合照圖片已下載"); }
+  catch(err){ const c=err&&err.code; toast(c==="declined"?"已取消下載":c==="rate_limited"?"下載視窗已開啟，請稍候再試":"這個畫面無法下載檔案"); }
+}
+function ppAlbumHTML(){                                    // 寵物窩「📸 合照」分頁
+  const all=ppAll(), have=Object.keys(all).filter(t=>ppOk(all[t])).sort((a,b)=>(+all[a].at||0)-(+all[b].at||0));
+  const wait=Object.keys(S.aff||{}).filter(t=>PETS[t]&&petKindOK(t)&&!have.includes(t)&&affOf(t)>0).sort((a,b)=>affOf(b)-affOf(a));
+  if(S.pet&&PETS[S.pet.type]&&!have.includes(S.pet.type)&&!wait.includes(S.pet.type)) wait.unshift(S.pet.type);
+  const card=t=>{ const ph=all[t], hung=S.photoWall==="pet:"+t;
+    return `<figure class="ppcard${ph.bg==="fire"?" rare":""}${hung?" hung":""}"><button type="button" class="ppimg" data-ppview="${esc(t)}" aria-label="看大張：${esc(ppCap(ph))}">${ppSVG(ph)}</button>
+      <figcaption><b>和${esc(ppName(ph))}</b>・${PP_BG[ph.bg][0]} ${esc(ppDate(ph.at))}</figcaption>
+      <div class="ppbtns"><button class="mini-btn" type="button" data-ppwall="${esc(t)}">${hung?"🖼 從牆上取下":"🖼 掛到牆上"}</button><button class="mini-btn" type="button" data-ppdl="${esc(t)}">⬇ 下載</button></div></figure>`; };
+  const empty=t=>`<figure class="ppcard empty"><span class="ppimg"><span class="pppet">${petSVG(ppPetLook(t),"adult")}</span></span>
+      <figcaption><b>${esc(lookName(t))}</b>・💗 ${affOf(t)} / ${PP_AFF}</figcaption><p class="ahint">親密度到 ${PP_AFF} 會自動拍</p></figure>`;
+  return `<section class="window pbox"><h3>和寵物的合照</h3>
+    <p class="ahint">每隻寵物的親密度到 <b>${PP_AFF}</b> 時，會自動和你拍一張合照；背景和動作是拍的時候隨機決定的，拍下的是你們當時的樣子。挑一張可以掛到展示區的牆上（和「好朋友合照」共用同一個位置，二選一），訪客也看得到。</p>
+    ${have.length||wait.length?`<div class="ppgrid">${have.map(card).join("")}${wait.map(empty).join("")}</div>`:`<p class="empty-note">還沒有合照，多餵寵物最愛的食物提高親密度吧！</p>`}
+    ${have.length?`<p class="ahint">已收藏 ${have.length} 張</p>`:""}
+  </section>`;
+}
 function photoOf(code){ const f=friends()[code]; return f&&f.photo&&f.photo.a&&f.photo.b?f.photo:null; }
-function photoSnapshot(){ const ph=S.photoWall&&photoOf(S.photoWall); return ph?{a:ph.a,as:ph.as,b:ph.b,bs:ph.bs}:null; }
+function photoSnapshot(){
+  if(String(S.photoWall||"").indexOf("pet:")===0){ const ph=ppAll()[S.photoWall.slice(4)]; return ppOk(ph)?{k:"me",av:ph.av,p:ph.p,bg:ph.bg,po:ph.po,s:ph.s,at:ph.at}:null; }   // 主人與寵物合照
+  const ph=S.photoWall&&photoOf(S.photoWall); return ph?{a:ph.a,as:ph.as,b:ph.b,bs:ph.bs}:null; }
 function photoPics(ph){ return `<span class="ph-pet">${petSVG(ph.a,ph.as||"adult")}</span><span class="ph-heart" aria-hidden="true">♥</span><span class="ph-pet flip">${petSVG(ph.b,ph.bs||"adult")}</span>`; }
 function photoHTML(ph){
+  if(ph&&ph.k==="me"){ if(!ppOk(ph)) return ""; return `<figure class="sr-photo ppw" title="${esc(ppCap(ph))}"><span class="ph-pic">${ppSVG(ph)}</span><figcaption>和${esc(ppName(ph))}</figcaption></figure>`; }
   if(!ph||!ph.a||!ph.b||!PETS[ph.a.type]||!PETS[ph.b.type]) return "";
   const cap=`${petNameOf(ph.a)} & ${petNameOf(ph.b)}`;
   return `<figure class="sr-photo" title="好朋友合照：${esc(cap)}"><span class="ph-pic">${photoPics(ph)}</span><figcaption>${esc(cap)}</figcaption></figure>`;
@@ -13903,8 +14130,8 @@ function openFind(id){
     : `<span class="st st-off">尚未發現</span><span class="st st-info">${esc(f.cat)}</span>`;
   $("#fdDesc").textContent=c?f.desc:"找到之後，這裡會顯示它的樣子和說明。";
   $("#fdWhere").innerHTML=f.hidden
-    ? `拜訪<b>${f.place==="home"?"村長的家":"數位總合辦公室"}</b>時，有機會在角落發現這個隱藏小物。`
-    : `在<b>${esc(FIND_SPOTS[f.cat]||"各個地點")}</b>查看任務文件，或把任務「♡ 加入最愛」時，比較容易遇到<b>${esc(f.cat)}</b>類的小物。`;
+    ? `拜訪<b>${f.place==="home"?"村長的家":"數位總合辦公室"}</b>時，有機會在角落發現這個隱藏小物（同一個地點每 10 分鐘最多找到一次）。`
+    : `在<b>${esc(FIND_SPOTS[f.cat]||"各個地點")}</b>查看任務文件，或把任務「♡ 加入最愛」時，比較容易遇到<b>${esc(f.cat)}</b>類的小物${f.cat==="程式開發"?"；進入<b>數位總合辦公室</b>時也有機會撿到":""}。`;
   const d=$("#findDlg"); if(!d.open) d.showModal();
   Sound.sfx(c?"open":"cursor");
 }
@@ -13913,7 +14140,7 @@ function renderCollection(panel){
   const got=S.finds||{}, total=FINDS.length, n=findCount();
   panel.innerHTML=`<section class="window pbox">
     <div class="abar"><h3>蒐藏箱 ${helpBtn("collect")}</h3><span class="ahint">已收集 ${n} / ${total} 種</span></div>
-    <p class="ahint">滑鼠移到圖示上可以看說明。在各區域查看任務文件，或把任務「♡ 加入最愛」時，有機會發現小物：新手村、情報酒館偏<b>冒險</b>，行政塔偏<b>都市計畫</b>，寶物庫偏<b>土木工程</b>，智慧神殿偏<b>程式開發</b>。拜訪村長的家或數位總合辦公室，還可能找到<b>隱藏</b>小物。同一種小物收集到 30 個，可以到「相簿」兌換隱藏畫框。</p>
+    <p class="ahint">點圖示可以看說明和容易出現的地點。在各區域查看任務文件，或把任務「♡ 加入最愛」時，有機會發現小物：新手村、情報酒館偏<b>冒險</b>，行政塔偏<b>都市計畫</b>，寶物庫偏<b>土木工程</b>，智慧神殿偏<b>程式開發</b>；進入數位總合辦公室時也有機會撿到<b>程式開發</b>類。拜訪村長的家或數位總合辦公室，還可能找到<b>隱藏</b>小物（同一個地點每 10 分鐘最多找到一次）。同一種小物收集到 30 個，可以到「相簿」兌換隱藏畫框。</p>
     ${tabsHTML("collect",FIND_CATS.map(cat=>{
       const list=FINDS.filter(f=>f.cat===cat);
       const mine=list.filter(f=>findSeen(f.id)).length;
@@ -14054,7 +14281,7 @@ function renderPetPanel(panel){
           ${CLOTH.map((c,i)=>`<label class="opt sw" title="${c[0]}"><input type="radio" name="pet-wc" value="${i}" ${+pet.wc===i?"checked":""}><i style="background:${c[1]}"></i></label>`).join("")}
         </div></div>`}
       ${petGearHTML(pet)}
-    </section>`},{id:"bond",label:"💞 羈絆",badge:affOf(pet.type)>=AFF_MAX?starsTxt(bondStars(pet.type)).replace(/☆/g,""):"",html:bondHTML(pet)},{id:"party",label:"🐾 出遊隊伍",badge:partySlots()?`${partyList().length}/${partySlots()}`:"🔒",html:partyHTML()}])}`;
+    </section>`},{id:"bond",label:"💞 羈絆",badge:affOf(pet.type)>=AFF_MAX?starsTxt(bondStars(pet.type)).replace(/☆/g,""):"",html:bondHTML(pet)},{id:"party",label:"🐾 出遊隊伍",badge:partySlots()?`${partyList().length}/${partySlots()}`:"🔒",html:partyHTML()},{id:"photo",label:"📸 合照",badge:Object.keys(ppAll()).filter(k=>ppOk(ppAll()[k])).length||"",html:ppAlbumHTML()}])}`;
 }
 function petGearHTML(pet){
   const own=Object.keys(PET_GEAR).filter(k=>S.shopOwned&&S.shopOwned[k]);
@@ -15581,6 +15808,7 @@ bootstrap().then(()=>{
   },20000);   // 每次開站都讓大家看到自己在線上
   try{ if(!S.seenContent||!Object.keys(S.seenContent).length||!HAS_SHEETS) markContentUpdates(); else refreshBonus(); }catch(e){}
   setTimeout(()=>{ try{ bondDailyGift(); }catch(e){} },6000);   // 寵物叼小禮物
+  setTimeout(()=>{ try{ ppCheck(); }catch(e){} },7500);          // 主人與寵物合照：補拍
   try{ seasonCheck(); }catch(e){}
   setTimeout(()=>{ try{ loadJoinDate(); }catch(e){} },4000);       // 加入日期（後台登錄紀錄）
   setTimeout(()=>{ try{ applyRosterInfo(); }catch(e){} },4500);    // 管理者補登／修改的人員資料

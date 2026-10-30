@@ -739,6 +739,7 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .ppcard .ppimg svg{display:block}
 .ppcard figcaption{font-size:13px;margin-top:5px;line-height:1.35}
 .ppcard .ppbtns{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-top:5px}
+.ppcard .ppbtns .mini-btn{padding-left:7px;padding-right:7px}
 .ppcard.rare{background:linear-gradient(#FFF1B8,#FFE08A);box-shadow:0 0 0 3px #E8B93A,3px 4px 0 rgba(0,0,0,.35)}
 .ppcard.hung{outline:3px dashed var(--gold);outline-offset:3px}
 .ppcard.empty{background:#F3EBDD;opacity:.85}
@@ -2653,7 +2654,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-10-30T18:29+0800">2026/10/30 18:29</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-10-30T18:53+0800">2026/10/30 18:53</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -7927,6 +7928,10 @@ function mergeProgInto(dst,src){                         // 把 src 有、dst �
   PROG_MAX.forEach(k=>{ const o=src[k]; if(!isObj(o)) return; Object.keys(o).forEach(id=>{ const v=+o[id]||0; if(v>0&&v>(+((dst[k]||{})[id])||0)){ box(k)[id]=o[id]; n++; } }); });
   PROG_OWN.forEach(k=>{ const o=src[k]; if(!isObj(o)) return; Object.keys(o).forEach(id=>{ if((+o[id]||0)>0&&!((+((dst[k]||{})[id])||0)>0)){ box(k)[id]=1; n++; } }); });
   if((+src.lvMax||0)>(+dst.lvMax||0)){ dst.lvMax=src.lvMax; n++; }
+  if(isObj(src.petPhotos)&&isObj(dst.petPhotos)) Object.keys(src.petPhotos).forEach(k=>{   // 主人與寵物合照：重拍過的，用最後拍的那張
+    const a=src.petPhotos[k], d=dst.petPhotos[k];
+    if(isObj(a)&&isObj(d)&&a!==d&&(+a.ed||0)>(+d.ed||0)){ dst.petPhotos[k]=a; n++; }
+  });
   if(+src.joinAt>0&&!(+dst.joinAt>0&&+dst.joinAt<=+src.joinAt)){ dst.joinAt=src.joinAt; n++; }   // 加入日：兩邊取最早
   if(Array.isArray(src.caught)){ if(!Array.isArray(dst.caught)) dst.caught=[]; src.caught.forEach(x=>{ if(!dst.caught.includes(x)){ dst.caught.push(x); n++; } }); }
   const sj=src.job;
@@ -13682,6 +13687,21 @@ function ppTake(t,quiet){                                  // 拍一張（每隻
   return ph;
 }
 function ppQueue(t){ if(ppOk(ppAll()[t])) return; setTimeout(()=>{ try{ ppTake(t); ppRefresh(); }catch(e){} },2300); }
+async function ppRetake(t){                                // 用現在的樣子重拍：背景、動作不變，主人和寵物換成現在的打扮
+  const ph=ppAll()[t]; if(!ppOk(ph)) return;
+  const av=JSON.parse(JSON.stringify(S.av||AV_DEFAULT)), p=ppPetLook(t);
+  if(JSON.stringify(av)===JSON.stringify(ph.av)&&JSON.stringify(p)===JSON.stringify(ph.p)){ Sound.sfx("cursor"); toast("你們現在的樣子和照片裡一樣，不用重拍喔"); return; }
+  if(!(await uiConfirm(`用現在的樣子重拍和${ppName(ph)}的合照嗎？\n背景和動作不變，你和${ppName(ph)}會換成現在的打扮（毛色、衣服、配件），日期改成今天。原本的照片會被取代。`,"重拍"))) return;
+  const now=Date.now();
+  Object.assign(ph,{av,p,at:now,ed:now});
+  save(); queueSync();
+  const hung=S.photoWall==="pet:"+t;
+  if(hung){ try{ pushFarm(true); }catch(e){} }
+  if(hung&&curPlace&&curPlace.id==="myhome") renderPlace(); else ppRefresh();
+  ppShow(t,false); $("#ppTitle").textContent="咔嚓！重拍好了";
+  Sound.sfx("achieve");
+}
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-ppre]"); if(b) ppRetake(b.dataset.ppre); });
 function ppRefresh(){                                      // 相簿開著時，拍好馬上更新
   const pn=document.querySelector('[data-stabpane="pet"][data-stabid="photo"]'); if(pn) pn.innerHTML=ppAlbumHTML();
   const tb=document.querySelector('[data-stabgo="pet"][data-stabid="photo"]'), n=Object.keys(ppAll()).filter(k=>ppOk(ppAll()[k])).length;
@@ -13749,7 +13769,7 @@ function ppAlbumHTML(){                                    // 寵物窩「📸 �
   const card=t=>{ const ph=all[t], hung=S.photoWall==="pet:"+t;
     return `<figure class="ppcard${ph.bg==="fire"?" rare":""}${hung?" hung":""}"><button type="button" class="ppimg" data-ppview="${esc(t)}" aria-label="看大張：${esc(ppCap(ph))}">${ppSVG(ph)}</button>
       <figcaption><b>和${esc(ppName(ph))}</b>・${PP_BG[ph.bg][0]} ${esc(ppDate(ph.at))}</figcaption>
-      <div class="ppbtns"><button class="mini-btn" type="button" data-ppwall="${esc(t)}">${hung?"🖼 從牆上取下":"🖼 掛到牆上"}</button><button class="mini-btn" type="button" data-ppdl="${esc(t)}">⬇ 下載</button></div></figure>`; };
+      <div class="ppbtns"><button class="mini-btn" type="button" data-ppwall="${esc(t)}">${hung?"🖼 從牆上取下":"🖼 掛到牆上"}</button><button class="mini-btn" type="button" data-ppdl="${esc(t)}">⬇ 下載</button><button class="mini-btn" type="button" data-ppre="${esc(t)}" title="用現在的樣子重拍（背景和動作不變）">📸 重拍</button></div></figure>`; };
   const empty=t=>`<figure class="ppcard empty"><span class="ppimg"><span class="pppet">${petSVG(ppPetLook(t),"adult")}</span></span>
       <figcaption><b>${esc(lookName(t))}</b>・💗 ${affOf(t)} / ${PP_AFF}</figcaption><p class="ahint">${affOf(t)>=PP_AFF?"📸 準備拍照中…（開網站後雲端比對完就會拍）":`親密度滿 ${PP_AFF} 會自動拍`}</p></figure>`;
   return `<section class="window pbox"><h3>和寵物的合照</h3>

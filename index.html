@@ -727,6 +727,7 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
 .syncbtns #syncCancel{margin-right:auto}
+.rinote{display:block;margin:2px 0 0;font-size:12px}
 .apdirect{flex-wrap:wrap;gap:8px;margin:6px 0 10px}
 .apdirect .ainput{max-width:11em;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;text-transform:uppercase}
 @keyframes dlgshake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
@@ -2550,7 +2551,8 @@ footer.site p{margin:4px 0}
         <div class="abar"><h3>使用者名冊</h3><span class="afilters">
           <input id="rsSearch" class="ainput" type="search" placeholder="搜尋名字、組別或代碼" style="max-width:220px">
           <label class="chk"><input type="checkbox" id="rsShowHidden"> 顯示已隱藏</label>
-          <button class="act ghost" type="button" id="rsReload">重新讀取</button></span></div>
+          <button class="act ghost" type="button" id="rsReload">重新讀取</button>
+          <button class="act" type="button" id="rsAdd">＋ 補登人員</button></span></div>
         <p class="ahint" id="rsSource"></p>
         <div class="tscroll"><table class="atable" id="rsTable"></table></div>
         <h3 style="margin-top:22px">🧳 觀光客紀錄</h3>
@@ -3206,6 +3208,30 @@ footer.site p{margin:4px 0}
     <footer><span></span><span class="btns" style="display:flex;gap:8px"><button class="act ghost" type="button" id="pfLater">稍後再說</button><button class="act" type="submit">確認更新</button></span></footer>
   </form>
 </dialog>
+<dialog id="riDlg" aria-labelledby="riTitle">
+  <form class="window dlg" id="riForm">
+    <div class="head"><div><p class="dept">使用者名冊</p><h3 id="riTitle">補登人員資料</h3></div></div>
+    <div class="body">
+      <p class="ahint" id="riIntro"></p>
+      <label class="elabel" for="riCode">新人代碼<b class="req">＊必填</b></label>
+      <input id="riCode" class="cinput wide" maxlength="12" placeholder="例如 X64E-NRJY" autocomplete="off" spellcheck="false" style="text-transform:uppercase">
+      <label class="elabel" for="riName" style="margin-top:10px">姓名</label>
+      <input id="riName" class="cinput wide" maxlength="12" placeholder="真實姓名" autocomplete="off">
+      <label class="elabel" for="riGroup" style="margin-top:10px">組別</label>
+      <select id="riGroup" class="cinput wide"></select>
+      <label class="elabel" for="riEmp3" style="margin-top:10px">員工編號末 3 碼</label>
+      <input id="riEmp3" class="cinput wide" maxlength="3" placeholder="例如 345" autocomplete="off" inputmode="latin">
+      <label class="elabel" for="riJoin" style="margin-top:10px">加入日期</label>
+      <input id="riJoin" class="cinput wide" type="date">
+      <label class="elabel" for="riNote" style="margin-top:10px">備註</label>
+      <input id="riNote" class="cinput wide" maxlength="60" placeholder="例如：補登，原本申請沒送到" autocomplete="off">
+      <p class="ahint" style="margin-top:8px">儲存後，這個人下次開網站時，<b>姓名、組別、加入日期</b>會改成這裡填的（留白的欄位不變），他會看到通知；員工編號末 3 碼和備註只給管理者看。這些資料會放在公開的「後台資料」裡（和交誼廳的名字、組別一樣），<b>不要填完整員工編號或敏感內容</b>。</p>
+      <p class="cerr" id="riErr" role="alert"></p>
+    </div>
+    <footer><span></span><span class="btns" style="display:flex;gap:8px"><button class="act ghost" type="button" data-close>取消</button><button class="act" type="submit" id="riSave">儲存</button></span></footer>
+  </form>
+</dialog>
+
 <dialog id="uDlg" aria-labelledby="uMsg">
   <form class="window dlg" id="uForm">
     <div class="body"><p id="uMsg" class="umsg"></p><label class="sr" for="uInput">輸入</label><input id="uInput" class="ainput wide" hidden></div>
@@ -6927,7 +6953,7 @@ async function unpackPayload(str){
   return JSON.parse(t.startsWith("j:")?t.slice(2):t);
 }
 async function parseFeed(rows){
-  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map(),approve:new Map(),profreq:new Map(),quiz:new Map()}, RLOG_RAW={};
+  const batches=new Map(), recs={interview:new Map(),reply:new Map(),ping:new Map(),roster:new Map(),comp:new Map(),approve:new Map(),profreq:new Map(),quiz:new Map(),rinfo:new Map()}, RLOG_RAW={};
   rows.forEach((r,i)=>{
     const ts=String(r[0]||""), type=String(r[1]||"").trim(), id=String(r[2]||"").trim(), part=String(r[3]||"").trim(), data=String(r[4]||""), by=String(r[5]||"");
     if(!type||!id) return;
@@ -6974,6 +7000,8 @@ async function parseFeed(rows){
   out.quiz=null;                                        // 題庫設定：取最後一筆
   { let best=null; for(const [id,rec] of recs.quiz){ if(!best||rec.row>best.rec.row) best={id,rec}; }
     if(best){ try{ const x=await unpackPayload(best.rec.data); if(x&&x.v) out.quiz=Object.assign({off:[],types:{},wrong:{},scen:{}},x,{id:best.id,ts:best.rec.ts,by:best.rec.by}); }catch(e){} } }
+  out.rinfo={};                                         // 管理者補登／修改的人員資料：每人取最後一筆
+  for(const [id,rec] of recs.rinfo){ try{ out.rinfo[id.toUpperCase()]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
   out.roster={};
   for(const [id,rec] of recs.roster){ try{ out.roster[id]=Object.assign({},await unpackPayload(rec.data),{ts:rec.ts,by:rec.by}); }catch(e){} }
   return out;
@@ -11569,6 +11597,7 @@ async function loadRoster(force){
   const r=(FEED&&FEED.roster)||{};
   Object.keys(r).forEach(k=>{ const c=k.toUpperCase(); if(!map[c]) map[c]={code:c,name:r[k].name||"",group:r[k].group||"",level:"",progress:"",awarded:""}; });
   RS_ROWS=Object.values(map);
+  riApplyRows();
   RS_BUSY=false;
   renderRoster();
 }
@@ -11627,11 +11656,11 @@ function renderRoster(){
   $("#rsTable").innerHTML=`<thead><tr><th>名字</th><th>組別</th><th>新人代碼</th><th>等級／進度</th><th>最後回報</th><th>最後上線</th><th>狀態</th><th><span class="sr">操作</span></th></tr></thead><tbody>${
     list.length?list.map(x=>{ const h=isHid(x.code), waiting=x.code in pend;
       return `<tr class="${h?"rs-hid":""}">
-        <td>${esc(x.name||"—")}${x.nick?`<span class="ahint">（${esc(x.nick)}）</span>`:""}</td><td>${esc(x.group||"—")}</td><td><code>${esc(x.code)}</code></td>
+        <td>${esc(x.name||"—")}${x.nick?`<span class="ahint">（${esc(x.nick)}）</span>`:""}${riInfoHTML(x)}</td><td>${esc(x.group||"—")}</td><td><code>${esc(x.code)}</code></td>
         <td>${x.level?esc(lvLabel(x.level)):"—"}${x.progress?`<span class="ahint">・${esc(x.progress)}</span>`:""}${x.awarded?' <span class="st st-gold">已結業</span>':""}</td>
         <td>${x.reported?esc(fmtShort(x.reported)):"—"}</td><td>${x.seen?esc(fmtShort(x.seen)):"—"}</td>
         <td>${rsPending(x.code)?'<span class="st st-wait">審核中</span> ':""}${h?'<span class="st st-off">已隱藏</span>':'<span class="st st-ok">顯示中</span>'}${waiting?' <span class="st st-wait">更新中</span>':""}</td>
-        <td><button class="${h?"mini-btn":"del"}" type="button" data-rshide="${esc(x.code)}" data-on="${h?0:1}">${h?"恢復顯示":"隱藏"}</button></td></tr>`;}).join("")
+        <td style="white-space:nowrap"><button class="mini-btn" type="button" data-rsedit="${esc(x.code)}">編輯</button> <button class="${h?"mini-btn":"del"}" type="button" data-rshide="${esc(x.code)}" data-on="${h?0:1}">${h?"恢復顯示":"隱藏"}</button></td></tr>`;}).join("")
     :`<tr><td colspan="8">${ROWS.length?"沒有符合的人員。":"目前沒有名冊資料。"}</td></tr>`}</tbody>`;
 }
 function renderTouristRoster(q){                       // 觀光客另外列：不算進新人名冊
@@ -11666,6 +11695,59 @@ $("#npcPublish").addEventListener("click",()=>{
   $("#ssPublish").click();
 });
 $("#rsShowHidden").addEventListener("change",renderRoster);
+/* ---- 補登／修改人員資料 ---- */
+const RI_LOCAL={};                                         // 剛送出、還沒生效的資料（先顯示）
+const riRec=c=>{ c=String(c||"").toUpperCase(); const f=((FEED&&FEED.rinfo)||{})[c], l=RI_LOCAL[c]; return l&&(!f||+f.at<+l.at)?l:f||null; };
+function riApplyRows(){                                    // 名冊每一列套上管理者填的資料；名冊沒有的人補一列
+  const codes=new Set(Object.keys((FEED&&FEED.rinfo)||{}).concat(Object.keys(RI_LOCAL)));
+  RS_ROWS.forEach(x=>{ x.ri=null; if(x.origName!==undefined){ x.name=x.origName; x.group=x.origGroup; } });
+  codes.forEach(c=>{
+    const rec=riRec(c); if(!rec) return;
+    let x=RS_ROWS.find(r=>String(r.code).toUpperCase()===c);
+    if(!x){ x={code:c,name:"",group:"",level:"",progress:"",awarded:"",added:true}; RS_ROWS.push(x); }
+    if(x.origName===undefined){ x.origName=x.name; x.origGroup=x.group; }
+    x.ri=rec; if(rec.name) x.name=rec.name; if(rec.group) x.group=rec.group;
+  });
+}
+const riDateText=t=>{ if(!(+t>0)) return ""; const d=new Date(+t); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
+function riInfoHTML(x){
+  const r=x.ri; if(!r) return "";
+  const bits=[r.emp3?`員編末 3 碼 ${esc(r.emp3)}`:"",+r.join>0?`加入 ${esc(riDateText(r.join))}`:"",r.note?esc(r.note):""].filter(Boolean);
+  return ` <span class="st st-gold" title="管理者補登或修改過">${x.added?"管理者補登":"管理者資料"}</span>${bits.length?`<span class="ahint rinote">${bits.join("・")}</span>`:""}`;
+}
+function openRiDlg(code){
+  const x=code?RS_ROWS.find(r=>r.code===code)||{code}:null, r=code?riRec(code)||{}:{};
+  $("#riTitle").textContent=code?"修改人員資料":"補登人員資料";
+  $("#riIntro").textContent=code?`新人代碼 ${code}。改好後按「儲存」。`:"名冊裡沒列出來的人，輸入他的新人代碼補上資料。";
+  $("#riCode").value=code||""; $("#riCode").readOnly=!!code;
+  $("#riName").value=r.name||(x&&x.name)||"";
+  const g=r.group||(x&&x.group)||"";
+  $("#riGroup").innerHTML=`<option value="">（不指定）</option>`+CFG.groups.map(v=>`<option${v===g?" selected":""}>${esc(v)}</option>`).join("")+(g&&!CFG.groups.includes(g)&&g!==TOURIST?`<option selected>${esc(g)}</option>`:"");
+  $("#riEmp3").value=r.emp3||(x&&x.emp3)||"";
+  const j=+r.join>0?new Date(+r.join):null; $("#riJoin").value=j?`${j.getFullYear()}-${String(j.getMonth()+1).padStart(2,"0")}-${String(j.getDate()).padStart(2,"0")}`:"";
+  $("#riNote").value=r.note||"";
+  $("#riErr").textContent="";
+  const d=$("#riDlg"); if(!d.open) d.showModal();
+  (code?$("#riName"):$("#riCode")).focus();
+}
+$("#rsAdd").addEventListener("click",()=>openRiDlg(null));
+$("#rsTable").addEventListener("click",e=>{ const b=e.target.closest("[data-rsedit]"); if(b) openRiDlg(b.dataset.rsedit); });
+$("#riForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const err=$("#riErr"), code=normNewbieCode($("#riCode").value);
+  const name=cleanText($("#riName").value,12), group=$("#riGroup").value, emp3=$("#riEmp3").value.replace(/\s/g,"").toUpperCase(), note=cleanText($("#riNote").value,60);
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec($("#riJoin").value), join=m?new Date(+m[1],+m[2]-1,+m[3]).getTime():0;
+  err.textContent="";
+  if(!code){ err.textContent="新人代碼是 8 個英文字母或數字，例如 X64E-NRJY"; Sound.sfx("error"); return; }
+  if(emp3&&!/^[A-Z0-9]{3}$/.test(emp3)){ err.textContent="員工編號只填最後 3 碼（英文字母或數字）"; Sound.sfx("error"); return; }
+  if(join&&join>Date.now()){ err.textContent="加入日期不能晚於今天"; Sound.sfx("error"); return; }
+  if(!name&&!group&&!emp3&&!join&&!note){ err.textContent="至少要填一項資料"; Sound.sfx("error"); return; }
+  const at=Date.now(), rec={code,name,group,emp3,join,note,at};
+  const btn=$("#riSave"); btn.disabled=true;
+  const ok=await adminSend("rinfo",code,"j:"+JSON.stringify(rec),`${RS_ROWS.some(r=>r.code===code&&!r.added)?"修改":"補登"}人員：${name||code}`,String(at));
+  btn.disabled=false;
+  if(ok){ RI_LOCAL[code]=rec; $("#riDlg").close(); riApplyRows(); renderRoster(); }
+});
 $("#rsSearch").addEventListener("input",renderRoster);
 $("#rsTable").addEventListener("click",async e=>{
   const b=e.target.closest("[data-rshide]"); if(!b) return;
@@ -11966,7 +12048,25 @@ const redeemable=()=>FINDS.filter(f=>((S.finds||{})[f.id]||0)>=ALBUM_COST);
 /* ---- 新畫框：轉職、試煉、答題、出遊隊伍、看門、年資、節慶 ---- */
 const trialWins=()=>JOBS.reduce((n,j)=>n+jobTier(j.id),0);          // 一轉 1 次、二轉再 1 次
 const joinLocal=()=>{ const L=[+S.since,S.onb&&+S.onb.start,+S.applyAt,+S.approvedAt].filter(x=>x>0); return L.length?Math.min(...L):0; };   // 存檔裡最早的加入紀錄
-const joinAt=()=>{ const L=[+S.joinAt,joinLocal()].filter(x=>x>0); return L.length?Math.min(...L):(+S.profAt||0); };
+const joinAt=()=>{ if(+S.joinAdmin>0) return +S.joinAdmin;   // 管理者在名冊填的加入日期最優先
+  const L=[+S.joinAt,joinLocal()].filter(x=>x>0); return L.length?Math.min(...L):(+S.profAt||0); };
+function applyRosterInfo(){                               // 管理者在使用者名冊補登或修改了我的資料：套用到角色
+  if(!syncGateOk("applyRosterInfo",()=>applyRosterInfo())) return;
+  if(!S.group||touristLocked()) return;
+  const r=((FEED&&FEED.rinfo)||{})[String(myCode()||"").toUpperCase()];
+  if(!r||!(+r.at>0)||+r.at<=(+S.rinfoAt||0)) return;
+  const ch=[];
+  if(r.name&&r.name!==S.name){ S.name=r.name; ch.push(`姓名：${r.name}`); }
+  if(r.group&&r.group!==S.group&&CFG.groups.includes(r.group)){ S.group=r.group; ch.push(`組別：${r.group}`); }
+  if(+r.join>0&&+r.join!==+S.joinAdmin){ S.joinAdmin=+r.join; const d=new Date(+r.join); ch.push(`加入日期：${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`); }
+  S.rinfoAt=+r.at; save();
+  if(!ch.length) return;
+  queueSync(true); try{ lastPresence=0; loungePresence(true,{card:true}).catch(()=>{}); }catch(e){}
+  try{ renderHUD(); renderGroups(); refreshAll(); newFramesCheck(); }catch(e){}
+  try{ if(curPlace) renderPlace(); }catch(e){}
+  const show=()=>{ if(document.querySelector("dialog[open]")){ setTimeout(show,1500); return; } uiAlert(`📋 管理者幫你更新了資料：\n${ch.join("\n")}\n\n如果有錯，請洽管理者。`); };
+  setTimeout(show,800);
+}
 const joinDays=()=>{ const t=joinAt(); if(!t) return 0; const a=new Date(t), b=new Date(); a.setHours(0,0,0,0); b.setHours(0,0,0,0); return Math.round((b-a)/864e5)+1; };   // 照日曆算：加入當天是第 1 天
 const joinDateText=()=>{ const t=joinAt(); if(!t) return ""; const d=new Date(t); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
 async function loadJoinDate(){                            // 讀後台「登錄日期」：每位新人第一次出現在登錄紀錄的時間
@@ -14387,6 +14487,7 @@ function pubDone(p,feed){
   if(p.type==="ping") return feed.pings.has(p.id);
   if(p.type==="profreq"){ const x=feed.profreq; return !!x&&x.id===p.id&&(p.expect==null||String(!!x.ended)===p.expect); }
   if(p.type==="quiz") return !!feed.quiz&&feed.quiz.id===p.id;
+  if(p.type==="rinfo"){ const x=(feed.rinfo||{})[String(p.id).toUpperCase()]; return !!x&&(p.expect==null||String(x.at)===p.expect); }
   if(p.type==="approve"){ const x=(feed.approve||{})[String(p.id).toUpperCase()]; return !!x&&(p.expect==null||String(!!x.ok)===p.expect); }
   if(p.type==="comp"){ const x=(feed.comps||[]).find(v=>v.id===p.id); return !!x&&(p.expect==null||String(!!x.revoked)===p.expect); }
   if(p.type==="interview"){ const x=feed.interviews.find(v=>v.id===p.id); return !!x&&(p.expect==null||String(x.status||"")===p.expect); }
@@ -15425,6 +15526,7 @@ bootstrap().then(()=>{
   try{ if(!S.seenContent||!Object.keys(S.seenContent).length||!HAS_SHEETS) markContentUpdates(); else refreshBonus(); }catch(e){}
   setTimeout(()=>{ try{ bondDailyGift(); }catch(e){} },6000);   // 寵物叼小禮物
   setTimeout(()=>{ try{ loadJoinDate(); }catch(e){} },4000);       // 加入日期（後台登錄紀錄）
+  setTimeout(()=>{ try{ applyRosterInfo(); }catch(e){} },4500);    // 管理者補登／修改的人員資料
   if(S.group){
     setTimeout(()=>loadInbox(),1500);
     try{ if(!sessionStorage.getItem("sino22-reported")){ sessionStorage.setItem("sino22-reported","1"); queueSync(true); } }catch(e){}

@@ -732,6 +732,51 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
 .syncbtns #syncCancel{margin-right:auto}
+.qb2chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.qb2chip{font:inherit;font-size:13px;border:2px solid rgba(255,255,255,.45);background:#0B1030;color:var(--win-muted);border-radius:16px;padding:3px 12px;cursor:pointer;min-height:32px}
+.qb2chip b{color:#fff;font-weight:700;margin-left:2px}
+.qb2chip.on{background:var(--gold);border-color:var(--gold);color:#231F20}.qb2chip.on b{color:#231F20}
+.qb2zone{margin:16px 0 0}
+.qb2zone>h4{font-family:var(--pixel);font-weight:400;font-size:19px;color:var(--gold);margin:0 0 6px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.qb2zone>h4 small{font-family:inherit;font-size:13px;color:var(--win-muted)}
+.qb2task{border:1px solid rgba(255,255,255,.22);border-radius:5px;margin:6px 0;background:rgba(0,0,0,.14)}
+.qb2task.open{border-color:rgba(255,255,255,.4)}
+.qb2th{display:flex;width:100%;justify-content:space-between;align-items:center;gap:10px;font:inherit;font-weight:700;font-size:15px;color:#fff;background:none;border:0;padding:9px 12px;cursor:pointer;text-align:left;min-height:40px}
+.qb2th small{font-weight:400;font-size:13px;color:var(--win-muted);white-space:nowrap}.qb2th small.zero{color:#FFB37A}
+.qb2row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:8px 12px;border-top:1px dashed rgba(255,255,255,.18)}
+.qb2row.off .qb2main{opacity:.5}.qb2row.dirty{box-shadow:inset 4px 0 0 var(--gold)}
+.qb2q{margin:0!important;font-size:14px;line-height:1.5}
+.qb2a{margin:2px 0 0!important;font-size:13px;color:#8BE59A}
+.qb2btns{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.mini-btn.hot{border-color:var(--gold);color:var(--gold)}
+.qbchip{display:inline-block;font-size:11.5px;line-height:1.5;padding:0 7px;border-radius:9px;margin-left:5px;vertical-align:1px;white-space:nowrap}
+.qbchip.bi{background:#4b569e;color:#E3E6FF}.qbchip.ed{background:#7d5ab8;color:#fff}.qbchip.nw{background:#2f8f5a;color:#fff}.qbchip.of{background:#555b7a;color:#ddd}
+.qbchip.dr{background:var(--gold);color:#231F20}.qbchip.wn{background:#F0A030;color:#231F20}.qbchip.yr{background:#2D6C9C;color:#fff}
+.qb2empty{padding:8px 12px;border-top:1px dashed rgba(255,255,255,.18);font-size:13px;color:#FFB37A}
+.qb2bar{position:sticky;bottom:8px;z-index:5;margin-top:14px;background:#0B1030;border:2px solid var(--gold);border-radius:6px;padding:9px 12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+@media (max-width:640px){.qb2row{grid-template-columns:minmax(0,1fr)}.qb2btns{justify-content:flex-start}}
+#qbDlg{max-width:min(1080px,calc(100vw - 28px))}
+.qbdbody{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:16px}
+@media (max-width:860px){.qbdbody{grid-template-columns:minmax(0,1fr)}}
+.qbdform,.qbdside{display:flex;flex-direction:column;gap:6px;min-width:0}
+.qbdl{font-size:13px;color:var(--win-muted);margin:6px 0 0!important}.qbdl small{color:var(--win-muted);opacity:.85}
+.qbdform .ainput{width:100%;box-sizing:border-box;padding:6px 10px;font-size:14px}
+.qbdwho{margin:0!important}
+.qbdopt{display:grid;grid-template-columns:62px minmax(0,1fr) 44px;gap:8px;align-items:center}
+.qbdopt>span{font-size:12.5px;text-align:center;border-radius:4px;padding:6px 0;background:#5a3550;color:#fff}
+.qbdopt.ok>span{background:#2E7D4F}
+.qbdopt small{font-size:11.5px;color:var(--win-muted);text-align:right}.qbdopt small.long{color:#FFC36B;font-weight:700}
+.qbdyr{font-size:13px;margin-top:4px}
+.qbdchecks{background:rgba(0,0,0,.28);border-radius:5px;padding:6px 12px;font-size:13px;line-height:1.7}
+.qbdchecks p{margin:0!important}.qbdchecks .qo{color:#8BE59A}.qbdchecks .qw{color:#FFC36B}.qbdchecks .qx{color:#FF8A8A}
+.qbdref{background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.2);border-radius:5px;padding:9px 12px;font-size:13px;line-height:1.75;max-height:260px;overflow:auto}
+.qbdref mark{background:var(--gold);color:#231F20;border-radius:2px;padding:0 2px}
+.qbdprev{background:#FFF8E8;color:#3a2a1a;border-radius:6px;padding:10px 12px}
+.qbdnpc{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#6b5a48}
+.qbdface{width:32px;height:32px;display:block}
+.qbdpq{font-weight:700;margin:6px 0!important;font-size:14px;line-height:1.5}
+.qbdpo{border:2px solid #3a2a1a;border-radius:4px;padding:5px 9px;margin:5px 0;font-size:13.5px;background:#fff}
+.qbdpo.ans{box-shadow:inset 4px 0 0 #2E7D4F}
 .ppgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px 14px;margin:10px 0 6px}
 .ppcard{margin:0;background:#FFF8E8;padding:7px 7px 6px;box-shadow:0 0 0 2px #3B2412,3px 4px 0 rgba(0,0,0,.35);color:#3B2412;text-align:center}
 .ppcard:nth-child(odd){transform:rotate(-1.2deg)}.ppcard:nth-child(even){transform:rotate(1deg)}
@@ -2520,36 +2565,20 @@ footer.site p{margin:4px 0}
     </div>
     <div class="apanel" data-panel="quizbank" role="tabpanel" hidden>
       <section class="window abox">
-        <div class="abar"><h3>題庫</h3><span class="afilters">
-          <button class="act ghost" type="button" id="qbAddScen">＋ 新增情境題</button>
-          <button class="act ghost" type="button" id="qbRevert">還原未發布的變更</button>
-          <button class="act" type="button" id="qbPublish">發布題庫設定</button></span></div>
-        <p class="ahint">NPC 情報問答和種子商店的每日問答，都是從任務內容自動出題。這裡列出目前任務內容會出的每一題：<b>停用</b>的題目不會再出現；選項不合理時可以按「自訂選項」，自己寫 3 個錯誤選項。修改任務內容後，改到的句子會變成新題目（預設啟用），記得回來看一下。</p>
+        <div class="abar"><h3>題庫・情境題</h3><span class="afilters">
+          <button class="act" type="button" id="qbAddScen">＋ 新增情境題</button></span></div>
+        <p class="ahint">NPC 情報問答、種子商店每日問答和轉職試煉，都從這裡的情境題出題（選項順序每次打亂）。題目依「地點 → 任務」分組，點任務名稱可以展開；新增或修改後要按下方的「發布題庫」，約 1–5 分鐘生效。</p>
         <p class="ahint" id="qbInfo"></p>
-        <div class="qbtypes" id="qbTypes" role="group" aria-label="題型開關"></div>
         <div class="qbfilter">
           <label>地點<select class="ainput" id="qbZone"></select></label>
-          <label>題型<select class="ainput" id="qbKind"></select></label>
-          <label>狀態<select class="ainput" id="qbState">
-            <option value="all">全部</option><option value="on">啟用中</option><option value="off">已停用</option><option value="custom">自訂選項</option><option value="none">選項不足（不會出題）</option><option value="dirty">未發布的變更</option></select></label>
-          <label class="qbsearch">搜尋<input class="ainput" id="qbSearch" type="search" placeholder="題目、答案或任務名稱"></label>
+          <label class="qbsearch">搜尋<input class="ainput" id="qbSearch" type="search" placeholder="題目、選項、解說或任務名稱"></label>
         </div>
-        <div class="qbscened" id="qbScenEd" hidden>
-          <h4 id="qbSeTitle">新增情境題</h4>
-          <div class="qbsegrid">
-            <label>地點（哪位 NPC 會出這題）<select class="ainput" id="qbSeZone"></select></label>
-            <label>相關任務（答題後可以「看說明」）<select class="ainput" id="qbSeQuest"></select></label>
-          </div>
-          <label class="qbsefull">情境題目<textarea class="ainput" id="qbSeQ" rows="2" maxlength="120" placeholder="例如：今天 8:40 才刷卡進公司，該怎麼處理？"></textarea></label>
-          <fieldset class="qbseopts"><legend>選項（4 個，點選圓圈標示正確答案）</legend>
-            <div id="qbSeOpts"></div></fieldset>
-          <label class="qbsefull">解說（答錯時顯示）<textarea class="ainput" id="qbSeEx" rows="2" maxlength="160" placeholder="例如：超過彈性上班範圍 30 分鐘內到達者，應請假 1 小時。"></textarea></label>
-          <p class="cerr" id="qbSeErr" role="alert"></p>
-          <div class="formfoot"><span></span><span class="afilters">
-            <button class="act ghost" type="button" id="qbSeCancel">取消</button>
-            <button class="act" type="button" id="qbSeSave">套用</button></span></div>
-        </div>
+        <div class="qb2chips" id="qbChips" role="group" aria-label="篩選"></div>
         <div id="qbList"></div>
+        <div class="qb2bar" id="qbBar" hidden>
+          <span id="qbBarTxt"></span>
+          <span class="afilters"><button class="act ghost" type="button" id="qbDiff">看變更</button><button class="act ghost" type="button" id="qbRevert">還原</button><button class="act" type="button" id="qbPublish">發布題庫</button></span>
+        </div>
       </section>
     </div>
     <div class="apanel" data-panel="approve" role="tabpanel" hidden>
@@ -2654,7 +2683,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-10-30T18:53+0800">2026/10/30 18:53</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-02T10:04+0800">2026/11/2 10:04</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -3158,6 +3187,37 @@ footer.site p{margin:4px 0}
     <div class="head"><div><p class="dept">📸 主人與寵物合照</p><h3 id="ppTitle">合照</h3></div></div>
     <div class="body"><div id="ppShow"></div><p class="dbody" id="ppSay"></p></div>
     <div class="foot"><button class="act ghost" type="button" id="ppDl">下載</button><button class="act ghost" type="button" id="ppWall">掛到牆上</button><button class="act" type="button" data-close>收進相簿</button></div>
+  </div>
+</dialog>
+<dialog id="qbDlg" aria-labelledby="qbdTitle">
+  <div class="window dlg form qbdwrap">
+    <div class="head"><div><p class="dept">題庫・情境題</p><h3 id="qbdTitle">新增情境題</h3></div></div>
+    <div class="body qbdbody">
+      <div class="qbdform">
+        <label class="qbdl" for="qbdQuest">① 相關任務（地點和出題的 NPC 會自動帶出）</label>
+        <select class="ainput" id="qbdQuest"></select>
+        <p class="ahint qbdwho" id="qbdWho"></p>
+        <label class="qbdl" for="qbdQ">② 情境題目 <small id="qbdQn"></small></label>
+        <textarea class="ainput" id="qbdQ" rows="2" maxlength="120" placeholder="例如：彈性上班到 8:30，今天 8:40 才刷卡進公司，該怎麼處理？"></textarea>
+        <p class="qbdl">③ 正確答案和錯誤選項 <small>（盡量寫得差不多長，答案才不容易被猜中）</small></p>
+        <div class="qbdopt ok"><span>✓ 正確</span><input class="ainput" id="qbdO0" maxlength="40" aria-label="正確答案"><small id="qbdN0"></small></div>
+        <div class="qbdopt"><span>✗ 錯誤</span><input class="ainput" id="qbdO1" maxlength="40" aria-label="錯誤選項 1"><small id="qbdN1"></small></div>
+        <div class="qbdopt"><span>✗ 錯誤</span><input class="ainput" id="qbdO2" maxlength="40" aria-label="錯誤選項 2"><small id="qbdN2"></small></div>
+        <div class="qbdopt"><span>✗ 錯誤</span><input class="ainput" id="qbdO3" maxlength="40" aria-label="錯誤選項 3"><small id="qbdN3"></small></div>
+        <label class="qbdl" for="qbdEx">④ 解說（答錯時顯示）<small id="qbdExn"></small></label>
+        <textarea class="ainput" id="qbdEx" rows="2" maxlength="160" placeholder="例如：超過彈性上班範圍 30 分鐘內到達者，應請假 1 小時。"></textarea>
+        <label class="chk qbdyr"><input type="checkbox" id="qbdYr"> 每年確認一次（補助金額、旅遊等會變動的規定，每年 1 月會列入「需要注意」）</label>
+        <div class="qbdchecks" id="qbdChecks" aria-live="polite"></div>
+      </div>
+      <div class="qbdside">
+        <p class="qbdl">任務內容（對照用，和答案有關的句子會標出來）</p>
+        <div class="qbdref" id="qbdRef"></div>
+        <p class="qbdl">新人看到的樣子（選項順序每次打亂）</p>
+        <div class="qbdprev" id="qbdPrev"></div>
+      </div>
+    </div>
+    <div class="foot"><span class="afilters"><button class="act ghost" type="button" id="qbdReset" hidden>還原預設</button><button class="act ghost" type="button" id="qbdDel" hidden>刪除這題</button></span>
+      <span class="afilters"><button class="act ghost" type="button" id="qbdCancel">取消</button><button class="act ghost" type="button" id="qbdNext">儲存並新增下一題</button><button class="act" type="button" id="qbdSave">儲存</button></span></div>
   </div>
 </dialog>
 <dialog id="visitDlg" aria-labelledby="vsTitle">
@@ -11171,72 +11231,19 @@ const QUIZ_MULT=10;
 function seededRand(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; }
   return ()=>{ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
 const shuffleR=(arr,r)=>{ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
-/* ---- NPC 情報問答：出題規則 v2 ----
-   題型只有兩種：情境題（內建＋管理者新增）、數字題（整段挖空完整的數字：時間區間、時間、日期、分機、帶單位的數字，不挖項目編號） */
+/* ---- NPC 情報問答：只出情境題（內建＋管理者新增），2026/11/2 起拿掉數字題 ---- */
 function htmlLines(html){
   return String(html||"").replace(/<table[\s\S]*?<\/table>/gi,"\n").replace(/<\s*(li|p|br|h3|h4|div|tr)\b[^>]*>/gi,"\n").replace(/<[^>]+>/g,"")
     .replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").split(/\n/);
 }
-const LIST_NO=/^\s*(?:[\(（]\s*\d{1,2}\s*[\)）]|\d{1,2}\s*[\.、．\)）](?!\d)|[①-⑳]|第[一二三四五六七八九十]+[步點項條]?[、：:．.]?|step\s*\d+\s*[:：.]?|[一二三四五六七八九十][、．.])\s*/i;
-function questSentences(q){
-  const out=[];
-  htmlLines(q.body).forEach(line=>line.split(/。|；/).forEach(t=>{
-    t=t.replace(/\s+/g," ").trim().replace(LIST_NO,"").trim();
-    if(t.length>=8&&t.length<=80) out.push(t);
-  }));
-  return out;
-}
-const UNITS="萬元|元|點|天|日|小時|分鐘|週|個月|月|年|次|人|%|％|樓|公里|張|份|萬|歲|台|部";
-const NUM_PATS=[
-  ["timerange",new RegExp("\\d{1,2}:\\d{2}\\s*[～~\\-–至到]\\s*\\d{1,2}:\\d{2}","g")],
-  ["date",/\d{4}\/\d{1,2}\/\d{1,2}/g],
-  ["unitrange",new RegExp("\\d[\\d,]*\\s*[～~\\-–至到]\\s*\\d[\\d,]*\\s*(?:"+UNITS+")","g")],
-  ["time",/\d{1,2}:\d{2}/g],
-  ["ext",/#\d{3,6}/g],
-  ["unit",new RegExp("\\d[\\d,]*(?:\\.\\d+)?\\s*(?:"+UNITS+")","g")]
-];
-function numTokens(t){                                 // 找出句子裡「完整」的數字片段
-  const taken=[], out=[];
-  NUM_PATS.forEach(([kind,re])=>{ re.lastIndex=0; let m;
-    while((m=re.exec(t))){
-      const s=m.index, e=s+m[0].length;
-      if(taken.some(([a,b])=>s<b&&e>a)) continue;
-      const before=t.charAt(s-1), after=t.charAt(e);
-      if(/[0-9A-Za-z\/:.,#]/.test(before)) continue;          // 前面還連著數字或英文，就不是完整的數字
-      if(/[0-9]/.test(after)||(kind==="time"&&after===":")) continue;
-      if(kind==="date"&&/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(m[0])===false) continue;
-      taken.push([s,e]); out.push({kind,tok:m[0],s,e});
-    }
-  });
-  return out;
-}
-const unitOf=tok=>{ const m=tok.match(new RegExp("("+UNITS+")$")); return m?m[1]:""; };
-const toMin=t=>{ const [h,m]=t.split(":").map(Number); return h*60+m; };
-const fmtMin=v=>{ v=((v%1440)+1440)%1440; return `${Math.floor(v/60)}:${String(v%60).padStart(2,"0")}`; };
-function fakeNum(c,r){
-  const t=c.tok, out=new Set();
-  const nums=t.match(/\d[\d,]*(?:\.\d+)?/g)||[];
-  const fmtN=(v,orig)=>{ v=Math.round(v*100)/100; return /,/.test(orig)||v>=10000?v.toLocaleString("en-US"):String(v); };
-  for(let g=0;g<40&&out.size<6;g++){
-    let f=t;
-    if(c.kind==="timerange"||c.kind==="time"){ const d=[15,30,60,90][Math.floor(r()*4)]*(r()<.5?-1:1); f=t.replace(/\d{1,2}:\d{2}/g,x=>fmtMin(toMin(x)+d)); }
-    else if(c.kind==="date"){ const [y,mo,dd]=t.split("/").map(Number); const d=new Date(y,mo-1,dd+([1,2,3,7,-1,-2,-7][Math.floor(r()*7)])); f=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; }
-    else if(c.kind==="ext"){ f="#"+String(parseInt(t.slice(1),10)+[1,2,10,-1,-10,100][Math.floor(r()*6)]).padStart(t.length-1,"0"); }
-    else{
-      const ops=[v=>v+1,v=>v-1,v=>v*2,v=>Math.round(v/2),v=>v+5,v=>v-5,v=>v+10,v=>v*3,v=>v+v/2,v=>v-v/4];
-      const op=ops[Math.floor(r()*ops.length)];
-      f=t.replace(/\d[\d,]*(?:\.\d+)?/g,x=>{ const v=parseFloat(x.replace(/,/g,"")); const nv=op(v); return nv>0?fmtN(nv,x):x; });
-    }
-    if(f!==t) out.add(f);
-  }
-  return [...out];
-}
 const optKey=x=>String(x).normalize("NFKC").replace(/[\s　]+/g,"").replace(/[～〜~]/g,"~").replace(/[－–—]/g,"-").toLowerCase();   // 比對選項是否重複（忽略空白、全形半形）
 const quizOK=q=>!!q&&new Set(q.opts.map(optKey)).size===q.opts.length;
-/* ---- 題庫設定：停用的題目、停用的題型、自訂干擾選項（管理者在「題庫」分頁發布） ---- */
-const QZ_KINDS=["情境題","數字題"];
+/* ---- 題庫設定：停用的題目、管理者修改／新增的情境題、確認紀錄（管理者在「題庫」分頁發布） ---- */
+const QZ_KINDS=["情境題"];
 /* 情境判斷題（內建）：依任務內容設計，第一個選項是正確答案，出題時打亂順序；管理者可在「題庫」分頁修改、停用或新增 */
 const SCEN_DEFAULT=[{"id": "s01", "zone": "village", "quest": "v4", "q": "報到第一天還沒拿到員工證，到了公司門口要怎麼刷卡進去？", "opts": ["向櫃台借白卡（臨時證）刷卡，並在借用簿登記", "請同事用他的員工證幫你刷卡進門", "先不刷卡，之後到出勤系統補登上班時間", "到行政部臨時申請一張正式員工證"], "ans": 0, "explain": "沒有員工證時可以向櫃台借白卡刷卡：輸入員編、歸還白卡，並在借用簿註明刷卡人及時間。"}, {"id": "s02", "zone": "village", "quest": "v4", "q": "用借來的白卡刷卡進公司後，事後還要記得做什麼？", "opts": ["到出勤系統確認有沒有刷卡紀錄", "把白卡留在座位，下班時再一起還", "請主管在請假卡幫你補簽到", "不用做任何事，白卡會自動記錄"], "ans": 0, "explain": "借白卡刷卡後要歸還，事後記得到出勤系統確認是否有紀錄。"}, {"id": "s03", "zone": "village", "quest": "v5", "q": "還沒配發電腦，但今天想先上訂餐系統訂便當，怎麼做最快？", "opts": ["從公司官網［員工專區］＞［一般員工］登入", "等電腦配發後，才能登入訂餐系統", "請部門行政組用他的帳號幫你代訂", "先安裝中興行動 APP，再用手機訂"], "ans": 0, "explain": "只需要訂餐、出勤、E-learning 系統時，可以從公司官網的［員工專區］＞［一般員工］登入。"}, {"id": "s04", "zone": "village", "quest": "v2", "q": "想把薪水轉進自己的郵局帳戶，可以嗎？", "opts": ["可以，薪轉戶可選彰化銀行、遠東銀行或郵局", "不行，薪轉戶只能選公司一樓的遠東銀行", "不行，薪轉戶只能選隔壁大樓的彰化銀行", "可以，但要另外專案申請並經主管核准"], "ans": 0, "explain": "公司薪轉戶可以選擇彰化銀行、遠東銀行、郵局。"}, {"id": "s05", "zone": "village", "quest": "v6", "q": "報到後第 5 天，主管問你安全衛生的線上課程上完了沒。規定是什麼？", "opts": ["報到一週內在職安署數位學習平台上完 2 小時", "等每季的實體課程，再一起上完 3 小時", "報到一個月內在 E-learning 上完 1 小時", "新人第一年免上，第二年再補上就好"], "ans": 0, "explain": "一般安全衛生教育訓練共 3 小時：報到一週內完成 2 小時線上課程，每季實體課程 1 小時。"}, {"id": "s06", "zone": "village", "quest": "v6", "q": "新人教育訓練當天的筆試考了 70 分，接下來會怎樣？", "opts": ["要補考", "要補修整門課", "已經及格，不用處理", "下一季重新報名上課"], "ans": 0, "explain": "筆試未達 80 分要補考，未達 60 分要補修。"}, {"id": "s07", "zone": "village", "quest": "v7", "q": "人員履歷的欄位全部填好了，最後一步要做什麼？", "opts": ["點選［申請主管簽核］", "印出來交給行政部", "寄 Email 給人資", "按儲存就完成了"], "ans": 0, "explain": "全部欄位填好後，點選［申請主管簽核］。之後每年依工作資歷、新增證照更新一次。"}, {"id": "s08", "zone": "tavern", "quest": "t1", "q": "彈性上班到 8:30，你今天 8:40 才刷卡進公司，該怎麼處理？", "opts": ["請假 1 小時", "不用處理，還在彈性時間內", "請假半天", "當天加班補回來就好"], "ans": 0, "explain": "超過彈性上班範圍 30 分鐘內到達者，應請假 1 小時。"}, {"id": "s09", "zone": "tavern", "quest": "t1", "q": "加班到晚上 7 點才要離開公司，要從哪裡出去？", "opts": ["B1 後門", "正門", "請警衛開正門", "哪一個門都可以"], "ans": 0, "explain": "正門開放時間 7:00～18:00，18:00 後請從 B1 後門進出。"}, {"id": "s10", "zone": "tavern", "quest": "t1", "q": "你今天 8:20 刷卡上班，最早幾點可以下班？", "opts": ["17:20", "16:20", "16:30", "17:30"], "ans": 0, "explain": "以 8 小時計算，加上中午 1 小時午休，例如 8:15 上班就是 17:15 下班。"}, {"id": "s11", "zone": "tavern", "quest": "t3", "q": "今天下班後預計要加班，加班申請卡最晚要在什麼時候完成？", "opts": ["加班前、最晚 16:30 填好並經主管簽核", "加班結束後，隔天上班再補填並簽核", "當月 30 號前，和正常工作卡一起填", "下班前、最晚 17:30 填好並經主管簽核"], "ans": 0, "explain": "加班申請卡要在加班前、最晚 16:30 完成填寫並經主管簽核，也可以事先申請一週的加班。"}, {"id": "s12", "zone": "tavern", "quest": "t3", "q": "昨天實際加班了 2 小時，加班卡要什麼時候填？", "opts": ["隔天務必填寫", "月底再和工作卡一起填", "不用填，有加班申請卡就夠了", "下一週再一起補填"], "ans": 0, "explain": "加班卡依實際加班時數，隔天務必填寫，逾時未填會記點。"}, {"id": "s13", "zone": "tavern", "quest": "t3", "q": "這個月已經加班 44 小時，主管問你這個月還能再申請幾小時？", "opts": ["2 小時", "4 小時", "12 小時", "沒有上限"], "ans": 0, "explain": "加班一天最多 4 小時，週六日最多 12 小時，當月最多 46 小時。"}, {"id": "s14", "zone": "tavern", "quest": "t3", "q": "週日來公司加班，可以怎麼申請？", "opts": ["只能申請補休，而且要在 7 日內補休", "只能領加班費，不能申請補休", "加班費或補休擇一，年底前休完即可", "只能申請補休，年底前休完就好"], "ans": 0, "explain": "週日只能申請補休，依勞基法須於 7 日內補休；未工作滿 8 小時者，須以特休假或補休補足。"}, {"id": "s15", "zone": "tavern", "quest": "t3", "q": "想請 1 小時病假去看醫生，要在哪裡填？", "opts": ["請假卡，由主管核假", "正常工作卡，填在當天的時數裡", "加班卡，之後再用補休抵", "寄 Email 給行政部登記"], "ans": 0, "explain": "病假、公出、特休、加班補休等，都在［請假卡］填卡，由主管核假。"}, {"id": "s16", "zone": "tavern", "quest": "t3", "q": "今天是 18 號，中旬的正常工作卡還沒填，最晚要在幾號前完成？", "opts": ["20 號", "10 號", "30 號", "下個月 5 號"], "ans": 0, "explain": "正常工作卡每月 10 號（上旬卡）、20 號（中旬卡）、30 號（下旬卡）前完成，逾時未填會記點。"}, {"id": "s17", "zone": "tavern", "quest": "t4", "q": "你 3 月 1 日報到，到了 7 月 1 日，總共有幾天特休？", "opts": ["2 天", "4 天", "1 天", "第一年沒有特休"], "ans": 0, "explain": "新人第 1 年，每滿 2 個月給特別休假 1 天，滿 4 個月就是 2 天。"}, {"id": "s18", "zone": "tavern", "quest": "t4", "q": "到了年底，還有 2 天特休沒休完，會怎樣？", "opts": ["換算成薪資，隔年 1 月匯入薪資帳戶", "全部作廢，不能保留也不能換錢", "自動延到明年，3 月底前要休完", "換成加班補休，隔年再慢慢休"], "ans": 0, "explain": "特休每年 12/31 結算，未休完的換算薪資，於隔年 1 月匯入薪資帳戶。"}, {"id": "s19", "zone": "tavern", "quest": "t6", "q": "上午 10:00 才想到要訂便當，還來得及嗎？", "opts": ["來不及，訂餐和取消都要在 9:50 前", "可以，中午 12 點前都還能訂", "可以，打電話給便當店直接加訂", "可以，但要改用現金付款"], "ans": 0, "explain": "線上訂餐須於每日 9:50 前完成，要取消也請於 9:50 前辦理。"}, {"id": "s20", "zone": "tavern", "quest": "t6", "q": "在線上訂好的便當，中午要去哪裡拿？", "opts": ["電梯前的桌上，便當上標有姓名", "1 樓櫃台，報名字領取", "部門前方的冰箱裡", "行政部辦公室，簽名領取"], "ans": 0, "explain": "便當中午放在電梯前桌上，上面標有姓名，午休時領取。"}, {"id": "s21", "zone": "tavern", "quest": "t7", "q": "要用座位電話打給客戶的手機，該怎麼撥？", "opts": ["撥 5 給總機，由總機協助撥打", "按 9 再直接撥手機號碼", "撥 0 給總機，由總機協助撥打", "直接撥手機號碼就可以"], "ans": 0, "explain": "撥打手機要撥 5 給總機，由總機協助撥打（113/12/16 起由 0 改為 5）；按 9 是撥外線市話。"}, {"id": "s22", "zone": "tavern", "quest": "t7", "q": "隔壁同事不在，他的座位電話一直響，你要怎麼代接？", "opts": ["按 ＊ ＋ 7", "按轉接鍵", "按 9", "按 5"], "ans": 0, "explain": "代接其他座位電話：按 ＊ ＋ 7。"}, {"id": "s23", "zone": "tavern", "quest": "t10", "q": "要把一個大檔案傳給別組同事，放到 P 槽後要提醒對方什麼？", "opts": ["當天就要下載，P 槽每天 00:00 會自動刪除", "檔案會保留一個月，慢慢下載就好", "放在 P 槽只有自己看得到，要另外分享", "P 槽只限部門內部，別組同事打不開"], "ans": 0, "explain": "P 槽用來資料交換，上傳後所有人都能下載，每日 00:00 自動刪除，重要檔案請另外保存。"}, {"id": "s24", "zone": "tavern", "quest": "t11", "q": "上班時不小心扭傷腳踝，保健室可以幫你做什麼？", "opts": ["只能初步緊急處理，扭傷要到醫療院所治療", "可以幫你打止痛針，休息後再回去上班", "可以幫你包紮，並做完整的扭傷治療", "會直接幫你掛號、安排醫生看診"], "ans": 0, "explain": "保健室醫護人員僅作初步緊急處理及健康諮詢，不處理扭傷、挫傷、跌傷等持續性治療。"}, {"id": "s25", "zone": "tavern", "quest": "t12", "q": "出差時想用手機批閱表單，從外部登入員工專區需要什麼？", "opts": ["密碼加一次性密碼（OTP）", "員編和密碼就好，不用驗證", "要先連上公司的 VPN", "外部網路不能登入員工專區"], "ans": 0, "explain": "自 115/1/1 起，從外部網站登入員工專區需要「密碼＋一次性密碼」，手機要安裝 Google Authenticator。"}, {"id": "s26", "zone": "tavern", "quest": "t9", "q": "在電腦按了列印，要怎麼把文件印出來？", "opts": ["到影印機刷員工證，再按［釋放列印］", "送出後印表機就會自動印出來", "請行政組在後台幫你放行文件", "在影印機輸入員編密碼就會印出"], "ans": 0, "explain": "文件送出列印（選 Epson Printer）後，到影印機刷員工證，按［釋放列印］。"}, {"id": "s27", "zone": "tower", "quest": "w1", "q": "下週要去台中的業主那邊開會，應該辦什麼手續？", "opts": ["出差，出差前填「員工出差申請及報告單」", "公出，事後再報支交通費就好", "請特休，再自行報銷交通費", "不用申請，直接搭車前往"], "ans": 0, "explain": "公務地點距原工作地 80 公里以外（新竹以南）屬出差，出差前填「員工出差申請及報告單」陳核。"}, {"id": "s28", "zone": "tower", "quest": "w2", "q": "要去台北市區的業主辦公室開會，當天來回，離開公司時要做什麼？", "opts": ["以公出辦理，先按「公出」鍵再用識別證感應", "以出差辦理，先填出差申請及報告單", "請半天特休，再報銷交通費", "直接離開，回來再跟主管說"], "ans": 0, "explain": "80 公里以內（新竹以北）以公出辦理；經主管許可公出，離開公司時先按「公出」鍵，再以 IC 識別證感應。"}, {"id": "s29", "zone": "tower", "quest": "w1", "q": "出差搭高鐵，可以買商務車廂報銷嗎？", "opts": ["不行，以標準（經濟）等級為限", "可以，按實際票價報支", "主管同意就可以報商務車廂", "只有回程可以買商務車廂"], "ans": 0, "explain": "搭高鐵或飛機以標準（經濟）等級為限。"}, {"id": "s30", "zone": "tower", "quest": "w1", "q": "出差住宿用 Agoda 訂房，訂房網的收據可以核銷嗎？", "opts": ["不行，要直接向飯店訂房拿有統編的單據", "可以，附上訂房網的收據就能報", "可以，但只能報一半的住宿費", "可以，改填交通費報銷單後就能報"], "ans": 0, "explain": "核銷不能使用訂房網（如 Agoda）的收據，請直接向飯店訂房並索取有公司統編的單據。"}, {"id": "s31", "zone": "tower", "quest": "w1", "q": "出差到澎湖 2 天，膳雜費每天可以報多少？", "opts": ["550 元", "400 元", "3,000 元", "不能報膳雜費"], "ans": 0, "explain": "膳雜費每日 400 元；馬祖、金門、澎湖等離島每日 550 元。"}, {"id": "s32", "zone": "tower", "quest": "w3", "q": "搭 Uber 去業主那邊開會，車資要怎麼報銷？", "opts": ["附上有起訖地和金額的資料，經搭乘人和主管簽章", "一定要填交通費報銷單，附上信用卡帳單", "多元計程車沒有收據，所以不能報銷", "把車資畫面傳給行政組就好，不用簽章"], "ans": 0, "explain": "多元計程車檢附載有「搭乘起訖地及支付金額」的資料，經搭乘人、部門主管等簽章後即可報銷，不必再填交通費報銷單。"}, {"id": "s33", "zone": "tower", "quest": "w3", "q": "因公搭計程車，下車地點是自己家，報銷時要注意什麼？", "opts": ["要另外註明搭車的原因", "起訖點有自宅就不能報銷", "不用說明，照一般程序報銷", "只能用多元計程車才可以報"], "ans": 0, "explain": "只要起訖點其中一端是自宅，都仍須註明原因。"}, {"id": "s34", "zone": "tower", "quest": "w6", "q": "電腦突然開不了機，要怎麼報修？", "opts": ["到內網［資訊設備報修］填單，或打分機 11014", "撥 24 小時直撥專線 10011 報修", "把電腦搬到行政部請人檢查", "填［EF07102 電腦軟硬體申請表］換新的"], "ans": 0, "explain": "電腦或軟體壞掉：公司內網＞［服務專區］＞［資訊設備報修］，資訊設備問題請洽分機 11014–11017。"}, {"id": "s35", "zone": "tower", "quest": "w9", "q": "辦公室的冷氣不冷，要找誰報修？", "opts": ["撥 24 小時直撥專線 10011", "到［資訊設備報修］填單報修", "填［EF07102 電腦軟硬體申請表］", "到 2F 保健室旁的福委會反映"], "ans": 0, "explain": "水電、空調、電話及清潔等報修，請撥 24 小時直撥專線 10011。"}, {"id": "s36", "zone": "tower", "quest": "w5", "q": "工作需要安裝一套工程軟體，第一步要做什麼？", "opts": ["先和主管確認，再填電腦軟硬體申請表", "自己上網下載安裝，再登記到軟體清單", "向同事借帳號，先用他的軟體授權", "撥 10011，請資訊人員直接來安裝"], "ans": 0, "explain": "軟體要先和主管確認要安裝哪些，再到表單入口網填［EF07102 電腦軟硬體申請表］。"}, {"id": "s37", "zone": "chest", "quest": "c2", "q": "你還在試用期，報名了英文課，可以申請員工進修補助嗎？", "opts": ["不行，試用期間的新進員工不適用", "可以，每年補助 2,000 元", "可以，補助一半的學費", "可以，但要先經主管同意"], "ans": 0, "explain": "員工進修補助：試用期間的新進員工不適用。"}, {"id": "s38", "zone": "chest", "quest": "c2", "q": "今年上了一門 1,500 元的電腦課，也拿到結訓證明，可以申請進修補助嗎？", "opts": ["不行，進修費用累計要超過 2,000 元", "可以，按實際費用補助 1,500 元", "可以，固定補助 2,000 元", "可以，補助一半 750 元"], "ans": 0, "explain": "繳交的進修費用累計須超過 2,000 元，且有結訓證明，每人每年最多申請一次、補助 2,000 元。"}, {"id": "s39", "zone": "chest", "quest": "c3", "q": "到職已滿一年，請 2 天特休去花蓮玩，花了 7,000 元，自辦休假旅遊最多補助多少？", "opts": ["6,000 元", "7,000 元", "9,000 元", "3,000 元"], "ans": 0, "explain": "須請特休自辦或參加旅遊，每天最高補助 3,000 元（檢據報銷），每年合計以 3 天、9,000 元為限。"}, {"id": "s40", "zone": "chest", "quest": "c3", "q": "週末沒有請假，自己安排了兩天一夜的旅遊，可以申請自辦休假旅遊補助嗎？", "opts": ["不行，要請特休（或代休假）才有補助", "可以，每天補助 3,000 元", "可以，但只補助一天", "可以，週末旅遊補助加倍"], "ans": 0, "explain": "非特休（或代休假）日的旅遊不在補助範圍。"}, {"id": "s41", "zone": "chest", "quest": "c3", "q": "只請了 4 小時特休去旅遊，可以申請自辦休假旅遊補助嗎？", "opts": ["不行，每次請假不得少於 8 小時", "可以，按比例補助一半", "可以，一樣補助 3,000 元", "可以，但要先經主管同意"], "ans": 0, "explain": "每次請假不得少於 8 小時。"}, {"id": "s42", "zone": "chest", "quest": "c4", "q": "到職 8 個月，想申請公司補助的健康檢查，可以嗎？", "opts": ["還不行，到職滿 1 年後才能申請", "可以，到職後隨時都能申請", "可以，但費用要全部自費", "要等到滿 30 歲才能申請"], "ans": 0, "explain": "新進員工到職滿 1 年後才能申請，須在「健檢預約系統」申請並產生公假卡。"}, {"id": "s43", "zone": "chest", "quest": "c4", "q": "這次健檢費用是 12,000 元，可以給多少公假？", "opts": ["0.5 天", "1 天", "2 天", "不給公假"], "ans": 0, "explain": "當次金額未滿 15,000 元給 0.5 天公假，15,000 元（含）以上給 1 天。"}, {"id": "s44", "zone": "chest", "quest": "c4", "q": "自己找合法的健檢機構做完健檢，要在多久內報銷？", "opts": ["健檢後 1 個月內，檢附收據加會行政部", "當年度 12/31 前送出即可", "健檢後一週內，交給保健室", "不能報銷，只能去特約醫院"], "ans": 0, "explain": "自行找合法健檢機構者，健檢後 1 個月內檢附收據加會行政部報銷。"}, {"id": "s45", "zone": "chest", "quest": "c1", "q": "收到公司發的電子禮券，要怎麼使用？", "opts": ["下載 APP「Edenred」並完成綁定", "到行政部換成紙本的禮券使用", "在線上訂餐系統裡直接折抵餐費", "寄信給福委會，兌換成現金"], "ans": 0, "explain": "電子禮券需下載 APP「Edenred」並完成員工綁定。"}, {"id": "s46", "zone": "temple", "quest": "p1", "q": "主管說部門的智慧存摺年底要達標，這個目標是怎麼算的？", "opts": ["員工點數平均值加部門點數，要達 100 點", "每個人各自都要累積到 100 點", "部門所有人的點數加總達 100 點", "每一季都要達到 100 點"], "ans": 0, "explain": "目標值：部門以所屬員工點數平均值加計部門點數，年度應達 100 點。"}, {"id": "s47", "zone": "village", "quest": "v1", "q": "下面哪一份是報到「前」就要準備好的文件，而不是報到當天才填？", "opts": ["保密承諾書", "定期／不定期契約書", "團體保險資料", "參加社團資料"], "ans": 0, "explain": "報到前要依報到單準備員工登記表、發薪基本資料表、健保申請表、保密承諾書等；契約書、團體保險和社團資料是報到當天填寫。"}, {"id": "s48", "zone": "village", "quest": "v1", "q": "準備員工登記表時，要附上什麼照片？", "opts": ["近半年的 2 吋大頭貼", "近一年的 1 吋大頭貼", "近三個月的生活照", "不用附照片"], "ans": 0, "explain": "員工登記表要附近半年 2 吋大頭貼及人員履歷表。"}, {"id": "s49", "zone": "village", "quest": "v3", "q": "報到當天，下面哪一份是要在公司現場填寫的資料？", "opts": ["定期／不定期契約書", "健保申請表", "勞退提繳申報表", "發薪基本資料表"], "ans": 0, "explain": "報到當天要填寫報到單、定期／不定期契約書、團體保險資料、參加社團資料；健保、勞退、發薪資料表是報到前就要準備好的。"}, {"id": "s50", "zone": "tavern", "quest": "t5", "q": "第一次領薪水，什麼時候入帳、薪資單要去哪裡看？", "opts": ["每月 16 號匯款，薪資單用 Email 寄送", "每月 5 號匯款，薪資單紙本發放", "每月月底匯款，薪資單到內網下載", "每月 16 號匯款，薪資單到行政部領取"], "ans": 0, "explain": "薪資每月 16 號匯款，匯入整月薪資；薪資單以 Email 寄送。"}, {"id": "s51", "zone": "tavern", "quest": "t8", "q": "常常外出，想讓座位分機的來電轉到手機，要怎麼申請？", "opts": ["填 0309002 E-Call 申辦單上傳簽核", "撥 5 請總機幫你把來電轉到手機", "在座位電話按 ＊ ＋ 7 開啟來電轉接", "撥 10011 報修專線請人來設定"], "ans": 0, "explain": "到表單入口網下載 0309002 分機跟隨手機（E-Call）申辦單，填寫後另存 PDF，回到［簽核表單上傳］送出。"}, {"id": "s52", "zone": "tavern", "quest": "t10", "q": "部門同事之間要共用的專案資料，應該放在哪裡？", "opts": ["O 槽", "P 槽", "自己電腦的桌面", "寄 Email 附件給大家"], "ans": 0, "explain": "O 槽是部門內資料共用；P 槽是資料交換，每天 00:00 會自動刪除。"}, {"id": "s53", "zone": "tavern", "quest": "t11", "q": "中午 12:30 想去保健室量血壓，保健室開著嗎？", "opts": ["沒有，中午 12:00–13:00 休息", "有，保健室中午也有醫護人員值班", "有，保健室週一到週五全天開放", "沒有，保健室只在每天上午開放"], "ans": 0, "explain": "保健室位於 2F，服務時間週一至週五 8:00–12:00、13:00–17:00。"}, {"id": "s54", "zone": "tower", "quest": "w4", "q": "想申請公司的 Email 信箱，要去哪裡申請？", "opts": ["內網［員工專區］＞［Email帳號申請］", "表單入口網的印製名片申請單", "撥分機 11014 請資訊人員開通", "到行政部填紙本申請單"], "ans": 0, "explain": "Email 信箱：公司內網＞［員工專區］＞［Email帳號申請］＞［我要申請］，之後可在［我的帳號查詢］追蹤進度。"}, {"id": "s55", "zone": "tower", "quest": "w7", "q": "需要原子筆和筆記本，要怎麼領？", "opts": ["內網［辦公用品及其他］加入領物清單後送簽", "直接到行政部的倉庫自己拿", "填電腦軟硬體申請表一起申請", "請助理先買，再填黏貼憑證報帳"], "ans": 0, "explain": "公司內網＞［表單管理］＞［辦公用品及其他］，把物品加入領物清單後［送出（線上簽核）］。"}, {"id": "s56", "zone": "tower", "quest": "w8", "q": "想申請公司的機車車位，什麼時候辦理？", "opts": ["每年 5～6 月統計並抽籤", "報到當天就能登記", "每季開放一次登記", "隨時找行政部申請就有"], "ans": 0, "explain": "機車／自行車車位每年 5～6 月統計並抽籤，詳細辦法請看公司公告或洽行政部。"}, {"id": "s57", "zone": "chest", "quest": "c1", "q": "下個月要結婚，婚假最小可以請多少時間？", "opts": ["1 小時", "0.5 天", "1 天", "4 小時"], "ans": 0, "explain": "喪假、婚假自 113/9/27 起改以 1 小時為最小請假單位。"}, {"id": "s58", "zone": "chest", "quest": "c1", "q": "公司的大型員工旅遊是怎麼補助的？", "opts": ["上下半年分梯舉辦，每人 6,000 元", "每年辦一次，每人 9,000 元", "自行安排，3 天特休共 9,000 元", "上下半年各一次，每次 3,000 元"], "ans": 0, "explain": "大型員工旅遊上下半年分梯舉辦，每人 6,000 元；自行安排、3 天特休共 9,000 元的是「補助員工休假旅遊」。"}, {"id": "s59", "zone": "temple", "quest": "p1", "q": "想隨時對照自己的智慧存摺點數離 100 點還差多少，可以用網站的什麼功能？", "opts": ["智慧神殿頁面下方的集點卡", "溫暖的家的筆記本", "交誼廳的留言板", "種子商店的每日問答"], "ans": 0, "explain": "神殿頁面下方的集點卡可以記下你目前的點數，隨時對照離 100 點還差多少。"}, {"id": "s60", "zone": "temple", "quest": "p1", "q": "想了解智慧存摺目標值的詳細計算方式，要去哪裡看？", "opts": ["內網的「ISO 品質目標.pdf」", "智慧神殿的集點卡說明", "中興規章入口網的工作規則", "福委會網站的補助辦法"], "ans": 0, "explain": "詳細說明請參考 ISO 品質目標.pdf（需公司內網）。"}];
+SCEN_DEFAULT.push(...[{"id": "s61", "zone": "village", "quest": "v1", "q": "報到前要準備的體格檢查，應該附哪一種報告？", "opts": ["一般新進人員體格檢查報告", "近三年內任何一次的健檢報告", "報到後參加公司健檢就好", "不用準備，到職滿一年再檢查"], "ans": 0, "explain": "報到單所列項目包含「一般新進人員體格檢查報告」，要在報到前準備好。"}, {"id": "s62", "zone": "village", "quest": "v1", "q": "員工登記表除了近半年 2 吋大頭貼，還要附上什麼？", "opts": ["人員履歷表", "主管推薦信", "前公司的薪資證明", "自傳和讀書計畫"], "ans": 0, "explain": "員工登記表要附近半年 2 吋大頭貼及人員履歷表。"}, {"id": "s63", "zone": "village", "quest": "v2", "q": "想開彰化銀行的薪轉帳戶，要去哪裡開戶？", "opts": ["公司隔壁大樓的彰化銀行", "公司一樓，和遠東銀行同一處", "交給行政部統一代為開戶", "一定要回戶籍地的分行開"], "ans": 0, "explain": "遠東銀行在公司一樓，彰化銀行在公司隔壁大樓，直接下去開戶即可。"}, {"id": "s64", "zone": "village", "quest": "v4", "q": "報到第一天上班，需要自己打上班卡嗎？", "opts": ["不用，由行政部協助設定", "要，先向櫃台借白卡刷上班卡", "要，請主管在系統幫你補登", "不用，第一週都不用打卡"], "ans": 0, "explain": "報到第一天的「上班打卡」會由行政部協助設定，無須打卡。"}, {"id": "s65", "zone": "village", "quest": "v4", "q": "臨時員工證大概什麼時候可以領？", "opts": ["1–2 週內，行政部會通知", "報到當天就可以到櫃台直接領取", "試用期滿三個月後才會發給", "自己上內網填單申請後領取"], "ans": 0, "explain": "臨時員工證於報到 1–2 週內，行政部會通知領取。"}, {"id": "s66", "zone": "village", "quest": "v5", "q": "主管讓你先用公用電腦，要用什麼帳號登入？", "opts": ["自己的員編和密碼", "主管的帳號密碼", "公用電腦的共用帳號", "行政部發的臨時帳號"], "ans": 0, "explain": "取得個人帳號（員編）密碼後，用個人帳密登入公用電腦或替代筆電。"}, {"id": "s67", "zone": "village", "quest": "v6", "q": "新人教育訓練一年辦幾次？", "opts": ["每年 4 次，每季辦一次", "每月辦 1 次，隨時可報名", "每年 2 次（1 月、7 月）", "報到當週由部門個別安排"], "ans": 0, "explain": "新人教育訓練每年 3 月、6 月、9 月、12 月辦理，部門行政組會通知上課時間。"}, {"id": "s68", "zone": "village", "quest": "v6", "q": "教育訓練當天的筆試只考了 55 分，接下來會怎樣？", "opts": ["要補修", "要補考", "不用處理", "下一季再考一次就好"], "ans": 0, "explain": "筆試未達 80 分補考，未達 60 分補修。"}, {"id": "s69", "zone": "village", "quest": "v7", "q": "人員履歷送出主管簽核後，之後多久要更新一次？", "opts": ["一年一次", "每季一次", "只有升遷時才更新", "不用再更新"], "ans": 0, "explain": "之後依在中興的工作資歷、新增技能證照等，一年更新一次。"}, {"id": "s70", "zone": "village", "quest": "v7", "q": "人員履歷的「經歷」要寫到哪裡？", "opts": ["包含現在在中興的職位", "只寫進中興以前的工作", "只寫最近的一份工作", "經歷欄留白也可以"], "ans": 0, "explain": "經歷必須包含現在在中興的職位，比照應徵時的履歷。"}, {"id": "s71", "zone": "tavern", "quest": "t1", "q": "公司的電腦卡鐘在哪裡？", "opts": ["1F 正門內西側、B1 入口", "每一層樓的電梯口旁邊各有一台", "只有 1 樓警衛室旁邊有", "各部門辦公室的門口"], "ans": 0, "explain": "電腦卡鐘在 1 樓正門內西側（兩台），以及 B1 入口處左右兩側（各兩台）。"}, {"id": "s72", "zone": "tavern", "quest": "t1", "q": "上午的休息時間是幾點到幾點？", "opts": ["10:00～10:10", "10:30～10:40", "9:50～10:00", "上午沒有休息時間"], "ans": 0, "explain": "休息時間：上午 10:00～10:10、中午 12:00～13:00、下午 15:00～15:10。"}, {"id": "s73", "zone": "tavern", "quest": "t1", "q": "今天 7:30 一進公司就刷卡上班，最早幾點可以下班？", "opts": ["16:30", "16:00", "17:00", "17:30"], "ans": 0, "explain": "以 8 小時計算，加上中午 1 小時午休：7:30 上班，16:30 下班。"}, {"id": "s74", "zone": "tavern", "quest": "t3", "q": "上旬的正常工作卡，最晚要在幾號前完成？", "opts": ["10 號", "5 號", "15 號", "20 號"], "ans": 0, "explain": "正常工作卡每月 10 號（上旬卡）、20 號（中旬卡）、30 號（下旬卡）前完成，逾時未填會記點。"}, {"id": "s75", "zone": "tavern", "quest": "t3", "q": "平常上班日，一天最多可以申請幾小時加班？", "opts": ["4 小時", "2 小時", "6 小時", "8 小時"], "ans": 0, "explain": "加班申請卡：一天最多 4 小時，週六日最多 12 小時，當月最多 46 小時。"}, {"id": "s76", "zone": "tavern", "quest": "t3", "q": "週六來公司加班，一天最多可以申請幾小時？", "opts": ["12 小時", "4 小時", "8 小時", "週六不能加班"], "ans": 0, "explain": "加班申請卡：一天最多 4 小時，週六日最多 12 小時。"}, {"id": "s77", "zone": "tavern", "quest": "t3", "q": "加班只多做了 20 分鐘，加班時數怎麼算？", "opts": ["最少以 0.5 小時計算", "照實際的 20 分鐘計算", "最少以 1 小時計算", "未滿 1 小時不算加班"], "ans": 0, "explain": "自 115/1/1 起，加班最少以 0.5 小時計算。"}, {"id": "s78", "zone": "tavern", "quest": "t3", "q": "週二加班選了「加班補休」，年底前沒休完會怎樣？", "opts": ["折算現金", "直接作廢", "延到明年再休", "自動變成特休"], "ans": 0, "explain": "週一～週六的加班補休，年底前未休完會折算現金。"}, {"id": "s79", "zone": "tavern", "quest": "t3", "q": "主管臨時交辦今晚加班，來不及事先申請，加班卡要怎麼處理？", "opts": ["填寫加班事由，由主管銷點", "不能申報，只能算義務幫忙", "改填請假卡，換成補休", "下週再一起補申請就好"], "ans": 0, "explain": "臨時交辦加班需填寫事由，由主管銷點；加班卡依實際時數隔天務必填寫。"}, {"id": "s80", "zone": "tavern", "quest": "t3", "q": "週日來加班只做了 5 小時，申請補休時還要注意什麼？", "opts": ["差的時數要用特休或補休補足", "照實際 5 小時給補休，不用補", "改領 5 小時的加班費就可以", "不滿 8 小時不能申請補休"], "ans": 0, "explain": "週日只能申請補休，須於 7 日內補休；未工作滿 8 小時者，須以特休假或補休補足。"}, {"id": "s81", "zone": "tavern", "quest": "t5", "q": "每月 16 號匯進薪資帳戶的是什麼？", "opts": ["整月的薪資", "上半個月的薪資", "上個月的加班費", "當月一半的薪資"], "ans": 0, "explain": "每月 16 號匯款，匯入整月薪資；薪資單以 Email 寄送。"}, {"id": "s82", "zone": "tavern", "quest": "t6", "q": "在線上訂好便當後想取消，最晚什麼時候要辦理？", "opts": ["9:50 前", "10:30 前", "中午 12 點前", "訂了就不能取消"], "ans": 0, "explain": "下訂後若要取消，也請於 9:50 前辦理；9:50 是訂餐與取消的共同截止時間。"}, {"id": "s83", "zone": "tavern", "quest": "t6", "q": "線上訂便當的費用怎麼付？", "opts": ["月結，從薪資直接扣除", "取便當時用現金付給店家", "每週五由行政組統一收費", "用電子禮券 Edenred 扣款"], "ans": 0, "explain": "線上訂餐費用月結，從薪資直接扣除。"}, {"id": "s84", "zone": "tavern", "quest": "t6", "q": "自己帶便當放蒸飯箱，蒸飯箱每天幾點啟動？", "opts": ["10:30", "9:50", "11:30", "要自己按開關啟動"], "ans": 0, "explain": "蒸飯箱每天 10:30 會有人啟動，可自行評估放置時間。"}, {"id": "s85", "zone": "tavern", "quest": "t6", "q": "訂便當時，某一款沒有標示剩餘數量，代表什麼？", "opts": ["不限量", "已經賣完了", "今天不供應", "要打電話問店家"], "ans": 0, "explain": "有限量的便當會標示剩餘數量，沒標示代表不限量。"}, {"id": "s86", "zone": "tavern", "quest": "t7", "q": "要用座位電話打給業主公司的市話，該怎麼撥？", "opts": ["先按 9 再撥號碼", "撥 5 請總機幫忙", "直接撥市話號碼", "先按 0 再撥號碼"], "ans": 0, "explain": "外線市話：按 9 ＞ 輸入市話號碼；撥打手機才是撥 5 給總機。"}, {"id": "s87", "zone": "tavern", "quest": "t7", "q": "接到要找隔壁同事的電話，要怎麼轉給他的分機？", "opts": ["按轉接鍵，再輸入分機號碼", "按 ＊＋7 再輸入分機號碼", "撥 5 請總機幫你轉過去", "請對方掛掉後改撥分機"], "ans": 0, "explain": "轉接：按轉接鍵 ＞ 輸入分機號碼。＊＋7 是代接其他座位的電話。"}, {"id": "s88", "zone": "tavern", "quest": "t8", "q": "E-Call 申辦單填好之後，要怎麼送出？", "opts": ["存成 PDF 上傳表單入口網簽核", "印出紙本交給行政部陳湘琳", "寄 Email 給總機請他設定", "撥分機 11388 口頭申請就好"], "ans": 0, "explain": "填好 0309002 申辦單後另存 PDF，回到表單入口網［簽核表單上傳］＞［瀏覽］選擇表單 ＞［新增］。"}, {"id": "s89", "zone": "tavern", "quest": "t9", "q": "用影印機傳真給廠商，輸入傳真號碼前要先輸入什麼？", "opts": ["9", "0", "5", "＊"], "ans": 0, "explain": "傳真：刷員工證 ＞［傳真］＞［直接輸入傳真］＞ 輸入 9 ＞ 輸入傳真號碼 ＞［傳送］。"}, {"id": "s90", "zone": "tavern", "quest": "t9", "q": "在影印機掃描的檔案，會存到哪裡？", "opts": ["園城部的掃描捷徑資料夾", "自動寄到自己的公司 Email", "影印機上插的 USB 隨身碟", "部門的 O 槽"], "ans": 0, "explain": "掃描後按［儲存］，檔案會存在園城部捷徑（Epson\\S20587 資料夾）。"}, {"id": "s91", "zone": "tavern", "quest": "t10", "q": "檔案放到 P 槽之後，誰可以下載？", "opts": ["所有人都能下載", "只有上傳的自己", "只有同部門的同事", "只有自己的主管"], "ans": 0, "explain": "P 槽是資料交換用，上傳後所有人都能下載；每日 00:00 自動刪除。"}, {"id": "s92", "zone": "tavern", "quest": "t11", "q": "保健室在哪裡？", "opts": ["2F 星巴克旁", "1F 櫃台後方", "B1 停車場旁", "5F 電梯口旁"], "ans": 0, "explain": "保健室位於公司 2F（星巴克旁，與福委會同辦公室）。"}, {"id": "s93", "zone": "tavern", "quest": "t11", "q": "下午 5 點半想去保健室做健康諮詢，還開著嗎？", "opts": ["沒有，服務到 17:00", "有，開到 18:00 才休息", "有，開到 17:30", "有，全天都有人"], "ans": 0, "explain": "保健室服務時間：週一至週五 8:00–12:00、13:00–17:00。"}, {"id": "s94", "zone": "tavern", "quest": "t12", "q": "要申請 OTP 一次性密碼，要去哪裡申請驗證碼？", "opts": ["內部網站首頁右側［申請驗證碼］", "寄 Email 給資訊人員幫忙開通", "到行政部櫃台填紙本申請單", "在中興行動 APP 的設定裡申請"], "ans": 0, "explain": "手機安裝 Google Authenticator 後，到內部網站首頁右側＞申請驗證碼完成申請。"}, {"id": "s95", "zone": "tower", "quest": "w1", "q": "出差去高雄，差務結束後多久內要報銷旅費？", "opts": ["一週內", "一個月內", "當月底前", "年底前"], "ans": 0, "explain": "出差前填出差申請及報告單；差務結束一週內按規定報銷旅費。", "yr": true}, {"id": "s96", "zone": "tower", "quest": "w1", "q": "一般員工出差到台南，平日住宿費每天上限多少（含稅）？", "opts": ["3,500 元", "3,000 元", "4,500 元", "2,500 元"], "ans": 0, "explain": "一般員工住宿費每日上限（含稅）：平日 3,500 元、假日 4,500 元，需檢據。", "yr": true}, {"id": "s97", "zone": "tower", "quest": "w1", "q": "出差住在週五晚上，隔天週六放假，住宿費上限用哪一種？", "opts": ["假日 4,500 元", "平日 3,500 元", "按實報支", "不能報住宿費"], "ans": 0, "explain": "假日指放假日，包含放假日前一天（不含放假日最後一天），所以週五晚上適用假日上限。", "yr": true}, {"id": "s98", "zone": "tower", "quest": "w1", "q": "出差到台中當天來回，可以報住宿費嗎？", "opts": ["不行", "可以，平日 3,500 元", "可以，但只能報一半", "主管同意就可以"], "ans": 0, "explain": "當天來回、返回原工作地當日、或出差地點有供住宿者，不得報支住宿費。"}, {"id": "s99", "zone": "tower", "quest": "w1", "q": "以出差方式去高雄參加國內培訓課程，可以報哪些費用？", "opts": ["只有交通費和住宿費", "交通、住宿和膳雜費", "只有膳雜費", "都不能報"], "ans": 0, "explain": "以出差方式參加國內培訓者，只支給交通費及住宿費。"}, {"id": "s100", "zone": "tower", "quest": "w1", "q": "出差到嘉義需要搭計程車，報支時的原則是什麼？", "opts": ["以共乘為原則，走最直接行程", "只能搭 Uber 等多元計程車", "出差一律不能報計程車費", "可以選最舒適的大型車種"], "ans": 0, "explain": "以大眾運輸優先；需搭計程車以共乘為原則，皆以最直接行程計給。"}, {"id": "s101", "zone": "tower", "quest": "w2", "q": "公出搭北北基桃捷運或公車，可以向誰取用部門的 TPASS 月票？", "opts": ["部門行政組", "行政部櫃台", "財會部出納", "福委會"], "ans": 0, "explain": "搭乘北北基桃捷運、台鐵、公車等，可向部門行政組黃秀容（#04339）取用部門已加值的 TPASS 通勤月票。"}, {"id": "s102", "zone": "tower", "quest": "w2", "q": "去台北開會，因為工作需要無法當天回來，要怎麼辦？", "opts": ["改以出差申報", "只能自費住宿", "改請特休就好", "隔天再補請公假"], "ans": 0, "explain": "公出因工作需要無法當日返回者，可改以出差申報。"}, {"id": "s103", "zone": "tower", "quest": "w2", "q": "「員工出差申請及報告單」和「交通費報銷單」現在怎麼填？", "opts": ["用電子表單填寫", "印紙本親筆簽名", "寄 Email 給行政組", "到行政部領紙本表單"], "ans": 0, "explain": "自 114/11/1 起，這兩張單改用電子表單，教學影片在 eLearning。"}, {"id": "s104", "zone": "tower", "quest": "w3", "q": "搭計程車有拿到司機的收據，報銷時要怎麼做？", "opts": ["在收據寫起訖地，簽章後報銷", "還要另外填一張交通費報銷單", "收據直接交給行政組就好", "要附上刷卡的信用卡帳單"], "ans": 0, "explain": "有司機或車行收據：在單據上寫明起訖地，經搭乘人、部門主管等簽章後即可報銷，不必再填交通費報銷單。"}, {"id": "s105", "zone": "tower", "quest": "w3", "q": "因公搭計程車，但沒有拿收據，還能報銷嗎？", "opts": ["可以，改填交通費報銷單", "不行，一定要有收據", "可以，口頭告知主管", "可以，打電話給車行即可"], "ans": 0, "explain": "沒有收據：依原規定填寫「交通費報銷單」，按核定層級簽准後報銷。"}, {"id": "s106", "zone": "tower", "quest": "w4", "q": "公司 Email 申請送出後，要怎麼追蹤進度？", "opts": ["在［我的帳號查詢］查看", "打分機 11014 問資訊人員", "等行政部寄 Email 通知", "到表單入口網查詢"], "ans": 0, "explain": "Email 帳號申請送出後，可在［我的帳號查詢］追蹤進度。"}, {"id": "s107", "zone": "tower", "quest": "w4", "q": "要印名片，要用哪一張申請單？", "opts": ["0399001 印製名片申請單", "EF07102 電腦軟硬體申請表", "0309002 E-Call 申辦單", "Email 帳號申請表"], "ans": 0, "explain": "名片：表單入口網＞［0399001 印製名片申請單］，下載填寫後另存 PDF 上傳簽核。"}, {"id": "s108", "zone": "tower", "quest": "w5", "q": "填電腦軟硬體申請表時，線上表單一開始要先輸入什麼？", "opts": ["計畫編號", "主管員編", "設備編號", "分機號碼"], "ans": 0, "explain": "EF07102 電腦軟硬體申請表：輸入計畫編號 ＞ 線上填寫 ＞［登錄取號］＞ 填寫申請事由 ＞ 送出。"}, {"id": "s109", "zone": "tower", "quest": "w5", "q": "申請電腦前，想先知道公司有哪些規格可以選，可以查什麼？", "opts": ["電腦軟硬體標準規格", "Sinotech 軟體登錄", "資訊設備報修", "辦公用品及其他"], "ans": 0, "explain": "申請前可先查員工專區的「電腦軟硬體標準規格」。"}, {"id": "s110", "zone": "tower", "quest": "w6", "q": "填資訊設備報修單時，要填哪些資料？", "opts": ["員編、設備編號、電話和類別", "只填員工姓名和分機就好", "主管簽名和專案計畫編號", "電腦當初的購買日期和發票號碼"], "ans": 0, "explain": "資訊設備報修要填寫員工編號、設備編號、連絡電話、報修類別。"}, {"id": "s111", "zone": "tower", "quest": "w7", "q": "需要的辦公用品加入領物清單後，下一步要做什麼？", "opts": ["查看領物清單後送出線上簽核", "列印領物清單交給行政部蓋章", "直接去倉庫自己拿", "寄 Email 給總務"], "ans": 0, "explain": "辦公用品及其他：加入領物清單 ＞［查看領物清單］＞［送出（線上簽核）］。"}, {"id": "s112", "zone": "tower", "quest": "w9", "q": "廁所的水龍頭一直漏水，要找誰處理？", "opts": ["撥 24 小時專線 10011", "到［資訊設備報修］填單", "撥分機 11014 找資訊人員", "跟福委會反映"], "ans": 0, "explain": "水電、空調、電話及清潔等報修，請撥 24 小時直撥專線 10011。"}, {"id": "s113", "zone": "tower", "quest": "w9", "q": "座位的電話壞了沒有聲音，要撥哪支專線報修？", "opts": ["10011", "11014", "11388", "9"], "ans": 0, "explain": "電話故障和水電、空調、清潔一樣，撥 24 小時直撥專線 10011；11014 是資訊設備。"}, {"id": "s114", "zone": "chest", "quest": "c1", "q": "春節禮金是多少？", "opts": ["10,000 元", "6,000 元", "8,000 元", "12,000 元"], "ans": 0, "explain": "春節禮金 10,000；端午禮金 6,000＋禮券 1,000；中秋禮金 6,000＋禮盒＋禮券 1,500。", "yr": true}, {"id": "s115", "zone": "chest", "quest": "c1", "q": "端午節會收到什麼？", "opts": ["禮金 6,000 元＋禮券 1,000 元", "禮金 10,000 元＋禮券 1,000 元", "禮金 6,000 元＋禮盒＋禮券", "只有禮券 1,500 元"], "ans": 0, "explain": "端午：禮金 6,000＋禮券 1,000。", "yr": true}, {"id": "s116", "zone": "chest", "quest": "c1", "q": "買書、看展覽的圖書雜誌展覽購書補助，每人多少？", "opts": ["500 元", "1,000 元", "2,000 元", "沒有補助"], "ans": 0, "explain": "福利包含圖書雜誌展覽購書補助（每人 500 元）。", "yr": true}, {"id": "s117", "zone": "chest", "quest": "c1", "q": "家裡有喪事要請喪假，最小可以請多少時間？", "opts": ["1 小時", "0.5 天", "1 天", "3 天"], "ans": 0, "explain": "喪假、婚假自 113/9/27 起改以 1 小時為最小請假單位。"}, {"id": "s118", "zone": "chest", "quest": "c1", "q": "每季的慶生會有什麼？", "opts": ["壽星抽獎和生日禮券", "生日禮金 6,000 元", "多放一天生日假", "部門聚餐補助"], "ans": 0, "explain": "每季慶生會有壽星抽獎及生日禮券。"}, {"id": "s119", "zone": "chest", "quest": "c2", "q": "員工進修補助，每人每年可以申請幾次？", "opts": ["1 次", "2 次", "每季 1 次", "不限次數"], "ans": 0, "explain": "每人每年最多申請一次，補助 2,000 元；當年度未申請不予保留。"}, {"id": "s120", "zone": "chest", "quest": "c2", "q": "員工進修補助的收據，統一編號要寫哪一個？", "opts": ["73987784", "84124259", "27698388", "不用寫統編"], "ans": 0, "explain": "進修補助單據抬頭是職工福利委員會，統一編號 73987784（84124259 是公司的統編）。"}, {"id": "s121", "zone": "chest", "quest": "c2", "q": "員工進修補助的收據和結訓證明，要送到哪裡審核？", "opts": ["福委會", "行政部", "財會部", "部門主管"], "ans": 0, "explain": "檢附員工本人報名費收據、結訓證明送福委會審核後發給。"}, {"id": "s122", "zone": "chest", "quest": "c3", "q": "今年的自辦休假旅遊補助沒用完，可以留到明年嗎？", "opts": ["不行，不得跨年累計", "可以，留到明年 3 月", "可以，最多留 1 天", "可以換成現金"], "ans": 0, "explain": "每年合計以 3 天為限，不得跨年累計；以 1/1～12/31 為一個年度，逾時視同棄權。"}, {"id": "s123", "zone": "chest", "quest": "c3", "q": "自辦休假旅遊補助的單據要怎麼處理？", "opts": ["貼在黏貼憑證用紙上", "拍照上傳表單入口網就好", "直接交給福委會審核", "寄 Email 給行政部"], "ans": 0, "explain": "單據請貼在「黏貼憑證用紙」上以利核銷。"}, {"id": "s124", "zone": "chest", "quest": "c3", "q": "今年 7 月才報到的新人，自辦休假旅遊補助怎麼算？", "opts": ["依比例核算", "一樣全額 9,000 元", "今年不能申請", "只能申請 1 天"], "ans": 0, "explain": "新進人員（或留職停薪者）依比例核算實際補助金額。", "yr": true}, {"id": "s125", "zone": "chest", "quest": "c4", "q": "28 歲的同事，公司補助的健檢多久可以做一次？", "opts": ["2 年 1 次", "1 年 1 次", "3 年 1 次", "只有到職時一次"], "ans": 0, "explain": "未滿 30 歲：一級，2 年 1 次，補助 7,500 元。"}, {"id": "s126", "zone": "chest", "quest": "c4", "q": "45 歲的同事，健檢補助上限是多少？", "opts": ["15,000 元", "7,500 元", "18,000 元", "10,000 元"], "ans": 0, "explain": "40–59 歲：二級，1 年 1 次，補助 15,000 元。", "yr": true}, {"id": "s127", "zone": "chest", "quest": "c4", "q": "這次健檢費用剛好 15,000 元（含自費），可以給多少公假？", "opts": ["1 天", "0.5 天", "2 天", "不給公假"], "ans": 0, "explain": "公假：當次金額未滿 15,000 元給 0.5 天，15,000 元（含）以上給 1 天（均含自費金額）。", "yr": true}, {"id": "s128", "zone": "chest", "quest": "c4", "q": "健檢想帶配偶一起去，可以嗎？", "opts": ["可以，超過補助上限要自付", "不行，只限員工本人參加", "可以，配偶費用公司全額補助", "可以，但要請特休陪同"], "ans": 0, "explain": "可攜配偶參加；超過補助上限須自行負擔。"}, {"id": "s129", "zone": "chest", "quest": "c4", "q": "公司補助的健檢費用，對個人有什麼影響？", "opts": ["會納入個人年度所得", "完全免稅，不用申報", "公司會代扣 10% 稅金", "只有配偶的部分要報稅"], "ans": 0, "explain": "公司補助費用納入個人年度所得。"}, {"id": "s130", "zone": "chest", "quest": "c4", "q": "要申請公司補助的健檢，要到哪裡申請？", "opts": ["員工專區的健檢預約系統", "表單入口網的健檢申請單", "到 2F 保健室填單登記", "自己打電話給特約醫院"], "ans": 0, "explain": "須在「健檢預約系統」申請並產生公假卡；可查詢特約醫院與檢查項目。"}, {"id": "s131", "zone": "temple", "quest": "p1", "q": "部門的智慧存摺，年度要達到幾點？", "opts": ["100 點", "50 點", "200 點", "沒有目標"], "ans": 0, "explain": "部門以所屬員工點數平均值加計部門點數，年度應達 100 點。"}, {"id": "s132", "zone": "temple", "quest": "p1", "q": "計算部門智慧存摺目標時，員工點數平均值還要加上什麼？", "opts": ["部門點數", "主管點數", "加班時數", "新人點數"], "ans": 0, "explain": "目標值：部門以所屬員工點數平均值加計部門點數，年度應達 100 點。"}]);   // 2026/11/2 新增的情境題
+["s31","s38","s39","s43","s58"].forEach(id=>{ const x=SCEN_DEFAULT.find(v=>v.id===id); if(x) x.yr=true; });   // 金額規定：每年確認一次
 const QUIZ_DEFAULT={v:1,scen:{},off:["q925r5l", "quypfzt", "q1czdq6t", "q1dlbeye", "q1e5svrg", "q1jzzl9n", "q1g660lm", "q1guwc28", "q1hgtj8x", "q1ja7j2r", "q30umr", "q1ozvpf7", "qh4s2xz", "q8gk4u2", "qlyuykl", "q1fzqezp", "q16jh7r9", "qz34uh1", "qap3ggk", "q5umxjo", "q16at0k4", "qw88q5w", "q1fbuwyk", "q1jy3j3j", "qnopsfk", "q1ia487k", "q1lk7134", "quz7lu0", "qc4164a", "q1bovqp", "q1xo42b6", "q1f6n6ep", "q3l2gmo", "qvn0egn", "q7pg9ti", "qataj4l", "q1jy50r8", "q1dfptjv", "qc6b0re", "q19oljj6", "q159y0gz", "qstyedl", "q1w36s05", "qtnviga", "q1m866zm", "q1gozwli", "q6o6o4l", "qoa1pxg", "q10wt38h", "q1h0trb4", "qh2a40z", "q1uzrd8i", "qhce82u", "qu5ygav", "qjhzzdf", "q1x9f2jv", "q1141x64", "q1wudgkf", "q15qcnoa"],types:{"數字題":false},wrong:{"qq3xcqr": ["基準值", "門檻值", "達成率"], "qn38n4h": ["1.5天", "2天", "3天"]}};   // 2026/10/12 題庫檢查的結果
 const quizCfg=()=>(FEED&&FEED.quiz&&FEED.quiz.v)?FEED.quiz:QUIZ_DEFAULT;
 const qzKey=(kind,qid,stem,ans)=>"q"+hashStr(kind+"|"+qid+"|"+stem+"|"+ans);
@@ -11251,81 +11258,20 @@ function buildScenQuiz(x,r){
   const order=shuffleR(x.opts.map((o,i)=>i),r), opts=order.map(i=>String(x.opts[i]));
   return {kind:"情境題",text:`情境題：\n${x.q}`,opts,ans:order.indexOf(+x.ans),quest:QIDS.has(x.quest)?x.quest:"",explain:x.explain||"",key:scenKey(x)};
 }
-function qzOn(key,kind,cfg){ cfg=cfg||quizCfg(); if(cfg.types&&cfg.types[kind]===false) return false; return !(cfg.off||[]).includes(key); }
-function qzWrong(key,cfg){ cfg=cfg||quizCfg(); const w=cfg.wrong&&cfg.wrong[key]; return Array.isArray(w)&&w.length>=3?w.slice(0,3).map(String):null; }
-const qzNumAns=tok=>String(tok).replace(/(\d)\s+(?=[^\d\s:～~\-–至到])/g,"$1");
-const numsIn=x=>(String(x).match(/\d[\d,]*(?:\.\d+)?/g)||[]).map(v=>parseFloat(v.replace(/,/g,"")));
-function quizCands(z,ALLQ){                             // 這個地點所有可能出的數字題
-  const qs=ALLQ.filter(q=>q.zone&&q.zone.id===z.id);
-  const numC=[], zoneNumToks=[];
-  qs.forEach(q=>{ questSentences(q).forEach(t=>{
-    numTokens(t).forEach(c=>{ zoneNumToks.push(c);
-      if(t.indexOf(c.tok)===t.lastIndexOf(c.tok)&&t.replace(c.tok,"").replace(/\s/g,"").length>=8){
-        const stem=t.slice(0,c.s)+"＿＿＿＿"+t.slice(c.e), ans=qzNumAns(c.tok);
-        numC.push(Object.assign({q,t,stem,ans,key:qzKey("數字題",q.id,stem,ans)},c)); } });
-  }); });
-  return {qs,numC,zoneNumToks};
-}
-function buildNumQuiz(c,r,zoneNumToks,cfg){
-  const unit=unitOf(c.tok), ansTxt=c.ans, ansK=optKey(ansTxt), tK=optKey(c.t);
-  let wrong=qzWrong(c.key,cfg);
-  if(!wrong){
-    const okTime=x=>!/\d{1,2}:\d{2}/.test(x)||(x.match(/\d{1,2}:\d{2}/g)||[]).every(h=>{ const v=toMin(h); return v>=360&&v<=1320; });
-    const val=x=>parseFloat(String(x).replace(/,/g,"")), v0=val(c.tok);
-    const okUnit=x=>{ const v=val(x); if(!(v>0)&&v!==0) return true;
-      if(unit==="月"&&!/個月/.test(x)) return v>=1&&v<=12&&Number.isInteger(v);
-      if(unit==="歲") return v>=18&&v<=70;
-      if(c.kind==="unit"&&Number.isInteger(v0)&&v0>=10&&v0%5===0) return v%5===0;   // 整數答案配整數選項
-      return true; };
-    const ansN=numsIn(c.tok), ansInt=ansN.every(Number.isInteger);
-    const okNums=x=>{                                    // 不出現 0.75 小時、22.5 歲、1–1 週、5～1 月這類不合理的選項
-      if(c.kind==="timerange"){ const h=(String(x).match(/\d{1,2}:\d{2}/g)||[]).map(toMin); return h.length<2||h[0]<h[1]; }
-      if(c.kind==="time"||c.kind==="date"||c.kind==="ext") return true;
-      const v=numsIn(x); if(!v.length) return false;
-      if(!v.every(n=>Number.isInteger(n)||(Number.isInteger(n*2)&&n<3&&(!ansInt||unit==="小時")))) return false;   // 只接受整數，或 3 以下的 .5
-      if(v.length>=2&&!(v[0]<v[1])) return false;
-      if(unit==="月"&&!/個月/.test(c.tok)&&!v.every(n=>n>=1&&n<=12)) return false;
-      return true; };
-    const sane=x=>okTime(x)&&okUnit(x)&&okNums(x);
-    let pool=shuffleR([...new Set(zoneNumToks.filter(x=>x.kind===c.kind&&optKey(x.tok)!==ansK&&unitOf(x.tok)===unit&&(!/個月/.test(c.tok)===!/個月/.test(x.tok))).map(x=>qzNumAns(x.tok)))],r);
-    wrong=pool.concat(shuffleR(fakeNum(c,r),r)).map(qzNumAns).filter((x,i,a)=>a.findIndex(y=>optKey(y)===optKey(x))===i&&optKey(x)!==ansK&&!tK.includes(optKey(x))&&sane(x)).slice(0,3);
-    if(wrong.length<3) return null;
-  }
-  const opts=shuffleR([ansTxt].concat(wrong),r);
-  return {kind:"數字題",text:`根據「${c.q.title}」：\n${c.stem}`,opts,ans:opts.indexOf(ansTxt),quest:c.q.id,explain:c.t,key:c.key};
-}
-function makeNpcQuizV2(n,today,ZONES,ALLQ,cfg){          // 數字題
-  cfg=cfg||quizCfg();
-  const r=seededRand(n.id+"|"+today+"|"+(n.zone||""));
-  const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
-  const {qs,numC,zoneNumToks}=quizCands(z,ALLQ); if(!qs.length) return null;
-  for(const c of shuffleR(numC.filter(c=>qzOn(c.key,"數字題",cfg)),r)){ const q=buildNumQuiz(c,r,zoneNumToks,cfg); if(q) return q; }
-  return null;
-}
+function qzOn(key,kind,cfg){ cfg=cfg||quizCfg(); return !(cfg.off||[]).includes(key); }
 function makeNpcQuiz(n){
   const today=npcToday(), r=seededRand(n.id+"|"+today+"|"+(n.zone||"")+"|mix");
   const z=ZONES.find(x=>x.id===n.zone); if(!z) return null;
   const cfg=quizCfg();
-  const num=()=>makeNpcQuizV2(n,today,ZONES,ALLQ,cfg);
   const scs=scenList(cfg).filter(x=>x.zone===z.id&&qzOn(scenKey(x),"情境題",cfg));
-  const sc=()=>scs.length?buildScenQuiz(scs[Math.floor(r()*scs.length)],r):null;
-  const seq=r()<.5?[sc,num]:[num,sc];                     // 抽到的題型被停用或出不了題，就換另一種
-  for(const f of seq){ const q=f(); if(quizOK(q)&&q.ans>=0) return q; }
-  return null;
+  if(!scs.length) return null;
+  r();
+  const q=buildScenQuiz(scs[Math.floor(r()*scs.length)],r);
+  return quizOK(q)&&q.ans>=0?q:null;
 }
-function quizBank(cfg){                                 // 管理者「題庫」分頁：列出目前任務內容會出的每一題
+function quizBank(cfg){                                 // 管理者「題庫」分頁：所有情境題
   cfg=cfg||quizCfg();
-  const out=[];
-  ZONES.forEach(z=>{
-    const {qs,numC,zoneNumToks}=quizCands(z,ALLQ); if(!qs.length) return;
-    const rows=[];
-    numC.forEach(c=>{ const smp=buildNumQuiz(c,seededRand(c.key),zoneNumToks,cfg); rows.push({key:c.key,kind:"數字題",q:c.q,stem:c.stem,ans:c.ans,opts:smp&&smp.opts,backup:false}); });
-    scenList(cfg).filter(x=>x.zone===z.id).forEach(x=>{ const smp=buildScenQuiz(x,seededRand(scenKey(x)));
-      rows.push({key:scenKey(x),kind:"情境題",q:ALLQ.find(q=>q.id===x.quest)||{id:"",title:"（沒有指定任務）"},stem:x.q,ans:String(x.opts[x.ans]),opts:smp.opts,backup:false,scen:x}); });
-    const seen=new Set();
-    rows.forEach(x=>{ if(seen.has(x.key)) return; seen.add(x.key); x.zone=z; out.push(x); });
-  });
-  return out;
+  return scenList(cfg).map(x=>({key:scenKey(x),kind:"情境題",scen:x,zone:ZONES.find(z=>z.id===x.zone),q:ALLQ.find(q=>q.id===x.quest)||null}));
 }
 function giveNpcSeeds(n,mult){
   const got=[];
@@ -11428,155 +11374,252 @@ function renderNpcAdmin(){
 }
 
 
-/* ================= 管理者：題庫 ================= */
-let QB_DRAFT=null, QB_BASE="", QB_BASEOBJ=null, QB_EDIT="";
-const qbClone=c=>({v:1,off:[...new Set((c.off||[]).map(String))],types:Object.assign({},c.types||{}),wrong:JSON.parse(JSON.stringify(c.wrong||{})),scen:JSON.parse(JSON.stringify(c.scen||{}))});
-const qbJSON=c=>JSON.stringify({off:[...c.off].sort(),types:QZ_KINDS.reduce((o,k)=>(o[k]=c.types[k]!==false,o),{}),wrong:Object.keys(c.wrong).sort().reduce((o,k)=>(o[k]=c.wrong[k],o),{}),scen:Object.keys(c.scen||{}).sort().reduce((o,k)=>(o[k]=c.scen[k],o),{})});
+/* ================= 管理者：題庫（只有情境題） ================= */
+let QB_DRAFT=null, QB_BASE="", QB_BASEOBJ=null, QB_FILTER="all", QB_ED=null;
+const QB_OPEN=new Set(), QB_LS="sino22-qb-draft", QB_BUILT_YEAR=2026;
+const qbSortObj=o=>Object.keys(o||{}).sort().reduce((r,k)=>(r[k]=o[k],r),{});
+const qbClone=c=>({v:2,off:[...new Set((c.off||[]).map(String).filter(k=>k.indexOf("s:")===0))],scen:JSON.parse(JSON.stringify(c.scen||{})),qc:JSON.parse(JSON.stringify(c.qc||{}))});
+const qbJSON=c=>JSON.stringify({off:[...c.off].sort(),scen:qbSortObj(c.scen),qc:qbSortObj(c.qc)});
 const qbDirty=()=>!!QB_DRAFT&&qbJSON(QB_DRAFT)!==QB_BASE;
-function openQuizAdmin(){
-  if(!QB_DRAFT||!qbDirty()){ QB_DRAFT=qbClone(quizCfg()); QB_BASEOBJ=qbClone(quizCfg()); QB_BASE=qbJSON(QB_BASEOBJ); }
+function qbSaveLocal(){ try{ if(qbDirty()) localStorage.setItem(QB_LS,JSON.stringify({base:QB_BASE,draft:QB_DRAFT,at:Date.now()})); else localStorage.removeItem(QB_LS); }catch(e){} }
+const qbQuest=id=>id?ALLQ.find(q=>q.id===id)||null:null;
+const qbBodyHash=html=>String(hashStr(htmlLines(html).join("").replace(/\s+/g,"")));
+function qbDefBody(id){ for(const z of DEFAULT_CONTENT) for(const ch of (z.chapters||[])) for(const q of (ch.quests||[])) if(q.id===id) return q.body||""; return null; }
+const qbYear=()=>new Date().getFullYear();
+function qbFlags(x,cfg){                                  // 需要注意的原因
+  cfg=cfg||QB_DRAFT; const f=[], qc=((cfg&&cfg.qc)||{})[x.id]||{};
+  const L=x.opts.map(o=>String(o).length), a=L[+x.ans]||0;
+  if(a>Math.max(...L.filter((v,i)=>i!==+x.ans))) f.push(["long","答案最長"]);
+  const q=qbQuest(x.quest);
+  if(!q) f.push(["noquest","沒有指定任務"]);
+  else{ let base=qc.h||""; if(!base&&x.builtin){ const b=qbDefBody(x.quest); if(b!=null) base=qbBodyHash(b); }
+    if(base&&base!==qbBodyHash(q.body)) f.push(["changed","任務內容改過"]); }
+  if(x.yr&&(+qc.y||QB_BUILT_YEAR)<qbYear()) f.push(["yearly","今年還沒確認"]);
+  return f;
+}
+async function openQuizAdmin(){
+  if(!QB_DRAFT||!qbDirty()){
+    QB_BASEOBJ=qbClone(quizCfg()); QB_BASE=qbJSON(QB_BASEOBJ); QB_DRAFT=qbClone(quizCfg());
+    let st=null; try{ st=JSON.parse(localStorage.getItem(QB_LS)||"null"); }catch(e){}
+    if(st&&st.draft&&qbJSON(qbClone(st.draft))!==QB_BASE){
+      if(st.base===QB_BASE){ QB_DRAFT=qbClone(st.draft); setTimeout(()=>toast("已載入上次還沒發布的題庫草稿"),300); }
+      else if(await uiConfirm(`這台電腦有一份 ${fmtShort(new Date(+st.at||Date.now()))} 還沒發布的題庫草稿，但之後題庫有重新發布過。\n要繼續使用這份草稿嗎？（按「取消」會丟掉草稿）`,"繼續使用草稿")) QB_DRAFT=qbClone(st.draft);
+      else try{ localStorage.removeItem(QB_LS); }catch(e){}
+    }
+  }
   const zs=$("#qbZone"); if(!zs.options.length) zs.innerHTML=`<option value="">全部地點</option>`+ZONES.map(z=>`<option value="${esc(z.id)}">${esc(z.name)}</option>`).join("");
-  const ks=$("#qbKind"); if(!ks.options.length) ks.innerHTML=`<option value="">全部題型</option>`+QZ_KINDS.map(k=>`<option>${k}</option>`).join("");
   renderQuizAdmin();
 }
-function qbRowState(x){
-  const base=QB_BASEOBJ||qbClone(quizCfg());
-  const off=QB_DRAFT.off.includes(x.key), typeOff=QB_DRAFT.types[x.kind]===false;
-  const custom=!!qzWrong(x.key,QB_DRAFT)||!!(x.scen&&(x.scen.edited||!x.scen.builtin));
-  const sid=x.scen&&x.scen.id;
-  const dirty=off!==base.off.includes(x.key)||JSON.stringify(QB_DRAFT.wrong[x.key]||null)!==JSON.stringify(base.wrong[x.key]||null)
-    ||(!!sid&&JSON.stringify((QB_DRAFT.scen||{})[sid]||null)!==JSON.stringify((base.scen||{})[sid]||null));
-  return {off,typeOff,custom,dirty,live:!off&&!typeOff};
+function qbState(x){
+  const B=QB_BASEOBJ, id=x.scen.id, off=QB_DRAFT.off.includes(x.key);
+  const dirty=off!==B.off.includes(x.key)||JSON.stringify(QB_DRAFT.scen[id]||null)!==JSON.stringify(B.scen[id]||null)||JSON.stringify(QB_DRAFT.qc[id]||null)!==JSON.stringify(B.qc[id]||null);
+  return {off,dirty,flags:qbFlags(x.scen)};
+}
+function qbChanges(){
+  const B=QB_BASEOBJ, D=QB_DRAFT, now=scenList(D), was=Object.fromEntries(scenList(B).map(x=>[x.id,x])), out={add:[],edit:[],del:[],off:[],on:[],ok:[]};
+  now.forEach(x=>{ const id=x.id, b=was[id], k=scenKey(x);
+    const se=JSON.stringify(D.scen[id]||null)!==JSON.stringify(B.scen[id]||null);
+    if(!b) out.add.push(x.q); else if(se) out.edit.push(x.q);
+    const o1=B.off.includes(k), o2=D.off.includes(k); if(b&&o1!==o2) (o2?out.off:out.on).push(x.q);
+    if(b&&!se&&JSON.stringify(D.qc[id]||null)!==JSON.stringify(B.qc[id]||null)) out.ok.push(x.q); });
+  Object.keys(was).forEach(id=>{ if(!now.some(x=>x.id===id)) out.del.push(was[id].q); });
+  return out;
+}
+const QB_CHG_NAMES=[["add","新增"],["edit","修改"],["del","刪除"],["off","停用"],["on","重新啟用"],["ok","確認沒問題"]];
+function qbRowHTML(x){
+  const sc=x.scen, st=x.st, id=sc.id;
+  const tag=sc.builtin?(sc.edited?`<span class="qbchip ed">已修改</span>`:`<span class="qbchip bi">內建</span>`):`<span class="qbchip nw">自訂</span>`;
+  const chips=tag+(st.off?`<span class="qbchip of">已停用</span>`:"")+(st.dirty?`<span class="qbchip dr">未發布</span>`:"")
+    +st.flags.map(([k,t])=>`<span class="qbchip wn">⚠ ${t}</span>`).join("")+(sc.yr&&!st.flags.some(f=>f[0]==="yearly")?`<span class="qbchip yr">每年確認</span>`:"");
+  const wrong=sc.opts.filter((o,i)=>i!==+sc.ans).join("／");
+  const conf=st.flags.some(f=>f[0]==="changed"||f[0]==="yearly")?`<button class="mini-btn hot" type="button" data-qbok="${esc(id)}">確認沒問題</button>`:"";
+  return `<div class="qb2row${st.off?" off":""}${st.dirty?" dirty":""}"><div class="qb2main">
+      <p class="qb2q"><span title="錯誤選項：${esc(wrong)}">${esc(sc.q)}</span>${chips}</p><p class="qb2a">✓ ${esc(sc.opts[+sc.ans])}</p></div>
+    <div class="qb2btns">${conf}<button class="mini-btn" type="button" data-qbse="${esc(id)}">編輯</button><button class="mini-btn" type="button" data-qbcopy="${esc(id)}">複製</button><button class="mini-btn" type="button" data-qb${st.off?"on":"off"}="${esc(x.key)}">${st.off?"啟用":"停用"}</button></div></div>`;
 }
 function renderQuizAdmin(){
   if(!QB_DRAFT) return;
-  const bank=quizBank(QB_DRAFT);
-  const fz=$("#qbZone").value, fk=$("#qbKind").value, fs=$("#qbState").value, q=$("#qbSearch").value.trim();
-  const rows=bank.map(x=>Object.assign(x,{st:qbRowState(x)}));
-  const live=rows.filter(x=>x.st.live&&x.opts).length, offN=rows.filter(x=>!x.st.live).length, none=rows.filter(x=>x.st.live&&!x.opts).length;
+  const rows=quizBank(QB_DRAFT).map(x=>Object.assign(x,{st:qbState(x)}));
+  const fz=$("#qbZone").value, kw=$("#qbSearch").value.trim();
+  const live=rows.filter(x=>!x.st.off).length, attn=rows.filter(x=>x.st.flags.length&&!x.st.off), dirtyN=rows.filter(x=>x.st.dirty).length, offN=rows.length-live;
+  const emptyT=ALLQ.filter(q=>q.zone&&!rows.some(x=>x.scen.quest===q.id&&!x.st.off));
   const fb=FEED&&FEED.quiz;
-  $("#qbInfo").innerHTML=`共 <b>${rows.length}</b> 題・會出現 <b>${live}</b> 題・停用 <b>${offN}</b> 題${none?`・選項不足不會出題 ${none} 題`:""}。`
-    +(fb?`目前生效的是 ${esc(fmtShort(new Date(parseSheetTs(fb.ts)||Date.now())))}${fb.by?`（${esc(fb.by)}）`:""}發布的設定。`:"目前使用網站內建的題庫設定（2026/10/14：只出情境題），還沒有發布過。")
-    +(qbDirty()?` <span class="st st-wait">有未發布的變更</span>`:"");
-  const tc=$("#qbTabCount"); if(tc){ tc.hidden=!qbDirty(); tc.textContent="!"; }
-  $("#qbTypes").innerHTML=`<span class="lab">題型開關</span>`+QZ_KINDS.map(k=>`<label class="chk"><input type="checkbox" data-qbtype="${k}"${QB_DRAFT.types[k]===false?"":" checked"}> ${k}（${rows.filter(x=>x.kind===k).length}）</label>`).join("");
-  const show=rows.filter(x=>(!fz||x.zone.id===fz)&&(!fk||x.kind===fk)&&(!q||(x.stem+x.ans+x.q.title).includes(q))
-    &&(fs==="all"||(fs==="on"&&x.st.live)||(fs==="off"&&!x.st.live)||(fs==="custom"&&x.st.custom)||(fs==="none"&&x.st.live&&!x.opts)||(fs==="dirty"&&x.st.dirty)));
+  $("#qbInfo").innerHTML=`共 <b>${rows.length}</b> 題・出題中 <b>${live}</b> 題・停用 <b>${offN}</b> 題。`
+    +(fb?`目前生效的是 ${esc(fmtShort(new Date(parseSheetTs(fb.ts)||Date.now())))}${fb.by?`（${esc(fb.by)}）`:""}發布的設定。`:"目前使用網站內建的題庫，還沒有發布過。");
+  const F=[["all","全部",rows.length],["attn","⚠ 需要注意",attn.length],["dirty","未發布",dirtyN],["off","已停用",offN],["empty","沒有題目的任務",emptyT.length]];
+  $("#qbChips").innerHTML=F.map(([k,n,c])=>`<button type="button" class="qb2chip${QB_FILTER===k?" on":""}" data-qbf="${k}" aria-pressed="${QB_FILTER===k}">${n} <b>${c}</b></button>`).join("");
+  const match=x=>(!fz||x.scen.zone===fz)&&(!kw||(x.scen.q+x.scen.opts.join(" ")+(x.scen.explain||"")+(x.q?x.q.title:"")).includes(kw))
+    &&(QB_FILTER==="all"||(QB_FILTER==="attn"&&x.st.flags.length&&!x.st.off)||(QB_FILTER==="dirty"&&x.st.dirty)||(QB_FILTER==="off"&&x.st.off));
+  const expandAll=QB_FILTER!=="all"||!!kw;
   const out=[];
   ZONES.forEach(z=>{
-    const zr=show.filter(x=>x.zone.id===z.id); if(!zr.length) return;
-    out.push(`<section class="qbzone"><h4>${esc(z.name)}（${zr.length}）</h4>`);
-    const groups=new Map();
-    zr.filter(x=>x.kind==="情境題").forEach(x=>{ if(!groups.has("#情境題")) groups.set("#情境題",[]); groups.get("#情境題").push(x); });
-    zr.filter(x=>x.kind!=="情境題").forEach(x=>{ const g=x.q.id; if(!groups.has(g)) groups.set(g,[]); groups.get(g).push(x); });
-    groups.forEach((list,g)=>{
-      const head=g[0]==="#"?`${g.slice(1)}<span>遇到這種情況該怎麼辦？（${list.length} 題）</span>`:`${esc(list[0].q.title)}<span>${list.length} 題</span>`;
-      out.push(`<div class="qbquest"><p>${head}</p>${list.map(qbRowHTML).join("")}</div>`);
+    if(fz&&z.id!==fz) return;
+    const zr=rows.filter(x=>x.scen.zone===z.id), zlive=zr.filter(x=>!x.st.off).length;
+    const npcs=npcList().filter(n=>n.zone===z.id).map(n=>n.name);
+    const tasks=ALLQ.filter(q=>q.zone&&q.zone.id===z.id).map(q=>({id:q.id,title:q.title}));
+    if(zr.some(x=>!qbQuest(x.scen.quest))) tasks.push({id:"",title:"（沒有指定任務）"});
+    const parts=[];
+    tasks.forEach(t=>{
+      const tr=zr.filter(x=>(t.id?x.scen.quest===t.id:!qbQuest(x.scen.quest))), shown=tr.filter(match), tlive=tr.filter(x=>!x.st.off).length;
+      if(QB_FILTER==="empty"){ if(!t.id||tlive||kw&&!t.title.includes(kw)) return; }
+      else if((expandAll||kw)&&!shown.length) return;
+      const key=z.id+"|"+t.id, open=QB_FILTER==="empty"||expandAll||QB_OPEN.has(key);
+      const warnN=tr.filter(x=>x.st.flags.length&&!x.st.off).length;
+      parts.push(`<div class="qb2task${open?" open":""}"><button type="button" class="qb2th" data-qbtask="${esc(key)}" aria-expanded="${open}"><span>${esc(t.title)}</span><small${tlive?"":' class="zero"'}>${tlive} 題${tr.length>tlive?`（停用 ${tr.length-tlive}）`:""}${warnN?` ・⚠ ${warnN}`:""} ${open?"▾":"▸"}</small></button>
+        ${open?`${(QB_FILTER==="all"&&!kw?tr:shown).map(qbRowHTML).join("")}${t.id&&(QB_FILTER==="all"||QB_FILTER==="empty")&&!kw?`<div class="qb2empty">${tlive?"":"這個任務還沒有情境題　"}<button class="mini-btn" type="button" data-qbnew="${esc(key)}">＋ 為這個任務出題</button></div>`:""}`:""}</div>`);
     });
-    out.push(`</section>`);
+    if(!parts.length) return;
+    const cyc=npcs.length&&zlive?Math.ceil(zlive/npcs.length):0;
+    out.push(`<section class="qb2zone"><h4>${esc(z.name)} <small>${npcs.length?`${esc(npcs.join("、"))}出題`:"目前沒有 NPC 在這裡（只會出在每日問答和轉職試煉）"}・${zlive} 題${cyc?`（每天 ${npcs.length} 題，大約 ${cyc} 天輪一次）`:""}</small>${npcs.length&&zlive<6?`<span class="qbchip wn">⚠ 題目太少，很快就會重複</span>`:""}</h4>${parts.join("")}</section>`);
   });
   $("#qbList").innerHTML=out.join("")||`<p class="ahint">沒有符合條件的題目。</p>`;
+  const dirty=qbDirty(), C=dirty?qbChanges():null;
+  $("#qbBar").hidden=!dirty;
+  if(dirty) $("#qbBarTxt").innerHTML=`未發布的變更：<b>${QB_CHG_NAMES.filter(([k])=>C[k].length).map(([k,n])=>`${n} ${C[k].length}`).join("・")||"設定有調整"}</b>`;
+  const hot=attn.filter(x=>x.st.flags.some(f=>f[0]==="changed"||f[0]==="yearly")).length;   // 分頁上的數字：只算要處理的（任務改過、今年還沒確認）
+  const tc=$("#qbTabCount"); if(tc){ tc.hidden=!dirty&&!hot; tc.textContent=dirty?"!":hot; }
+  qbSaveLocal();
 }
-function qbRowHTML(x){
-  const st=x.st;
-  const stem=x.kind==="情境題"?`${esc(x.stem)}<span class="qbtag${x.scen.builtin?(x.scen.edited?" edit":""):" new"}">${x.scen.builtin?(x.scen.edited?"內建・已修改":"內建"):"自訂"}</span>`
-    :esc(x.stem).replace("＿＿＿＿",'<span class="blank">＿＿＿＿</span>')+`　→ <b>${esc(x.ans)}</b>`;
-  const opts=x.opts?`<ul class="qbopts" aria-label="選項範例">${x.opts.map(o=>`<li class="${o===x.ans?"ans":""}">${esc(o)}${o===x.ans?" ✓":""}</li>`).join("")}</ul>`:"";
-  const notes=[];
-  if(st.typeOff) notes.push("整個題型已停用");
-  if(!x.opts&&!st.typeOff&&!st.off) notes.push("<b>選項不足，目前不會出題</b>（可以自訂選項）");
-  if(st.custom) notes.push("<b>使用自訂選項</b>");
-  if(st.dirty) notes.push("<b>未發布</b>");
-  if(x.kind==="情境題"){ if(x.q.id) notes.unshift(`相關任務：${esc(x.q.title)}`); else notes.unshift("沒有指定相關任務"); }
-  const canEdit=x.kind==="數字題";
-  const scenBtns=x.kind==="情境題"?`<button class="mini-btn" type="button" data-qbse="${esc(x.scen.id)}">編輯</button>${x.scen.builtin?(x.scen.edited?`<button class="mini-btn" type="button" data-qbsereset="${esc(x.scen.id)}">還原預設</button>`:""):`<button class="mini-btn" type="button" data-qbsedel="${esc(x.scen.id)}">刪除</button>`}`:"";
-  const expl=x.kind==="情境題"&&x.scen.explain?`<p class="qbexp">解說：${esc(x.scen.explain)}</p>`:"";
-  const edit=QB_EDIT===x.key?`<div class="qbedit"><input class="ainput" id="qbWrong" value="${esc((QB_DRAFT.wrong[x.key]||[]).join("、"))}" placeholder="3 個錯誤選項，用「、」隔開" aria-label="自訂錯誤選項">
-      <button class="mini-btn" type="button" data-qbsave="${x.key}">套用</button><button class="mini-btn" type="button" data-qbclear="${x.key}">改回自動</button><button class="mini-btn" type="button" data-qbcancel>取消</button><p class="cerr" id="qbErr" role="alert"></p></div>`:"";
-  return `<div class="qbrow${st.live?"":" off"}${st.dirty?" dirty":""}" data-key="${x.key}">
-    <div><span class="qbkind">${x.kind}</span><span class="qbstem">${stem}</span>${opts}${expl}${notes.length?`<p class="qbnote">${notes.join("・")}</p>`:""}</div>
-    <div class="qbside"><div class="qbtoggle" role="group" aria-label="啟用或停用">
-      <button type="button" class="on" data-qbon="${x.key}" aria-pressed="${!st.off}">啟用</button><button type="button" class="off" data-qboff="${x.key}" aria-pressed="${st.off}">停用</button></div>
-      ${canEdit?`<button class="mini-btn" type="button" data-qbedit="${x.key}">自訂選項</button>`:""}${scenBtns}</div>${edit}</div>`;
-}
+$("#qbChips").addEventListener("click",e=>{ const b=e.target.closest("[data-qbf]"); if(!b) return; QB_FILTER=b.dataset.qbf; Sound.sfx("cursor"); renderQuizAdmin(); });
 $("#qbList").addEventListener("click",e=>{
-  const b=e.target.closest("[data-qbon],[data-qboff],[data-qbedit],[data-qbsave],[data-qbclear],[data-qbcancel]"); if(!b||!QB_DRAFT) return;
+  const b=e.target.closest("[data-qbtask],[data-qbnew],[data-qbse],[data-qbcopy],[data-qbon],[data-qboff],[data-qbok]"); if(!b||!QB_DRAFT) return;
+  if(b.dataset.qbtask){ const k=b.dataset.qbtask; if(QB_OPEN.has(k)) QB_OPEN.delete(k); else QB_OPEN.add(k); Sound.sfx("cursor"); renderQuizAdmin(); return; }
+  if(b.dataset.qbnew){ openQbEd("",{sel:b.dataset.qbnew}); return; }
+  if(b.dataset.qbse){ openQbEd(b.dataset.qbse); return; }
+  if(b.dataset.qbcopy){ openQbEd(b.dataset.qbcopy,{copy:true}); return; }
   if(b.dataset.qbon||b.dataset.qboff){ const k=b.dataset.qbon||b.dataset.qboff, off=!!b.dataset.qboff;
-    QB_DRAFT.off=QB_DRAFT.off.filter(x=>x!==k); if(off) QB_DRAFT.off.push(k); Sound.sfx("cursor"); renderQuizAdmin(); return; }
-  if(b.dataset.qbedit){ QB_EDIT=QB_EDIT===b.dataset.qbedit?"":b.dataset.qbedit; renderQuizAdmin(); const i=$("#qbWrong"); if(i) i.focus(); return; }
-  if(b.hasAttribute("data-qbcancel")){ QB_EDIT=""; renderQuizAdmin(); return; }
-  if(b.dataset.qbclear){ delete QB_DRAFT.wrong[b.dataset.qbclear]; QB_EDIT=""; renderQuizAdmin(); return; }
-  if(b.dataset.qbsave){
-    const k=b.dataset.qbsave, x=quizBank(QB_DRAFT).find(r=>r.key===k); if(!x) return;
-    const list=$("#qbWrong").value.split(/[、,，\n]/).map(v=>v.trim()).filter(Boolean);
-    const err=list.length!==3?"請輸入 3 個錯誤選項，用「、」隔開"
-      :new Set(list.map(optKey)).size<3?"3 個選項不能重複"
-      :list.some(v=>optKey(v)===optKey(x.ans))?"錯誤選項不能和正確答案一樣":"";
-    if(err){ $("#qbErr").textContent=err; Sound.sfx("error"); return; }
-    QB_DRAFT.wrong[k]=list; QB_EDIT=""; Sound.sfx("select"); renderQuizAdmin();
-  }
+    QB_DRAFT.off=QB_DRAFT.off.filter(x=>x!==k); if(off) QB_DRAFT.off.push(k); Sound.sfx(off?"undo":"select"); renderQuizAdmin(); return; }
+  if(b.dataset.qbok){ const x=scenList(QB_DRAFT).find(v=>v.id===b.dataset.qbok); if(!x) return; const q=qbQuest(x.quest);
+    QB_DRAFT.qc[x.id]={h:q?qbBodyHash(q.body):"",y:qbYear()}; Sound.sfx("select"); renderQuizAdmin(); toast("已標記為確認沒問題，記得按「發布題庫」"); }
 });
-/* ---- 情境題編輯 ---- */
-let QB_SE_ID="";
-function qbSeQuests(zid,sel){ $("#qbSeQuest").innerHTML=`<option value="">（不指定）</option>`+ALLQ.filter(q=>q.zone&&q.zone.id===zid).map(q=>`<option value="${esc(q.id)}"${q.id===sel?" selected":""}>${esc(q.title)}</option>`).join(""); }
-function openScenEd(id){
-  if(!QB_DRAFT) return;
-  const x=id?scenList(QB_DRAFT).find(v=>v.id===id):null;
-  QB_SE_ID=id||"";
-  $("#qbSeTitle").textContent=x?(x.builtin?"編輯內建情境題":"編輯自訂情境題"):"新增情境題";
-  const zid=x?x.zone:($("#qbZone").value||ZONES[0].id);
-  $("#qbSeZone").innerHTML=ZONES.map(z=>`<option value="${esc(z.id)}"${z.id===zid?" selected":""}>${esc(z.name)}</option>`).join("");
-  qbSeQuests(zid,x?x.quest:"");
-  $("#qbSeQ").value=x?x.q:""; $("#qbSeEx").value=x?(x.explain||""):"";
-  const opts=x?x.opts.slice(0,4):["","","",""]; while(opts.length<4) opts.push("");
-  const ans=x?+x.ans:0;
-  $("#qbSeOpts").innerHTML=opts.map((o,i)=>`<div class="qbseopt"><input type="radio" name="qbSeAns" value="${i}" id="qbSeA${i}"${i===ans?" checked":""} aria-label="選項 ${i+1} 是正確答案"><input class="ainput" id="qbSeO${i}" maxlength="40" value="${esc(o)}" placeholder="${i===ans?"正確答案":"錯誤選項"}" aria-label="選項 ${i+1}"></div>`).join("");
-  $("#qbSeErr").textContent=""; $("#qbScenEd").hidden=false;
-  $("#qbScenEd").scrollIntoView({block:"center",behavior:"smooth"}); setTimeout(()=>$("#qbSeQ").focus({preventScroll:true}),300);
-}
-$("#qbSeZone").addEventListener("change",e=>qbSeQuests(e.target.value,""));
-$("#qbScenEd").addEventListener("input",()=>{ $("#qbSeErr").textContent=""; });
-$("#qbAddScen").addEventListener("click",()=>{ openQuizAdmin(); openScenEd(""); });
-$("#qbSeCancel").addEventListener("click",()=>{ $("#qbScenEd").hidden=true; QB_SE_ID=""; });
-$("#qbSeSave").addEventListener("click",()=>{
-  const q=$("#qbSeQ").value.trim(), ex=$("#qbSeEx").value.trim(), opts=[0,1,2,3].map(i=>$("#qbSeO"+i).value.trim());
-  const ans=+((document.querySelector('input[name="qbSeAns"]:checked')||{}).value||0);
-  const err=!q?"請輸入情境題目":opts.some(o=>!o)?"4 個選項都要填":new Set(opts.map(optKey)).size<4?"選項不能重複":"";
-  if(err){ $("#qbSeErr").textContent=err; Sound.sfx("error"); return; }
-  const obj={zone:$("#qbSeZone").value,quest:$("#qbSeQuest").value,q,opts,ans,explain:ex};
-  QB_DRAFT.scen=QB_DRAFT.scen||{};
-  const isEdit=!!QB_SE_ID, id=QB_SE_ID||("c"+Date.now().toString(36));
-  const def=SCEN_DEFAULT.find(v=>v.id===id);
-  if(def&&JSON.stringify({zone:def.zone,quest:def.quest,q:def.q,opts:def.opts,ans:+def.ans,explain:def.explain})===JSON.stringify(obj)) delete QB_DRAFT.scen[id];
-  else QB_DRAFT.scen[id]=obj;
-  $("#qbScenEd").hidden=true; QB_SE_ID=""; Sound.sfx("select");
-  renderQuizAdmin(); toast(isEdit?"已修改情境題，記得按「發布題庫設定」":"已加入情境題，記得按「發布題庫設定」");
-});
-$("#qbList").addEventListener("click",e=>{
-  const b=e.target.closest("[data-qbse],[data-qbsereset],[data-qbsedel]"); if(!b||!QB_DRAFT) return;
-  if(b.dataset.qbse){ openScenEd(b.dataset.qbse); return; }
-  if(b.dataset.qbsereset){ delete QB_DRAFT.scen[b.dataset.qbsereset]; Sound.sfx("undo"); renderQuizAdmin(); return; }
-  if(b.dataset.qbsedel){ const id=b.dataset.qbsedel; delete QB_DRAFT.scen[id]; QB_DRAFT.off=QB_DRAFT.off.filter(k=>k!=="s:"+id); Sound.sfx("undo"); renderQuizAdmin(); toast("已刪除這題（發布後生效）"); }
-});
-$("#qbList").addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="qbWrong"){ e.preventDefault(); const b=document.querySelector("[data-qbsave]"); if(b) b.click(); } });
-$("#qbTypes").addEventListener("change",e=>{ const k=e.target.dataset.qbtype; if(!k||!QB_DRAFT) return; QB_DRAFT.types[k]=e.target.checked; renderQuizAdmin(); });
-["#qbZone","#qbKind","#qbState"].forEach(id=>$(id).addEventListener("change",renderQuizAdmin));
+$("#qbZone").addEventListener("change",renderQuizAdmin);
 $("#qbSearch").addEventListener("input",renderQuizAdmin);
-$("#qbRevert").addEventListener("click",()=>{ QB_DRAFT=null; QB_EDIT=""; openQuizAdmin(); toast("已還原成目前生效的題庫設定"); });
+$("#qbAddScen").addEventListener("click",async()=>{ await openQuizAdmin(); openQbEd(""); });
+$("#qbRevert").addEventListener("click",async()=>{
+  if(!(await uiConfirm("要丟掉所有還沒發布的變更，回到目前生效的題庫嗎？","還原"))) return;
+  QB_DRAFT=qbClone(QB_BASEOBJ); try{ localStorage.removeItem(QB_LS); }catch(e){} renderQuizAdmin(); toast("已還原成目前生效的題庫");
+});
+$("#qbDiff").addEventListener("click",()=>{
+  const C=qbChanges(), cut=t=>t.length>34?t.slice(0,34)+"…":t;
+  const txt=QB_CHG_NAMES.filter(([k])=>C[k].length).map(([k,n])=>`【${n} ${C[k].length} 題】\n`+C[k].slice(0,12).map(t=>"・"+cut(t)).join("\n")+(C[k].length>12?`\n…還有 ${C[k].length-12} 題`:"")).join("\n\n");
+  uiAlert(txt||"沒有還沒發布的變更");
+});
 $("#qbPublish").addEventListener("click",async()=>{
   if(!QB_DRAFT) return;
   if(!qbDirty()&&FEED&&FEED.quiz){ toast("沒有需要發布的變更"); return; }
-  const bank=quizBank(QB_DRAFT), keys=new Set(bank.map(x=>x.key));
-  const data={v:1,off:QB_DRAFT.off.filter(k=>keys.has(k)),types:QZ_KINDS.reduce((o,k)=>(o[k]=QB_DRAFT.types[k]!==false,o),{}),
-    wrong:Object.keys(QB_DRAFT.wrong).filter(k=>keys.has(k)).reduce((o,k)=>(o[k]=QB_DRAFT.wrong[k],o),{}),scen:JSON.parse(JSON.stringify(QB_DRAFT.scen||{}))};
-  const live=bank.filter(x=>qzOn(x.key,x.kind,data)&&x.opts).length;
-  if(!(await uiConfirm(`發布後約 1–5 分鐘生效：會出現 ${live} 題、停用 ${bank.length-live} 題。確定發布嗎？`,"發布"))) return;
+  const all=scenList(QB_DRAFT), ids=new Set(all.map(x=>x.id)), keys=new Set(all.map(scenKey));
+  const data={v:2,off:QB_DRAFT.off.filter(k=>keys.has(k)),scen:JSON.parse(JSON.stringify(QB_DRAFT.scen||{})),
+    qc:Object.keys(QB_DRAFT.qc||{}).filter(id=>ids.has(id)).reduce((o,id)=>(o[id]=QB_DRAFT.qc[id],o),{}),types:{"情境題":true,"數字題":false}};   // types：舊版網頁也只出情境題
+  const live=all.filter(x=>!data.off.includes(scenKey(x))).length, C=qbChanges();
+  const sum=QB_CHG_NAMES.filter(([k])=>C[k].length).map(([k,n])=>`${n} ${C[k].length} 題`).join("、");
+  if(!(await uiConfirm(`發布後約 1–5 分鐘生效。\n${sum?`這次的變更：${sum}\n`:""}發布後會出題 ${live} 題、停用 ${all.length-live} 題。確定發布嗎？`,"發布"))) return;
   const id="QZ-"+Date.now().toString(36).toUpperCase();
   const payload=await packPayload(data,true);
   if(payload.length>38000){ await uiAlert("題庫設定太大（多半是自訂情境題太多），請刪掉一些自訂情境題再發布。"); return; }
   const ok=await adminSend("quiz",id,payload,"題庫設定",null);
-  if(ok){ QB_BASEOBJ=qbClone(data); QB_BASE=qbJSON(QB_BASEOBJ); renderQuizAdmin(); }
+  if(ok){ QB_BASEOBJ=qbClone(data); QB_BASE=qbJSON(QB_BASEOBJ); try{ localStorage.removeItem(QB_LS); }catch(e){} renderQuizAdmin(); }
 });
+/* ---- 情境題編輯視窗 ---- */
+function qbQuestOpts(sel){
+  return ZONES.map(z=>`<optgroup label="${esc(z.name)}">`+ALLQ.filter(q=>q.zone&&q.zone.id===z.id).map(q=>`<option value="${esc(z.id+"|"+q.id)}"${sel===z.id+"|"+q.id?" selected":""}>${esc(q.title)}</option>`).join("")
+    +`<option value="${esc(z.id+"|")}"${sel===z.id+"|"?" selected":""}>（${esc(z.name)}・不指定任務）</option></optgroup>`).join("");
+}
+const qbReorder=o=>{ const a=+o.ans||0, L=(o.opts||[]).map(String); return Object.assign({},o,{opts:[L[a]].concat(L.filter((_,i)=>i!==a)),ans:0}); };
+const qbNorm=o=>JSON.stringify({zone:o.zone,quest:o.quest||"",q:o.q,opts:o.opts.map(String),ans:+o.ans||0,explain:o.explain||"",yr:!!o.yr});
+function qbEdVals(){ const [zone,quest]=String($("#qbdQuest").value||"").split("|");
+  return {zone,quest:quest||"",q:$("#qbdQ").value.trim(),opts:[0,1,2,3].map(i=>$("#qbdO"+i).value.trim()),ans:0,explain:$("#qbdEx").value.trim(),yr:$("#qbdYr").checked}; }
+function qbBigrams(t){ t=String(t).replace(/[\s，。？！、：；「」（）()?!,.~～]/g,""); const o=new Set(); for(let i=0;i<t.length-1;i++) o.add(t.slice(i,i+2)); return o; }
+function qbSimilar(q,selfId){
+  const a=qbBigrams(q); if(a.size<4) return null; let best=null, bs=0;
+  scenList(QB_DRAFT).forEach(x=>{ if(x.id===selfId) return; const b=qbBigrams(x.q); if(!b.size) return; let n=0; a.forEach(g=>{ if(b.has(g)) n++; }); const sc=n/Math.min(a.size,b.size); if(sc>bs){ bs=sc; best=x; } });
+  return bs>=.6?best:null;
+}
+function qbEdChecks(v){
+  const err=[], warn=[], ok=[];
+  if(!v.q) err.push("請輸入情境題目");
+  if(v.opts.some(o=>!o)) err.push("正確答案和 3 個錯誤選項都要填");
+  else if(new Set(v.opts.map(optKey)).size<4) err.push("選項不能重複");
+  else{ ok.push("4 個選項沒有重複");
+    const L=v.opts.map(o=>o.length); if(L[0]>Math.max(L[1],L[2],L[3])) warn.push(`正確答案（${L[0]} 字）比錯誤選項都長，容易被猜中；建議把錯誤選項寫得差不多長`); else ok.push("正確答案不是最長的選項，不容易被猜中"); }
+  const q=qbQuest(v.quest);
+  if(!q) warn.push("沒有指定相關任務：答錯時不能「看說明」，任務內容修改時也不會提醒");
+  else if(v.opts[0]&&/\d/.test(v.opts[0])){ const body=htmlLines(q.body).join(" "), miss=(v.opts[0].match(/\d[\d,]*(?:\.\d+)?/g)||[]).filter(n=>!body.includes(n));
+    if(miss.length) warn.push(`答案裡的「${miss.join("、")}」在任務內容裡找不到（如果是算出來的答案請忽略）`); else ok.push("答案裡的數字在任務內容找得到"); }
+  if(v.q&&!v.explain) warn.push("還沒寫解說：新人答錯時只會看到正確答案");
+  const sim=v.q&&qbSimilar(v.q,QB_ED&&QB_ED.id);
+  if(sim) warn.push(`和現有題目很像：「${sim.q.length>32?sim.q.slice(0,32)+"…":sim.q}」`);
+  return {err,warn,ok};
+}
+function qbRefHTML(q,v){
+  if(!q) return `<p class="ahint" style="margin:0">沒有指定任務。</p>`;
+  const src=(v.opts[0]+" "+v.explain), keys=[...new Set((src.match(/\d[\d,:.]*\d/g)||[]))], flat=src.replace(/\s+/g,"");
+  const sents=[]; htmlLines(q.body).forEach(l=>l.replace(/([。；])/g,"$1\n").split("\n").forEach(t=>{ t=t.replace(/\s+/g," ").trim(); if(t) sents.push(t); }));
+  return sents.map(t=>{ const tt=t.replace(/\s+/g,""); let hit=keys.some(k=>tt.includes(k.replace(/\s+/g,"")));
+    if(!hit&&flat.length>=4) for(let i=0;i+4<=flat.length;i++){ if(tt.includes(flat.slice(i,i+4))){ hit=true; break; } }
+    return hit?`<mark>${esc(t)}</mark>`:esc(t); }).join("<br>");
+}
+function qbPrevHTML(v){
+  const n=npcList().find(x=>x.zone===v.zone), opts=shuffleR(v.opts.map((o,i)=>[o,i]),seededRand(v.q||"x"));
+  return `<div class="qbdnpc"><span class="qbdface" aria-hidden="true">${avatarSVG((n&&n.av)||CHIEF_AV)}</span><span>${esc(n?n.name:"種子商店")}・情報問答</span></div>
+    <p class="qbdpq">${esc(v.q||"（情境題目）")}</p>${opts.map(([o,i])=>`<div class="qbdpo${i===0&&o?" ans":""}">${esc(o||"（選項）")}</div>`).join("")}`;
+}
+function qbEdUpdate(){
+  const v=qbEdVals(), z=ZONES.find(x=>x.id===v.zone), q=qbQuest(v.quest), npcs=npcList().filter(n=>n.zone===v.zone).map(n=>n.name);
+  const cnt=v.quest?scenList(QB_DRAFT).filter(x=>x.quest===v.quest&&x.id!==(QB_ED&&QB_ED.id)&&!QB_DRAFT.off.includes(scenKey(x))).length:0;
+  $("#qbdWho").textContent=`→ ${z?z.name:""}，${npcs.length?`由 ${npcs.join("、")} 出題`:"目前沒有 NPC 在這裡，只會出在種子商店每日問答和轉職試煉"}${v.quest?`（這個任務目前有 ${cnt} 題）`:""}`;
+  $("#qbdQn").textContent=`${v.q.length} / 120`; $("#qbdExn").textContent=`${v.explain.length} / 160`;
+  const L=v.opts.map(o=>o.length), mx=Math.max(L[1],L[2],L[3]);
+  [0,1,2,3].forEach(i=>{ const n=$("#qbdN"+i); n.textContent=`${L[i]} 字`; n.className=i===0&&L[0]&&L[0]>mx?"long":""; });
+  const c=qbEdChecks(v);
+  $("#qbdChecks").innerHTML=c.err.map(t=>`<p class="qx">✗ ${esc(t)}</p>`).join("")+c.warn.map(t=>`<p class="qw">⚠ ${esc(t)}</p>`).join("")+c.ok.map(t=>`<p class="qo">✓ ${esc(t)}</p>`).join("");
+  $("#qbdRef").innerHTML=qbRefHTML(q,v); $("#qbdPrev").innerHTML=qbPrevHTML(v);
+  $("#qbdSave").disabled=$("#qbdNext").disabled=!!c.err.length;
+}
+const qbEdSnap=()=>JSON.stringify(qbEdVals());
+const qbEdDirty=()=>!!QB_ED&&$("#qbDlg").open&&qbEdSnap()!==QB_ED.snap;
+function qbEdFill(src,sel){
+  $("#qbdQuest").innerHTML=qbQuestOpts(sel); if(!$("#qbdQuest").value) $("#qbdQuest").selectedIndex=0;
+  const o=src?qbReorder(src):{q:"",opts:["","","",""],explain:"",yr:false};
+  $("#qbdQ").value=o.q||""; [0,1,2,3].forEach(i=>{ $("#qbdO"+i).value=o.opts[i]||""; }); $("#qbdEx").value=o.explain||""; $("#qbdYr").checked=!!o.yr;
+}
+function openQbEd(id,opt){
+  if(!QB_DRAFT) return; opt=opt||{};
+  const src=id?scenList(QB_DRAFT).find(v=>v.id===id):null, copy=!!opt.copy&&!!src;
+  QB_ED={id:copy?"":(src?src.id:""),builtin:!!(src&&src.builtin&&!copy),edited:!!(src&&src.edited&&!copy)};
+  $("#qbdTitle").textContent=copy?"複製成新題":src?(src.builtin?"編輯內建情境題":"編輯自訂情境題"):"新增情境題";
+  qbEdFill(src,src?src.zone+"|"+(qbQuest(src.quest)?src.quest:""):(opt.sel||(($("#qbZone").value||ZONES[0].id)+"|")));
+  if(!src&&!opt.sel){ const first=[...$("#qbdQuest").options].find(o=>o.value.split("|")[0]===($("#qbZone").value||ZONES[0].id)&&o.value.split("|")[1]); if(first) $("#qbdQuest").value=first.value; }
+  if(copy){ $("#qbdQ").value=""; }
+  $("#qbdReset").hidden=!(QB_ED.builtin&&QB_ED.edited); $("#qbdDel").hidden=!(src&&!src.builtin&&!copy); $("#qbdNext").hidden=!!QB_ED.id;
+  QB_ED.snap=qbEdSnap(); qbEdUpdate();
+  const d=$("#qbDlg"); if(!d.open) d.showModal(); setTimeout(()=>$("#qbdQ").focus(),60);
+}
+function qbEdSave(next){
+  const v=qbEdVals(), c=qbEdChecks(v);
+  if(c.err.length){ Sound.sfx("error"); qbEdUpdate(); return; }
+  const obj={zone:v.zone,quest:v.quest,q:v.q,opts:v.opts,ans:0,explain:v.explain}; if(v.yr) obj.yr=true;
+  const id=QB_ED.id||("c"+Date.now().toString(36)), prev=scenList(QB_DRAFT).find(x=>x.id===id);
+  if(prev&&qbNorm(qbReorder(prev))===qbNorm(obj)){ $("#qbDlg").close(); QB_ED=null; toast("沒有修改"); return; }
+  const def=SCEN_DEFAULT.find(x=>x.id===id);
+  if(def&&qbNorm(qbReorder(def))===qbNorm(obj)) delete QB_DRAFT.scen[id]; else QB_DRAFT.scen[id]=obj;
+  const q=qbQuest(v.quest); QB_DRAFT.qc[id]={h:q?qbBodyHash(q.body):"",y:qbYear()};
+  QB_OPEN.add(v.zone+"|"+(q?v.quest:""));
+  Sound.sfx("select"); const isEdit=!!QB_ED.id;
+  renderQuizAdmin();
+  if(next){ const sel=$("#qbdQuest").value; QB_ED={id:"",builtin:false,edited:false}; qbEdFill(null,sel); QB_ED.snap=qbEdSnap(); qbEdUpdate(); $("#qbdTitle").textContent="新增情境題"; $("#qbdQ").focus(); toast("已加入，可以接著出下一題（記得最後按「發布題庫」）"); return; }
+  $("#qbDlg").close(); QB_ED=null;
+  toast(isEdit?"已修改，記得按「發布題庫」":"已加入，記得按「發布題庫」");
+}
+$("#qbDlg").addEventListener("input",()=>{ if(QB_ED) qbEdUpdate(); });
+$("#qbDlg").addEventListener("change",()=>{ if(QB_ED) qbEdUpdate(); });
+$("#qbdSave").addEventListener("click",()=>qbEdSave(false));
+$("#qbdNext").addEventListener("click",()=>qbEdSave(true));
+$("#qbdCancel").addEventListener("click",async()=>{ if(qbEdDirty()&&!(await uiConfirm("還沒儲存，確定要關閉嗎？","關閉"))) return; $("#qbDlg").close(); QB_ED=null; });
+$("#qbdReset").addEventListener("click",async()=>{ if(!QB_ED||!QB_ED.id) return; if(!(await uiConfirm("要把這題還原成網站內建的內容嗎？","還原預設"))) return;
+  delete QB_DRAFT.scen[QB_ED.id]; delete QB_DRAFT.qc[QB_ED.id]; $("#qbDlg").close(); QB_ED=null; Sound.sfx("undo"); renderQuizAdmin(); toast("已還原預設，記得按「發布題庫」"); });
+$("#qbdDel").addEventListener("click",async()=>{ if(!QB_ED||!QB_ED.id) return; if(!(await uiConfirm("確定要刪除這題嗎？（發布後生效）","刪除"))) return;
+  const id=QB_ED.id; delete QB_DRAFT.scen[id]; delete QB_DRAFT.qc[id]; QB_DRAFT.off=QB_DRAFT.off.filter(k=>k!=="s:"+id); $("#qbDlg").close(); QB_ED=null; Sound.sfx("undo"); renderQuizAdmin(); toast("已刪除這題（發布後生效）"); });
+setTimeout(()=>{ try{ DLG_ESC_ASK.qbDlg={running:()=>qbEdDirty(),msg:"還沒儲存，確定要關閉嗎？",ok:"關閉"}; }catch(e){} },0);
 /* ================= 管理者：新人審核 ================= */
 let AP_ROWS=[], AP_BUSY=false, AP_LOCAL={};
 async function loadApprovals(force){

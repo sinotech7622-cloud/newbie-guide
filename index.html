@@ -795,6 +795,12 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .ppcard.big .ppimg{cursor:default}
 .ppcard.big figcaption{font-size:16px}
 .sr-photo.ppw .ph-pic{display:block;background:none;height:auto;aspect-ratio:4/3}
+.sr-photo.ppw{width:200px;top:18px;left:calc(50% + 92px);padding:8px 8px 4px;cursor:zoom-in}
+.sr-photo.ppw figcaption{font-size:13px;padding-top:4px}
+.sr-photo.ppw:hover,.sr-photo.ppw:focus-visible{transform:rotate(2deg) scale(1.04);outline:none;box-shadow:0 0 0 2px #3B2412,0 0 0 4px var(--gold),3px 5px 0 rgba(0,0,0,.4)}
+@media (max-width:640px){.sr-photo.ppw{width:120px;left:auto;right:3%;top:auto;bottom:110px;padding:5px 5px 2px}.sr-photo.ppw .ph-pic{height:auto}.sr-photo.ppw figcaption{font-size:10px;padding-top:2px}}
+@media (prefers-reduced-motion:reduce){.sr-photo.ppw:hover,.sr-photo.ppw:focus-visible{transform:rotate(4deg)}}
+#ppDlg.ppview #ppWall,#ppDlg.ppview #ppDl{display:none}
 .sr-photo.ppw .ph-pic svg{display:block}
 @media (prefers-reduced-motion:reduce){.ppcard,.ppcard.big{transform:none}}
 .seasonfx{position:absolute;inset:8px;overflow:hidden;pointer-events:none;z-index:3}
@@ -2683,7 +2689,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-02T10:04+0800">2026/11/2 10:04</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-02T12:35+0800">2026/11/2 12:35</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -13761,6 +13767,21 @@ function ppCheck(){                                        // 開站時：已經
   if(got.length===1) ppShow(got[0],true);
   else{ Sound.sfx("get"); toast(`📸 補拍了 ${got.length} 張和寵物的合照！到「溫暖的家 → 寵物窩 → 📸 合照」看看`); }
 }
+const PP_WALL=new Map();                                    // 牆上照片（自己家或拜訪別人家）：點了看大張
+function ppWallKey(ph){ const k="w"+hashStr(JSON.stringify([ph.p,ph.av,ph.bg,ph.po,ph.s,ph.at])); PP_WALL.set(k,ph); if(PP_WALL.size>40) PP_WALL.delete(PP_WALL.keys().next().value); return k; }
+function ppViewWall(key){
+  const ph=PP_WALL.get(key); if(!ppOk(ph)) return;
+  const t=ph.p.type, mine=ppAll()[t];
+  if(String(S.photoWall||"")==="pet:"+t&&ppOk(mine)&&+mine.at===+ph.at&&!($("#visitDlg")&&$("#visitDlg").open)){ Sound.sfx("select"); ppShow(t,false); return; }   // 自己家的牆
+  const d=$("#ppDlg"); d.dataset.t=""; d.classList.add("ppview");
+  $("#ppTitle").textContent=`和${ppName(ph)}的合照`;
+  $("#ppShow").innerHTML=`<figure class="ppcard big${ph.bg==="fire"?" rare":""}"><span class="ppimg">${ppSVG(ph)}</span><figcaption>${esc(ppCap(ph))}</figcaption></figure>`;
+  $("#ppSay").textContent=`${PP_BG[ph.bg][0]} ${PP_BG[ph.bg][1]}・${PP_PO[ph.po]}`;
+  const cl=d.querySelector("[data-close]"); if(cl) cl.textContent="關閉";
+  Sound.sfx("select"); if(!d.open) d.showModal();
+}
+document.addEventListener("click",e=>{ const f=e.target.closest&&e.target.closest("[data-ppv]"); if(f){ e.stopPropagation(); ppViewWall(f.dataset.ppv); } },true);
+document.addEventListener("keydown",e=>{ if((e.key==="Enter"||e.key===" ")&&e.target.dataset&&e.target.dataset.ppv){ e.preventDefault(); ppViewWall(e.target.dataset.ppv); } });
 function ppShow(t,isNew,tries){                            // 跳出視窗看照片（剛拍好時，別的視窗開著就等它關掉）
   const ph=ppAll()[t], d=$("#ppDlg"); if(!ppOk(ph)||!d) return;
   if(isNew&&!d.open&&document.querySelector("dialog[open]")){
@@ -13768,7 +13789,7 @@ function ppShow(t,isNew,tries){                            // 跳出視窗看照
     else{ Sound.sfx("get"); toast(`📸 和${ppName(ph)}拍了一張合照！到「溫暖的家 → 寵物窩 → 📸 合照」看看`); }
     return;
   }
-  d.dataset.t=t;
+  d.dataset.t=t; d.classList.remove("ppview"); { const cl=d.querySelector("[data-close]"); if(cl) cl.textContent=isNew?"收進相簿":"關閉"; }
   $("#ppTitle").textContent=isNew?"咔嚓！拍了一張合照":`和${ppName(ph)}的合照`;
   $("#ppShow").innerHTML=`<figure class="ppcard big${ph.bg==="fire"?" rare":""}"><span class="ppimg">${ppSVG(ph)}</span><figcaption>${esc(ppCap(ph))}</figcaption></figure>`;
   $("#ppSay").textContent=isNew?`${ppName(ph)}的親密度滿 ${PP_AFF} 了，一起拍了一張「${PP_PO[ph.po]}」的照片${ph.bg==="fire"?"，還遇到難得的煙火大會！":"！"}收在「溫暖的家 → 寵物窩 → 📸 合照」。`:"";
@@ -13827,7 +13848,8 @@ function photoSnapshot(){
   const ph=S.photoWall&&photoOf(S.photoWall); return ph?{a:ph.a,as:ph.as,b:ph.b,bs:ph.bs}:null; }
 function photoPics(ph){ return `<span class="ph-pet">${petSVG(ph.a,ph.as||"adult")}</span><span class="ph-heart" aria-hidden="true">♥</span><span class="ph-pet flip">${petSVG(ph.b,ph.bs||"adult")}</span>`; }
 function photoHTML(ph){
-  if(ph&&ph.k==="me"){ if(!ppOk(ph)) return ""; return `<figure class="sr-photo ppw" title="${esc(ppCap(ph))}"><span class="ph-pic">${ppSVG(ph)}</span><figcaption>和${esc(ppName(ph))}</figcaption></figure>`; }
+  if(ph&&ph.k==="me"){ if(!ppOk(ph)) return ""; const key=ppWallKey(ph);
+    return `<figure class="sr-photo ppw" role="button" tabindex="0" data-ppv="${esc(key)}" title="點一下看大張：${esc(ppCap(ph))}" aria-label="看大張：${esc(ppCap(ph))}"><span class="ph-pic">${ppSVG(ph)}</span><figcaption>和${esc(ppName(ph))}</figcaption></figure>`; }
   if(!ph||!ph.a||!ph.b||!PETS[ph.a.type]||!PETS[ph.b.type]) return "";
   const cap=`${petNameOf(ph.a)} & ${petNameOf(ph.b)}`;
   return `<figure class="sr-photo" title="好朋友合照：${esc(cap)}"><span class="ph-pic">${photoPics(ph)}</span><figcaption>${esc(cap)}</figcaption></figure>`;

@@ -732,6 +732,11 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
 .syncbtns #syncCancel{margin-right:auto}
+.showroom>.sr-wall{z-index:1}.showroom>.sr-photo{z-index:2}.showroom>.sr-weapon{z-index:3}.showroom>.sr-walldeco{z-index:4}.showroom>.sr-splats{z-index:5}
+.showroom>.sr-floor{z-index:6}.showroom>.sr-rugpx{z-index:7}
+.showroom>.sr-floordeco,.showroom>.sr-bed,.showroom>.sr-item,.showroom>.sr-outfit{z-index:8}
+.showroom>.roompet{z-index:9}.showroom>.roomhost{z-index:10}.showroom>.roompet.talking{z-index:11}.showroom>.tossfly{z-index:12}
+.sr-splats .splat{transform:translate(-50%,-50%) rotate(var(--sr,0deg)) scale(var(--ss,1))}
 .qb2chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
 .qb2chip{font:inherit;font-size:13px;border:2px solid rgba(255,255,255,.45);background:#0B1030;color:var(--win-muted);border-radius:16px;padding:3px 12px;cursor:pointer;min-height:32px}
 .qb2chip b{color:#fff;font-weight:700;margin-left:2px}
@@ -795,8 +800,8 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .ppcard.big .ppimg{cursor:default}
 .ppcard.big figcaption{font-size:16px}
 .sr-photo.ppw .ph-pic{display:block;background:none;height:auto;aspect-ratio:4/3}
-.sr-photo.ppw{width:200px;top:18px;left:calc(50% + 92px);padding:8px 8px 4px;cursor:zoom-in}
-.sr-photo.ppw figcaption{font-size:13px;padding-top:4px}
+.sr-photo.ppw{width:150px;top:24px;left:calc(50% + 94px);padding:6px 6px 3px;cursor:zoom-in}
+.sr-photo.ppw figcaption{font-size:12px;padding-top:3px}
 .sr-photo.ppw:hover,.sr-photo.ppw:focus-visible{transform:rotate(2deg) scale(1.04);outline:none;box-shadow:0 0 0 2px #3B2412,0 0 0 4px var(--gold),3px 5px 0 rgba(0,0,0,.4)}
 @media (max-width:640px){.sr-photo.ppw{width:120px;left:auto;right:3%;top:auto;bottom:110px;padding:5px 5px 2px}.sr-photo.ppw .ph-pic{height:auto}.sr-photo.ppw figcaption{font-size:10px;padding-top:2px}}
 @media (prefers-reduced-motion:reduce){.sr-photo.ppw:hover,.sr-photo.ppw:focus-visible{transform:rotate(4deg)}}
@@ -2689,7 +2694,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-02T13:12+0800">2026/11/2 13:12</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-02T14:34+0800">2026/11/2 14:34</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -9001,7 +9006,7 @@ function renderVisit(){
   $("#vsDept").textContent=`拜訪 ${p.group||""}`;
   $("#vsTitle").textContent=`${p.name||"冒險者"} 的溫暖的家`;
   stabGo("visit",["farm","act","book"].includes(STAB.visit)?STAB.visit:"farm");
-  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,party:p.pet&&Array.isArray(p.pet.party)?p.pet.party:[],petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatList(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.nocard?"":(p.name||"屋主"),hostId:"visitHost",label:`${p.name}的溫暖的家`});
+  $("#vsRoom").innerHTML=roomHTML(Object.assign({},h,{pet:p.pet,party:p.pet&&Array.isArray(p.pet.party)?p.pet.party:[],petStage:(+p.level||1)>=4?"adult":"baby",av:p.av,splats:splatItems(p.code,h.clean)}),{petId:"visitPet",guestPet:S.pet&&PETS[S.pet.type]?petView(S.pet):null,host:p.nocard?"":(p.name||"屋主"),hostId:"visitHost",label:`${p.name}的溫暖的家`});
   startRoomPet("#visitPet",true);
   startPlaydate();
   const hostEl=$("#visitHost");
@@ -9171,6 +9176,20 @@ function splatList(code,clean){
   return ((loungeData().tosses||{})[String(code).toUpperCase()]||[]).filter(x=>x.at&&x.at.getTime()>since).map(x=>CROPS[x.msg]?x.msg:"tomato");
 }
 function splatCount(code,clean){ return splatList(code,clean).length; }
+const splatDay=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+function splatItems(code,clean){                           // 牆上的蔬菜漬（含位置種子：丟的人｜屋主｜日期｜那天第幾顆）
+  if(!loungeReady()||!LOUNGE.at) return [];
+  const host=String(code).toUpperCase(), since=Math.max(+clean||0,Date.now()-48*3600e3), cnt={};
+  return ((loungeData().tosses||{})[host]||[]).filter(x=>x.at).slice().sort((a,b)=>a.at-b.at).map(x=>{
+    const who=String(x.code||"").toUpperCase(), d=splatDay(x.at), ck=who+"|"+d, n=cnt[ck]||0; cnt[ck]=n+1;
+    return {c:CROPS[x.msg]?x.msg:"tomato",k:`${who}|${host}|${d}|${n}`,t:x.at.getTime()};
+  }).filter(x=>x.t>since);
+}
+function splatPos(k){                                      // 位置、角度、大小：同一顆在每台裝置都一樣
+  const r=seededRand("splat|"+k);
+  return {l:+(4+r()*92).toFixed(1),t:+(6+r()*86).toFixed(1),rot:Math.floor(r()*360),sc:+(.8+r()*.4).toFixed(2)};
+}
+const splatStyle=p=>`left:${p.l}%;top:${p.t}%;--sr:${p.rot}deg;--ss:${p.sc}`;
 function tryZoneSeeds(zoneId){                         // 到任務地點隨機撿到種子
   if(!S.group) return;
   S.seedAt=S.seedAt||{};
@@ -10042,14 +10061,16 @@ async function tossVeg(p,h){
   const room=$("#vsRoom .showroom"); if(!room) return;
   const btn=$("#vsToss"); if(btn) btn.disabled=true;
   const fly=document.createElement("span"); fly.className="tossfly"; fly.innerHTML=spriteSVG("f_"+k);
-  const tx=15+Math.random()*70, ty=10+Math.random()*40;
+  const sPos=splatPos(`${String(myCode()).toUpperCase()}|${host}|${splatDay(new Date())}|${log[lk]||0}`);
+  const wallH=Math.max(1,room.clientHeight-52), tx=sPos.l, ty=sPos.t*wallH/Math.max(1,room.clientHeight);
   room.appendChild(fly);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{ fly.style.left=tx+"%"; fly.style.top=ty+"%"; fly.style.transform="translate(-50%,-50%) rotate(540deg) scale(.8)"; }));
   Sound.sfx("blip");
   setTimeout(async()=>{
     fly.remove();
-    const sp=document.createElement("span"); sp.className="splat fresh"; sp.style.left=tx+"%"; sp.style.top=ty+"%"; sp.innerHTML=splatSVG(k);
-    room.appendChild(sp); Sound.sfx("error");
+    const sp=document.createElement("span"); sp.className="splat fresh"; sp.setAttribute("style",splatStyle(sPos)); sp.innerHTML=splatSVG(k);
+    let box=room.querySelector(":scope > .sr-splats"); if(!box){ box=document.createElement("div"); box.className="sr-splats"; room.appendChild(box); }
+    box.appendChild(sp); Sound.sfx("error");
     const payload={type:"toss",code:myCode(),name:dispName(),target:host,msg:k};
     if(await loungeSend(payload)) addPending(payload);
     S.barn[k]--; save(); queueSync();
@@ -12463,8 +12484,9 @@ function roomHTML(h,opt){
   return `<div class="showroom${tall?" tall":""}${fdOn?" hasfloor":""}${out?" hasoutfit":""}${wp&&wp.cat==="paper"&&wp.id!=="wp_default"?" "+wp.id:""}"${fdOn?` style="--fw:${DECO_SPR[fd.id][0].length}"`:""} aria-label="${esc(opt.label||"溫暖的家展示空間")}">
     <div class="sr-wall">${a?`<figure class="wframe">${frameArt(a,h.pet?Object.assign({},h.pet,{party:Array.isArray(h.party)?h.party:(h.pet===S.pet?partyList():(h.pet.party||[]))}):null)}<figcaption>${esc(a.name)}</figcaption></figure>`:""}</div>
     ${wep?`<div class="sr-weapon ${tierOf(weaponById(wep)).cls}" title="${esc(weaponById(wep).name)}"><span class="sr-wpic">${spriteSVG("w_"+wep)}</span><span class="sr-tag">${esc(tierOf(weaponById(wep)).stars)} ${esc(weaponById(wep).name)}</span></div>`:""}
-    ${(()=>{ const L=Array.isArray(h.splats)?h.splats:Array.from({length:+h.splats||0},()=>"tomato"); if(!L.length) return "";
-      return `<div class="sr-splats" aria-label="牆上有 ${L.length} 個蔬菜漬">${L.slice(0,10).map((c,i)=>`<span class="splat" style="left:${8+(i*29+7)%80}%;top:${6+(i*17+5)%46}%">${splatSVG(c)}</span>`).join("")}</div>`; })()}
+    ${(()=>{ const L0=Array.isArray(h.splats)?h.splats:Array.from({length:+h.splats||0},()=>"tomato"); if(!L0.length) return "";
+      const L=L0.slice(-10);                               // 最多顯示最近 10 個
+      return `<div class="sr-splats" aria-label="牆上有 ${L0.length} 個蔬菜漬">${L.map((x,i)=>{ const o=typeof x==="object"&&x?x:{c:x,k:"i"+i}; return `<span class="splat" style="${splatStyle(splatPos(o.k))}">${splatSVG(o.c)}</span>`; }).join("")}</div>`; })()}
     <div class="sr-floor${gd&&gd.cat==="ground"&&gd.id!=="fl_wood"?" "+gd.id:""}"></div>
     ${rg&&rg.cat==="rug"?`<div class="sr-rugpx" style="${decoDim(rg.id)}" title="${esc(rg.name)}">${decoSVG(rg.id)}</div>`:""}
     ${wd&&wd.cat==="wall"?`<div class="sr-walldeco ${wd.id}" style="${decoDim(wd.id)}" title="${esc(wd.name)}">${decoSVG(wd.id)}</div>`:""}
@@ -12484,7 +12506,7 @@ function showroomHTML(){
   const sc=S.showcase||{}, L=showcaseLists();
   const sel=(key,label,list)=>`<label class="srsel"><span>${label}</span><select class="ainput" name="sc-${key}">
       <option value="">不展示</option>${list.map(([v,n])=>`<option value="${esc(v)}" ${sc[key]===v?"selected":""}>${esc(n)}</option>`).join("")}</select></label>`;
-  const mySplatList=splatList(myCode(),S.cleanedAt), mySplats=mySplatList.length;
+  const mySplatList=splatItems(myCode(),S.cleanedAt), mySplats=mySplatList.length;
   return roomHTML(Object.assign({},myHomeSnapshot(),{pet:S.pet,party:partyList(),petStage:petStage(),av:S.av,splats:mySplatList}),{host:dispName(),hostId:"homeHost"})+`
   <div class="srbar" aria-label="展示品設定">
     <span class="srbar-t">展示品 ${helpBtn("showroom")}</span>

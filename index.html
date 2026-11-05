@@ -732,6 +732,28 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .syncbtns .act{display:flex;flex-direction:column;align-items:center;line-height:1.3}
 .syncbtns .act small{font-size:12px;opacity:.85}
 .syncbtns #syncCancel{margin-right:auto}
+.cmsbox{display:flex;align-items:center;gap:12px;margin:-4px 0 10px 18px;padding:9px 12px;background:#141B52;border:2px dashed rgba(242,193,78,.55);border-top:0;border-radius:0 0 6px 6px}
+.cmsbox.ready{border-color:var(--gold);border-style:solid;background:#22235A}
+.cmsbox.done{justify-content:space-between;flex-wrap:wrap;color:#8BE59A;font-size:14px}
+.cmsmain{flex:1;min-width:0}
+.cmst{margin:0!important;font-size:14px}.cmst .st{margin-left:6px}
+.cmsq{margin:3px 0 6px!important;font-size:14.5px;line-height:1.5}
+.cmsbar{height:8px;background:#0B1030;border:1px solid rgba(255,255,255,.3);border-radius:4px;overflow:hidden}
+.cmsbar i{display:block;height:100%;background:linear-gradient(90deg,#F2C14E,#FFE08A)}
+.cmslist{display:grid;gap:10px;margin:8px 0 6px}
+.cmscard{display:flex;align-items:center;gap:12px;background:#1B2466;border:2px solid rgba(255,255,255,.3);border-radius:6px;padding:10px 12px}
+.cmscard.ready{border-color:var(--gold);box-shadow:0 0 0 2px rgba(242,193,78,.25)}
+.cmscard .npcface{width:48px;height:48px;flex:0 0 48px}
+.cmsstamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-top:8px}
+.cmsstamp{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.2);border-radius:5px;padding:7px 10px}
+.cmsstamp.full{border-color:var(--gold)}
+.cmsstamp>div{display:flex;flex-direction:column;min-width:0}
+.cmsstamp small{font-size:12px;color:var(--win-muted)}
+.cmsfurn{width:42px;height:42px;flex:0 0 42px;display:flex;align-items:flex-end;justify-content:center;filter:grayscale(1) opacity(.45)}
+.cmsstamp.full .cmsfurn{filter:none}
+.cmsfurn svg{width:100%;height:100%}
+.cmsdots{color:var(--gold);letter-spacing:2px;font-size:13px}
+@media (max-width:640px){.cmsbox{margin-left:6px;flex-wrap:wrap}.cmscard{flex-wrap:wrap}}
 .showroom>.sr-wall{z-index:1}.showroom>.sr-photo{z-index:2}.showroom>.sr-weapon{z-index:3}.showroom>.sr-walldeco{z-index:4}.showroom>.sr-splats{z-index:5}
 .showroom>.sr-floor{z-index:6}.showroom>.sr-rugpx{z-index:7}
 .showroom>.sr-floordeco,.showroom>.sr-bed,.showroom>.sr-item,.showroom>.sr-outfit{z-index:8}
@@ -2694,7 +2716,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-02T16:00+0800">2026/11/2 16:00</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-05T14:18+0800">2026/11/5 14:18</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -3178,6 +3200,15 @@ footer.site p{margin:4px 0}
     <div class="body">
       <div class="nqtop"><span class="npcface" id="spFace" aria-hidden="true"></span><p class="dbody" id="spSay"></p></div>
       <div class="seedrow" id="spOpts" style="margin-top:12px"></div>
+    </div>
+  </div>
+</dialog>
+<dialog id="cmsDlg" aria-labelledby="cmsTitle">
+  <div class="window dlg form nqwrap">
+    <div class="head"><div><p class="dept">📜 NPC 委託・全勤獎</p><h3 id="cmsTitle">這週的委託全部完成了！</h3></div></div>
+    <div class="body">
+      <p class="dbody">7 位 NPC 都很感謝你！挑一種你最想要的稀有作物，會放進倉庫。</p>
+      <div class="seedrow" id="cmsOpts" style="margin-top:12px"></div>
     </div>
   </div>
 </dialog>
@@ -4757,7 +4788,7 @@ function tryFind(from,chance,where){
   toast(lines[Math.floor(Math.random()*lines.length)]);
   S.finds=S.finds||{};
   const first=!S.finds[f.id];
-  S.finds[f.id]=(S.finds[f.id]||0)+1;
+  S.finds[f.id]=(S.finds[f.id]||0)+1; cmsEvt("find");
   save(); Sound.sfx(first?"achieve":"get");
   setTimeout(()=>toast(`${first?"✨ 發現新收藏":"又找到"}：${f.name}（${f.cat}）${first?"　已放進蒐藏箱":""}`),1100);
   checkAch(); renderHUD();
@@ -5012,7 +5043,7 @@ function trySeaMonster(){
 }
 function trySeaTreasure(){
   if(!S.group) return;
-  const now=Date.now(); if(now-lastDig<2200) return; lastDig=now;
+  const now=Date.now(); if(now-lastDig<2200) return; lastDig=now; cmsEvt("sea");
   S.items=S.items||{};
   if(starActive()||Math.random()<(jb("drain")?.28:.22)){
     const w=rollWeapon("sea");
@@ -5058,7 +5089,7 @@ function tryHiddenFind(id){
     const f=pool[Math.floor(Math.random()*pool.length)];
     S.finds=S.finds||{};
     const first=!S.finds[f.id];
-    S.finds[f.id]=(S.finds[f.id]||0)+1; save();
+    S.finds[f.id]=(S.finds[f.id]||0)+1; cmsEvt("find"); save();
     toast(HIDDEN_HIT[id][Math.floor(Math.random()*HIDDEN_HIT[id].length)]);
     Sound.sfx(first?"achieve":"get");
     setTimeout(()=>toast(`${first?"🔍 發現隱藏小物":"又找到"}：${f.name}${first?"　已放進蒐藏箱":""}`),1200);
@@ -5077,7 +5108,7 @@ function tryDevFind(id){                                    // 數位總合辦�
     let r=Math.random()*tot, f=pool[0]; for(const x of pool){ r-=x.w; if(r<=0){ f=x; break; } }
     S.finds=S.finds||{};
     const first=!S.finds[f.id];
-    S.finds[f.id]=(S.finds[f.id]||0)+1; save();
+    S.finds[f.id]=(S.finds[f.id]||0)+1; cmsEvt("find"); save();
     toast(DEV_HIT[Math.floor(Math.random()*DEV_HIT.length)]);
     Sound.sfx(first?"achieve":"get");
     setTimeout(()=>toast(`${first?"✨ 發現新收藏":"又找到"}：${f.name}（${f.cat}）${first?"　已放進蒐藏箱":""}`),1200);
@@ -6641,7 +6672,7 @@ document.addEventListener("click",e=>{
   e.preventDefault(); dlgNudge(d);
 });
 /* Esc：確認、領取、一定要選的視窗不能用 Esc 關；進行中的先問 */
-const DLG_ESC_BLOCK=new Set(["obDlg","cloudDlg","rcDlg","seedPickDlg","compDlg","uDlg","profDlg","kgDlg"]);
+const DLG_ESC_BLOCK=new Set(["cmsDlg","obDlg","cloudDlg","rcDlg","seedPickDlg","compDlg","uDlg","profDlg","kgDlg"]);
 const DLG_ESC_ASK={
   mgDlg:{running:()=>!!document.querySelector("#mgBody .mgov:not(.mgpause)[hidden]"),msg:"小遊戲還在進行中，現在離開這一局不會計分。確定要離開嗎？",ok:"離開遊戲"},
   npcQuizDlg:{running:()=>true,msg:"確定要離開問答嗎？",ok:"離開"}
@@ -8047,7 +8078,7 @@ function fpNorm(v){                                   // 空的預設值（空�
 const PROG_SETS=["done","visited","ach","album","shopOwned","petKinds","outfits","accs","findSeen","rareSeen","petColors","devs","bonusOk","bonusSeenH","petPhotos"];
 const PROG_MAX=["rare","aff"];                           // 數字只會變大：取比較大的
 const PROG_OWN=["items","finds"];                        // 可以賣掉的收藏：至少保有 1 個（數量用選的那一邊）
-const PROG_KEYS=new Set(PROG_SETS.concat(PROG_MAX,PROG_OWN,["job","lvMax","caught","tro","frame","joinAt"]));
+const PROG_KEYS=new Set(PROG_SETS.concat(PROG_MAX,PROG_OWN,["job","lvMax","caught","tro","frame","joinAt","cms"]));
 const isObj=o=>!!o&&typeof o==="object"&&!Array.isArray(o);
 function mergeProgInto(dst,src){                         // 把 src 有、dst 沒有的永久進度補進 dst；回傳補了幾項
   if(!isObj(dst)||!isObj(src)) return 0;
@@ -8057,6 +8088,19 @@ function mergeProgInto(dst,src){                         // 把 src 有、dst �
   PROG_MAX.forEach(k=>{ const o=src[k]; if(!isObj(o)) return; Object.keys(o).forEach(id=>{ const v=+o[id]||0; if(v>0&&v>(+((dst[k]||{})[id])||0)){ box(k)[id]=o[id]; n++; } }); });
   PROG_OWN.forEach(k=>{ const o=src[k]; if(!isObj(o)) return; Object.keys(o).forEach(id=>{ if((+o[id]||0)>0&&!((+((dst[k]||{})[id])||0)>0)){ box(k)[id]=1; n++; } }); });
   if((+src.lvMax||0)>(+dst.lvMax||0)){ dst.lvMax=src.lvMax; n++; }
+  if(isObj(src.cms)){                                    // NPC 委託
+    if(!isObj(dst.cms)){ dst.cms=JSON.parse(JSON.stringify(src.cms)); n++; }
+    else{ const a=src.cms, b=dst.cms, st=Object.assign({},b.st||{});
+      Object.keys(a.st||{}).forEach(k=>{ if((+a.st[k]||0)>(+st[k]||0)){ st[k]=a.st[k]; n++; } });
+      if(cmsWkDate(a.wk)>cmsWkDate(b.wk)){ dst.cms=JSON.parse(JSON.stringify(a)); n++; }
+      else if(a.wk===b.wk){ b.q=b.q||{}; b.p=b.p||{}; b.d=b.d||{}; b.rd=b.rd||{};
+        Object.keys(a.q||{}).forEach(k=>{ if(!b.q[k]) b.q[k]=a.q[k]; });
+        Object.keys(a.p||{}).forEach(k=>{ if((+a.p[k]||0)>(+b.p[k]||0)){ b.p[k]=a.p[k]; n++; } });
+        Object.keys(a.d||{}).forEach(k=>{ if(a.d[k]&&!b.d[k]){ b.d[k]=a.d[k]; n++; } });
+        Object.keys(a.rd||{}).forEach(k=>{ if(a.rd[k]) b.rd[k]=1; });
+        if(a.fw===a.wk) b.fw=a.wk; }
+      dst.cms.st=st; }
+  }
   if(isObj(src.petPhotos)&&isObj(dst.petPhotos)) Object.keys(src.petPhotos).forEach(k=>{   // 主人與寵物合照：重拍過的，用最後拍的那張
     const a=src.petPhotos[k], d=dst.petPhotos[k];
     if(isObj(a)&&isObj(d)&&a!==d&&(+a.ed||0)>(+d.ed||0)){ dst.petPhotos[k]=a; n++; }
@@ -9201,6 +9245,7 @@ function feedPet(k){
   if(fav&&jb("eco",2)){ const J=jobS(); if(J.feedDay!==dayKey()){ J.feedDay=dayKey(); ecoPlus=2; } }      // 大地守護者：每天第一次餵最愛 +2
   const wasFull=affOf(t)>=AFF_MAX;
   if(fav) reached=affGain(t,1+ecoPlus);
+  if(fav) cmsEvt("feed");
   save(); queueSync(); pushFarm(true);
   if(fav&&!reached&&!wasFull) setTimeout(()=>toast(`💗 ${pn}的親密度 +${1+ecoPlus}（${affOf(t)}/${AFF_MAX}）${ecoPlus?"・大地守護者的祝福":""}`),1300);
   if(reached&&P===S.pet) setTimeout(()=>affinityMax(t),900);
@@ -9257,7 +9302,7 @@ function tryZoneSeeds(zoneId){                         // 到任務地點隨機�
   const tot=Object.values(SEED_WEIGHT).reduce((a,b)=>a+b,0); let r=Math.random()*tot, k="bokchoy";
   for(const [c,w] of Object.entries(SEED_WEIGHT)){ r-=w; if(r<=0){ k=c; break; } }
   const n=1+Math.floor(Math.random()*3);
-  seeds()[k]=(seeds()[k]||0)+n; save();
+  seeds()[k]=(seeds()[k]||0)+n; save(); cmsEvt("seed",zoneId);
   const z=ZONES.find(x=>x.id===zoneId);
   setTimeout(()=>{ Sound.sfx("get"); toast(`🌱 在${z?z.name:"路上"}撿到 ${n} 顆${CROPS[k].name}種子！`); },900);
 }
@@ -10075,7 +10120,7 @@ async function playRps(p,mine){
     Sound.sfx("get"); if(petEl){ sayAt(petEl,[`${CROPS[fav].name}！好吃～`,"耶！我贏了！","再來再來！"][Math.floor(Math.random()*3)]); heartAt(petEl); }
   }
   const lg=rpsLog(), lk=host+"|"+dayKey(); lg[lk]=(lg[lk]||0)+1; try{ localStorage.setItem(RPS_KEY,JSON.stringify(lg)); }catch(e){}
-  S.rpsStat=S.rpsStat||{w:0,l:0}; S.rpsStat[win?"w":"l"]++;
+  S.rpsStat=S.rpsStat||{w:0,l:0}; S.rpsStat[win?"w":"l"]++; if(win) cmsEvt("rps");
   save(); queueSync();
   RPS_LAST={host,cls:win?"win":"lose",html};
   const payload={type:"rps",code:myCode(),name:dispName(),target:host,msg};
@@ -11279,6 +11324,176 @@ const npcList=()=>CFG.npcs||cleanNpcs(null);
 const npcSeedText=n=>n.seed==="mix"?"隨機綜合種子":`${CROPS[n.seed].name}種子`;
 const npcSupplyText=n=>n.supply||`供應${npcSeedText(n)}`;
 function npcToday(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }   // NPC 問答與種子：依電腦時間每天 0:00 換日
+/* ===== NPC 委託 ===== */
+const CMS_MAX=3, CMS_STAMP=5;
+const CMS_FURN={atu:"d_cm_atu",luobo:"d_cm_luobo",tomato:"d_cm_tomato",ami:"d_cm_ami",nainai:"d_cm_nainai",xiaomei:"d_cm_xiaomei",axing:"d_cm_axing"};
+const CMS_GATHER=["veg","rare","harvest","sea","seed","find"], CMS_PET=["bring","party","dress","feed","play","rps"];
+const cmsOn=()=>!!S.group&&!restricted();               // 觀光客、審核中的新人不開放
+const cmsWkDate=w=>{ const m=/^(\d+)-(\d+)-(\d+)$/.exec(String(w||"")); return m?new Date(+m[1],+m[2]-1,+m[3]).getTime():0; };
+function cmsS(){
+  const wk=mgWeek(); let c=S.cms; if(!c||typeof c!=="object") c=S.cms={};
+  if(c.wk!==wk){ c.wk=wk; c.q={}; c.p={}; c.d={}; c.rd={}; }   // 每週一換新（集章保留）
+  c.st=c.st&&typeof c.st==="object"?c.st:{}; c.q=c.q||{}; c.p=c.p||{}; c.d=c.d||{}; c.rd=c.rd||{};
+  return c;
+}
+const cmsNpcs=()=>npcList().filter(n=>n.zone&&ZONES.some(z=>z.id===n.zone));
+function cmsOrder(){ const c=cmsS(); return shuffleR(cmsNpcs().map(n=>n.id),seededRand("cms|"+String(myCode()||S.name||"")+"|"+c.wk)); }
+function cmsActive(){                                    // 這週還沒完成的前 3 位 NPC
+  const c=cmsS(), out=[]; let made=false;
+  for(const id of cmsOrder()){ if(c.d[id]) continue; out.push(id); if(out.length>=CMS_MAX) break; }
+  out.forEach(id=>{ if(!c.q[id]||!(CMS_GATHER.includes(c.q[id].k)||CMS_PET.includes(c.q[id].k))){ c.q[id]=cmsMake(id); made=true; } });
+  if(made) save();
+  return out;
+}
+function cmsPetTypes(){                                  // 可以帶來的寵物：隊長，以及（有跟班位置時）有親密度的寵物
+  if(!S.pet||!PETS[S.pet.type]) return [];
+  const L=[S.pet.type];
+  if(partySlots()>0) Object.keys(S.aff||{}).forEach(t=>{ if(PETS[t]&&petKindOK(t)&&affOf(t)>0&&!L.includes(t)) L.push(t); });
+  return L;
+}
+function cmsMake(id){                                    // 決定這位 NPC 這週的委託（同一個人、同一週在每台裝置抽到的一樣）
+  const c=cmsS(), n=npcList().find(x=>x.id===id)||{}, r=seededRand("cmsq|"+String(myCode()||S.name||"")+"|"+c.wk+"|"+id), lv=myLv();
+  const used=new Set(Object.values(c.q).map(q=>q&&q.k));
+  const lounge=loungeReady(), pet=!!(S.pet&&PETS[S.pet.type]);
+  const okG=CMS_GATHER.filter(k=>k!=="rare"||Object.keys(RARE).some(x=>S.rareSeen&&S.rareSeen[x]));
+  const okP=pet?CMS_PET.filter(k=>(k!=="party"||partySlots()>0)&&(k!=="dress"||(petWearUnlocked()&&!petNoWear(S.pet.type)))&&((k!=="play"&&k!=="rps")||lounge)):[];
+  const gN=Object.values(c.q).filter(q=>q&&CMS_GATHER.includes(q.k)).length, pN=Object.values(c.q).filter(q=>q&&CMS_PET.includes(q.k)).length;
+  let pool=(okP.length&&(pN*4<gN*3||r()<.43))?okP:okG;   // 大約 4 個採集類、3 個寵物類
+  const fresh=pool.filter(k=>!used.has(k)); if(fresh.length) pool=fresh;
+  const k=pool[Math.floor(r()*pool.length)], q={k,rw:r()<.6?"seed":"fert"};
+  const crops=Object.keys(CROPS);
+  if(k==="veg"){ q.c=CROPS[n.seed]?n.seed:crops[Math.floor(r()*crops.length)]; q.n=4+Math.min(8,lv); }
+  else if(k==="rare"){ const L=Object.keys(RARE).filter(x=>S.rareSeen&&S.rareSeen[x]); q.c=L[Math.floor(r()*L.length)]; q.n=1; }
+  else if(k==="harvest") q.n=5+Math.floor(lv/2);
+  else if(k==="sea") q.n=5;
+  else if(k==="seed"){ q.z=n.zone; q.n=2; }
+  else if(k==="find") q.n=1+(lv>=6?1:0);
+  else if(k==="bring"){ const L=cmsPetTypes(); q.t=L[Math.floor(r()*L.length)]||S.pet.type; q.n=1; }
+  else if(k==="party"||k==="dress"){ q.n=1; if(k==="dress"){ const W=Object.keys(PET_WEAR).filter(w=>w!=="none"); q.w=W[Math.floor(r()*W.length)]; } }
+  else if(k==="feed") q.n=4+Math.floor(lv/3);
+  else q.n=2;                                            // 串門子、猜拳贏
+  return q;
+}
+const cmsZoneName=z=>{ const Z=ZONES.find(x=>x.id===z); return Z?Z.name:""; };
+function cmsText(id,q){
+  const n=npcList().find(x=>x.id===id)||{}, zn=cmsZoneName(n.zone), C=CROPS[q.c];
+  switch(q.k){
+    case "veg": return `幫我帶 ${q.n} ${C.unit}${C.name}來`;
+    case "rare": return `想看看傳說中的${RARE[q.c].name}，帶 1 ${C.unit}給我吧`;
+    case "harvest": return `在開心農場收成 ${q.n} 次`;
+    case "sea": return `到海邊撈寶 ${q.n} 次`;
+    case "seed": return `到${cmsZoneName(q.z)}逛逛，撿到 ${q.n} 次種子`;
+    case "find": return `找到 ${q.n} 個小物給我瞧瞧`;
+    case "bring": return `帶${PETS[q.t]?PETS[q.t].name:"寵物"}來${zn}找我玩（隊長或跟班都可以）`;
+    case "party": return `帶著隊長和跟班（跟班帶滿）來${zn}開派對`;
+    case "dress": return `讓隊長穿上「${PET_WEAR[q.w]?PET_WEAR[q.w].name:"衣服"}」來${zn}給我看`;
+    case "feed": return `餵寵物牠最愛吃的蔬菜 ${q.n} 次`;
+    case "play": return `讓寵物去別人家串門子 ${q.n} 次`;
+    case "rps": return `跟別人的寵物猜拳贏 ${q.n} 次`;
+  }
+  return "";
+}
+function cmsProg(id){
+  const c=cmsS(), q=c.q[id]; if(!q) return 0;
+  if(q.k==="veg") return Math.min(q.n,+((S.barn||{})[q.c])||0);
+  if(q.k==="rare") return Math.min(q.n,+((S.rare||{})[q.c])||0);
+  return Math.min(q.n,+c.p[id]||0);
+}
+const cmsReady=id=>{ const q=cmsS().q[id]; return !!q&&cmsProg(id)>=q.n; };
+function cmsNotify(id){                                  // 剛好完成：提醒回去交付（每個委託一次）
+  const c=cmsS(), n=npcList().find(x=>x.id===id); if(!n||c.rd[id]) return;
+  c.rd[id]=1; save();
+  setTimeout(()=>{ Sound.sfx("achieve"); toast(`📜 ${n.name}的委託完成了！到${cmsZoneName(n.zone)}找${n.name}交付`); },1200);
+}
+function cmsEvt(kind,arg){                               // 採集、寵物動作發生時累計進度
+  try{
+    if(!cmsOn()) return;
+    const c=cmsS(); let ch=false;
+    cmsActive().forEach(id=>{ const q=c.q[id]; if(!q||q.k!==kind||c.d[id]) return; if(kind==="seed"&&q.z!==arg) return;
+      const v=Math.min(q.n,(+c.p[id]||0)+1); if(v!==(+c.p[id]||0)){ c.p[id]=v; ch=true; if(v>=q.n) cmsNotify(id); } });
+    if(ch){ save(); queueSync(); }
+  }catch(e){}
+}
+function cmsPresence(zoneId){                            // 帶寵物來玩、滿隊、打扮：走進 NPC 所在地點時檢查
+  if(!cmsOn()||!S.pet) return;
+  const c=cmsS(); let ch=false;
+  cmsActive().forEach(id=>{ const q=c.q[id], n=npcList().find(x=>x.id===id); if(!q||!n||n.zone!==zoneId||c.d[id]||(+c.p[id]||0)>=q.n) return;
+    let ok=false;
+    if(q.k==="bring") ok=S.pet.type===q.t||partyList().some(f=>f.type===q.t);
+    else if(q.k==="party") ok=partySlots()>0&&partyList().length>=partySlots();
+    else if(q.k==="dress") ok=!petNoWear(S.pet.type)&&S.pet.wear===q.w;
+    if(ok){ c.p[id]=q.n; ch=true; setTimeout(()=>{ Sound.sfx("achieve"); toast(`📜 ${n.name}：「${q.k==="dress"?"好可愛的打扮！":q.k==="party"?"哇，大家都來了！":"就是牠！好可愛～"}」委託完成，可以交付了`); },700); c.rd[id]=1; }
+  });
+  if(ch){ save(); queueSync(); }
+}
+function cmsBar(v,n){ return `<div class="cmsbar" aria-hidden="true"><i style="width:${Math.round(100*Math.min(1,v/Math.max(1,n)))}%"></i></div>`; }
+function cmsNpcHTML(n){                                  // 任務地點的 NPC 卡片下方：委託
+  if(!cmsOn()) return "";
+  const c=cmsS(), st=+c.st[n.id]||0;
+  if(c.d[n.id]) return `<div class="cmsbox done"><span>📜 這週的委託完成了 ✓</span><span class="ahint">委託章 ${Math.min(st,CMS_STAMP)} / ${CMS_STAMP}${st>=CMS_STAMP?"・專屬家具已解鎖":""}</span></div>`;
+  if(!cmsActive().includes(n.id)) return "";
+  const q=c.q[n.id], v=cmsProg(n.id), ok=v>=q.n, unit=q.k==="veg"||q.k==="rare"?`倉庫有 ${(q.k==="veg"?+((S.barn||{})[q.c]):+((S.rare||{})[q.c]))||0}`:`${v}`;
+  return `<div class="cmsbox${ok?" ready":""}"><div class="cmsmain"><p class="cmst">📜 ${esc(n.name)}的委託</p><p class="cmsq">「${esc(cmsText(n.id,q))}」</p>
+    ${cmsBar(v,q.n)}<p class="ahint" style="margin:2px 0 0">${unit} / ${q.n}・獎勵：${q.rw==="seed"?"種子禮包":"一般肥料 ×2"}${CMS_PET.includes(q.k)?"、寵物親密度 +3":""}、委託章 1 個（${Math.min(st,CMS_STAMP)} / ${CMS_STAMP}）</p></div>
+    <button class="act${ok?"":" ghost"}" type="button" data-cmsdo="${esc(n.id)}" ${ok?"":"disabled"}>${ok?"交付":"進行中"}</button></div>`;
+}
+function cmsTurnIn(id){
+  if(!cmsOn()) return;
+  const c=cmsS(), q=c.q[id], n=npcList().find(x=>x.id===id); if(!q||!n||c.d[id]||!cmsActive().includes(id)) return;
+  if(!cmsReady(id)){ toast("委託還沒完成喔"); Sound.sfx("error"); return; }
+  if(q.k==="veg"){ S.barn[q.c]=Math.max(0,(+S.barn[q.c]||0)-q.n); }
+  if(q.k==="rare"){ S.rare[q.c]=Math.max(0,(+S.rare[q.c]||0)-q.n); }
+  c.d[id]=Date.now();
+  const got=[];
+  if(q.rw==="seed"){ const ks=shuffleR(Object.keys(CROPS),Math.random).slice(0,2); ks.forEach(k=>{ seeds()[k]=(seeds()[k]||0)+5; }); got.push(ks.map(k=>`${CROPS[k].name}種子 ×5`).join("、")); }
+  else{ S.fert=S.fert||{}; S.fert.fz_basic=(S.fert.fz_basic||0)+2; got.push("一般肥料 ×2"); }
+  let maxed="";
+  if(CMS_PET.includes(q.k)&&S.pet){ const t=q.k==="bring"&&PETS[q.t]?q.t:S.pet.type, was=affOf(t)>=AFF_MAX;
+    if(affGain(t,3,true)&&t===S.pet.type) maxed=t; got.push(was?`${PETS[t].name}的羈絆點 +3`:`${PETS[t].name}的親密度 +3`); }
+  const st=c.st[id]=(+c.st[id]||0)+1;
+  got.push(`委託章（${Math.min(st,CMS_STAMP)} / ${CMS_STAMP}）`);
+  let furn="";
+  if(st===CMS_STAMP&&CMS_FURN[id]){ S.shopOwned=S.shopOwned||{}; if(!S.shopOwned[CMS_FURN[id]]){ S.shopOwned[CMS_FURN[id]]=true; furn=shopItem(CMS_FURN[id]).name; } }
+  save(); queueSync(); Sound.sfx("achieve");
+  toast(`📜 ${n.name}：「謝謝你！」拿到 ${got.join("、")}`);
+  if(furn) setTimeout(()=>{ Sound.sfx("levelup"); toast(`🎁 集滿 ${CMS_STAMP} 個${n.name}的委託章！拿到專屬家具「${furn}」，到種子商店的地面擺設擺上吧`); },2200);
+  if(maxed) setTimeout(()=>affinityMax(maxed),furn?4200:2000);
+  const all=cmsOrder();
+  if(all.length&&all.every(x=>c.d[x])&&c.fw!==c.wk){ c.fw=c.wk; save(); setTimeout(cmsFullBonus,furn?4600:2600); }
+  try{ renderZoneNpc(curZone&&curZone.id); }catch(e){}
+  if(curPlace&&curPlace.id==="myhome") try{ renderPlace(); }catch(e){}
+}
+function cmsFullBonus(){                                 // 一週全部完成：任選 1 個發現過的稀有作物
+  const L=Object.keys(RARE).filter(k=>S.rareSeen&&S.rareSeen[k]);
+  if(!L.length){ S.fert=S.fert||{}; S.fert.fz_super=(S.fert.fz_super||0)+2; save(); queueSync(); Sound.sfx("levelup"); toast("🏅 這週的 NPC 委託全部完成！全勤獎：高級肥料 ×2（發現稀有作物之後，全勤獎可以改選稀有作物）"); return; }
+  $("#cmsOpts").innerHTML=L.map(k=>`<button type="button" class="seed" data-cmsrare="${k}"><span class="seedicon" aria-hidden="true">${spriteSVG(RARE[k].id)}</span><b>${esc(RARE[k].name)}</b></button>`).join("");
+  const d=$("#cmsDlg"); Sound.sfx("levelup"); if(!d.open) d.showModal();
+}
+function cmsListHTML(){                                  // 開心農場「📜 NPC 委託」分頁
+  if(!S.group) return `<p class="empty-note">建立角色後就能接 NPC 委託。</p>`;
+  if(restricted()) return `<p class="empty-note">觀光客和審核中的新人還不能接 NPC 委託，正式加入後就會開放。</p>`;
+  const c=cmsS(), all=cmsOrder(), act=cmsActive(), doneN=all.filter(x=>c.d[x]).length;
+  const npc=id=>npcList().find(x=>x.id===id)||{};
+  const card=id=>{ const n=npc(id), q=c.q[id], v=cmsProg(id), ok=v>=q.n;
+    return `<article class="cmscard${ok?" ready":""}"><span class="npcface" aria-hidden="true">${avatarSVG(n.av)}</span><div class="cmsmain">
+      <p class="cmst"><b>${esc(n.name)}</b> <span class="ahint">📍 ${esc(cmsZoneName(n.zone))}</span>${ok?`<span class="st st-ok">可以交付</span>`:""}</p>
+      <p class="cmsq">「${esc(cmsText(id,q))}」</p>${cmsBar(v,q.n)}<p class="ahint" style="margin:2px 0 0">${v} / ${q.n}</p></div>
+      <button class="act${ok?"":" ghost"}" type="button" data-cmsgo="${esc(n.zone)}">${ok?"去交付":"前往"}</button></article>`; };
+  const stamps=cmsNpcs().map(n=>{ const st=Math.min(CMS_STAMP,+c.st[n.id]||0), f=CMS_FURN[n.id], it=f&&shopItem(f);
+    return `<div class="cmsstamp${st>=CMS_STAMP?" full":""}"><span class="cmsfurn" aria-hidden="true" style="${decoDim(f)}">${f?decoSVG(f):""}</span>
+      <div><b>${esc(n.name)}</b><span class="cmsdots" aria-label="委託章 ${st} / ${CMS_STAMP}">${"●".repeat(st)}${"○".repeat(CMS_STAMP-st)}</span><small>${st>=CMS_STAMP?`已解鎖「${esc(it?it.name:"")}」`:`集滿 ${CMS_STAMP} 個換「${esc(it?it.name:"")}」`}</small></div></div>`; }).join("");
+  return `<p class="ahint">NPC 會請你幫忙採集或帶寵物去玩。同時最多 ${CMS_MAX} 個委託，交付後會換下一位 NPC；每位 NPC 每週 1 個，每週一換新（沒完成的會重新來過）。完成後到 NPC 所在的地點按「交付」。</p>
+    <p class="dsec">本週委託 <span class="ahint">完成 ${doneN} / ${all.length}${c.fw===c.wk?"・🏅 全勤獎已領取":"・全部完成有全勤獎（任選 1 個稀有作物）"}</span></p>
+    ${act.length?`<div class="cmslist">${act.map(card).join("")}</div>`:`<p class="empty-note">這週的委託全部完成了，下週一會有新的委託！</p>`}
+    <p class="dsec">委託章與專屬家具</p><div class="cmsstamps">${stamps}</div>`;
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest&&e.target.closest("[data-cmsdo],[data-cmsgo],[data-cmsrare]"); if(!t) return;
+  if(t.dataset.cmsdo){ cmsTurnIn(t.dataset.cmsdo); return; }
+  if(t.dataset.cmsgo){ Sound.sfx("select"); openZone(t.dataset.cmsgo); return; }
+  if(t.dataset.cmsrare){ const k=t.dataset.cmsrare; if(!RARE[k]) return; S.rare=S.rare||{}; S.rare[k]=(S.rare[k]||0)+1; save(); queueSync(); $("#cmsDlg").close();
+    Sound.sfx("get"); toast(`🏅 全勤獎：${RARE[k].name} ×1 放進倉庫了`); if(curPlace&&curPlace.id==="myhome") try{ renderPlace(); }catch(e2){} }
+});
 function npcClaimedToday(id){ return ((S.npcDay||{})[id])===npcToday(); }
 let NPC_DAY_SEEN="";
 setInterval(()=>{ const t=npcToday(); if(!NPC_DAY_SEEN){ NPC_DAY_SEEN=t; return; } if(t===NPC_DAY_SEEN) return;   // 網頁開著跨過午夜：NPC 卡片換成新的一天
@@ -11287,6 +11502,7 @@ function renderZoneNpc(zoneId){
   const box=$("#zNpc"); if(!box) return;
   const here=npcList().filter(n=>n.zone===zoneId);
   if(!here.length||!S.group){ box.innerHTML=""; return; }
+  try{ cmsPresence(zoneId); }catch(e){}
   box.innerHTML=here.map(n=>{ const done=npcClaimedToday(n.id);
     return `<div class="npccard">
       <span class="npcface" aria-hidden="true">${avatarSVG(n.av)}</span>
@@ -11294,7 +11510,7 @@ function renderZoneNpc(zoneId){
         <p class="npcsay">「${esc(done?"今天的種子給過你囉，明天再來找我吧！":n.say)}」</p>
         ${done?"":`<p class="ahint" style="margin:2px 0 0">回答一題這裡的情報問題，答對送 ${QUIZ_MULT} 倍種子！</p>`}</div>
       <button class="act${done?" ghost":""}" type="button" data-npcseed="${n.id}" ${done?"disabled":""}>${done?"今天已領":"❓ 答題領種子"}</button>
-    </div>`; }).join("");
+    </div>${cmsNpcHTML(n)}`; }).join("");
 }
 function claimNpcSeeds(id){
   const n=npcList().find(x=>x.id===id); if(!n||npcClaimedToday(id)) return;
@@ -12720,6 +12936,7 @@ function renderFarm(panel){
       </button></div>`;
     }).join("")}</div>
     <p class="ahint" style="margin-top:12px">收成的蔬菜放在展示區下方的「倉庫」，可以餵寵物、送人或砸過去。</p>`},
+      {id:"cms",label:"📜 NPC 委託",badge:(()=>{ try{ if(!cmsOn()) return ""; const r=cmsActive().filter(cmsReady).length; return r?`${r} 可交付`:""; }catch(e){ return ""; } })(),html:cmsListHTML()},
       {id:"rare",label:"📖 稀有圖鑑",badge:`${rareCount()}/${Object.keys(RARE).length}`,html:rareBookHTML()},
       {id:"steal",label:"🕵 偷菜紀錄",badge:stolenLog.length||"",html:`
     ${stolenLog.length?`<div class="vsbook" style="max-height:none">${stolenLog.map(x=>{ const c=CROPS[String(x.msg||"").split("|")[1]]||{name:"蔬菜",unit:"份"};
@@ -12822,7 +13039,7 @@ function farmClick(i){
     const bonus=jb("south",2)&&(pl.c==="pumpkin"||pl.c==="strawberry")?2:0;          // 烈陽遊俠：南瓜、草莓 +2
     const stolen=stealsOn(myCode(),i,pl.t).length, amount=Math.max(1,st.crop.yield+bonus-stolen);
     const rare=tryRare(i,pl);                          // 先看鄰居，再清空這塊田
-    S.barn=S.barn||{}; S.barn[pl.c]=(S.barn[pl.c]||0)+amount; plots[i]=null;
+    S.barn=S.barn||{}; S.barn[pl.c]=(S.barn[pl.c]||0)+amount; plots[i]=null; cmsEvt("harvest");
     save(); queueSync(); pushFarm(); Sound.sfx("get");
     toast(`收成${st.crop.name} ×${amount}，放進倉庫了${stolen?`（被偷了 ${stolen} ${st.crop.unit}）`:""}`);
     if(rare) setTimeout(()=>rareFound(rare),700);
@@ -12868,7 +13085,7 @@ SHOP.rug.items.push(...[["rug_job_road", "國道聖騎士的地毯", 0], ["rug_j
 SHOP.floor.items.push(...[["jf_road", "交通錐", 0], ["jf_civil", "鋼筋混凝土柱", 0], ["jf_drain", "水閘門模型", 0], ["jf_park", "科學園區模型", 0], ["jf_plan", "沙盤模型", 0], ["jf_renew", "鍊金爐", 0], ["jf_eco", "盆景森林", 0], ["jf_south", "芒果樹盆栽", 0], ["jf_digital", "伺服器機櫃", 0], ["jf_support", "補給站櫃台", 0]]);
 SHOP.petgear.items.push(...[["pg_job_road", "迷你反光背心", 0], ["pg_job_civil", "小安全帽", 0], ["pg_job_drain", "小雨衣帽", 0], ["pg_job_park", "迷你無塵帽", 0], ["pg_job_plan", "小綸巾", 0], ["pg_job_renew", "小護目鏡", 0], ["pg_job_eco", "小花環", 0], ["pg_job_south", "小草帽", 0], ["pg_job_digital", "小耳機", 0], ["pg_job_support", "小補給圍巾", 0]]);
 const JOB_SHOP=new Set(["wp_job_road", "fl_job_road", "rug_job_road", "jf_road", "pg_job_road", "wp_job_civil", "fl_job_civil", "rug_job_civil", "jf_civil", "pg_job_civil", "wp_job_drain", "fl_job_drain", "rug_job_drain", "jf_drain", "pg_job_drain", "wp_job_park", "fl_job_park", "rug_job_park", "jf_park", "pg_job_park", "wp_job_plan", "fl_job_plan", "rug_job_plan", "jf_plan", "pg_job_plan", "wp_job_renew", "fl_job_renew", "rug_job_renew", "jf_renew", "pg_job_renew", "wp_job_eco", "fl_job_eco", "rug_job_eco", "jf_eco", "pg_job_eco", "wp_job_south", "fl_job_south", "rug_job_south", "jf_south", "pg_job_south", "wp_job_digital", "fl_job_digital", "rug_job_digital", "jf_digital", "pg_job_digital", "wp_job_support", "fl_job_support", "rug_job_support", "jf_support", "pg_job_support"]);                 // 職業主題：轉職取得，不能用種子買
-const jobShopHint=id=>{ const k=String(id).replace(/^(wp_job_|fl_job_|rug_job_|jf_|pg_job_)/,""), j=jobById(k); return j?(/^jf_/.test(id)?`第一次轉職「${j.n1}」取得`:`第二次轉職「${j.n2}」取得`):"轉職取得"; };
+const jobShopHint=id=>{ if(/^d_cm_/.test(id)){ const n=npcList().find(x=>CMS_FURN[x.id]===id); return `集滿${n?n.name:"NPC"}的 ${CMS_STAMP} 個委託章取得`; } const k=String(id).replace(/^(wp_job_|fl_job_|rug_job_|jf_|pg_job_)/,""), j=jobById(k); return j?(/^jf_/.test(id)?`第一次轉職「${j.n1}」取得`:`第二次轉職「${j.n2}」取得`):"轉職取得"; };
 const CONSUME=new Set(["snack","fert"]);
 const TOURIST_NO_SHOP=new Set(["pets","petgear","snack","bed","wear","avacc"]);   // 觀光客不能買：人物與寵物相關商品
 const touristShopBan=(cat,id)=>!restricted()?"":TOURIST_NO_SHOP.has(cat)?"購買人物與寵物相關商品":(!CONSUME.has(cat)&&SHOP_THEME[id]!=="classic")?"購買經典款以外的家具":"";
@@ -13122,7 +13339,16 @@ function troShelfSVG(list){                                // 獎盃架：木頭
     ${L.length?"":`<text x="33" y="18" text-anchor="middle" font-size="5" fill="#D9A566">還沒有獎盃</text>`}</svg>`;
 }
 DECO_SPR.d_trophyshelf=Array(21).fill(".".repeat(40));     // 擺設尺寸 40x21（畫面由 troShelfSVG 畫）
-SHOP.floor.items.push(["d_trophyshelf","獎盃架",0]); JOB_SHOP.add("d_trophyshelf");   // 拿到第一座獎盃才出現在商店
+SHOP.floor.items.push(["d_trophyshelf","獎盃架",0]); JOB_SHOP.add("d_trophyshelf");
+/* NPC 委託專屬家具：集滿那位 NPC 的 5 個委託章才會出現在商店（免費） */
+DECO_SPR.d_cm_atu=["......f...f.....", ".....fjf.fjf....", "....fjjjfjjjf...", "...fjjjjfjjjjf..", "...fjjfjjjfjjf..", "....fjfjjjfjf...", "....fwfjjjfwf...", ".....wwfffww....", ".....wwwwwww....", "...KKKKKKKKKK...", "...KCDDDDDDCK...", "....KCCCCCCK....", "....KCDDDDCK....", "....KCCCCCCK....", ".....KCCCCK.....", ".....KKKKKK....."]; SHOP.floor.items.push(["d_cm_atu","小白菜盆栽",0]); JOB_SHOP.add("d_cm_atu");
+DECO_SPR.d_cm_luobo=["...........f.f..", "..........fjfjf.", "...........fjf..", "..KKKKKKKKKfK...", ".KOOOOOOOOOOOK..", "KOOtOOOOOtOOOOK.", "KOOOOOOOOOOOOK..", "KOOOOOtOOOOOK...", ".KOOOOOOOOOK....", "..KOOOtOOOK.....", "...KOOOOOK......", "....KOOOK.......", ".....KOK........", "......K........."]; SHOP.floor.items.push(["d_cm_luobo","紅蘿蔔抱枕",0]); JOB_SHOP.add("d_cm_luobo");
+DECO_SPR.d_cm_tomato=["..KbbbbbbbbbbK..", "..Kb.f..f..fbK..", "..Kbfjf.fjf.bK..", "..Kb.fssf.f.bK..", "..Kbf.srs.fjbK..", "..Kb.f.ss.fsbK..", "..Kbfjf.fj.sbK..", "..Kbssf.f.f.bK..", "..Kbsrsfjf..bK..", "..Kb.ss..f..bK..", "..Kb..f.ss..bK..", "..Kb.fjfsrs.bK..", "...KKKKKKKKKK...", "...KCDDDDDDCK...", "....KCCCCCCK....", "....KKKKKKKK...."]; SHOP.floor.items.push(["d_cm_tomato","番茄藤架",0]); JOB_SHOP.add("d_cm_tomato");
+DECO_SPR.d_cm_ami=["....f.Y..Y.f....", "...fjYhYYhYjf...", "...fjYYhhYYjf...", "....fYhYYhYf....", "...fjYYhhYYjf...", "..KKKKKKKKKKKK..", "..KbccccccccbK..", "..KmmmmmmmmmmK..", "..KbccccccccbK..", "..KbcdccccdcbK..", "..KbccccccccbK..", "..KmmmmmmmmmmK..", "..KbccccccccbK..", "...KKKKKKKKKK..."]; SHOP.floor.items.push(["d_cm_ami","玉米收納桶",0]); JOB_SHOP.add("d_cm_ami");
+DECO_SPR.d_cm_nainai=[".......ef.......", "......efe.......", "....KKKaKKKK....", "..KKOOODOOOOKK..", ".KOOODOODOOOOOK.", "KOODOOiiiiODOOOK", "KOODOiYkkYiODOOK", "KOODOiYkkYiODOOK", "KOODOOiiiiODOOOK", ".KOOODOODOOOOOK.", "..KKOOODOOOOKK..", "....KKKKKKKK...."]; SHOP.floor.items.push(["d_cm_nainai","南瓜小燈",0]); JOB_SHOP.add("d_cm_nainai");
+DECO_SPR.d_cm_xiaomei=["......f..f......", ".....fssssf.....", "....KsQsrsQK....", "...KsssssssK....", "..KwwwwwwwwwwK..", "..KQQQQQQQQQQK..", "..KEEEEEEEEEEK..", "..KsQsQsQsQsQK..", "..KEEEEEEEEEEK..", "..KwwwwwwwwwwK..", ".KoooooooooooK..", "..KKKKKnKKKKK...", "......Kn.K......", "......KnK.......", "....KKoooKK.....", "...KoooooooK...."]; SHOP.floor.items.push(["d_cm_xiaomei","草莓蛋糕架",0]); JOB_SHOP.add("d_cm_xiaomei");
+DECO_SPR.d_cm_axing=["......KKKK......", ".....Km..mK.....", "..KKKKKKKKKKKK..", ".KBCCCCCCCCCCBK.", ".KCsssCCCvvvCCK.", ".KCsYsCCCvwvCCK.", ".KCsssCCCvvvCCK.", ".KhhhhhhhhhhhhK.", ".KCCCCCPPPCCCCK.", ".KCCuuCPQPCCCCK.", ".KCCuuCPPPCCCCK.", ".KBCCCCCCCCCCBK.", "..KKKKKKKKKKKK..", "..KK........KK.."]; SHOP.floor.items.push(["d_cm_axing","旅行行李箱",0]); JOB_SHOP.add("d_cm_axing");
+   // 拿到第一座獎盃才出現在商店
 function troPanelHTML(){
   const L=troSorted(), c=troCount(), st=troStreak();
   const best=Object.keys(MG).map(g=>{ const x=troS().list.filter(t=>t.g===g).sort((a,b)=>b.v-a.v)[0]; return x?`${MG[g].icon} ${esc(MG[g].name)} ${x.v} ${esc(MG[g].unit)}（${troMD(x.w)} 週）`:""; }).filter(Boolean);
@@ -13989,7 +14215,7 @@ async function sendPlaydate(code,p){                   // 打開拜訪視窗時�
   addPending(payload);
   const r=friendBump(code,p.name,p.pet,(+p.level||1)>=4?"adult":"baby",day); if(!r) return;
   if(jb("road",2)){ const f=friends()[code], lb=friendLv(f.n); f.n++; r.n=f.n; const la=friendLv(f.n); if(la>lb) r.up=la; }   // 國道聖騎士：友誼額外 +1
-  const reached=petAffAdd(1); save(); queueSync();
+  const reached=petAffAdd(1); save(); queueSync(); cmsEvt("play");
   const mine=petNameOf(S.pet), theirs=petNameOf(p.pet), nx=friendNext(r.n);
   Sound.sfx("achieve");
   toast(`🐾 ${mine}和${theirs}一起玩了！${mine}親密度 +1（${affOf(S.pet.type)}/${AFF_MAX}）・友誼 ${r.n}${nx?`，再 ${nx[0]-r.n} 次變成「${nx[1]}」`:""}`);

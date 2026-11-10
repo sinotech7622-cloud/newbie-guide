@@ -1897,6 +1897,22 @@ body.tour-lock .mapframe{z-index:41}
 .lounge{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
 .qtybox{display:inline-flex;align-items:stretch;gap:4px;flex:none}
 .qtybox .qty{width:64px;height:42px;box-sizing:border-box;padding:4px 6px;text-align:center}
+.qtybox.sm{gap:3px}.qtybox.sm .qty{width:46px;height:32px;padding:2px 4px;font-size:14px}
+.qtybox.sm .qbtn{height:32px;min-width:32px;padding:0 6px;font-size:14px}
+.barnitem.fav{grid-column:1/-1;flex-wrap:wrap;row-gap:6px;border-color:#FF8FB1;background:#2A2470}
+.barnitem.fav .bfmain{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.barnitem.fav .bfmain b{flex:none;white-space:normal}.barnitem.fav .bfmain .ahint{white-space:normal}
+.barnitem.fav .favtag{font-size:12px;color:#FF8FB1;margin-left:6px}
+.feedqty{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-end;flex:0 1 auto;margin-left:auto}
+.feedqty .act{padding:5px 12px;font-size:14px;white-space:nowrap}.feedqty .mini-btn{white-space:nowrap}
+@media (max-width:640px){.barnitem.fav .feedqty{flex-basis:100%;justify-content:space-between}.barnitem.fav .feedqty .act{flex:1}}
+.shopqty{display:flex;flex-direction:column;align-items:stretch;gap:4px;width:100%;margin-top:4px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.18)}
+.shopqty .sqhead{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:12px;color:var(--win-muted)}
+.shopqty .sqall{color:#FFD23F;background:none;border:0;padding:0;font:inherit;text-decoration:underline;cursor:pointer}
+.shopqty .qtybox{align-self:center}
+.shopcard>.shopbtns{align-self:stretch}
+.shopbtns .shopqty .act{width:100%;padding:5px 6px;font-size:13px;white-space:normal;line-height:1.3}
+.shopqty .act small{display:block;font-size:11px;opacity:.85}
 .qtybox .qbtn{height:42px;box-sizing:border-box;min-width:42px;padding:0 10px;font-size:15px;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center}
 .lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
 .lrow .ainput{flex:1;min-width:180px}
@@ -2750,7 +2766,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-06T12:56+0800">2026/11/6 12:56</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-10T11:40+0800">2026/11/10 11:40</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -9281,22 +9297,31 @@ function claimGifts(){
   const hb=$("#homeBarn"); if(hb){ hb.innerHTML=barnHTML(got); }        // 倉庫數量即時更新
   try{ renderMenu(); }catch(e){}
 }
-function feedPet(k){
+async function feedPetQty(btn){                           // 最愛的蔬菜：照數量框一次餵 n 份（量大先確認）
+  const k=btn.dataset.feed; if(!btn.hasAttribute("data-feedqty")) return feedPet(k);
+  const n=Math.min(qtyOf("feed|"+k),(S.barn||{})[k]||0); if(!(n>0)) return;
+  if(n>QTY_ASK_FEED&&!(await uiConfirm(`要一次餵 ${n} ${CROPS[k].unit}${CROPS[k].name}給${petNameOf(feedTarget())}嗎？`,"餵食"))) return;
+  feedPet(k,n);
+}
+function feedPet(k,n){
+  n=Math.max(1,Math.min(QTY_MAX,n|0||1));
   if(!S.pet||!CROPS[k]||!((S.barn||{})[k]>0)) return;
-  S.barn[k]--; S.petFed=(S.petFed||0)+1; S.guardUntil=Date.now()+guardMs();
-  const P=feedTarget(), pn=petNameOf(P), fav=PET_FAV[P.type]===k, t=P.type;
+  const P=feedTarget(), fav=PET_FAV[P.type]===k; if(!fav) n=1;   // 不是最愛：看守時間不會累加，一次只餵 1 份
+  n=Math.min(n,S.barn[k]);
+  S.barn[k]-=n; S.petFed=(S.petFed||0)+n; S.guardUntil=Date.now()+guardMs();
+  const pn=petNameOf(P), t=P.type;
   let reached=false;
   let ecoPlus=0;
   if(fav&&jb("eco",2)){ const J=jobS(); if(J.feedDay!==dayKey()){ J.feedDay=dayKey(); ecoPlus=2; } }      // 大地守護者：每天第一次餵最愛 +2
   const wasFull=affOf(t)>=AFF_MAX;
-  if(fav) reached=affGain(t,1+ecoPlus);
-  if(fav) cmsEvt("feed");
+  if(fav) reached=affGain(t,n+ecoPlus);
+  if(fav) for(let i=0;i<n;i++) cmsEvt("feed");          // NPC 委託：一次餵 n 份算 n 次
   save(); queueSync(); pushFarm(true);
-  if(fav&&!reached&&!wasFull) setTimeout(()=>toast(`💗 ${pn}的親密度 +${1+ecoPlus}（${affOf(t)}/${AFF_MAX}）${ecoPlus?"・大地守護者的祝福":""}`),1300);
+  if(fav&&!reached&&!wasFull) setTimeout(()=>toast(`💗 ${pn}的親密度 +${n+ecoPlus}（${affOf(t)}/${AFF_MAX}）${ecoPlus?"・大地守護者的祝福":""}`),1300);
   if(reached&&P===S.pet) setTimeout(()=>affinityMax(t),900);
   else if(reached) setTimeout(()=>{ Sound.sfx("levelup"); toast(`💗 ${pn}的親密度滿 ${AFF_MAX} 了！彩虹毛色可以在「寵物窩 → 出遊隊伍」換上`); },900);
   Sound.sfx(fav?"achieve":"get");
-  toast(fav?`${pn}最愛吃${CROPS[k].name}了！接下來 ${guardMs()/60000} 分鐘會認真看守農場`:`${pn}吃掉了${CROPS[k].name}，接下來 ${guardMs()/60000} 分鐘會幫你看守農場（餵最愛的${CROPS[PET_FAV[t]]?CROPS[PET_FAV[t]].name:"食物"}才會提升親密度）`);
+  toast(fav?`${pn}吃了 ${n} ${CROPS[k].unit}最愛的${CROPS[k].name}！接下來 ${guardMs()/60000} 分鐘會認真看守農場`:`${pn}吃掉了${CROPS[k].name}，接下來 ${guardMs()/60000} 分鐘會幫你看守農場（餵最愛的${CROPS[PET_FAV[t]]?CROPS[PET_FAV[t]].name:"食物"}才會提升親密度）`);
   const el=$("#roomPet");
   const el2=P!==S.pet?$("#roomPetF"+(partyList().findIndex(f=>f.type===t))):null, eF=el2||el;
   if(eF){ sayAt(eF,fav?`${CROPS[k].name}！最喜歡這個了！`:(PET_VOICE[t]||"好吃！")); heartAt(eF); if(fav) setTimeout(()=>heartAt(eF),400); }
@@ -9449,7 +9474,11 @@ function barnHTML(got){
     <div class="abar"><b class="hb-title">倉庫 ${helpBtn("barn")}</b><span class="ahint">共 ${total} 份${pn?`・點「餵」看${esc(pn)}的反應`:""}</span>
       ${g?`<span class="st st-gold">🐾 ${esc(pn)}看守中 ${fmtLeft(left)}</span>`:""}</div>
     ${partyList().length?`<div class="feedto" role="radiogroup" aria-label="餵給哪一隻"><span class="ahint">餵給：</span>${[S.pet].concat(partyList()).map((p,i)=>`<button type="button" class="themechip${(partyList()[FEED_TO-1]?FEED_TO:0)===i?" on":""}" data-feedto="${i}" aria-pressed="${(partyList()[FEED_TO-1]?FEED_TO:0)===i}"><span class="fdpv" aria-hidden="true">${petSVG(i?p:S.pet,"adult")}</span>${esc(petNameOf(p))}${i?"":"（隊長）"}</button>`).join("")}</div>`:""}
-    <div class="barn">${Object.entries(CROPS).map(([k,c])=>`<div class="barnitem${barn[k]?"":" none"}${got[k]?" got":""}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}${S.pet&&PET_FAV[feedTarget().type]===k?' <span title="寵物最愛">♥</span>':""}</b><span>${barn[k]||0} ${esc(c.unit)}</span>${got[k]?`<span class="gotplus">+${got[k]}</span>`:""}${S.pet&&barn[k]?`<button class="mini-btn" type="button" data-feed="${k}" title="拿來餵寵物">餵</button>`:""}</div>`).join("")}</div>
+    <div class="barn">${(()=>{ const P=S.pet&&PETS[S.pet.type]?feedTarget():null, fk=P?PET_FAV[P.type]:"", fc=CROPS[fk]; if(!fc) return "";
+      const have=barn[fk]||0, a=affOf(P.type), need=Math.max(0,AFF_MAX-a), mx=Math.min(QTY_MAX,have);
+      return `<div class="barnitem fav${have?"":" none"}${got[fk]?" got":""}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+fk)}</span>
+        <div class="bfmain"><b>${esc(fc.name)}<span class="favtag">♥ ${esc(petNameOf(P))}最愛</span></b><span class="ahint">倉庫 ${have} ${esc(fc.unit)}・每${esc(fc.unit)}親密度 +1・目前 ${a}/${AFF_MAX}${a>=AFF_MAX?"（滿了，多的會變成羈絆點）":""}</span></div>${got[fk]?`<span class="gotplus">+${got[fk]}</span>`:""}
+        ${have?`<div class="feedqty">${qtyBoxHTML("feed|"+fk,mx,"要餵幾"+fc.unit)}${need>0?`<button class="mini-btn" type="button" data-qfill="${Math.min(need,mx)}" data-qfor="feed|${fk}" title="填入剛好補到 ${AFF_MAX} 的數量">補到 ${AFF_MAX}</button>`:""}<button class="act" type="button" data-feed="${fk}" data-feedqty data-qbtn="feed|${fk}">${qtyLabel("feed|"+fk,1)}</button></div>`:`<span class="ahint">倉庫沒有${esc(fc.name)}了</span>`}</div>`; })()}${Object.entries(CROPS).filter(([k])=>!(S.pet&&PETS[S.pet.type]&&PET_FAV[feedTarget().type]===k)).map(([k,c])=>`<div class="barnitem${barn[k]?"":" none"}${got[k]?" got":""}"><span class="seedicon" aria-hidden="true">${spriteSVG("f_"+k)}</span><b>${esc(c.name)}${S.pet&&PET_FAV[feedTarget().type]===k?' <span title="寵物最愛">♥</span>':""}</b><span>${barn[k]||0} ${esc(c.unit)}</span>${got[k]?`<span class="gotplus">+${got[k]}</span>`:""}${S.pet&&barn[k]?`<button class="mini-btn" type="button" data-feed="${k}" title="拿來餵寵物">餵</button>`:""}</div>`).join("")}</div>
     ${Object.keys(RARE).some(k=>(S.rare||{})[k]>0)?`<div class="barn rarebarn">${Object.entries(RARE).filter(([k])=>(S.rare||{})[k]>0).map(([k,R])=>`<div class="barnitem rareitem"><span class="seedicon" aria-hidden="true">${spriteSVG(R.id)}</span><b>${esc(R.name)}</b><span>${S.rare[k]} ${esc(CROPS[k].unit)}</span>${S.pet?`<button class="mini-btn" type="button" data-rarefeed="${k}" title="拿來餵寵物（親密度 +${RARE_FEED}）">餵</button>`:""}</div>`).join("")}</div>`:""}
     <p class="ahint" style="margin:8px 0 0">${pn?`餵完 5 分鐘內，${esc(pn)}會更專心看守農場，小偷更容易被抓到。`:""}蔬菜也可以帶去別人家送禮或砸過去，去村長家和總長辦公室送菜還有驚喜。</p>
     ${log.length?`<details class="ixlog"><summary>互動紀錄（${log.length}）</summary>${log.map(x=>{ const c=CROPS[x.crop]||{name:"蔬菜",unit:"份"};
@@ -13738,8 +13767,12 @@ function renderShop(panel){
           else if(cat==="avacc") btn=using?`<button class="act ghost" type="button" data-shopuse="avacc|">配戴中・拿下</button>`:`<button class="act" type="button" data-shopuse="avacc|${id}">戴上</button>`;
           else btn=!pn?`<span class="ahint">有寵物之後就能戴</span>`:using?`<button class="act ghost" type="button" data-shopuse="petgear|">配戴中・拿下</button>`:`<button class="act" type="button" data-shopuse="petgear|${id}">幫${esc(pn)}戴上</button>`;
         }else
-        if(cat==="fert") btn=`<button class="act ghost" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>買 1 包（${price}）</button>${n?`<button class="act" type="button" data-gofarm="${id}">去施肥</button>`:""}`;
-        else if(cat==="snack") btn=`<button class="act ghost" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>買 1 個（${price}）</button>${n?`<button class="act" type="button" data-snackfeed="${id}" ${pn?"":"disabled"}>餵${pn?esc(pn):""}</button>`:""}`;
+        if(cat==="fert"||cat==="snack"){
+          const mb=Math.min(QTY_MAX,Math.floor(total/price));
+          btn=`<div class="shopqty"><div class="sqhead"><span>購買</span><span>${mb?`最多可買 ${mb}`:`還差 ${price-total} 顆`}</span></div>${qtyBoxHTML("buy|"+id,mb,"要買幾"+(cat==="fert"?"包":"個"),!mb)}<button class="act ghost" type="button" data-shopbuy="${id}" data-qbtn="buy|${id}" ${mb?"":"disabled"}>${qtyLabel("buy|"+id,1)}</button></div>`;
+          if(cat==="fert"&&n) btn+=`<div class="shopqty"><button class="act" type="button" data-gofarm="${id}">去施肥（擁有 ${n} 包）</button></div>`;
+          if(cat==="snack"&&n) btn+=pn?`<div class="shopqty"><div class="sqhead"><span>餵${esc(pn)}</span><span>擁有 ${n}・<button class="sqall" type="button" data-qfill="max" data-qfor="snack|${id}">全部</button></span></div>${qtyBoxHTML("snack|"+id,n,"要餵幾個")}<button class="act" type="button" data-snackfeed="${id}" data-qbtn="snack|${id}">${qtyLabel("snack|"+id,1)}</button></div>`:`<div class="shopqty"><span class="ahint">有寵物之後就能餵</span></div>`;
+        }
         else if(!owned) btn=`<button class="act" type="button" data-shopbuy="${id}" ${can?"":"disabled"}>購買（${price} 顆）</button>`;
         else if(cat==="floor") btn=d.floor===id?`<button class="act ghost" type="button" data-shopuse="floor|">左邊・收起</button>`
           :d.floor2===id?`<button class="act ghost" type="button" data-shopuse="floor2|">右邊・收起</button>`
@@ -14040,17 +14073,19 @@ function vipCongrats(){
   $("#chGift").innerHTML=`<span class="pv vipv">👑</span><div><p class="dbody"><b>種子商店 VIP</b></p><p class="ahint">家具、牆紙、地板、地毯都能先預覽再決定。</p></div>`;
   const d=$("#cheatDlg"); if(!d.open) d.showModal(); Sound.sfx("levelup");
 }
-async function shopBuy(id){
+async function shopBuy(id,qn){
   const it=shopItem(id); if(!it) return;
   { const ban=touristShopBan(it.cat,id); if(ban&&touristBlock(ban)) return; }
-  const used=planPay(it.price);
-  if(!used){ toast(`種子不夠，還差 ${it.price-seedTotal()} 顆`); Sound.sfx("error"); return; }
-  if(it.price>=40&&!(await uiConfirm(`要用 ${it.price} 顆種子買「${it.name}」嗎？\n會用掉：${usedText(used)}`,"購買"))) return;
+  const n=CONSUME.has(it.cat)?Math.max(1,Math.min(QTY_MAX,qn|0||1)):1, unit=it.cat==="fert"?"包":"個", cost=it.price*n;   // 零食、肥料可以一次買多個
+  const used=planPay(cost);
+  if(!used){ toast(`種子不夠，還差 ${cost-seedTotal()} 顆`); Sound.sfx("error"); return; }
+  if(cost>=40&&!(await uiConfirm(`要用 ${cost} 顆種子買${n>1?` ${n} ${unit}`:""}「${it.name}」嗎？\n會用掉：${usedText(used)}`,"購買"))) return;
+  if(!planPay(cost)) return;
   paySeeds(used); shopState();
-  const wasVip=isVip(); S.shopBuys=shopBuysCount()+1;
+  const wasVip=isVip(); S.shopBuys=shopBuysCount()+n;
   if(!wasVip&&isVip()) setTimeout(vipCongrats,900);
-  if(it.cat==="snack") S.snacks[id]=(S.snacks[id]||0)+1;
-  else if(it.cat==="fert"){ S.fert=S.fert||{}; S.fert[id]=(S.fert[id]||0)+1; }
+  if(it.cat==="snack") S.snacks[id]=(S.snacks[id]||0)+n;
+  else if(it.cat==="fert"){ S.fert=S.fert||{}; S.fert[id]=(S.fert[id]||0)+n; }
   else if(it.cat==="pets"){ S.shopOwned[id]=true; S.petKinds=S.petKinds||{}; S.petKinds[shopPetType(id)]=true; }
   else if(WEAR_CATS.has(it.cat)){ S.shopOwned[id]=true; wearShopItem(it.cat,id); }
   else{ S.shopOwned[id]=true; if(it.cat==='floor'&&S.deco.floor&&!S.deco.floor2) S.deco.floor2=id; else S.deco[it.cat]=id; }
@@ -14062,7 +14097,7 @@ async function shopBuy(id){
     else if(!(await adoptShopPet(id,true))) toast(`買下「${it.name}」！之後在商店或寵物交換所都能換成牠`);
     renderPlace(); return;
   }
-  toast(it.cat==="fert"?`買了 1 包${it.name}，到開心農場就能施肥`:it.cat==="snack"?`買了 1 個${it.name}`:it.cat==="petgear"&&!S.pet?`買下「${it.name}」，有寵物之後就能戴上`:WEAR_CATS.has(it.cat)?`買下「${it.name}」，已經${it.cat==="wear"?"換上":"戴上"}了！`:`買下「${it.name}」，已經擺進展示空間！`);
+  toast(it.cat==="fert"?`買了 ${n} 包${it.name}，到開心農場就能施肥`:it.cat==="snack"?`買了 ${n} 個${it.name}`:it.cat==="petgear"&&!S.pet?`買下「${it.name}」，有寵物之後就能戴上`:WEAR_CATS.has(it.cat)?`買下「${it.name}」，已經${it.cat==="wear"?"換上":"戴上"}了！`:`買下「${it.name}」，已經擺進展示空間！`);
   if(WEAR_CATS.has(it.cat)){ renderHUD(); buildMap(); }
   renderPlace();
 }
@@ -14092,15 +14127,52 @@ function shopUse(cat,id){
   if(id&&cat==="floor2"&&S.deco.floor===id) S.deco.floor="";
   save(); queueSync(); pushFarm(true); Sound.sfx(id?"get":"undo"); renderPlace();
 }
-function feedSnack(id){
+async function feedSnackQty(id,n){                         // 量大先確認
+  const it=shopItem(id); if(!it||!S.pet) return;
+  n=Math.max(1,Math.min(n|0||1,(S.snacks||{})[id]||0)); if(!(n>0)) return;
+  if(n>QTY_ASK_SNACK&&!(await uiConfirm(`要一次餵 ${n} 個${it.name}給${petNameOf(S.pet)}嗎？（親密度 +${n*it.aff}）`,"餵食"))) return;
+  feedSnack(id,n);
+}
+function feedSnack(id,n){
   const it=shopItem(id); if(!it||!S.pet||!(S.snacks[id]>0)) return;
-  S.snacks[id]--; const reached=petAffAdd(it.aff); save(); queueSync();
+  n=Math.max(1,Math.min(QTY_MAX,n|0||1,S.snacks[id]));
+  S.snacks[id]-=n; const reached=petAffAdd(it.aff*n); save(); queueSync();
   const pn=S.pet.name||PETS[S.pet.type].name;
-  Sound.sfx("achieve"); petEatFx(`${it.name}！好吃～`,it.aff>=5);
-  toast(`💗 ${pn}吃了${it.name}，親密度 +${it.aff}（${affOf(S.pet.type)}/${AFF_MAX}）`);
+  Sound.sfx("achieve"); petEatFx(`${it.name}！好吃～`,it.aff*n>=5);
+  toast(`💗 ${pn}吃了${n>1?` ${n} 個`:""}${it.name}，親密度 +${it.aff*n}（${affOf(S.pet.type)}/${AFF_MAX}）`);
   if(reached) setTimeout(()=>affinityMax(S.pet.type),900);
   setTimeout(()=>{ if(curPlace&&curPlace.id==="seedshop"&&$("#shopPanel")) renderShop($("#shopPanel")); },60);
 }
+
+/* ---- 數量框（倉庫餵食、零食、肥料共用）：− 數字 ＋，超過上限自動改回上限 ---- */
+const QTY_MAX=99, QTY_ASK_FEED=20, QTY_ASK_SNACK=5;
+function qtyBoxHTML(key,max,label,dis){
+  max=Math.max(1,Math.min(QTY_MAX,max|0));
+  return `<span class="qtybox sm"><button class="act ghost qbtn" type="button" data-qstep="-1" aria-label="少一個" ${dis?"disabled":""}>−</button><input class="ainput qty" type="number" inputmode="numeric" min="1" max="${max}" value="1" data-qty="${key}" aria-label="${label}" ${dis?"disabled":""}><button class="act ghost qbtn" type="button" data-qstep="1" aria-label="多一個" ${dis?"disabled":""}>＋</button></span>`;
+}
+function qtyVal(inp){ if(!inp) return 1; const mx=Math.max(1,+inp.max||1); let v=parseInt(inp.value,10); if(!(v>=1)) v=1; if(v>mx) v=mx; return v; }
+function qtyLabel(key,n){                                   // 按鈕上的字跟著數量變
+  const [kind,id]=String(key).split("|");
+  if(kind==="buy"){ const it=shopItem(id); if(!it) return ""; return `買 ${n} ${it.cat==="fert"?"包":"個"}<small>共 ${n*it.price} 顆種子</small>`; }
+  if(kind==="snack"){ const it=shopItem(id); if(!it) return ""; return `餵 ${n} 個<small>親密度 +${n*it.aff}</small>`; }
+  if(kind==="feed"){ const c=CROPS[id]; return c?`餵 ${n} ${esc(c.unit)}`:""; }
+  return "";
+}
+function qtySync(inp,clamp){
+  if(!inp) return; const n=qtyVal(inp); if(clamp) inp.value=n;
+  const box=inp.closest(".shopqty,.feedqty"), b=box&&box.querySelector(`[data-qbtn="${CSS.escape(inp.dataset.qty)}"]`);
+  if(b) b.innerHTML=qtyLabel(inp.dataset.qty,n);
+}
+const qtyOf=key=>qtyVal(document.querySelector(`[data-qty="${CSS.escape(key)}"]`));
+document.addEventListener("click",e=>{
+  const st=e.target.closest&&e.target.closest("[data-qstep]");
+  if(st){ const inp=st.parentElement.querySelector("[data-qty]"); if(!inp) return; inp.value=qtyVal(inp)+(+st.dataset.qstep); qtySync(inp,true); Sound.sfx("cursor"); return; }
+  const fl=e.target.closest&&e.target.closest("[data-qfill]");
+  if(fl){ e.preventDefault(); const inp=document.querySelector(`[data-qty="${CSS.escape(fl.dataset.qfor)}"]`); if(!inp) return; inp.value=fl.dataset.qfill==="max"?inp.max:fl.dataset.qfill; qtySync(inp,true); Sound.sfx("cursor"); }
+});
+document.addEventListener("input",e=>{ if(e.target.matches&&e.target.matches("[data-qty]")) qtySync(e.target,false); });
+document.addEventListener("change",e=>{ if(e.target.matches&&e.target.matches("[data-qty]")) qtySync(e.target,true); });
+document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.matches&&e.target.matches("[data-qty]")){ e.preventDefault(); qtySync(e.target,true); const b=e.target.closest(".shopqty,.feedqty").querySelector(`[data-qbtn="${CSS.escape(e.target.dataset.qty)}"]`); if(b&&!b.disabled) b.click(); } });
 
 /* ---- 品種改良：相鄰（左右、上下）種了指定作物，收成時有機率長出稀有品種 ---- */
 const RARE={
@@ -15318,14 +15390,14 @@ $("#placeBody").addEventListener("click",async e=>{
     Sound.sfx("get"); toast(`牆擦乾淨了！回收了${Object.entries(got).map(([c,n])=>`${CROPS[c].name} ×${n}`).join("、")}，放進倉庫`); renderPlace(); return;
   }
   const fd2=t.closest("[data-feed]");
-  if(fd2){ feedPet(fd2.dataset.feed); return; }
+  if(fd2){ feedPetQty(fd2); return; }
   if(t.closest("[data-syncnow]")){ syncNow(t.closest("[data-syncnow]")); return; }
   const spv=t.closest("[data-shoppv]"); if(spv){ openPreview(spv.dataset.shoppv); return; }
   const sth=t.closest("[data-shoptheme]"); if(sth){ shopTheme=sth.dataset.shoptheme; Sound.sfx("select"); renderShop($("#shopPanel")); return; }
-  const sb=t.closest("[data-shopbuy]"); if(sb){ shopBuy(sb.dataset.shopbuy); return; }
+  const sb=t.closest("[data-shopbuy]"); if(sb){ shopBuy(sb.dataset.shopbuy,sb.hasAttribute("data-qbtn")?qtyOf("buy|"+sb.dataset.shopbuy):1); return; }
   { const sl=t.closest("[data-shoplock]"); if(sl){ touristBlock(sl.dataset.shoplock||"購買這個商品"); return; } }
   const su=t.closest("[data-shopuse]"); if(su){ const [c,i]=su.dataset.shopuse.split("|"); shopUse(c,i); return; }
-  const sf=t.closest("[data-snackfeed]"); if(sf){ feedSnack(sf.dataset.snackfeed); return; }
+  const sf=t.closest("[data-snackfeed]"); if(sf){ feedSnackQty(sf.dataset.snackfeed,sf.hasAttribute("data-qbtn")?qtyOf("snack|"+sf.dataset.snackfeed):1); return; }
   const rf=t.closest("[data-rarefeed]"); if(rf){ feedRare(rf.dataset.rarefeed); return; }
   const ng=t.closest("[data-npcgift]"); if(ng){ giveToNpc(ng.dataset.npcgift); return; }
   const dg=t.closest("[data-dig]"); if(dg){ digPlot(+dg.dataset.dig); return; }

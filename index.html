@@ -753,7 +753,11 @@ body.tourist [data-lounge="post"]::before,body.tourist [data-lounge="reply"]::be
 .cmsstamp.full .cmsfurn{filter:none}
 .cmsfurn svg{width:100%;height:100%}
 .cmsdots{color:var(--gold);letter-spacing:2px;font-size:13px}
-@media (max-width:640px){.cmsbox{margin-left:6px;flex-wrap:wrap}.cmscard{flex-wrap:wrap}}
+.cmshow{margin:6px 0 0!important;font-size:13px;line-height:1.55;color:#C9D3FF}
+.cmsbtns{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}.cmsbtns .act{white-space:nowrap}
+.cmswhy{margin:6px 0 0!important;padding:5px 8px;border-radius:4px;background:rgba(232,69,60,.18);border:1px solid rgba(255,140,130,.5);font-size:13px;color:#FFD9D4}
+.cmswhy.ok{background:rgba(95,227,154,.15);border-color:rgba(95,227,154,.55);color:#C9F5DA}
+@media (max-width:640px){.cmsbox{margin-left:6px;flex-wrap:wrap}.cmscard{flex-wrap:wrap}.cmsbtns{flex-direction:row;flex-wrap:wrap;flex-basis:100%}.cmsbtns .act{flex:1}}
 .showroom>.sr-wall{z-index:1}.showroom>.sr-photo{z-index:2}.showroom>.sr-weapon{z-index:3}.showroom>.sr-walldeco{z-index:4}.showroom>.sr-splats{z-index:5}
 .showroom>.sr-floor{z-index:6}.showroom>.sr-rugpx{z-index:7}
 .showroom>.sr-floordeco,.showroom>.sr-bed,.showroom>.sr-item,.showroom>.sr-outfit{z-index:8}
@@ -2766,7 +2770,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-10T11:40+0800">2026/11/10 11:40</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-11T21:21+0800">2026/11/11 21:21</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -11490,6 +11494,7 @@ function cmsEvt(kind,arg){                               // 採集、寵物動�
 }
 function cmsPresence(zoneId){                            // 帶寵物來玩、滿隊、打扮：走進 NPC 所在地點時檢查
   if(!cmsOn()||!S.pet) return;
+  if(!CMS_KEEP) CMS_WHY={};                              // 重新進來：舊的檢查結果清掉
   const c=cmsS(); let ch=false;
   cmsActive().forEach(id=>{ const q=c.q[id], n=npcList().find(x=>x.id===id); if(!q||!n||n.zone!==zoneId||c.d[id]||(+c.p[id]||0)>=q.n) return;
     let ok=false;
@@ -11500,6 +11505,86 @@ function cmsPresence(zoneId){                            // 帶寵物來玩、�
   });
   if(ch){ save(); queueSync(); }
 }
+/* ---- 委託提示：怎麼完成、前往哪裡；帶寵物類可以按「🐾 檢查」看還差什麼 ---- */
+const CMS_PRES=["bring","party","dress"];
+function cmsHow(id,q){                                     // 回傳 {t:提示文字, go:[按鈕文字, 前往代號]}
+  const n=npcList().find(x=>x.id===id)||{}, zn=cmsZoneName(n.zone), C=CROPS[q.c], pn=S.pet&&PETS[S.pet.type]?petNameOf(S.pet):"寵物";
+  switch(q.k){
+    case "veg": return {t:`倉庫準備好 ${q.n} ${C.unit}${C.name}，回${zn}找${n.name}按「交付」（交付時才會從倉庫扣）。${C.name}可以在開心農場種。`,go:["去開心農場","farm"]};
+    case "rare": return {t:`倉庫要有 1 ${C.unit}${RARE[q.c].name}。稀有品種要在開心農場把指定的作物種在旁邊才會長出來，線索在農場的稀有作物圖鑑。`,go:["去開心農場","farm"]};
+    case "harvest": return {t:"在開心農場收成，每收一塊田算 1 次。",go:["去開心農場","farm"]};
+    case "sea": return {t:"在地圖上點海面走過去，每走到海上一次算 1 次（撈到東西不是必要的）。",go:null};
+    case "seed": return {t:`從地圖點「${cmsZoneName(q.z)}」進去，每次進去有機會撿到種子；沒撿到就回地圖再點一次，撿到後同一個地點要隔 2 分鐘才會再撿到。`,go:[`前往${cmsZoneName(q.z)}`,"zone:"+q.z]};
+    case "find": return {t:"讀任務文件、做收藏任務時有機會撿到小物；各地點也藏著隱藏小物可以找找看。",go:null};
+    case "bring": return {t:`讓${PETS[q.t]?PETS[q.t].name:"寵物"}當隊長或跟班（溫暖的家 → 寵物窩），再從地圖點「${zn}」進去，進去的那一刻會檢查。`,go:null};
+    case "party": return {t:`跟班位置要全部帶滿（溫暖的家 → 寵物窩），再從地圖點「${zn}」進去，進去的那一刻會檢查。`,go:null};
+    case "dress": return {t:`隊長要穿「${PET_WEAR[q.w]?PET_WEAR[q.w].name:"指定的衣服"}」（溫暖的家 → 寵物窩換衣服），再從地圖點「${zn}」進去，進去的那一刻會檢查。`,go:null};
+    case "feed": return {t:`到溫暖的家的倉庫，餵${pn}最愛的${CROPS[PET_FAV[(S.pet||{}).type]]?CROPS[PET_FAV[S.pet.type]].name:"蔬菜"}，一次餵 N 份算 N 次。`,go:["去倉庫","barn"]};
+    case "play": return {t:"到交誼廳點同事的頭像去拜訪，對方也有養寵物才算；同一位同事每天只算 1 次。",go:["去交誼廳","lounge"]};
+    case "rps": return {t:"拜訪有養寵物的同事，在他家跟他的寵物猜拳，贏了才算。",go:["去交誼廳","lounge"]};
+  }
+  return {t:"",go:null};
+}
+function cmsWhy(id){                                       // 帶寵物類：條件哪裡不對（空字串＝都符合）
+  const q=cmsS().q[id]; if(!q||!CMS_PRES.includes(q.k)) return "";
+  if(!S.pet||!PETS[S.pet.type]) return "還沒有寵物";
+  const cap=petNameOf(S.pet), L=partyList(), slots=partySlots(), fol=L.length?`跟班是${L.map(f=>petNameOf(f)||PETS[f.type].name).join("、")}`:"沒有帶跟班";
+  if(q.k==="bring"){
+    if(S.pet.type===q.t||L.some(f=>f.type===q.t)) return "";
+    const want=PETS[q.t]?PETS[q.t].name:"指定的寵物";
+    const inRaw=Array.isArray(S.party)&&S.party.some(p=>p&&p.type===q.t);
+    if(inRaw&&slots>0) return `${want}有設成跟班，但跟班位置只有 ${slots} 個，牠沒有被帶出門。把牠排到前面，或直接讓牠當隊長。`;
+    return `現在的隊長是${cap}（${PETS[S.pet.type].name}），${fol}。要讓${want}當隊長或跟班。`;
+  }
+  if(q.k==="party"){
+    if(slots<=0) return "還沒有跟班位置：任一隻寵物親密度滿 100 才會開。";
+    if(L.length>=slots) return "";
+    return `跟班 ${L.length} / ${slots}，還差 ${slots-L.length} 隻。跟隊長同種、或重複同種的跟班不算。`;
+  }
+  if(q.k==="dress"){
+    if(petNoWear(S.pet.type)) return `${cap}不能穿衣服，換一隻能穿衣服的寵物當隊長。`;
+    if(S.pet.wear===q.w) return "";
+    const now=PET_WEAR[S.pet.wear]&&S.pet.wear!=="none"?`「${PET_WEAR[S.pet.wear].name}」`:"沒有穿衣服";
+    return `隊長${cap}現在${now}，要換成「${PET_WEAR[q.w]?PET_WEAR[q.w].name:""}」。`;
+  }
+  return "";
+}
+let CMS_WHY={}, CMS_KEEP=false;
+function cmsCheck(id){
+  const c=cmsS(), q=c.q[id], n=npcList().find(x=>x.id===id); if(!q||!n) return;
+  if(cmsReady(id)){ toast("這個委託已經完成，可以交付了"); return; }
+  const why=cmsWhy(id);
+  if(why){ CMS_WHY[id]={t:why,ok:false}; Sound.sfx("error"); toast("🐾 "+why); }
+  else if(!curZone||curZone.id!==n.zone||$("#viewZone").hidden){
+    CMS_WHY[id]={t:`條件都符合了！正在帶你去「${cmsZoneName(n.zone)}」…`,ok:true}; Sound.sfx("select");
+    openZone(n.zone); return;                              // 進去的那一刻就會完成
+  } else { cmsPresence(n.zone); CMS_WHY[id]=cmsReady(id)?null:{t:"條件都符合了，但檢查沒有通過，請截圖給管理者",ok:false}; }
+  CMS_KEEP=true; try{ renderZoneNpc(curZone&&curZone.id); }catch(e){} CMS_KEEP=false;
+  try{ const fp=$("#cmsListBox"); if(fp) fp.innerHTML=cmsListInner(); }catch(e){}
+}
+function cmsGo(to){
+  Sound.sfx("select");
+  if(to==="farm"){ STAB.farm="plots"; openHome("farm"); return; }
+  if(to==="barn"){ openPlace("myhome"); setTimeout(()=>{ const b=$("#homeBarn"); if(b) b.scrollIntoView({behavior:"smooth",block:"center"}); },300); return; }
+  if(to==="lounge"){ openPlace("lounge"); return; }
+  if(to.indexOf("zone:")===0) openZone(to.slice(5));
+}
+function cmsHintHTML(id,q,ok){
+  if(ok) return "";
+  const h=cmsHow(id,q), w=CMS_WHY[id];
+  return `<p class="cmshow">💡 ${esc(h.t)}</p>${w?`<p class="cmswhy${w.ok?" ok":""}" role="status">${w.ok?"✓":"🐾"} ${esc(w.t)}</p>`:""}`;
+}
+function cmsSideBtns(id,q,ok,inZone){                      // 交付／檢查／前往
+  if(ok) return "";
+  const h=cmsHow(id,q), b=[];
+  if(CMS_PRES.includes(q.k)) b.push(`<button class="act" type="button" data-cmscheck="${esc(id)}">🐾 檢查</button>`);
+  if(h.go&&!(inZone&&h.go[1]==="zone:"+(curZone&&curZone.id))) b.push(`<button class="act ghost" type="button" data-cmsnav="${esc(h.go[1])}">${esc(h.go[0])}</button>`);
+  return b.join("");
+}
+document.addEventListener("click",e=>{
+  const c=e.target.closest&&e.target.closest("[data-cmscheck]"); if(c){ cmsCheck(c.dataset.cmscheck); return; }
+  const g=e.target.closest&&e.target.closest("[data-cmsnav]"); if(g){ cmsGo(g.dataset.cmsnav); }
+});
 function cmsBar(v,n){ return `<div class="cmsbar" aria-hidden="true"><i style="width:${Math.round(100*Math.min(1,v/Math.max(1,n)))}%"></i></div>`; }
 function cmsNpcHTML(n){                                  // 任務地點的 NPC 卡片下方：委託
   if(!cmsOn()) return "";
@@ -11508,8 +11593,8 @@ function cmsNpcHTML(n){                                  // 任務地點的 NPC 
   if(!cmsActive().includes(n.id)) return "";
   const q=c.q[n.id], v=cmsProg(n.id), ok=v>=q.n, unit=q.k==="veg"||q.k==="rare"?`倉庫有 ${(q.k==="veg"?+((S.barn||{})[q.c]):+((S.rare||{})[q.c]))||0}`:`${v}`;
   return `<div class="cmsbox${ok?" ready":""}"><div class="cmsmain"><p class="cmst">📜 ${esc(n.name)}的委託</p><p class="cmsq">「${esc(cmsText(n.id,q))}」</p>
-    ${cmsBar(v,q.n)}<p class="ahint" style="margin:2px 0 0">${unit} / ${q.n}・獎勵：${q.rw==="seed"?"種子禮包":"一般肥料 ×2"}${CMS_PET.includes(q.k)?"、寵物親密度 +3":""}、委託章 1 個（${Math.min(st,CMS_STAMP)} / ${CMS_STAMP}）</p></div>
-    <button class="act${ok?"":" ghost"}" type="button" data-cmsdo="${esc(n.id)}" ${ok?"":"disabled"}>${ok?"交付":"進行中"}</button></div>`;
+    ${cmsBar(v,q.n)}<p class="ahint" style="margin:2px 0 0">${unit} / ${q.n}・獎勵：${q.rw==="seed"?"種子禮包":"一般肥料 ×2"}${CMS_PET.includes(q.k)?"、寵物親密度 +3":""}、委託章 1 個（${Math.min(st,CMS_STAMP)} / ${CMS_STAMP}）</p>${cmsHintHTML(n.id,q,ok)}</div>
+    <div class="cmsbtns"><button class="act${ok?"":" ghost"}" type="button" data-cmsdo="${esc(n.id)}" ${ok?"":"disabled"}>${ok?"交付":"進行中"}</button>${cmsSideBtns(n.id,q,ok,true)}</div></div>`;
 }
 function cmsTurnIn(id){
   if(!cmsOn()) return;
@@ -11543,6 +11628,7 @@ function cmsFullBonus(){                                 // 一週全部完成�
   $("#cmsOpts").innerHTML=L.map(k=>`<button type="button" class="seed" data-cmsrare="${k}"><span class="seedicon" aria-hidden="true">${spriteSVG(RARE[k].id)}</span><b>${esc(RARE[k].name)}</b></button>`).join("");
   const d=$("#cmsDlg"); Sound.sfx("levelup"); if(!d.open) d.showModal();
 }
+function cmsListInner(){ const d=document.createElement("div"); d.innerHTML=cmsListHTML(); const b=d.querySelector("#cmsListBox"); return b?b.innerHTML:""; }
 function cmsListHTML(){                                  // 開心農場「📜 NPC 委託」分頁
   if(!S.group) return `<p class="empty-note">建立角色後就能接 NPC 委託。</p>`;
   if(restricted()) return `<p class="empty-note">觀光客和審核中的新人還不能接 NPC 委託，正式加入後就會開放。</p>`;
@@ -11551,14 +11637,14 @@ function cmsListHTML(){                                  // 開心農場「📜 
   const card=id=>{ const n=npc(id), q=c.q[id], v=cmsProg(id), ok=v>=q.n;
     return `<article class="cmscard${ok?" ready":""}"><span class="npcface" aria-hidden="true">${avatarSVG(n.av)}</span><div class="cmsmain">
       <p class="cmst"><b>${esc(n.name)}</b> <span class="ahint">📍 ${esc(cmsZoneName(n.zone))}</span>${ok?`<span class="st st-ok">可以交付</span>`:""}</p>
-      <p class="cmsq">「${esc(cmsText(id,q))}」</p>${cmsBar(v,q.n)}<p class="ahint" style="margin:2px 0 0">${v} / ${q.n}</p></div>
-      <button class="act${ok?"":" ghost"}" type="button" data-cmsgo="${esc(n.zone)}">${ok?"去交付":"前往"}</button></article>`; };
+      <p class="cmsq">「${esc(cmsText(id,q))}」</p>${cmsBar(v,q.n)}<p class="ahint" style="margin:2px 0 0">${v} / ${q.n}</p>${cmsHintHTML(id,q,ok)}</div>
+      <div class="cmsbtns">${ok?`<button class="act" type="button" data-cmsgo="${esc(n.zone)}">去交付</button>`:cmsSideBtns(id,q,ok,false)||`<button class="act ghost" type="button" data-cmsgo="${esc(n.zone)}">前往 ${esc(cmsZoneName(n.zone))}</button>`}</div></article>`; };
   const stamps=cmsNpcs().map(n=>{ const st=Math.min(CMS_STAMP,+c.st[n.id]||0), f=CMS_FURN[n.id], it=f&&shopItem(f);
     return `<div class="cmsstamp${st>=CMS_STAMP?" full":""}"><span class="cmsfurn" aria-hidden="true" style="${decoDim(f)}">${f?decoSVG(f):""}</span>
       <div><b>${esc(n.name)}</b><span class="cmsdots" aria-label="委託章 ${st} / ${CMS_STAMP}">${"●".repeat(st)}${"○".repeat(CMS_STAMP-st)}</span><small>${st>=CMS_STAMP?`已解鎖「${esc(it?it.name:"")}」`:`集滿 ${CMS_STAMP} 個換「${esc(it?it.name:"")}」`}</small></div></div>`; }).join("");
   return `<p class="ahint">NPC 會請你幫忙採集或帶寵物去玩。同時最多 ${CMS_MAX} 個委託，交付後會換下一位 NPC；每位 NPC 每週 1 個，每週一換新（沒完成的會重新來過）。完成後到 NPC 所在的地點按「交付」。</p>
     <p class="dsec">本週委託 <span class="ahint">完成 ${doneN} / ${all.length}${c.fw===c.wk?"・🏅 全勤獎已領取":"・全部完成有全勤獎（任選 1 個稀有作物）"}</span></p>
-    ${act.length?`<div class="cmslist">${act.map(card).join("")}</div>`:`<p class="empty-note">這週的委託全部完成了，下週一會有新的委託！</p>`}
+    <div id="cmsListBox">${act.length?`<div class="cmslist">${act.map(card).join("")}</div>`:`<p class="empty-note">這週的委託全部完成了，下週一會有新的委託！</p>`}</div>
     <p class="dsec">委託章與專屬家具</p><div class="cmsstamps">${stamps}</div>`;
 }
 document.addEventListener("click",e=>{

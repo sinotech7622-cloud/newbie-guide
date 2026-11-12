@@ -2770,7 +2770,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-12T07:58+0800">2026/11/12 07:58</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-12T18:48+0800">2026/11/12 18:48</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -3717,7 +3717,22 @@ function kgFxSVG(n,sc,ox,oy){                              // ★ 邊緣閃光�
   return sp+fl;
 }
 function kgImg(kg,av){ return +((av||{}).kgs)>=3&&!+((av||{}).kgp)&&kg.gold?kg.gold:kg.img; }   // kgp：滿星但選了原色
-function avMaskSVG(av,sc,ox,oy){ { const kg=av&&av.kigu&&kgItem(av.kigu); if(kg){ sc=sc||1; return `<image href="${kgImg(kg,av)}" x="${ox||0}" y="${oy||0}" width="${32*sc}" height="${32*sc}" style="image-rendering:pixelated"/>`+kgFxSVG(Math.min(3,+av.kgs||0),sc,ox,oy); } } const m=ACC[(av||{}).acc]; if(!m||!m.img) return ""; const JL=jobLook(av); if(JL&&JL.hat) return ""; sc=sc||1; const [x,y,w,h]=m.box; return `<image href="${m.img}" x="${(ox||0)+x*sc}" y="${(oy||0)+y*sc}" width="${w*sc}" height="${h*sc}" style="image-rendering:pixelated"/>`; }
+const KG_ACC=new Map();
+function kgAccLayer(av){                                   // 穿全身裝時的配件圖層：戴配件和不戴配件的差異就是配件本身
+  const a=av&&av.acc; if(!a||a==="none"||!ACC[a]) return null;
+  const key=JSON.stringify([a,av.hair,av.hc,av.skin]); if(KG_ACC.has(key)) return KG_ACC.get(key);
+  const base=Object.assign({},av,{kigu:"",job:null,jt:0,jo:0,jh:0}), w=avatarParts32(base), o=avatarParts32(Object.assign({},base,{acc:"none"}));
+  const rows=w.rows.map((r,y)=>r.split("").map((c,x)=>c!==(o.rows[y]||"")[x]?c:".").join(""));
+  const out=rows.some(r=>/[^.]/.test(r))?{rows,pal:w.pal}:null; if(KG_ACC.size>200) KG_ACC.clear(); KG_ACC.set(key,out); return out;
+}
+const KG_ACC_BOX={smirk:[7.75,7,16,16]};                 // 穿全身裝時改用的位置大小（面具縮小到臉上）
+const kgAccBox=(av,m)=>KG_ACC_BOX[(av||{}).acc]||m.box;
+function kgAccSVG(av,sc,ox,oy){
+  const L=kgAccLayer(av), m=ACC[(av||{}).acc]; let o=L?spriteRects(L.rows,sc,ox||0,oy||0,L.pal):"";
+  if(m&&m.img&&m.box){ const [x,y,w,h]=kgAccBox(av,m); o+=`<image href="${m.img}" x="${(ox||0)+x*sc}" y="${(oy||0)+y*sc}" width="${w*sc}" height="${h*sc}" style="image-rendering:pixelated"/>`; }
+  return o;
+}
+function avMaskSVG(av,sc,ox,oy){ { const kg=av&&av.kigu&&kgItem(av.kigu); if(kg){ sc=sc||1; return `<image href="${kgImg(kg,av)}" x="${ox||0}" y="${oy||0}" width="${32*sc}" height="${32*sc}" style="image-rendering:pixelated"/>`+kgAccSVG(av,sc,ox,oy)+kgFxSVG(Math.min(3,+av.kgs||0),sc,ox,oy); } } const m=ACC[(av||{}).acc]; if(!m||!m.img) return ""; const JL=jobLook(av); if(JL&&JL.hat) return ""; sc=sc||1; const [x,y,w,h]=m.box; return `<image href="${m.img}" x="${(ox||0)+x*sc}" y="${(oy||0)+y*sc}" width="${w*sc}" height="${h*sc}" style="image-rendering:pixelated"/>`; }
 function avatarSVG(av){const {rows,pal}=avatarParts32(av);return `<svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(rows,1,0,0,pal)}${avMaskSVG(av)}</svg>`;}
 
 /* ---- 寵物（LV3 領養／LV5 換衣服；已取消寶寶型態，一律是成年的樣子） ---- */
@@ -5645,7 +5660,7 @@ function syncJobAv(){                                   // 角色身上的職業
   return true;
 }
 function jobOutfitChanged(part){
-  if(S.av&&S.av.kigu){ S.av=Object.assign({},S.av); delete S.av.kigu; }                        // 自己換了衣服（或戴上配件）：脫下對應的職業服裝（或職業頭飾）
+  if(part!=="hat"&&S.av&&S.av.kigu){ S.av=Object.assign({},S.av); delete S.av.kigu; }          // 自己換了衣服：脫下全身裝（戴配件可以跟全身裝一起）；並脫下對應的職業服裝（或職業頭飾）
   const J=S.job; if(!J||!J.cur) return;
   const w=jobWear(); if(part==="hat") w.hat=0; else w.out=0;
   syncJobAv();
@@ -6523,9 +6538,11 @@ async function renderCert(canvas,opt){
   const ax=hasPet?bx+24:bx+(bw-16*apx)/2, ay=by+8;
   px(ctx,av.rows,av.pal,ax,ay,apx/2);          // 角色完整呈現（32 格高精度）
   { const kg=S.av&&S.av.kigu&&kgItem(S.av.kigu), m=kg?{img:kgImg(kg,S.av),box:[0,0,32,32]}:ACC[(S.av||{}).acc], JL=kg?null:jobLook(S.av);   // 細緻版頭飾（獅頭帽等）是一張小圖疊上去
-    if(m&&m.img&&!(JL&&JL.hat)){ const im=new Image(); im.src=m.img;
+    const drawImg=async mm=>{ const im=new Image(); im.src=mm.img;
       await new Promise(r=>{ if(im.complete) r(); else { im.onload=r; im.onerror=r; } });
-      const [mx,my,mw,mh]=m.box, k=apx/2; ctx.imageSmoothingEnabled=false; try{ ctx.drawImage(im,ax+mx*k,ay+my*k,mw*k,mh*k); }catch(e){} } }
+      const [mx,my,mw,mh]=mm.box, k=apx/2; ctx.imageSmoothingEnabled=false; try{ ctx.drawImage(im,ax+mx*k,ay+my*k,mw*k,mh*k); }catch(e){} };
+    if(m&&m.img&&!(JL&&JL.hat)) await drawImg(m);
+    if(kg){ const L=kgAccLayer(S.av); if(L) px(ctx,L.rows,L.pal,ax,ay,apx/2); const am=ACC[(S.av||{}).acc]; if(am&&am.img&&am.box) await drawImg({img:am.img,box:kgAccBox(S.av,am)}); } }
   if(hasPet){
     const q=petParts(S.pet), ppx=4;
     if(q.img){
@@ -7051,7 +7068,7 @@ $("#cForm").addEventListener("submit",async e=>{
   if(!touristLocked()&&(isNew||S.name!==name||S.emp!==emp)) S.profAt=Date.now();   // 最後一次填寫或修改真實姓名、員工編號的時間（資料更新通知用）
   if(isNew&&!S.since) S.since=Date.now();             // 加入時間（種子補償「只給目前已加入的人」用）
   const outfitChg=!!(S.av&&draft.outfit!==S.av.outfit);
-  S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; { const pv=S.av||{}; S.av=Object.assign({},draft); if(pv.kigu&&!["hair","hc","skin","outfit","oc","acc"].some(k=>String(draft[k])!==String(pv[k]))) S.av.kigu=pv.kigu; else delete S.av.kigu; } S.group=grp; if(draft.job&&jobCur()){ const w=jobWear(); w.out=+draft.jo?1:0; w.hat=+draft.jh?1:0; } syncJobAv(); void outfitChg; save();
+  S.name=name; S.nick=cleanText($("#cNick").value,12); S.emp=emp; { const pv=S.av||{}; S.av=Object.assign({},draft); if(pv.kigu&&!["hair","hc","skin","outfit","oc"].some(k=>String(draft[k])!==String(pv[k]))) S.av.kigu=pv.kigu; else delete S.av.kigu; } S.group=grp; if(draft.job&&jobCur()){ const w=jobWear(); w.out=+draft.jo?1:0; w.hat=+draft.jh?1:0; } syncJobAv(); void outfitChg; save();
   if(isNew&&!touristLocked()){                          // 新人審核：新建立的角色先送出申請
     if(approvalNeeded()){ S.approval="pending"; S.applyAt=Date.now(); save(); sendApply(); }
     else { S.approval="approved"; save(); }
@@ -13504,7 +13521,7 @@ function kgPanelHTML(mode){
       ${miss.length?`<button class="act ghost" type="button" data-kg="frag" ${frag>=5?"":"disabled"}>碎片重抽（保證新的）</button>`:`<span class="ahint">13 套都收齊了，碎片拿去兌換所換東西吧！</span>`}</div>
     ${lock?"":kgExHTML()}
     <div class="kggrid">${KIGU.map(card).join("")}</div>
-    ${wear?`<p class="kgoff"><button class="act ghost" type="button" data-kg="off">脫下全身裝</button><span class="ahint">換其他衣服或配件時也會自動脫下</span></p>`:`<p class="ahint">點收藏冊裡已經抽到的生肖就能換上。</p>`}
+    ${wear?`<p class="kgoff"><button class="act ghost" type="button" data-kg="off">脫下全身裝</button><span class="ahint">換其他衣服時會自動脫下；配件可以一起戴</span></p>`:`<p class="ahint">點收藏冊裡已經抽到的生肖就能換上。</p>`}
     ${kgMaster()?`<p class="kgdone">🏮 13 套全部 ★★★：稱號「生肖大師」</p>`:""}${kgDone()?`<p class="kgdone">🏮 已集滿十二生肖：稱號「十二生肖收藏家」、相簿畫框「生肖大集合」${kgMaster()?"":`。13 套（含熊貓）都升到 ★★★ 可以拿到稱號「生肖大師」`}</p>`:`<p class="ahint">集滿 12 隻（不含隱藏款）可以拿到稱號「十二生肖收藏家」和相簿畫框「生肖大集合」。</p>`}
   </section>`;
 }
@@ -13685,7 +13702,7 @@ function xmUseLabel(id){
   const it=xmItem(id), D=S.deco||{}, av=S.av||{};
   if(!it) return "";
   if(it.cat==="suit") return av.kigu===id?"脫下":"穿上";
-  if(it.cat==="acc") return av.acc===id&&!av.kigu?"拿下":"戴上";
+  if(it.cat==="acc") return av.acc===id?"拿下":"戴上";
   if(it.cat==="pet") return !S.pet?"":S.pet.gear===id?"拿下":"幫寵物戴上";
   if(it.cat==="fx") return D.snow?"關掉下雪":"打開下雪";
   return D.floor===id||D.floor2===id?"收起來":"擺到家裡";
@@ -13696,7 +13713,7 @@ function xmUse(id){
   const av=S.av||AV_DEFAULT;
   if(it.cat==="suit"){ S.av=Object.assign({},av); if(av.kigu===id) delete S.av.kigu; else S.av.kigu=id; delete S.av.kgs;
     save(); queueSync(); try{ pushFarm(true); }catch(e){} Sound.sfx(S.av.kigu?"get":"undo"); toast(S.av.kigu?`換上了「${it.name}」`:"脫下了全身裝"); try{ renderHUD(); buildMap(); }catch(e){} }
-  else if(it.cat==="acc") shopUse("avacc",av.acc===id&&!av.kigu?"":id);
+  else if(it.cat==="acc") shopUse("avacc",av.acc===id?"":id);
   else if(it.cat==="pet"){ if(!S.pet) return; shopUse("petgear",S.pet.gear===id?"":id); }
   else if(it.cat==="fx"){ shopState(); S.deco.snow=S.deco.snow?0:1; save(); queueSync(); try{ pushFarm(true); }catch(e){} Sound.sfx(S.deco.snow?"get":"undo"); toast(S.deco.snow?"❄ 溫暖的家開始下雪了":"雪停了"); try{ renderPlace(); }catch(e){} }
   else{ shopState(); const D=S.deco;

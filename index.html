@@ -2770,7 +2770,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-11T21:21+0800">2026/11/11 21:21</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-12T07:58+0800">2026/11/12 07:58</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -3716,7 +3716,7 @@ function kgFxSVG(n,sc,ox,oy){                              // ★ 邊緣閃光�
   const fl=n>=2?[[2.5,15,0],[29.5,13,.9],[25,27,1.7]].map(([x,y,d])=>{ const [a,b]=P(x,y); return `<g class="kgst" style="animation-delay:${d}s">${star(a,b,1.8*sc,n>=3?"#FFD23F":"#FFE98A")}</g>`; }).join(""):"";
   return sp+fl;
 }
-function kgImg(kg,av){ return +((av||{}).kgs)>=3&&kg.gold?kg.gold:kg.img; }
+function kgImg(kg,av){ return +((av||{}).kgs)>=3&&!+((av||{}).kgp)&&kg.gold?kg.gold:kg.img; }   // kgp：滿星但選了原色
 function avMaskSVG(av,sc,ox,oy){ { const kg=av&&av.kigu&&kgItem(av.kigu); if(kg){ sc=sc||1; return `<image href="${kgImg(kg,av)}" x="${ox||0}" y="${oy||0}" width="${32*sc}" height="${32*sc}" style="image-rendering:pixelated"/>`+kgFxSVG(Math.min(3,+av.kgs||0),sc,ox,oy); } } const m=ACC[(av||{}).acc]; if(!m||!m.img) return ""; const JL=jobLook(av); if(JL&&JL.hat) return ""; sc=sc||1; const [x,y,w,h]=m.box; return `<image href="${m.img}" x="${(ox||0)+x*sc}" y="${(oy||0)+y*sc}" width="${w*sc}" height="${h*sc}" style="image-rendering:pixelated"/>`; }
 function avatarSVG(av){const {rows,pal}=avatarParts32(av);return `<svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${spriteRects(rows,1,0,0,pal)}${avMaskSVG(av)}</svg>`;}
 
@@ -8223,7 +8223,7 @@ async function pushIfGained(){                            // 合併後比雲端�
   await cloudPush(true);
 }
 function afterProgMerge(){ try{ jobS(); syncJobAv(); }catch(e){} }
-const JOB_AV_KEYS=["job","jt","jo","jh","jc","jl","zt","kgs","xt"];
+const JOB_AV_KEYS=["job","jt","jo","jh","jc","jl","zt","kgs","xt","kgp"];
 function qtyFingerprint(st){                              // 永久進度以外的部分（種子、蔬菜、點數、田地、佈置…）
   const o={}; Object.keys(st||{}).forEach(k=>{ if(k[0]!=="_"&&!FP_SKIP.has(k)&&!PROG_KEYS.has(k)) o[k]=st[k]; });
   if(isObj(o.av)){ o.av=Object.assign({},o.av); JOB_AV_KEYS.forEach(k=>delete o.av[k]); }
@@ -13307,6 +13307,7 @@ function kgSyncAv(){                                     // 稱號（1 收藏家
   const want=kgMaster()?2:kgDone()?1:0, av=S.av||AV_DEFAULT, w=av.kigu, ks=w?kgStar(w):0; let ch=false;
   if(want>(+av.zt||0)){ S.av=Object.assign({},av,{zt:want}); ch=true; }
   if(w&&(+(S.av||{}).kgs||0)!==ks){ S.av=Object.assign({},S.av,{kgs:ks}); if(!ks) delete S.av.kgs; ch=true; }
+  { const kp=w&&ks>=3&&kgPlain(w)?1:0; if((+(S.av||{}).kgp||0)!==kp){ S.av=Object.assign({},S.av); if(kp) S.av.kgp=1; else delete S.av.kgp; ch=true; } }
   if(ch) save(); return ch; }
 FRAME_RULES.zd_all={ok:()=>kgDone(), hint:()=>`抽生肖盲盒集滿十二生肖（${kgCount()}/12，隱藏款不用）`};
 Object.assign(FRAME_SAY,{zd_all:["生肖盲盒","十二生肖全部到齊了！這幅「生肖大集合」送給你，稱號「十二生肖收藏家」也是你的了。"]});
@@ -13450,7 +13451,7 @@ function kgExHTML(){
   return `<div class="kgex"><div class="abar"><h3>🧩 碎片兌換所</h3><span class="ahint">持有 🧩 <b>${frag}</b> 片</span></div>
     ${k?`<div class="kgexsel"><label for="kgSel">選生肖</label><select id="kgSel" data-kgsel>${list.map(q=>`<option value="${q.id}"${q.id===k.id?" selected":""}>${esc(q.name)} ${"★".repeat(kgStar(q.id))||"☆"}</option>`).join("")}</select><span class="ahint">升星、頭套和公仔都是換這一隻的</span></div>`:""}
     <div class="kgexgrid">
-      ${k?item(kgFace(k.id),`升 1 星`,KG_EX.up,"up",st>=3,"已經 ★★★ 了",kgStarsHTML(st)):""}
+      ${k?(st>=3?`<div class="kgexi done"><span class="kgpv" aria-hidden="true">${kgFace(k.id)}</span><b>★★★ 外觀</b>${kgStarsHTML(3)}<span class="ahint">現在是${kgPlain(k.id)?"原色":"金色"}・免費切換</span><button class="act ghost" type="button" data-kg="color">${kgPlain(k.id)?"✨ 換成金色":"🎨 改回原色"}</button></div>`:item(kgFace(k.id),`升 1 星`,KG_EX.up,"up",false,"",kgStarsHTML(st))):""}
       ${k?item(petSVG(Object.assign({},S.pet||{type:"dog",color:0,name:""},{gear:hat}),S.pet?undefined:"adult"),esc(PET_GEAR[hat].name),KG_EX.hat,"hat",!!own[hat]):""}
       ${k?item(decoSVG(fig),`${esc(k.name)}公仔`,KG_EX.fig,"fig",!!own[fig]):""}
       ${item(`<span style="width:72px;height:47px;display:block">${decoSVG("d_zdcase")}</span>`,"生肖展示櫃",KG_EX.case,"case",!!own.d_zdcase,"已兌換")}
@@ -13465,14 +13466,24 @@ function kgFragSeed(){                                     // 5 片碎片換 50 
 }
 function kgWear(id){
   if(id&&!kgOwn(id)) return;
-  S.av=Object.assign({},S.av||AV_DEFAULT); if(id){ S.av.kigu=id; if(kgStar(id)) S.av.kgs=kgStar(id); else delete S.av.kgs; } else{ delete S.av.kigu; delete S.av.kgs; }
+  S.av=Object.assign({},S.av||AV_DEFAULT); delete S.av.kgp; if(id){ S.av.kigu=id; if(kgStar(id)) S.av.kgs=kgStar(id); else delete S.av.kgs; if(kgStar(id)>=3&&kgPlain(id)) S.av.kgp=1; } else{ delete S.av.kigu; delete S.av.kgs; }
   save(); pushFarm(); Sound.sfx(id?"get":"undo");
   toast(id?`換上了「${kgItem(id).name}」全身裝`:"脫下了全身裝");
   renderHUD(); buildMap(); const d=$("#kgDlg"); if(d&&d.open) d.close();
   if(curPlace&&(curPlace.id==="myhome"||curPlace.id==="seedshop")) renderPlace(); else kgRefresh();
 }
 const KG_RAR={n:["一般款",""],r:["稀有款","r"],h:["隱藏款","h"]};
-function kgFace(id){ return avatarSVG(Object.assign({},S.av||AV_DEFAULT,{kigu:id,kgs:kgStar(id)})); }
+function kgFace(id){ return avatarSVG(Object.assign({},S.av||AV_DEFAULT,{kigu:id,kgs:kgStar(id),kgp:kgPlain(id)?1:0})); }
+function kgPlain(id){ return !!(kgS().plain||{})[id]; }
+function kgColor(){                                        // ★★★ 金色 ⇄ 原色
+  const k=kgSel(); if(!k||kgStar(k.id)<3) return;
+  if(touristBlock("切換全身裝顏色")) return;
+  const K=kgS(); K.plain=K.plain||{}; if(K.plain[k.id]) delete K.plain[k.id]; else K.plain[k.id]=1;
+  kgSyncAv(); save(); queueSync(); try{ pushFarm(); }catch(e){} Sound.sfx("select");
+  toast(K.plain[k.id]?`「${k.name}」改回原色了（★★★ 閃光和星星照樣有）`:`「${k.name}」換回金色了`);
+  if((S.av||{}).kigu===k.id){ try{ renderHUD(); buildMap(); }catch(e){} }
+  kgRefresh();
+}
 function kgPanelHTML(mode){
   const K=kgS(), frag=+K.frag||0, miss=KIGU.filter(k=>!kgOwn(k.id)), wear=(S.av||{}).kigu, tot=seedTotal(), lock=restricted(), left=kgLeft(), t10=+K.t10||0, t1=+K.t1||0;
   const card=k=>{ const own=kgOwn(k.id), on=wear===k.id, R=KG_RAR[k.rar];
@@ -13518,6 +13529,7 @@ async function kgAct(b){
   if(a==="frag") return kgFragDraw();
   if(a==="fragseed") return kgFragSeed();
   if(a==="ex") return kgExchange(b.dataset.ex);
+  if(a==="color") return kgColor();
   if(a==="wear") return kgWear(b.dataset.id);
   if(a==="off") return kgWear("");
 }

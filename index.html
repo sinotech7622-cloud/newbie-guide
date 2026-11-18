@@ -1227,6 +1227,75 @@ body.star-mode #hudFace{box-shadow:0 0 0 3px #FFD23F,0 0 14px #FFD23F}
 .rpsres.win{border-color:var(--gold)}
 .rpsres.lose{border-color:#F4929A}
 .rpsres.draw{border-color:#9BE38E}
+/* ---- 照片動作（交誼廳名片、商店預覽） ---- */
+.mo-on{--md:0s}
+.mo-on .lav,.mo-on .lav *,.mo-on .lpet svg,.mo-on .lpet0 svg,.mo-on .mvx,.mo-on.mo-mf_shine{animation-delay:var(--md)}
+.mo-on svg g{transform-box:view-box}
+.mo-on .mv-al{transform-origin:4px 23px}.mo-on .mv-ar{transform-origin:28px 23px}.mo-on .mv-all{transform-origin:16px 16px}
+.mo-on .lav{transform-origin:50% 100%}
+.moprev{position:relative;overflow:visible}
+.moprev .lav{display:block;width:100%;height:100%}.moprev .lpet0{display:block;width:100%;height:100%}
+.mvx{position:absolute;pointer-events:none;opacity:0;z-index:3}
+/* 人物動作 */
+.mo-mo_hop .lav,.mo-k.mo-dz .lav{animation:mvHop 1.2s infinite}
+@keyframes mvHop{0%,40%,100%{transform:translateY(0) scale(1,1)}10%{transform:translateY(0) scale(1.08,.9)}22%{transform:translateY(-14%) scale(.95,1.06)}34%{transform:translateY(0) scale(1.06,.94)}}
+.mo-mo_sway .lav,.mo-k.mo-mo_wave .lav,.mo-k.mo-dz_karaoke .lav,.mo-k.mo-dz_hum .lav{animation:mvSway 1.6s ease-in-out infinite;transform-origin:50% 95%}
+@keyframes mvSway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+.mo-mo_turn .lav{animation:mvTurn 2.4s infinite;transform-origin:50% 50%}
+@keyframes mvTurn{0%,40%{transform:scaleX(1)}48%{transform:scaleX(.1)}50%,90%{transform:scaleX(-1)}98%{transform:scaleX(-.1)}100%{transform:scaleX(1)}}
+.mo-mo_wave .mv-ar{animation:mvWave .6s steps(1) infinite}
+@keyframes mvWave{0%{transform:rotate(-180deg)}50%{transform:rotate(-180deg) translateX(1px)}}
+.mvh{bottom:40%;font-size:16px;animation:mvLove 2.4s linear infinite}
+.mvh.n1{left:18%}.mvh.n2{left:62%;animation-delay:calc(var(--md) - .8s)}.mvh.n3{left:40%;animation-delay:calc(var(--md) - 1.6s)}
+@keyframes mvLove{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:1}70%{opacity:1}100%{transform:translateY(-70px) scale(1.1);opacity:0}}
+/* 跳舞 */
+.mo-dz_disco .mv-ar{animation:mvA180 1s steps(1) infinite}.mo-dz_disco .mv-up{animation:mvHip 1s steps(1) infinite}
+@keyframes mvA180{0%{transform:rotate(-180deg)}50%{transform:none}}
+@keyframes mvHip{0%{transform:translateX(-1px)}25%{transform:translateX(1px)}50%{transform:translateX(-1px)}75%{transform:translateX(1px)}}
+.mo-dz_robot .mv-al{animation:mvRL 1.2s steps(1) infinite}.mo-dz_robot .mv-ar{animation:mvRR 1.2s steps(1) infinite}.mo-dz_robot .mv-head{animation:mvRH 1.2s steps(1) infinite}
+@keyframes mvRL{0%{transform:rotate(90deg)}25%{transform:none}50%{transform:none}75%{transform:rotate(90deg)}}
+@keyframes mvRR{0%{transform:none}25%{transform:rotate(-90deg)}50%{transform:rotate(-90deg)}75%{transform:none}}
+@keyframes mvRH{0%{transform:translateX(-1px)}25%{transform:translateX(1px)}50%{transform:none}75%{transform:translateY(1px)}}
+.mo-dz_cheer .mv-al{animation:mvCL .8s steps(1) infinite}.mo-dz_cheer .mv-ar{animation:mvCR .8s steps(1) infinite}.mo-dz_cheer .mv-all{animation:mvJump .4s steps(1) infinite}
+@keyframes mvCL{0%{transform:rotate(180deg)}50%{transform:none}}@keyframes mvCR{0%{transform:none}50%{transform:rotate(-180deg)}}
+@keyframes mvJump{0%{transform:translateY(-2px)}50%{transform:none}}
+.mo-dz_kick .mv-fl{animation:mvKL 1s steps(1) infinite}.mo-dz_kick .mv-fr{animation:mvKR 1s steps(1) infinite}.mo-dz_kick .mv-al{animation:mvRL 1s steps(1) infinite}.mo-dz_kick .mv-ar{animation:mvKA 1s steps(1) infinite}.mo-dz_kick .mv-up{animation:mvJump 1s steps(1) infinite}
+@keyframes mvKL{0%{transform:translate(-4px,-2px)}25%{transform:none}}
+@keyframes mvKR{0%,25%,75%{transform:none}50%{transform:translate(4px,-2px)}}
+@keyframes mvKA{0%{transform:none}50%{transform:rotate(-90deg)}}
+.mo-dz_oj .mv-up{animation:mvOLean 1.2s steps(1) infinite}.mo-dz_oj .mv-head{animation:mvOHead 1.2s steps(1) infinite}
+.mo-dz_oj .mv-al{animation:mvOAL 1.2s steps(1) infinite}.mo-dz_oj .mv-ar{animation:mvOAR 1.2s steps(1) infinite}
+.mo-dz_oj .mv-fl{animation:mvOFL 1.2s steps(1) infinite}.mo-dz_oj .mv-fr{animation:mvOFR 1.2s steps(1) infinite}
+@keyframes mvOLean{0%{transform:translate(-2px,0)}25%{transform:translate(0,1px)}50%{transform:translate(2px,0)}75%{transform:translate(0,1px)}}
+@keyframes mvOHead{0%{transform:translateX(-1px)}25%{transform:none}50%{transform:translateX(1px)}75%{transform:none}}
+@keyframes mvOAL{0%{transform:rotate(90deg)}25%{transform:rotate(180deg)}50%{transform:none}75%{transform:rotate(180deg)}}
+@keyframes mvOAR{0%{transform:none}25%{transform:rotate(-180deg)}50%{transform:rotate(-90deg)}75%{transform:rotate(-180deg)}}
+@keyframes mvOFL{0%,25%{transform:none}50%{transform:translate(-5px,-3px)}75%{transform:none}}
+@keyframes mvOFR{0%{transform:translate(5px,-3px)}25%{transform:none}}
+.mo-dz_slide .mv-all{animation:mvSlide 1.6s ease-in-out infinite}.mo-dz_slide .mv-al{transform:rotate(90deg)}.mo-dz_slide .mv-ar{animation:mvSA 1.6s steps(1) infinite}
+@keyframes mvSlide{0%,100%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+@keyframes mvSA{0%{transform:rotate(-90deg)}50%{transform:rotate(-180deg)}}
+.mo-dz_karaoke .mv-ar{transform:rotate(-180deg)}.mo-dz_karaoke .mv-mouth{animation:mvMouth .5s steps(1) infinite}.mo-dz_karaoke .mv-head,.mo-dz_karaoke .mv-mic{animation:mvSway2 1s steps(1) infinite}
+@keyframes mvMouth{0%{opacity:1}50%{opacity:0}}@keyframes mvSway2{0%{transform:translateX(-1px)}50%{transform:translateX(1px)}}
+.mo-dz_hum .mv-head{animation:mvSway2 1.2s steps(1) infinite}.mo-dz_hum .mv-all{animation:mvJump 1.2s steps(1) infinite}.mo-dz_hum .mv-al{animation:mvRL 2.4s steps(1) infinite}
+.mvn{font-size:18px;font-weight:900;color:#3A2C8A;text-shadow:1px 1px 0 #fff;animation:mvNote 2s linear infinite}
+.mvn.n1{left:62%;top:20%}.mvn.n2{left:70%;top:14%;animation-delay:calc(var(--md) - .7s)}.mvn.n3{left:20%;top:24%;animation-delay:calc(var(--md) - 1.4s)}
+@keyframes mvNote{0%{transform:translate(0,0);opacity:0}15%{opacity:1}80%{opacity:1}100%{transform:translate(14px,-56px);opacity:0}}
+/* 寵物動作 */
+.mo-pm_hop .lpet svg,.mo-pm_hop .lpet0 svg{animation:mvPhop .8s infinite;transform-origin:50% 100%}
+@keyframes mvPhop{0%,50%,100%{transform:translateY(0)}25%{transform:translateY(-22%)}}
+.mo-pm_spin .lpet svg,.mo-pm_spin .lpet0 svg{animation:mvPspin 2s infinite}
+@keyframes mvPspin{0%,55%{transform:translateY(0) rotate(0)}70%{transform:translateY(-30%) rotate(180deg)}85%{transform:translateY(-10%) rotate(360deg)}100%{transform:translateY(0) rotate(360deg)}}
+/* 照片特效 */
+.mo-mf_shine{animation:mvGlow 1.6s ease-in-out infinite}
+@keyframes mvGlow{0%,100%{box-shadow:0 0 0 2px #FFE066,0 0 6px 2px rgba(255,224,102,.4)}50%{box-shadow:0 0 0 2px #FFE066,0 0 18px 6px rgba(255,224,102,.85)}}
+.mvs{width:22px;height:22px;filter:drop-shadow(0 0 3px #FFE066);animation:mvTw 1.2s steps(2) infinite}
+.mvs.n1{left:-10px;top:-8px}.mvs.n2{right:-8px;top:20%;animation-delay:calc(var(--md) - .4s)}.mvs.n3{left:10%;bottom:-10px;animation-delay:calc(var(--md) - .8s)}
+@keyframes mvTw{0%{transform:scale(.4);opacity:.3}50%{transform:scale(1.1);opacity:1}100%{transform:scale(.4);opacity:.3}}
+.mopet{position:absolute;right:-6px;bottom:-6px;width:42%;height:42%}
+.fxoff .mo-on,.fxoff .mo-on *{animation:none!important}.fxoff .mo-on .mvx{display:none}
+@media (prefers-reduced-motion:reduce){.mo-on,.mo-on *{animation:none!important}.mo-on .mvx{display:none}}
+
 .rpsf{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,8,28,.72);pointer-events:auto;cursor:pointer;animation:rpsfIn .18s ease-out}
 .rpsf.out{transition:opacity .3s;opacity:0}
 @keyframes rpsfIn{from{opacity:0}to{opacity:1}}
@@ -2810,7 +2879,7 @@ footer.site p{margin:4px 0}
 
 <footer class="site">
   <p>本站僅就常見問題整理，如有未登錄事宜，請洽部門同仁、公司行政或資訊人員協助。</p>
-  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-18T17:11+0800">2026/11/18 17:11</time>。</p>
+  <p>系統維護人員：陳逸歆（#07622）。網站更新時間：<time datetime="2026-11-18T17:36+0800">2026/11/18 17:36</time>。</p>
   <p>Copyright by SINOTECH Engineering Consultants, Ltd. Technology Park &amp; Regional Development Dept.</p>
 </footer>
 
@@ -5287,7 +5356,7 @@ const SEASON_DOT={spring:["#FFC2D6","#FF9FBF"],autumn:["#E08A2E","#C9592B"],wint
 var FX_ALIVE=[], FX_NOACTOR=null;
 function fxPrefOn(){ try{ return localStorage.getItem("sino22-fx")!=="0"; }catch(e){ return true; } }
 function fxSetOn(v){ try{ localStorage.setItem("sino22-fx",v?"1":"0"); }catch(e){} if(!v) fxStopAll(true); }
-function syncFxBtn(){ const b=$("#btnFx"); if(!b) return; const on=fxPrefOn(); b.setAttribute("aria-pressed",String(on)); b.title=`像素動畫：${on?"開":"關"}（升級、任務完成、開箱、寵物愛心；點一下切換）`; }
+function syncFxBtn(){ try{ document.body.classList.toggle("fxoff",!fxPrefOn()); }catch(e){} const b=$("#btnFx"); if(!b) return; const on=fxPrefOn(); b.setAttribute("aria-pressed",String(on)); b.title=`像素動畫：${on?"開":"關"}（升級、任務完成、開箱、寵物愛心、猜拳、名片照片動作；點一下切換）`; }
 function fxOK(){ return !!window.PFX&&fxPrefOn()&&!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches); }
 function fxLayer(){                                        // 疊在最上層（popover 會蓋過已經打開的視窗）
   let h=document.getElementById("fxLayer");
@@ -9126,8 +9195,8 @@ function loungeCardInner(p,champion){
   const jj=p.av&&jobById(p.av.job);
   return `<article class="lcard${crown?" champ":""}${p.online?" on":""}${jj?" hasjob":""}${jj&&+p.av.jt===2?" job2":""}"${jj?` style="--jc:${jj.color}"`:""}>
     ${crown?`<span class="crown" aria-label="人氣王">${spriteSVG("crown")}</span>`:""}
-    <div class="lface" role="button" tabindex="0" data-visit="${esc(p.code)}" title="${me?"回到自己的家":"拜訪"+esc(p.name||"")+"的家"}">
-      <span class="lav" aria-hidden="true">${avatarSVG(p.av||AV_DEFAULT)}</span>
+    <div class="lface${moCls(p.av,p.code).cls}"${moCls(p.av,p.code).style} role="button" tabindex="0" data-visit="${esc(p.code)}" title="${me?"回到自己的家":"拜訪"+esc(p.name||"")+"的家"}">
+      ${moLavHTML(p.av||AV_DEFAULT)}
       ${p.pet?`<span class="lpet" aria-hidden="true">${petSVG(p.pet,(+p.level||1)>=4?"adult":"baby")}</span>`:""}
       ${p.av&&p.av.weapon&&SPR["w_"+p.av.weapon]?`<span class="lwep" title="${esc((weaponById(p.av.weapon)||{}).name||"")}" aria-hidden="true">${spriteSVG("w_"+p.av.weapon)}</span>`:""}
     </div>
@@ -14085,6 +14154,67 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-tro]"); i
 SHOP_THEMES.push(["job","職業"]);
 Object.assign(SHOP_THEME,{"wp_job_road": "job", "fl_job_road": "job", "rug_job_road": "job", "jf_road": "job", "pg_job_road": "job", "wp_job_civil": "job", "fl_job_civil": "job", "rug_job_civil": "job", "jf_civil": "job", "pg_job_civil": "job", "wp_job_drain": "job", "fl_job_drain": "job", "rug_job_drain": "job", "jf_drain": "job", "pg_job_drain": "job", "wp_job_park": "job", "fl_job_park": "job", "rug_job_park": "job", "jf_park": "job", "pg_job_park": "job", "wp_job_plan": "job", "fl_job_plan": "job", "rug_job_plan": "job", "jf_plan": "job", "pg_job_plan": "job", "wp_job_renew": "job", "fl_job_renew": "job", "rug_job_renew": "job", "jf_renew": "job", "pg_job_renew": "job", "wp_job_eco": "job", "fl_job_eco": "job", "rug_job_eco": "job", "jf_eco": "job", "pg_job_eco": "job", "wp_job_south": "job", "fl_job_south": "job", "rug_job_south": "job", "jf_south": "job", "pg_job_south": "job", "wp_job_digital": "job", "fl_job_digital": "job", "rug_job_digital": "job", "jf_digital": "job", "pg_job_digital": "job", "wp_job_support": "job", "fl_job_support": "job", "rug_job_support": "job", "jf_support": "job", "pg_job_support": "job"});
 const WEAR_CATS=new Set(["wear","avacc","petgear","pets"]);
+/* ---- 照片動作：dance、mo 共用人物欄（av.mo），寵物動作 av.pm，照片特效 av.mf ---- */
+SHOP.dance={name:"跳舞唱歌",items:[["dz_disco","🕺 迪斯可",120],["dz_robot","🤖 機器人舞",120],["dz_cheer","🙌 歡呼舞",100],["dz_kick","🦵 踢踢舞",100],["dz_oj","🕺 擺臂踢踏舞",150],["dz_slide","🛼 滑步",100],["dz_karaoke","🎤 唱 K",150],["dz_hum","🎶 哼歌",100]]};
+SHOP.mo={name:"人物動作",items:[["mo_hop","🦘 跳跳",60],["mo_sway","🎵 搖擺",60],["mo_turn","🔄 轉身",80],["mo_wave","👋 揮手",80],["mo_love","💕 冒愛心",100]]};
+SHOP.pmo={name:"寵物動作",items:[["pm_hop","🐾 寵物蹦蹦",60],["pm_spin","🌀 寵物翻滾",100]]};
+SHOP.mfx={name:"照片特效",items:[["mf_shine","✨ 閃亮登場",120]]};
+const MO_SLOT={dance:"mo",mo:"mo",pmo:"pm",mfx:"mf"};
+const MO_DESC={dz_disco:"單手指天、屁股左右扭",dz_robot:"手臂一格一格地動，頭跟著頓",dz_cheer:"雙手輪流舉高＋小跳",dz_kick:"左右輪流踢腿、手擺動",dz_oj:"身體左右擺、手跟著甩、對側腳往外踢",dz_slide:"左右滑動、雙手打開",dz_karaoke:"拿麥克風、嘴巴開合、冒音符",dz_hum:"閉眼搖頭晃腦、冒音符",
+  mo_hop:"蹲一下再跳起來",mo_sway:"左右晃",mo_turn:"轉到背面再轉回來",mo_wave:"舉手揮一揮",mo_love:"頭上飄愛心",pm_hop:"寵物在小框裡跳",pm_spin:"寵物跳起來翻一圈",mf_shine:"照片金框發光、四周星星閃"};
+const MO_HINT={dance:"買了就會在交誼廳名片的照片上動；人物動作和跳舞唱歌同時只能用一個",mo:"人物動作和跳舞唱歌同時只能用一個",pmo:"名片右下角的寵物照片會動（要有寵物）",mfx:"可以和人物、寵物動作一起用"};
+const MO_SPLIT=new Set(["dz_disco","dz_robot","dz_cheer","dz_kick","dz_oj","dz_slide","dz_karaoke","dz_hum","mo_wave"]);   // 要把手腳拆開動的
+SHOP_GROUPS.push({id:"motion",name:"💃 動作",cats:["dance","mo","pmo","mfx"]});
+Object.keys(MO_SLOT).forEach(c=>{ WEAR_CATS.add(c); TOURIST_NO_SHOP.add(c); });
+const moOk=(cat,id)=>!!id&&!!SHOP[cat]&&SHOP[cat].items.some(x=>x[0]===id);
+function moOf(av){                                          // 名片資料裡的動作（只認得商店裡有的）
+  av=av||{}; const m=String(av.mo||""), pm=String(av.pm||""), mf=String(av.mf||"");
+  return {mo:moOk("dance",m)||moOk("mo",m)?m:"",pm:moOk("pmo",pm)?pm:"",mf:moOk("mfx",mf)?mf:""};
+}
+function moCls(av,seed){                                    // 加在照片框上的 class 和錯開節奏的 style
+  const m=moOf(av); if(!m.mo&&!m.pm&&!m.mf) return {cls:"",style:""};
+  const k=!!(av&&av.kigu&&kgItem(av.kigu)), c=["mo-on"];
+  if(m.mo){ c.push("mo-"+m.mo); if(m.mo.startsWith("dz_")) c.push("mo-dz"); }
+  if(m.pm) c.push("mo-"+m.pm); if(m.mf) c.push("mo-"+m.mf); if(k) c.push("mo-k");
+  const h=parseInt(hashStr(String(seed||"")).slice(0,6),36)||0;
+  return {cls:" "+c.join(" "),style:` style="--md:-${((h%2400)/1000).toFixed(2)}s"`};
+}
+function moArmSVG(x0,sleeve,skin){
+  const A=[".kk.","kOOk","kOOk","kOOk","kssk","kssk",".kk."]; let o="";
+  A.forEach((r,y)=>{ for(let i=0;i<4;i++){ const c=r[i]; if(c!==".") o+=`<rect x="${x0+i}" y="${22+y}" width="1.02" height="1.02" fill="${c==="k"?"#231F20":c==="O"?sleeve:skin}"/>`; } });
+  return o;
+}
+function moAvatarSVG(av,mo){                                // 拆成頭、身體、雙手、雙腳的人物（跳舞用）
+  const {rows,pal}=avatarParts32(av);
+  const R=f=>{ let o=""; rows.forEach((r,y)=>{ for(let x=0;x<r.length;x++){ const c=r[x]; if(c!=="."&&pal[c]&&f(x,y)) o+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${pal[c]}"/>`; } }); return o; };
+  const inL=(x,y)=>y>=23&&y<=28&&x>=2&&x<=5, inR=(x,y)=>y>=23&&y<=28&&x>=26&&x<=29;
+  const cnt={}; rows.slice(23,26).forEach(r=>[...r.slice(2,6)+r.slice(26,30)].forEach(c=>{ if(c!=="."&&c!=="k"&&c!=="s"&&c!=="d"&&pal[c]&&String(pal[c])[0]==="#") cnt[c]=(cnt[c]||0)+1; }));
+  const sc=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0], sleeve=sc?pal[sc]:(String(pal.O||"")[0]==="#"?pal.O:"#3F6FD8"), skin=pal.s||"#F3C9A0";
+  const eyesOK=/[wn]/.test((rows[11]||"").slice(12,14)), mouth=mo==="dz_karaoke"?`<g class="mv-mouth"><rect x="14" y="16" width="4" height="2" fill="#7A1F2B"/><rect x="15" y="17" width="2" height="1" fill="#E85A6A"/></g>`:"";
+  const eyes=mo==="dz_hum"&&eyesOK?`<rect x="12" y="10" width="2" height="4" fill="${skin}"/><rect x="18" y="10" width="2" height="4" fill="${skin}"/><rect x="12" y="12" width="2" height="1" fill="#231F20"/><rect x="18" y="12" width="2" height="1" fill="#231F20"/><rect x="15" y="16" width="2" height="1" fill="#7A1F2B"/>`:"";
+  const mic=mo==="dz_karaoke"?`<g class="mv-mic"><rect x="26" y="12" width="4" height="4" fill="#231F20"/><rect x="27" y="13" width="2" height="2" fill="#C4CAD8"/><rect x="27" y="16" width="2" height="1" fill="#231F20"/></g>`:"";
+  return `<svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true" style="overflow:visible"><g class="mv-all"><g class="mv-up">
+    <g class="mv-fl">${R((x,y)=>y>=30&&x<16)}</g><g class="mv-fr">${R((x,y)=>y>=30&&x>=16)}</g>
+    <g class="mv-body">${R((x,y)=>y>21&&y<30&&!inL(x,y)&&!inR(x,y))}<rect x="5" y="23" width="1" height="6" fill="#231F20"/><rect x="26" y="23" width="1" height="6" fill="#231F20"/></g>
+    <g class="mv-al">${moArmSVG(2,sleeve,skin)}</g><g class="mv-ar">${moArmSVG(26,sleeve,skin)}</g>
+    <g class="mv-head">${R((x,y)=>y<=21)}${avMaskSVG(av)}${mouth}${eyes}</g>${mic}</g></g></svg>`;
+}
+const MO_STAR=`<svg viewBox="0 0 7 7" shape-rendering="crispEdges" width="100%" height="100%"><path fill="#FFE066" d="M3 0h1v2h1v1h2v1h-2v1h-1v2h-1v-2h-1v-1h-2v-1h2v-1h1z"/><rect x="3" y="3" width="1" height="1" fill="#FFF6C4"/></svg>`;
+function moLavHTML(av){                                     // 照片裡的人物（有動作就換成會動的版本）＋愛心、音符、星星
+  av=av||AV_DEFAULT; const m=moOf(av), k=!!(av.kigu&&kgItem(av.kigu));
+  let h=`<span class="lav" aria-hidden="true">${m.mo&&MO_SPLIT.has(m.mo)&&!k?moAvatarSVG(av,m.mo):avatarSVG(av)}</span>`;
+  if(m.mo==="mo_love") h+=`<span class="mvx mvh n1" aria-hidden="true">💗</span><span class="mvx mvh n2" aria-hidden="true">💕</span><span class="mvx mvh n3" aria-hidden="true">💗</span>`;
+  if(m.mo==="dz_karaoke"||m.mo==="dz_hum") h+=`<span class="mvx mvn n1" aria-hidden="true">♪</span><span class="mvx mvn n2" aria-hidden="true">♫</span><span class="mvx mvn n3" aria-hidden="true">♪</span>`;
+  if(m.mf==="mf_shine") h+=[1,2,3].map(i=>`<span class="mvx mvs n${i}" aria-hidden="true">${MO_STAR}</span>`).join("");
+  return h;
+}
+function moPreviewHTML(cat,id){                              // 商店卡片上的預覽（會動）
+  const slot=MO_SLOT[cat], av=Object.assign({},S.av||AV_DEFAULT,{mo:"",pm:"",mf:""},{[slot]:id});
+  const c=moCls(av,""), pet=S.pet&&PETS[S.pet.type]?petView(S.pet):{type:"dog",color:0,name:""};
+  if(cat==="pmo") return `<span class="shopic petpv moprev${c.cls}" aria-hidden="true"><span class="lpet0">${petSVG(pet,"adult")}</span></span>`;
+  return `<span class="shopic avpv moprev${c.cls}" aria-hidden="true">${moLavHTML(av)}</span>`;
+}
+
 const shopPetType=id=>{ const t=String(id).replace(/^p_/,""); return PETS[t]&&PETS[t].shop?t:""; };       // 服裝與配件：買了直接穿戴，不擺進展示空間
 let shopTheme="all";
 const FREE_DECO=new Set(["wp_default","fl_wood"]);
@@ -14102,6 +14232,7 @@ function decoSnapshot(){                               // 只放已經買下的�
   return {paper:own(d.paper)?d.paper:"wp_default",ground:own(d.ground)?d.ground:"fl_wood",rug:own(d.rug)?d.rug:"",wall:own(d.wall)?d.wall:"",floor:own(d.floor)?d.floor:"",floor2:own(d.floor2)?d.floor2:"",bed:own(d.bed)?d.bed:"",snow:d.snow&&S.shopOwned.fx_xmsnow?1:0};
 }
 function shopPreview(cat,id){
+  if(MO_SLOT[cat]) return moPreviewHTML(cat,id);
   if(cat==="paper") return `<span class="shopsw showroom ${id}" aria-hidden="true"></span>`;
   if(cat==="ground") return `<span class="shopsw flsw" aria-hidden="true"><i class="sr-floor ${id}"></i></span>`;
   if(cat==="rug") return `<span class="shopsw rugsw" aria-hidden="true">${decoSVG(id)}</span>`;
@@ -14122,11 +14253,11 @@ function renderShop(panel){
     <div class="themechips" role="group" aria-label="商品主題">${[["all","全部"]].concat(SHOP_THEMES).map(([k,n])=>{
       const L=Object.keys(SHOP_THEME).filter(id=>k==="all"||SHOP_THEME[id]===k), own=L.filter(id=>FREE_DECO.has(id)||S.shopOwned[id]).length;
       return `<button type="button" class="themechip${shopTheme===k?" on":""}" data-shoptheme="${k}" aria-pressed="${shopTheme===k}">${esc(n)}<small>${own}/${L.length}</small></button>`; }).join("")}</div>
-    ${(()=>{ const blk=([cat,c])=>`<div class="catblock"><p class="cattitle">${esc(c.name)}${cat==="fert"?`<span class="ahint">在開心農場選好肥料，點正在長的作物就能讓它早點成熟；每塊田每一輪最多施 ${FERT_MAX} 次</span>`:cat==="snack"?`<span class="ahint">任何寵物都能吃，可以提升親密度</span>`:cat==="wear"?`<span class="ahint">固定配色，買了也會收進衣櫃</span>`:cat==="avacc"?`<span class="ahint">也可以在「角色設定」的配件換</span>`:cat==="petgear"?`<span class="ahint">所有寵物都能戴，也可以在「寵物窩」換</span>`:cat==="bed"?`<span class="ahint">擺在家裡，寵物會走過去睡覺；睡自己專屬的窩更常去，每天親密度 +1</span>`:cat==="pets"?`<span class="ahint">買了就能換成牠，名字和配件會保留；之後在寵物交換所也選得到</span>`:""}</p>
+    ${(()=>{ const blk=([cat,c])=>`<div class="catblock"><p class="cattitle">${esc(c.name)}${MO_HINT[cat]?`<span class="ahint">${esc(MO_HINT[cat])}</span>`:cat==="fert"?`<span class="ahint">在開心農場選好肥料，點正在長的作物就能讓它早點成熟；每塊田每一輪最多施 ${FERT_MAX} 次</span>`:cat==="snack"?`<span class="ahint">任何寵物都能吃，可以提升親密度</span>`:cat==="wear"?`<span class="ahint">固定配色，買了也會收進衣櫃</span>`:cat==="avacc"?`<span class="ahint">也可以在「角色設定」的配件換</span>`:cat==="petgear"?`<span class="ahint">所有寵物都能戴，也可以在「寵物窩」換</span>`:cat==="bed"?`<span class="ahint">擺在家裡，寵物會走過去睡覺；睡自己專屬的窩更常去，每天親密度 +1</span>`:cat==="pets"?`<span class="ahint">買了就能換成牠，名字和配件會保留；之後在寵物交換所也選得到</span>`:""}</p>
       <div class="shopgrid">${c.items.filter(([id])=>(shopTheme==="all"||SHOP_THEME[id]===shopTheme)&&(!JOB_SHOP.has(id)||(S.shopOwned||{})[id]||shopTheme==="job")).map(([id,name,price0,aff])=>{
         const price=shopPrice(cat,price0);
         const owned=!CONSUME.has(cat)&&(FREE_DECO.has(id)||!!S.shopOwned[id]), n=cat==="fert"?((S.fert||{})[id]||0):S.snacks[id]||0;
-        const using=cat==="wear"?(S.av||AV_DEFAULT).outfit===id:cat==="avacc"?(S.av||AV_DEFAULT).acc===id:cat==="petgear"?!!(S.pet&&S.pet.gear===id):!CONSUME.has(cat)&&(d[cat]===id||(cat==="floor"&&d.floor2===id));
+        const using=MO_SLOT[cat]?(S.av||AV_DEFAULT)[MO_SLOT[cat]]===id:cat==="wear"?(S.av||AV_DEFAULT).outfit===id:cat==="avacc"?(S.av||AV_DEFAULT).acc===id:cat==="petgear"?!!(S.pet&&S.pet.gear===id):!CONSUME.has(cat)&&(d[cat]===id||(cat==="floor"&&d.floor2===id));
         const can=total>=price;
         let btn;
         const ban=owned&&!CONSUME.has(cat)?"":touristShopBan(cat,id);
@@ -14135,6 +14266,8 @@ function renderShop(panel){
         else if(cat==="pets"&&owned){
           const t=shopPetType(id);
           btn=S.pet&&S.pet.type===t?`<span class="st st-gold">目前的夥伴</span>`:!petUnlocked()?`<span class="ahint">LV 3 領養寵物後就能換</span>`:`<button class="act" type="button" data-shopuse="pets|${id}">${S.pet?"換成牠":"領養牠"}</button>`;
+        }else if(MO_SLOT[cat]&&owned){
+          btn=cat==="pmo"&&!pn?`<span class="ahint">有寵物之後才看得到</span>`:using?`<button class="act ghost" type="button" data-shopuse="${cat}|">使用中・取消</button>`:`<button class="act" type="button" data-shopuse="${cat}|${id}">使用</button>`;
         }else if(WEAR_CATS.has(cat)&&owned){
           if(cat==="wear") btn=using?`<span class="st st-gold">穿著中</span>`:`<button class="act" type="button" data-shopuse="wear|${id}">換上</button>`;
           else if(cat==="avacc") btn=using?`<button class="act ghost" type="button" data-shopuse="avacc|">配戴中・拿下</button>`:`<button class="act" type="button" data-shopuse="avacc|${id}">戴上</button>`;
@@ -14155,7 +14288,7 @@ function renderShop(panel){
         const th=SHOP_THEMES.find(([k])=>k===SHOP_THEME[id]);
         return `<article class="shopcard${using?" on":""}">${th&&shopTheme==="all"?`<span class="themetag t-${th[0]}">${esc(th[1])}</span>`:""}${!CONSUME.has(cat)&&!WEAR_CATS.has(cat)?`<button class="pvbtn${isVip()?"":" locked"}" type="button" data-shoppv="${id}" title="${isVip()?"預覽擺進家裡的樣子":`VIP 才能預覽（再買 ${VIP_BUYS-shopBuysCount()} 個）`}">${isVip()?"👁 預覽":"🔒 預覽"}</button>`:""}${shopPreview(cat,id)}
           <b>${esc(name)}</b>${cat==="bed"?(()=>{ const t=id.slice(2), mine=S.pet&&S.pet.type===t; return `<span class="bedfor${mine?" mine":""}">${mine?"★ 你的":""}${esc(PETS[t]?PETS[t].name:"")}專屬</span>`; })():""}
-          <span class="ahint">${cat==="fert"?`${FERT[id].desc}・擁有 ${n} 包`:cat==="snack"?`親密度 +${aff}・擁有 ${n}`:owned?"已擁有":JOB_SHOP.has(id)?"職業限定":`${price} 顆種子`}${!owned&&!JOB_SHOP.has(id)&&!CONSUME.has(cat)&&!can?`・還差 ${price-total}`:""}</span>
+          <span class="ahint">${MO_DESC[id]?`${esc(MO_DESC[id])}・`:""}${cat==="fert"?`${FERT[id].desc}・擁有 ${n} 包`:cat==="snack"?`親密度 +${aff}・擁有 ${n}`:owned?"已擁有":JOB_SHOP.has(id)?"職業限定":`${price} 顆種子`}${!owned&&!JOB_SHOP.has(id)&&!CONSUME.has(cat)&&!can?`・還差 ${price-total}`:""}</span>
           <span class="shopbtns">${btn}</span></article>`;
       }).join("")}</div></div>`;
       const show=([cat,c])=>shopTheme==="all"||(!CONSUME.has(cat)&&c.items.some(([id])=>SHOP_THEME[id]===shopTheme));
@@ -14488,6 +14621,7 @@ function wearShopItem(cat,id){                            // 換上／拿下商�
   if(cat==="wear"&&OUTFIT[id]){ S.av=Object.assign({},S.av||AV_DEFAULT,{outfit:id}); jobOutfitChanged(); }
   else if(cat==="avacc"){ S.av=Object.assign({},S.av||AV_DEFAULT,{acc:ACC[id]?id:"none"}); if(ACC[id]&&id!=="none") jobOutfitChanged("hat"); }
   else if(cat==="petgear"&&S.pet){ S.pet.gear=PET_GEAR[id]?id:""; partyGearFree(S.pet.gear); }
+  else if(MO_SLOT[cat]){ S.av=Object.assign({},S.av||AV_DEFAULT,{[MO_SLOT[cat]]:moOk(cat,id)?id:""}); }
 }
 function shopUse(cat,id){
   if(cat==="pets"){ adoptShopPet(id,false).then(ok=>{ if(ok){ Sound.sfx("get"); renderPlace(); } }); return; }
